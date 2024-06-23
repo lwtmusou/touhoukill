@@ -58,21 +58,48 @@ public:
     }
 };
 
-class Huaxu : public TriggerSkill
+class YilingVS : public ViewAsSkill
 {
 public:
-    Huaxu()
-        : TriggerSkill("huaxu")
+    YilingVS()
+        : ViewAsSkill("yiling")
+    {
+        response_pattern = "@@yiling";
+    }
+
+    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    {
+        return to_select->isEquipped() && !Self->isJilei(to_select);
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const override
+    {
+        if (!cards.isEmpty()) {
+            DummyCard *d = new DummyCard;
+            d->addSubcards(cards);
+            return d;
+        }
+
+        return nullptr;
+    }
+};
+
+class Yiling : public TriggerSkill
+{
+public:
+    Yiling()
+        : TriggerSkill("yiling")
     {
         events << EventPhaseStart << EventPhaseChanging;
+        view_as_skill = new YilingVS;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive && change.player->getMark("sidie") > 0) {
-                room->setPlayerMark(change.player, "sidie", 0);
+            if (change.from == Player::Play && change.player->hasFlag(objectName())) {
+                change.player->setFlags("-" + objectName());
                 room->handleAcquireDetachSkills(change.player, "-sidie", true);
             }
         }
@@ -82,6 +109,7 @@ public:
     {
         if (triggerEvent != EventPhaseStart)
             return QList<SkillInvokeDetail>();
+
         QList<SkillInvokeDetail> d;
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Play) {
@@ -93,27 +121,67 @@ public:
         return d;
     }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        const Card *c = room->askForCard(invoke->invoker, "@@yiling", "@yiling:" + invoke->preferredTarget->objectName(), data, objectName());
+        if (c != nullptr) {
+            invoke->tag["n"] = c->subcardsLength();
+            return true;
+        }
+
+        return false;
+    }
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *uuz = invoke->invoker;
         ServerPlayer *target = invoke->targets.first();
-        QList<const Card *> cards;
-        foreach (const Card *c, uuz->getCards("e")) {
-            if (uuz->canDiscard(uuz, c->getId()))
-                cards << c;
+
+        uuz->drawCards(invoke->tag["n"].toInt());
+        if (!target->hasSkill("sidie", true, false)) {
+            target->setFlags(objectName());
+            room->handleAcquireDetachSkills(target, "sidie", true);
         }
 
-        if (!cards.isEmpty()) {
-            DummyCard dummy;
-            dummy.addSubcards(cards);
-            room->throwCard(&dummy, uuz, uuz);
-            uuz->drawCards(cards.length());
-            if (!target->hasSkill("sidie", true, false)) {
-                room->setPlayerMark(target, "sidie", 1);
-                room->handleAcquireDetachSkills(target, "sidie", true);
+        return false;
+    }
+};
+
+class MoranVS : public OneCardViewAsSkill
+{
+public:
+    MoranVS()
+        : OneCardViewAsSkill("moranvs")
+    {
+        response_pattern = "@@moranvs";
+    }
+
+    bool viewFilter(const Card *to_select) const override
+    {
+        const Player *from = nullptr;
+        QList<const Player *> players = Self->getAliveSiblings();
+        players << Self;
+        foreach (const Player *p, players) {
+            if (Self->property("moran_target").toString() == p->objectName()) {
+                from = p;
+                break;
             }
         }
+        if (from == nullptr)
+            return false;
+
+        if (to_select->isKindOf("EquipCard")) {
+            const EquipCard *e = qobject_cast<const EquipCard *>(to_select->getRealCard());
+            if (e != nullptr)
+                return from->getEquip(e->location()) == nullptr;
+        }
+
         return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        return new DummyCard({originalCard->getEffectiveId()});
     }
 };
 
@@ -123,68 +191,59 @@ public:
     Moran()
         : TriggerSkill("moran$")
     {
-        events << Damaged << FinishJudge;
+        events = {Damaged};
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const override
+    static QList<ServerPlayer *> availableLieges(const Room *room, ServerPlayer *uuz)
     {
-        QList<SkillInvokeDetail> details;
-        if (event == Damaged) {
-            DamageStruct damage = data.value<DamageStruct>();
-            if (damage.to->isAlive() && damage.to->getKingdom() == "yym") {
-                foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-                    if (p->hasLordSkill(objectName())) {
-                        for (int i = 0; i < damage.damage; ++i)
-                            details << SkillInvokeDetail(this, p, damage.to);
+        QList<ServerPlayer *> lieges = room->getLieges("yym", uuz);
+        QList<ServerPlayer *> r;
+
+        foreach (ServerPlayer *liege, lieges) {
+            if (!liege->getHandcards().isEmpty()) {
+                r << liege;
+            } else if (!liege->getEquips().isEmpty()) {
+                static const QList<EquipCard::Location> locations = {
+                    EquipCard::WeaponLocation, EquipCard::ArmorLocation, EquipCard::DefensiveHorseLocation, EquipCard::OffensiveHorseLocation, EquipCard::TreasureLocation,
+                };
+                foreach (EquipCard::Location l, locations) {
+                    if (liege->getEquip(l) != nullptr && uuz->getEquip(l) == nullptr) {
+                        r << liege;
+                        break;
                     }
                 }
             }
-        } else if (event == FinishJudge) {
-            JudgeStruct *judge = data.value<JudgeStruct *>();
-            if (judge->reason == objectName() && judge->isGood() && !judge->ignore_judge) {
-                ServerPlayer *uuz = judge->relative_player;
-                if ((uuz != nullptr) && uuz->isAlive())
-                    details << SkillInvokeDetail(this, uuz, uuz, nullptr, true);
-            }
         }
-        return details;
+
+        return r;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
-        if (triggerEvent == Damaged) {
-            bool doJudge = invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner));
-            if (doJudge) {
-                room->broadcastSkillInvoke(objectName());
-                room->notifySkillInvoked(invoke->owner, objectName());
-                LogMessage log;
-                log.type = "#InvokeOthersSkill";
-                log.from = invoke->invoker;
-                log.to << invoke->owner;
-                log.arg = objectName();
-                room->sendLog(log);
-                return true;
-            }
-        } else
-            return true;
-        return false;
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.to->isAlive() && damage.to->hasLordSkill(this)) {
+            if (!availableLieges(room, damage.to).isEmpty())
+                return {SkillInvokeDetail(this, damage.to, damage.to)};
+        }
+
+        return {};
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        if (triggerEvent == Damaged) {
-            JudgeStruct judge;
-            judge.pattern = ".|black";
-            judge.who = invoke->invoker;
-            judge.reason = objectName();
-            judge.good = true;
-            judge.relative_player = invoke->owner;
-            room->judge(judge);
+        QList<ServerPlayer *> lieges = availableLieges(room, invoke->invoker);
+        room->sortByActionOrder(lieges);
 
-        } else {
-            JudgeStruct *judge = data.value<JudgeStruct *>();
-            invoke->owner->obtainCard(judge->card);
+        foreach (ServerPlayer *liege, lieges) {
+            room->setPlayerProperty(liege, "moran_target", invoke->invoker->objectName());
+            const Card *c = room->askForCard(liege, "@@moranvs", "@moranvs:" + invoke->invoker->objectName(), data, Card::MethodNone);
+            if (c != nullptr) {
+                CardMoveReason r(CardMoveReason::S_REASON_PUT, liege->objectName(), objectName(), QString());
+                room->moveCardTo(Sanguosha->getCard(c->getEffectiveId()), invoke->invoker, Player::PlaceEquip, r, true);
+                break;
+            }
         }
+
         return false;
     }
 };
@@ -2263,7 +2322,7 @@ TH07Package::TH07Package()
 {
     General *yuyuko = new General(this, "yuyuko$", "yym", 4, false);
     yuyuko->addSkill(new Sidie);
-    yuyuko->addSkill(new Huaxu);
+    yuyuko->addSkill(new Yiling);
     yuyuko->addSkill(new Moran);
 
     General *yukari = new General(this, "yukari", "yym", 4, false);
@@ -2340,7 +2399,7 @@ TH07Package::TH07Package()
     addMetaObject<YujianCard>();
     addMetaObject<HuayinCard>();
 
-    skills << new ShihuiVS;
+    skills << new ShihuiVS << new MoranVS;
 }
 
 ADD_PACKAGE(TH07)

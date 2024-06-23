@@ -4598,7 +4598,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     //Winter
     General *yuyuko_hegemony = new General(this, "yuyuko_hegemony", "wei", 4, false);
     yuyuko_hegemony->addSkill("sidie");
-    yuyuko_hegemony->addSkill("huaxu");
+    yuyuko_hegemony->addSkill("yiling");
     yuyuko_hegemony->addCompanion("yukari_hegemony");
     yuyuko_hegemony->addCompanion("youmu_hegemony");
 
