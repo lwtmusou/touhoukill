@@ -2060,11 +2060,11 @@ public:
 
             QStringList prompt = {QString(), QString(), QString(), QString(), QString()};
             if (use.card->isKindOf("Slash")) {
-                prompt[3] = "Slash";
-                prompt[4] = "Snatch";
+                prompt[3] = "slash";
+                prompt[4] = "snatch";
             } else {
-                prompt[3] = "Snatch";
-                prompt[4] = "Slash";
+                prompt[3] = "snatch";
+                prompt[4] = "slash";
             }
 
             prompt[0] = "@nianli-discard" + QString::number(n);
