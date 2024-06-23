@@ -204,11 +204,8 @@ public:
                     log.arg = QString::number(current->getMark("shigui"));
                     log.arg2 = current->getPhaseString();
                     room->doNotify(current, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-                    //considering hiddenskill and losed skill, regardless of  doBroadcastNotify()
-                    //room->touhouLogmessage("#shigui_log", current, QString::number(current->getMark("shigui")), QList<ServerPlayer *>() << current);
                 }
             }
-
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
@@ -228,26 +225,36 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        QString skillname = invoke->invoker->getHandcardNum() < invoke->invoker->getMark("shigui") ? "draw" : "play";
-        QString prompt = skillname + "_notice:" + QString::number(invoke->invoker->getMark("shigui"));
-        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+        if (invoke->invoker->getHandcardNum() > invoke->invoker->getMark("shigui")) {
+            int n = invoke->invoker->getHandcardNum() - invoke->invoker->getMark("shigui");
+            if (room->askForDiscard(invoke->invoker, objectName(), n, n, true, false,
+                                    "@shigui-discard:::" + QString::number(n) + ":" + QString::number(invoke->invoker->getMark("shigui")))) {
+                invoke->tag["discard"] = true;
+                return true;
+            }
+        } else {
+            int n = invoke->invoker->getMark("shigui") - invoke->invoker->getHandcardNum();
+            if (room->askForSkillInvoke(invoke->invoker, this, "drawcard:::" + QString::number(n) + ":" + QString::number(invoke->invoker->getMark("shigui")))) {
+                invoke->tag["discard"] = false;
+                room->drawCards(invoke->invoker, n, objectName());
+                return true;
+            }
+        }
+        return false;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *current = invoke->invoker;
-        room->setPlayerFlag(current, "shigui_used");
-        bool recover = current->getHandcardNum() > current->getMark("shigui");
-        int num = current->getHandcardNum() - current->getMark("shigui");
+        bool recover = invoke->tag["discard"].toBool();
 
         if (recover) {
-            room->askForDiscard(invoke->invoker, objectName(), qAbs(num), qAbs(num), false, false, "shigui_discard:" + QString::number(qAbs(num)));
+            room->setPlayerFlag(current, "shigui_used");
             RecoverStruct recover;
             room->recover(invoke->invoker, recover);
         } else {
-            current->drawCards(qAbs(num));
             room->loseHp(current);
         }
 

@@ -82,27 +82,29 @@ sgs.ai_skill_choice.ciyuan = function(self, choices, data)
 end
 
 --[时轨]
-sgs.ai_skill_invoke.shigui = function(self,data)
+sgs.ai_skill_invoke.shigui = function(self, data)
+	local phase = self.player:getPhase()
+	local pahseCount = self.player:getMark("shigui")
+	local diff = pahseCount - self.player:getHandcardNum()
+	if diff > 2 then
+		return true
+	else
+		return not self:isWeak(self.player)
+	end
+	return false
+end
+sgs.ai_skill_discard.shigui = function(self, discard_num)
 	local phase = self.player:getPhase()
 	local pahseCount = self.player:getMark("shigui")
 	local diff = pahseCount - self.player:getHandcardNum()
 
-	if diff < 2 and diff > 0 then
-		if  diff > 2 then
-			return true
-		elseif diff == 2 then
-			return not self:isWeak(self.player)
-		end
-	end
 	if diff < 0 and diff > -2 then
-		if not self.player:isWounded() then return false end
 		if  math.abs(diff) <= self:getOverflow(self.player) or pahseCount <= 4 then
-			return true
+			return self:askForDiscard("dummy",discard_num,discard_num,false,false)
 		elseif self:isWeak(self.player) and math.abs(diff) <= 2 then
-			return true
+			return self:askForDiscard("dummy",discard_num,discard_num,false,false)
 		end
 	end
-	return false
 end
 
 sgs.ai_need_bear.shigui = function(self, card,from,tos)

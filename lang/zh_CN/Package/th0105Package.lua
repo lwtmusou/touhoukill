@@ -52,14 +52,10 @@ return {
 	["ciyuan:discard"] = "弃牌阶段",
 	["ciyuan:finish"] = "结束阶段",
 	["shigui"] = "时轨",
-	[":shigui"] = "摸牌阶段结束时或出牌阶段结束时，你可以将手牌调整至X张（X为此回合内你已执行的阶段数），若以此法：获得牌，你失去1点体力；弃置牌，你回复1点体力。<font color=\"green\"><b>每回合限一次。</b></font>",
-
-	["shigui_draw"] = "时轨(摸牌)",
-	["shigui_play"] = "时轨(弃牌)",
-	["shigui_discard"] = "你发动“时轨(弃牌)”，请弃置%src张手牌。",
-	["shigui:draw_notice"] = "你可以发动 “时轨(摸牌)”， 目前进行的阶段数为<font color=\"#FF8000\"><b>%src </b></font> 。",
-	["shigui:play_notice"] = "你可以发动 “时轨(弃牌)”， 目前进行的阶段数为<font color=\"#FF8000\"><b>%src </b></font> 。",
+	[":shigui"] = "摸牌阶段结束时或出牌阶段结束时，你可以将手牌调整至X张（X为此回合内你已执行的阶段数），若以此法：获得牌，你失去1点体力；弃置牌，你回复1点体力，然后此技能于此回合内无效。",
 	["#shigui_log"] = "时轨: 进入 <font color=\"#FF8000\"><b>%arg2 </b></font> 阶段， 目前进行的本回合阶段数为 <font color=\"#FF8000\"><b>%arg </b></font> 。",
+	["@shigui-discard"] = "时轨（X = %arg2）你可以调整手牌至%arg2张，你可以弃置 %arg 张牌，回复1点体力",
+	["shigui:drawcard"] = "时轨（X = %arg2）你可以调整手牌至%arg2张，你可以摸 %arg 张牌，失去1点体力",
 
 	["chongdong"] = "虫洞",
 	["#chongdong"]= "%from 将结束回合。",
