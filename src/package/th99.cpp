@@ -932,7 +932,7 @@ public:
     Lianxi()
         : TriggerSkill("lianxi")
     {
-        events << CardResponded << CardUsed;
+        events = {CardResponded, CardUsed, CardsMoveOneTime};
         view_as_skill = new LianxiVS;
     }
 
@@ -953,6 +953,18 @@ public:
             CardResponseStruct resp = data.value<CardResponseStruct>();
             card = resp.m_card;
             user = resp.m_from;
+        } else if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from != nullptr && move.from->getPhase() == Player::Discard
+                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
+                foreach (int id, move.card_ids) {
+                    const Card *c = Sanguosha->getCard(id);
+                    if (c->isKindOf("Slash")) {
+                        user = qobject_cast<ServerPlayer *>(move.from);
+                        card = c;
+                    }
+                }
+            }
         }
 
         if (user != nullptr && user->hasSkill(this) && user->isAlive() && card != nullptr && card->isKindOf("Slash"))
@@ -987,15 +999,21 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        room->doLightbox("$yueshiAnimate", 4000);
         ServerPlayer *toyo = invoke->invoker;
         room->touhouLogmessage("#YueshiWake", toyo, "yueshi");
+        room->doLightbox("$yueshiAnimate", 4000);
         room->notifySkillInvoked(toyo, objectName());
-        room->addPlayerMark(toyo, objectName());
-        if (room->changeMaxHpForAwakenSkill(toyo, 1) && toyo->getMark("yueshi") > 0)
-            room->handleAcquireDetachSkills(toyo, "ruizhi");
+        return room->changeMaxHpForAwakenSkill(invoke->invoker, -1);
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        ServerPlayer *toyo = invoke->invoker;
+        toyo->setMark("yueshi", 1);
+        room->drawCards(toyo, 2, objectName());
+        room->handleAcquireDetachSkills(toyo, "ruizhi");
 
         return false;
     }
@@ -2629,7 +2647,7 @@ TH99Package::TH99Package()
     merry->addSkill(new Mengxian);
     merry->addRelateSkill("luanying");
 
-    General *toyohime = new General(this, "toyohime", "wai", 3);
+    General *toyohime = new General(this, "toyohime", "wai");
     toyohime->addSkill(new Lianxi);
     toyohime->addSkill(new Yueshi);
 
