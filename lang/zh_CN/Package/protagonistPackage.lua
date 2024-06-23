@@ -34,7 +34,6 @@ return {
 	[":fengmo"] = "当一名其他角色于一个回合内首次使用基本牌时，你可以弃置一张手牌，令该角色判定，若结果为红色，此牌无效。",
 	["@fengmo"] = "封魔： %src 使用了 【%dest】， 你可以弃置一张手牌， 发动封魔",
 
-	
 	["boli"] = "博丽",
 	["@boli-retrial"]= "你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“博丽”，打出一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌，代替 <font color=\"#FF8000\"><b>%src </b></font> 的 “%arg” 判定牌。",
 	["boli:judge"] = "<font color=\"#00FF00\"><b>%src </b></font> 的 “%dest” 判定结果不为<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>，你可以发动主公技“博丽”，令其他角色选择是否打出一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌代替之。",
@@ -63,10 +62,12 @@ return {
 	["origin:marisa_6"] = "个人id：173876",
 
 	["mofa"] = "魔法",
-	[":mofa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，令你于此回合内使用的【杀】或普通锦囊牌的伤害值基数+1，若以此法弃置<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸一张牌。",
+	[":mofa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张牌，令你于此回合内使用的【杀】或普通锦囊牌的伤害值基数+1。",
 	["#mofa_notice"]= "由于 %arg 的效果，此回合内 %from 使用的【杀】或普通锦囊牌的伤害值基数+1。",
 	["#mofa_damage"]= "%from 对 %to 的伤害由 %arg2 点增加到 %arg 点。",
 	["#TouhouBuff"]= "%from 的 %arg 效果被触发。",
+	["qinmian"] = "勤勉",
+	[":qinmian"] = "当你的<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌从手牌里被弃置或从装备区里移出后，你可以摸一张牌。",
 	["wuyu"] = "雾雨",
 	[":wuyu"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>其可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌交给你。",
 	[":wuyu_attach"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌交给拥有主公技“雾雨”的角色。",
@@ -317,7 +318,7 @@ return {
 	["&reisen_gzz"] = "绀珠传铃仙",
 	["#reisen_gzz"] = "地上的月兔",
 	["designer:reisen_gzz"] = "蔚海幽浮",
-	
+
 	["illustrator:reisen_gzz"] = "まさる.jp",
 	["origin:reisen_gzz"] = "p号：59883222，个人id：6547201",
 	["illustrator:reisen_gzz_1"] = "カズ",
@@ -330,7 +331,7 @@ return {
 	["origin:reisen_gzz_4"] = "p号：50003628；个人id：292644",
 	["illustrator:reisen_gzz_5"] = "Goback",
 	["origin:reisen_gzz_5"] = "p号：81985109；个人id：5846268",
-	
+
 	["bodong"] = "波动" ,
 	[":bodong"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌并选择场上一至三张装备牌，依次横置之。",
 	["huanlong"] = "幻胧",

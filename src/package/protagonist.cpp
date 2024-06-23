@@ -254,10 +254,6 @@ MofaCard::MofaCard()
 void MofaCard::use(Room *room, const CardUseStruct &card_use) const
 {
     ServerPlayer *source = card_use.from;
-
-    Card *card = Sanguosha->getCard(subcards.first());
-    if (card->getSuit() == Card::Spade)
-        source->drawCards(1);
     room->touhouLogmessage("#mofa_notice", source, "mofa");
     source->setFlags("mofa_invoked");
 }
@@ -268,19 +264,18 @@ public:
     MofaVS()
         : OneCardViewAsSkill("mofa")
     {
-        filter_pattern = ".|.|.|hand!";
+        filter_pattern = ".!";
     }
 
     bool isEnabledAtPlay(const Player *player) const override
     {
-        return !player->hasUsed("MofaCard") && !player->isKongcheng();
+        return !player->hasUsed("MofaCard") && !player->isNude();
     }
 
     const Card *viewAs(const Card *originalCard) const override
     {
         MofaCard *card = new MofaCard;
         card->addSubcard(originalCard);
-
         return card;
     }
 };
@@ -328,6 +323,41 @@ public:
             damage.damage = damage.damage + 1;
             data = QVariant::fromValue(damage);
         }
+        return false;
+    }
+};
+
+class Qinmian : public TriggerSkill
+{
+public:
+    Qinmian()
+        : TriggerSkill("qinmian")
+    {
+        events = {CardsMoveOneTime};
+        frequency = Frequent;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
+        if (from != nullptr && from->isAlive() && from->hasSkill(this)) {
+            for (int i = 0; i < move.from_places.length(); ++i) {
+                const Card *c = Sanguosha->getCard(move.card_ids[i]);
+                if (c->getSuit() == Card::Spade) {
+                    if (move.from_places[i] == Player::PlaceEquip
+                        || (move.from_places[i] == Player::PlaceHand && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)))
+                        return {SkillInvokeDetail(this, from, from)};
+                }
+            }
+        }
+
+        return {};
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        invoke->invoker->drawCards(1, objectName());
         return false;
     }
 };
@@ -2523,6 +2553,7 @@ ProtagonistPackage::ProtagonistPackage()
 
     General *marisa = new General(this, "marisa$", "zhu", 4);
     marisa->addSkill(new Mofa);
+    marisa->addSkill(new Qinmian);
     marisa->addSkill(new Wuyu);
 
     General *reimu_sp = new General(this, "reimu_sp", "zhu", 4);
