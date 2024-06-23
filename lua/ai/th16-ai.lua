@@ -14,7 +14,7 @@ mishen_skill.getTurnUseCard=function(self)
 
 	self:sortByUseValue(avail,true)
 
-	--[[if #avail == 0 then 
+	--[[if #avail == 0 then
 		if not self.player:isChained() then
 			local card_str = ("lure_tiger:mishen[%s:%s]=%d"):format("to_be_decided", 0, -1)
 			local skillcard = sgs.Card_Parse(card_str)
@@ -42,10 +42,10 @@ end
 sgs.ai_skill_use_func.MishenCard = function(card, use, self)
 	local lt =sgs.cloneCard("lure_tiger")
 	lt:setSkillName("mishen")
-	
+
 	assert(lt)
 	self:useTrickCard(lt, use)
-	
+
 	if not use.card then return end
 	use.card=card
 end
@@ -64,7 +64,7 @@ end
 sgs.ai_skill_use_func.LijiCard = function(card, use, self)
 	local nextTarget = self.room:findPlayerByObjectName(self.player:getNextAlive():objectName())
 	local lastTarget = self.room:findPlayerByObjectName(self.player:getLastAlive():objectName())
-	
+
 	local function goodTarget(target)
 		local can = false
 		for _,c in sgs.qlist(target:getEquips()) do
@@ -90,10 +90,10 @@ sgs.ai_skill_use_func.LijiCard = function(card, use, self)
 				end
 			end
 		end
-		
+
 		return can
 	end
-	
+
 	if nextTarget and self.player:objectName() ~= nextTarget:objectName() then
 		local can = goodTarget(nextTarget)
 		if can then
@@ -104,7 +104,7 @@ sgs.ai_skill_use_func.LijiCard = function(card, use, self)
 			end
 		end
 	end
-	
+
 	if lastTarget and self.player:objectName() ~= lastTarget:objectName() then
 		local can = goodTarget(lastTarget)
 		if can then
@@ -138,7 +138,7 @@ sgs.ai_skill_cardchosen.liji = function(self, who, flags)
 			end
 		end
 	end
-	
+
 	return who:getCards("e"):first()
 end
 
@@ -235,7 +235,7 @@ sgs.ai_skill_use_func.LinsaCard = function(card, use, self)
 		use.to:append(targets[1])
 		if use.to:length() >= 1 then return end
 	end
-	
+
 end
 sgs.ai_use_priority.LinsaCard =  sgs.ai_use_priority.Slash + 0.5
 ]]
@@ -302,7 +302,7 @@ zhenshe_skill.getTurnUseCard=function(self)
 end
 
 
---天空璋：矢田寺成美 
+--天空璋：矢田寺成美
 --[菩提]
 sgs.ai_skill_invoke.puti = true
 
@@ -311,9 +311,9 @@ sgs.ai_skill_discard.puti = function(self,discard_num)
 	if (getCardsNum("Slash", self.player, self.player) == 0) then
 		return gamerule_discard
 	end
-	
+
 	gamerule_discard = sgs.ai_skill_discard.juhe(self,  1)
-	
+
 	return gamerule_discard
 end
 
@@ -364,7 +364,7 @@ function kuangwu_judge(self,target,use)
 	if card:isKindOf("AwaitExhausted") then
 		return 2
 	end
-	
+
 	if card:isKindOf("IronChain") then
 		if target:isChained() then
 			return 2
@@ -392,11 +392,11 @@ sgs.ai_skill_use["@@guwu"] = function(self, prompt)
 	self:sort(targets,"defense")
 	local avail_targets = {}
 	local use = self.player:getTag("guwu"):toCardUse()
-	
+
 	for _,p in ipairs(targets) do
-		if table.contains(l, p:objectName()) then  
-			local res = kuangwu_judge(self,target, use)
-			if res == 2 and self:isFriend(p) then 
+		if table.contains(l, p:objectName()) then
+			local res = kuangwu_judge(self,p, use)
+			if res == 2 and self:isFriend(p) then
 				table.insert(avail_targets, p:objectName())
 			elseif res == 1 and self:isEnemy(p) then
 				table.insert(avail_targets, p:objectName())
@@ -405,7 +405,6 @@ sgs.ai_skill_use["@@guwu"] = function(self, prompt)
 	end
 
 	if #avail_targets == 0 then return "." end
-	
 
 	local avail = {}
 	for _,c in sgs.qlist(self.player:getCards("e")) do
@@ -413,7 +412,7 @@ sgs.ai_skill_use["@@guwu"] = function(self, prompt)
             table.insert(avail, c)
 		end
 	end
-	
+
 	if #avail > 0 then
 		return "@GuwuCard=".. avail[1]:getId()  .. "->" .. avail_targets[1]
 	elseif not self.player:isChained() then
@@ -444,12 +443,12 @@ end
 			end
 		end
 	end
-	return f >= e 
+	return f >= e
 end
 ]]
 sgs.ai_skill_use["@@minghe"] = function(self, prompt)
 	local targets={}
-	for _, p in ipairs(self.room:getAlivePlayers()) do
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 		if p:isChained() or not p:getShownHandcards():isEmpty() or not p:getBrokenEquips():isEmpty() then
 			if self:isEnemy(p) and p:getHp() > self.player:getHp() then
 				table.insert(targets,p:objectName())
@@ -474,11 +473,11 @@ sgs.ai_skill_use["@@kuangwu"] = function(self, prompt)
 	self:sort(targets,"defense")
 	local avail_targets = {}
 	local use = self.player:getTag("kuangwu"):toCardUse()
-	
+
 	for _,p in ipairs(targets) do
-		if table.contains(l, p:objectName()) then  
+		if table.contains(l, p:objectName()) then
 			local res = kuangwu_judge(self,target, use)
-			if res == 2 and self:isFriend(p) then 
+			if res == 2 and self:isFriend(p) then
 				table.insert(avail_targets, p:objectName())
 			elseif res == 1 and self:isEnemy(p) then
 				table.insert(avail_targets, p:objectName())
@@ -487,7 +486,7 @@ sgs.ai_skill_use["@@kuangwu"] = function(self, prompt)
 	end
 
 	if #avail_targets == 0 then return "." end
-	
+
 
 	local avail = {}
 	for _,c in sgs.qlist(self.player:getCards("e")) do
@@ -495,7 +494,7 @@ sgs.ai_skill_use["@@kuangwu"] = function(self, prompt)
             table.insert(avail, c)
 		end
 	end
-	
+
 	if #avail > 0 then
 		return "@KuangwuCard=".. avail[1]:getId()  .. "->" .. avail_targets[1]
 	elseif not self.player:isChained() then
@@ -511,7 +510,7 @@ end
 	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 		if self:isFriend(p) then
 			if p:isChained() or not p:getShownHandcards():isEmpty() or not p:getBrokenEquips():isEmpty() then
-				
+
 				if p:getHp() > self.player:getHp()  then
 					f = f - 1
 				else
@@ -528,7 +527,7 @@ end
 			end
 		end
 	end
-	return f >= e 
+	return f >= e
 end
 ]]
 sgs.ai_skill_use["@@zhuti"] = function(self, prompt)
@@ -549,7 +548,7 @@ sgs.ai_skill_use["@@zhuti"] = function(self, prompt)
 end
 
 
---天空璋：SP摩多罗隐岐奈 
+--天空璋：SP摩多罗隐岐奈
 --[门扉]
 local menfei_skill = {}
 menfei_skill.name = "menfei"
@@ -573,14 +572,14 @@ end
 --[后户]
 sgs.ai_skill_invoke.houhu =function(self,data)
 	local use = data:toCardUse()
-	local target 
+	local target
 	for _,p in sgs.qlist(self.room:getAlivePlayers())do
-		if p:getMark("@door") > 0 then 
+		if p:getMark("@door") > 0 then
 			target = p
 			break
 		end
 	end
-	
+
 	if use.to:contains(target) then
 		return true
 	else
@@ -594,7 +593,7 @@ sgs.ai_skill_invoke.houhu =function(self,data)
 	return false
 end
 
---天空璋：SP莉莉霍瓦特 
+--天空璋：SP莉莉霍瓦特
 --[春腾]
 sgs.ai_skill_use["@@chunteng"] = function(self, prompt)
 	if self.friends_noself == 0 then return nil end
