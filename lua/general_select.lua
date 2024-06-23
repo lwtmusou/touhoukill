@@ -147,11 +147,19 @@ selectFirst = function(player, candidates) -- string
 	    local idx = math.random(1, #candidates)
 		return candidates[idx]
 	end
-	
 
 	local values = {}
 	local role = player:getRole()
 	local lord = player:getRoom():getLord()
+
+	if role = sgs.Player_Lord then
+		for i, candidiate in ipairs(candidates) do
+			if candidate == "suwako_god" then
+				table.remove(i)
+				break
+			end
+		end
+	end
 
 	local seat_place
 	if player:getSeat() - 1 <= 2 then
@@ -443,11 +451,11 @@ arrange1v1 = function(player) -- stringlist
 end
 
 selectPair = function(player, candidates) -- string
-	--暂时性的测试用国战选将ai    
+	--暂时性的测试用国战选将ai
     local real_pairs = {}
 	for _, a in ipairs(candidates) do
 		for _, b in ipairs(candidates) do
-		    if a ~= b then 
+		    if a ~= b then
 				local general1 = sgs.Sanguosha:getGeneral(a)
 				local general2 = sgs.Sanguosha:getGeneral(b)
 				local can =  (general1:getKingdom() == general2:getKingdom()) or (general1:getKingdom() == "zhu") or (general2:getKingdom() == "zhu")
