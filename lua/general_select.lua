@@ -155,7 +155,7 @@ selectFirst = function(player, candidates) -- string
 	if role = sgs.Player_Lord then
 		for i, candidiate in ipairs(candidates) do
 			if candidate == "suwako_god" then
-				table.remove(i)
+				table.remove(candidates,i)
 				break
 			end
 		end
