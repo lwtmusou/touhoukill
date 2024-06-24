@@ -563,6 +563,7 @@ BuxianCard::BuxianCard()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
+    sort_targets = false;
 }
 
 bool BuxianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -573,19 +574,6 @@ bool BuxianCard::targetFilter(const QList<const Player *> &targets, const Player
 bool BuxianCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
     return targets.length() == 2;
-}
-
-void BuxianCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    card_use.from->showHiddenSkill("buxian");
-    LogMessage log;
-    log.from = card_use.from;
-    log.to << card_use.to;
-    log.type = "#UseCard";
-    log.card_str = toString();
-    room->sendLog(log);
-
-    use(room, card_use);
 }
 
 void BuxianCard::use(Room *room, const CardUseStruct &card_use) const

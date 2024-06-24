@@ -969,6 +969,7 @@ public:
 XiefaCard::XiefaCard()
 {
     will_throw = false;
+    sort_targets = false;
 }
 
 bool XiefaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -993,21 +994,6 @@ bool XiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
 bool XiefaCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
     return targets.length() == 2;
-}
-
-void XiefaCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    card_use.from->showHiddenSkill("xiefa");
-
-    ServerPlayer *from = card_use.from;
-    ServerPlayer *to1 = card_use.to.at(0);
-    ServerPlayer *to2 = card_use.to.at(1);
-    QList<ServerPlayer *> logto;
-    logto << to1 << to2;
-    room->touhouLogmessage("#ChoosePlayerWithSkill", from, "xiefa", logto, "");
-    room->notifySkillInvoked(card_use.from, "xiefa");
-
-    use(room, card_use);
 }
 
 void XiefaCard::use(Room *room, const CardUseStruct &card_use) const

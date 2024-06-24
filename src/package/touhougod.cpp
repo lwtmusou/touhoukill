@@ -4877,10 +4877,8 @@ bool RumoCard::targetsFeasible(const QList<const Player *> &targets, const Playe
 }
 void RumoCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    CardUseStruct new_use = card_use;
-    room->sortByActionOrder(new_use.to);
     room->doLightbox("$rumoAnimate", 4000);
-    SkillCard::onUse(room, new_use);
+    SkillCard::onUse(room, card_use);
 }
 
 void RumoCard::use(Room *room, const CardUseStruct &card_use) const

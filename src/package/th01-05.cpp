@@ -3237,7 +3237,6 @@ public:
 ZhancheCard::ZhancheCard()
 {
     will_throw = true;
-    //m_skillName = "_zhanche";
     handling_method = Card::MethodDiscard;
 }
 
@@ -3245,28 +3244,6 @@ bool ZhancheCard::targetFilter(const QList<const Player *> &targets, const Playe
 {
     return targets.isEmpty() && to_select != Self && !to_select->getEquips().isEmpty();
 }
-
-/*void ZhancheCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    ????
-    // cut-down (prevent show general)
-    LogMessage log;
-    log.from = card_use.from;
-    log.to = card_use.to;
-    log.type = "#UseCard";
-    log.card_str = card_use.card->toString(false);
-    room->sendLog(log);
-
-    CardMoveReason reason(CardMoveReason::S_REASON_THROW, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
-    room->moveCardTo(this, card_use.from, nullptr, Player::DiscardPile, reason, true);
-
-    CardEffectStruct effect;
-    effect.card = this;
-    effect.from = card_use.from;
-    effect.to = card_use.to.first();
-
-    onEffect(effect);
-}*/
 
 void ZhancheCard::onEffect(const CardEffectStruct &effect) const
 {

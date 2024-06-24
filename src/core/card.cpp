@@ -915,6 +915,7 @@ void Card::clearFlags() const
 
 SkillCard::SkillCard()
     : Card(NoSuit, 0)
+    , sort_targets(true)
 {
 }
 
@@ -962,7 +963,8 @@ void SkillCard::onUse(Room *room, const CardUseStruct &_use) const
     CardUseStruct card_use = _use;
     ServerPlayer *player = card_use.from;
 
-    room->sortByActionOrder(card_use.to);
+    if (sort_targets)
+        room->sortByActionOrder(card_use.to);
 
     // GameRule::effect (PreCardUsed)
     {

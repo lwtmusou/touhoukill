@@ -3177,6 +3177,7 @@ public:
 KuaizhaoHegemonyCard::KuaizhaoHegemonyCard()
 {
     m_skillName = "kuaizhao_hegemony";
+    sort_targets = false;
 }
 
 bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
@@ -3196,22 +3197,6 @@ bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, co
 bool KuaizhaoHegemonyCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
     return targets.length() == 2;
-}
-
-void KuaizhaoHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    ServerPlayer *player = card_use.from;
-
-    LogMessage log;
-    log.from = player;
-    log.to = card_use.to;
-    log.type = "#UseCard";
-    log.card_str = card_use.card->toString();
-    room->sendLog(log);
-
-    player->showHiddenSkill("kuaizhao_hegemony");
-
-    use(room, card_use);
 }
 
 void KuaizhaoHegemonyCard::use(Room *room, const CardUseStruct &card_use) const
@@ -3962,6 +3947,7 @@ public:
 BanyueHegemonyCard::BanyueHegemonyCard()
 {
     m_skillName = "banyue_hegemony";
+    sort_targets = false;
 }
 
 bool BanyueHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -3980,21 +3966,6 @@ bool BanyueHegemonyCard::targetFilter(const QList<const Player *> &targets, cons
 bool BanyueHegemonyCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
     return targets.length() == 2;
-}
-
-void BanyueHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    card_use.from->showHiddenSkill("banyue_hegemony");
-
-    ServerPlayer *from = card_use.from;
-    ServerPlayer *to1 = card_use.to.at(0);
-    ServerPlayer *to2 = card_use.to.at(1);
-    QList<ServerPlayer *> logto;
-    logto << to1 << to2;
-    room->touhouLogmessage("#ChoosePlayerWithSkill", from, "banyue_hegemony", logto, "");
-    room->notifySkillInvoked(card_use.from, "banyue_hegemony");
-
-    use(room, card_use);
 }
 
 void BanyueHegemonyCard::use(Room *room, const CardUseStruct &card_use) const // onEffect is better?

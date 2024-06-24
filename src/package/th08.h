@@ -34,7 +34,6 @@ public:
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
@@ -81,7 +80,6 @@ class ChuangshiCard : public SkillCard
 public:
     Q_INVOKABLE ChuangshiCard();
 
-    //virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;
