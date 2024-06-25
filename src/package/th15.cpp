@@ -668,10 +668,8 @@ public:
             room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), use.to);
             foreach (ServerPlayer *p, use.to)
                 room->setEmotion(p, "skill_nullify");
-
             use.to.clear();
             data = QVariant::fromValue(use);
-
         } else {
             if (use.card->isKindOf("Slash"))
                 room->setCardFlag(use.card, "ZeroJink");
