@@ -1100,7 +1100,8 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill != nullptr) {
             QString text = prompt_doc->toHtml();
-            text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(skill->getNotice(index)));
+            if (index != 0)
+                text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(skill->getNotice(index)));
             prompt_doc->setHtml(text);
         }
     }
