@@ -1487,6 +1487,33 @@ void Dashboard::selectLingshou()
     adjustCards(true);
 }
 
+void Dashboard::selectWeiyi()
+{
+    foreach (const QString &pile, Self->getPileNames()) {
+        if (pile.startsWith("&") || pile == "wooden_ox")
+            retractPileCards(pile);
+    }
+    retractSpecialCard();
+
+    if (view_as_skill != nullptr) {
+        unselectAll();
+        bool ok = false;
+        int selectedId = Self->property("weiyiSelected").toString().toInt(&ok);
+        if (!ok)
+            return;
+
+        foreach (CardItem *card_item, m_handCards) {
+            if (selectedId == card_item->getId()) {
+                selectCard(card_item, true);
+                pendings << card_item;
+                break;
+            }
+        }
+        updatePending();
+    }
+    adjustCards(true);
+}
+
 void Dashboard::updateShown()
 {
     updatePending();

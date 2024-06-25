@@ -152,7 +152,7 @@ selectFirst = function(player, candidates) -- string
 	local role = player:getRole()
 	local lord = player:getRoom():getLord()
 
-	if role = sgs.Player_Lord then
+	if role == sgs.Player_Lord then
 		for i, candidiate in ipairs(candidates) do
 			if candidate == "suwako_god" then
 				table.remove(candidates,i)

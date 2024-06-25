@@ -154,6 +154,7 @@ public slots:
     void updateHandPile();
 
     void selectLingshou();
+    void selectWeiyi();
 
 #ifdef Q_OS_WIN
     void updateTimedProgressBar(time_t val, time_t max);

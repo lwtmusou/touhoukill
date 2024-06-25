@@ -132,10 +132,6 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		return false
 	end
 	
-	-- 夺志 用酒为了无效对面的牌，一定可以打输出，就算有zhancao、shishi、luanying之类的技能无效了酒，也值得用
-	-- 暂且加在这里算了，之后看看需不需要调
-	if self.player:hasSkill("duozhi") then return true end
-
 	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then
 		return
 	end

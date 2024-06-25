@@ -990,24 +990,172 @@ public:
     }
 };
 
+WeiyiCard::WeiyiCard()
+{
+    sort_targets = false;
+}
+
+bool WeiyiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    return targets.length() == 2 && targetFilter({}, targets.first(), Self) && targetFilter({targets.first()}, targets.last(), Self);
+}
+
+bool WeiyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (targets.length() == 0)
+        return !to_select->isNude() && to_select != Self;
+
+    if (targets.length() == 1)
+        return targets.first()->canSlash(to_select, false);
+
+    return false;
+}
+
+void WeiyiCard::use(Room *room, const CardUseStruct &card_use) const
+{
+    ServerPlayer *a = card_use.to.first();
+    ServerPlayer *b = card_use.to.last();
+
+    QStringList prompt = {"@weiyi-askforuseslashto"};
+    prompt << card_use.from->objectName() << b->objectName();
+
+    if (!room->askForUseSlashTo(a, b, prompt.join(":"), false)) {
+        if (!a->isNude() && a != card_use.from) {
+            QStringList prompt = {"@weiyi-askforexchange"};
+            prompt << card_use.from->objectName();
+            const Card *c = room->askForExchange(a, "weiyi", 1, 1, true, prompt.join(":"));
+            if (c == nullptr) {
+                QList<const Card *> cs = a->getCards("hes");
+                if (!cs.isEmpty())
+                    c = cs.first();
+            }
+            if (c == nullptr)
+                return;
+
+            card_use.from->tag["weiyiSelected"] = c->getEffectiveId(); // for AI and skill event trigger
+            card_use.from->tag["weiyiFrom"] = QVariant::fromValue(a);
+            room->setPlayerProperty(card_use.from, "weiyiSelected", QString::number(c->getEffectiveId())); // for client use
+            room->obtainCard(card_use.from, c, false);
+            card_use.from->tag.remove("weiyiFrom");
+            card_use.from->tag.remove("weiyiSelected");
+        }
+    }
+}
+
+class WeiyiVS : public ViewAsSkill
+{
+public:
+    WeiyiVS()
+        : ViewAsSkill("weiyi")
+    {
+        response_pattern = "@@weiyi";
+    }
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    {
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+            return false;
+        if (selected.isEmpty()) {
+            bool ok = false;
+            int id = Self->property("weiyiSelected").toString().toInt(&ok);
+            return ok && to_select->getId() == id;
+        }
+        return false;
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const override
+    {
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+            return new WeiyiCard;
+
+        Slash *s = new Slash(Card::SuitToBeDecided, -1);
+        s->addSubcards(cards);
+        s->setSkillName("_" + objectName());
+        return s;
+    }
+
+    bool isEnabledAtPlay(const Player *player) const override
+    {
+        return !player->hasUsed("WeiyiCard");
+    }
+
+    bool isResponseOrUse() const override
+    {
+        return Sanguosha->getCurrentCardUsePattern() == "@@weiyi";
+    }
+};
+
+class Weiyi : public TriggerSkill
+{
+public:
+    Weiyi()
+        : TriggerSkill("weiyi")
+    {
+        events = {CardsMoveOneTime};
+        view_as_skill = new WeiyiVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *to = qobject_cast<ServerPlayer *>(move.to);
+        if (to != nullptr && to->tag.contains("weiyiSelected") && move.to_place == Player::PlaceHand) {
+            bool ok = false;
+            int id = to->tag.value("weiyiSelected").toInt(&ok);
+            if (ok && move.card_ids.contains(id) && room->getCardOwner(id) == to && room->getCardPlace(id) == Player::PlaceHand) {
+                ServerPlayer *a = to->tag.value("weiyiFrom").value<ServerPlayer *>();
+                if (a != nullptr && to->canSlash(a))
+                    return {SkillInvokeDetail(this, to, to, a, true, nullptr, false)};
+            }
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        // copy & paste Room::askForUseSlashTo
+
+        ServerPlayer *slasher = invoke->invoker;
+        ServerPlayer *victim = invoke->targets.first();
+
+        room->setPlayerFlag(slasher, "slashTargetFix");
+        room->setPlayerFlag(slasher, "slashTargetFixToOne");
+        room->setPlayerFlag(victim, "SlashAssignee");
+
+        const Card *slash = room->askForUseCard(slasher, "@@weiyi", "@weiyi:" + victim->objectName(), 0, Card::MethodUse, false);
+        if (slash == nullptr) {
+            room->setPlayerFlag(slasher, "-slashTargetFix");
+            room->setPlayerFlag(slasher, "-slashTargetFixToOne");
+            room->setPlayerFlag(victim, "-SlashAssignee");
+        }
+
+        return slash != nullptr;
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const override
+    {
+        return false;
+    }
+};
+
 class Duozhi : public TriggerSkill
 {
 public:
     Duozhi()
         : TriggerSkill("duozhi")
     {
-        events << CardFinished << EventPhaseStart;
-        frequency = Compulsory;
+        events = {EventPhaseStart, EventPhaseChanging};
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *c = data.value<ServerPlayer *>();
-            if (c->getPhase() == Player::NotActive) {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->isCardLimited("use,response", "duozhi"))
-                        room->removePlayerCardLimitation(p, "use,response", ".$1", "duozhi", true);
+                    if (p->isCardLimited("use,response", objectName()))
+                        room->removePlayerCardLimitation(p, "use,response", "Jink$1", objectName(), true);
                 }
             }
         }
@@ -1015,54 +1163,47 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
-        if (triggerEvent == CardFinished) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this)) {
-                ServerPlayer *current = room->getCurrent();
-                if (current != nullptr && current->getPhase() != Player::NotActive && current->isAlive()) {
-                    foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
-                        if (!p->isCardLimited("use,response", "duozhi"))
-                            return {SkillInvokeDetail(this, use.from, use.from, nullptr, true)};
+        QList<SkillInvokeDetail> d;
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->isAlive() && p->getPhase() == Player::Start) {
+                foreach (ServerPlayer *yachie, room->getAlivePlayers()) {
+                    if (yachie->isAlive() && yachie->hasSkill(this) && p->getHandcardNum() >= yachie->getHandcardNum()) {
+                        foreach (ServerPlayer *others, room->getOtherPlayers(yachie)) {
+                            if (others->getHandcardNum() < yachie->getHandcardNum()) {
+                                d << SkillInvokeDetail(this, yachie, yachie);
+                                break;
+                            }
+                        }
                     }
                 }
             }
         }
 
-        return {};
+        return d;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
-            if (invoke->invoker->hasShownSkill(this)) {
-                LogMessage l;
-                l.type = "#TriggerSkill";
-                l.from = invoke->invoker;
-                l.arg = objectName();
-                room->sendLog(l);
-            }
-
-            return true;
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *others, room->getOtherPlayers(invoke->invoker)) {
+            if (others->getHandcardNum() < invoke->invoker->getHandcardNum())
+                targets << others;
         }
 
+        ServerPlayer *target
+            = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@duozhi-yingyingying:::" + QString::number(invoke->invoker->getHandcardNum()), true, true);
+        if (target != nullptr) {
+            invoke->targets << target;
+            return true;
+        }
         return false;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        LogMessage l;
-
-        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (!p->isCardLimited("use,response", "duozhi")) {
-                room->setPlayerCardLimitation(p, "use,response", ".", "duozhi", true);
-                l.to << p;
-            }
-        }
-
-        if (!l.to.isEmpty()) {
-            l.type = "#duozhi";
-            room->sendLog(l);
-        }
+        invoke->targets.first()->drawCards(1, objectName());
+        room->setPlayerCardLimitation(invoke->targets.first(), "use,response", "Jink", objectName(), true);
 
         return false;
     }
@@ -1471,6 +1612,7 @@ TH17Package::TH17Package()
     related_skills.insertMulti("ciou", "#ciou");
 
     General *yachie = new General(this, "yachie", "gxs");
+    yachie->addSkill(new Weiyi);
     yachie->addSkill(new Duozhi);
 
     General *kutaka = new General(this, "kutaka", "gxs");
@@ -1488,6 +1630,7 @@ TH17Package::TH17Package()
     addMetaObject<LiaoguCard>();
     addMetaObject<LunniCard>();
     addMetaObject<JunzhenCard>();
+    addMetaObject<WeiyiCard>();
 
     skills << new LingshouOtherVS;
 }

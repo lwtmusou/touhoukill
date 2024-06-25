@@ -2949,6 +2949,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     dashboard->selectOnlyCard();
                 else if (skill->objectName() == "LingshouOtherVS")
                     dashboard->selectLingshou();
+                else if (skill->objectName() == "weiyi")
+                    dashboard->selectWeiyi();
             }
         } else {
             if (pattern.endsWith("!"))
