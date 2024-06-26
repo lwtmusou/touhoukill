@@ -492,56 +492,93 @@ public:
     Wuchang()
         : TriggerSkill("wuchang")
     {
-        events << EventPhaseStart << EventPhaseChanging;
+        events = {TargetSpecifying};
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    static QList<const Player *> convertSpList(const QList<ServerPlayer *> &arg)
     {
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Discard) {
-                if (change.player->getMark("wuchang_limit") > 0) {
-                    room->removePlayerCardLimitation(change.player, "discard", ".|.|.|show$1", objectName());
-                    room->setPlayerMark(change.player, "wuchang_limit", 0);
-                }
-            }
-        }
+        QList<const Player *> r;
+        foreach (ServerPlayer *p, arg)
+            r << p;
+        return r;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> d;
-        if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *current = data.value<ServerPlayer *>();
-            if ((current == nullptr) || current->getPhase() != Player::Discard || current->getCards("h").isEmpty())
-                return d;
-
-            foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
-                if (src != current)
-                    d << SkillInvokeDetail(this, src, src, nullptr, false, current);
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from != nullptr && (use.card->isKindOf("Slash") || (use.card->isNDTrick() && use.card->isBlack()))) {
+            foreach (ServerPlayer *benben, room->findPlayersBySkillName(objectName())) {
+                if (benben->hasSkill(this) && benben->isAlive() && benben != use.from) {
+                    use.card->setFlags("wuchang");
+                    foreach (ServerPlayer *targets, room->getAlivePlayers()) {
+                        if (!use.to.contains(targets) && use.card->targetFilter(convertSpList(use.to), targets, use.from)) {
+                            d << SkillInvokeDetail(this, benben, benben);
+                            break;
+                        }
+                    }
+                    use.card->setFlags("-wuchang");
+                }
             }
         }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        QString prompt = "target:" + invoke->preferredTarget->objectName();
-        return room->askForSkillInvoke(invoke->invoker, objectName(), prompt);
+        ServerPlayer *benben = invoke->invoker;
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<ServerPlayer *> selectables;
+        use.card->setFlags("wuchang");
+        foreach (ServerPlayer *targets, room->getAlivePlayers()) {
+            if (!use.to.contains(targets) && use.card->targetFilter(convertSpList(use.to), targets, use.from))
+                selectables << targets;
+        }
+        use.card->setFlags("-wuchang");
+
+        ServerPlayer *target
+            = room->askForPlayerChosen(benben, selectables, objectName(), "@wuchang-addtarget:" + use.from->objectName() + "::" + use.card->objectName(), true, true);
+        if (target != nullptr) {
+            invoke->targets << target;
+            return true;
+        }
+
+        return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName());
-        if (id > -1) {
-            invoke->targets.first()->addToShownHandCards(QList<int>() << id);
-            if (invoke->targets.first()->getMark("wuchang_limit") == 0) {
-                room->setPlayerCardLimitation(invoke->targets.first(), "discard", ".|.|.|show", objectName(), true);
-                room->setPlayerMark(invoke->targets.first(), "wuchang_limit", 1);
-            }
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.to << invoke->targets.first();
+
+        if (!use.to.contains(invoke->invoker)) {
+            use.card->setFlags("wuchang");
+            if (!use.to.contains(invoke->invoker) && use.card->targetFilter(convertSpList(use.to), invoke->invoker, use.from))
+                use.to << invoke->invoker;
+            use.card->setFlags("-wuchang");
         }
+
+        room->sortByActionOrder(use.to);
+        data = QVariant::fromValue(use);
         return false;
+    }
+};
+
+class WuchangTM : public TargetModSkill
+{
+public:
+    WuchangTM()
+        : TargetModSkill("#wuchang")
+    {
+        pattern = ".";
+    }
+
+    int getExtraTargetNum(const Player *, const Card *card) const override
+    {
+        if (card->hasFlag("wuchang"))
+            return 1000;
+
+        return 0;
     }
 };
 
@@ -1169,6 +1206,8 @@ TH14Package::TH14Package()
     General *benben = new General(this, "benben", "hzc", 3);
     benben->addSkill(new Yuyin);
     benben->addSkill(new Wuchang);
+    benben->addSkill(new WuchangTM);
+    related_skills.insertMulti("wuchang", "#wuchang");
 
     General *yatsuhashi = new General(this, "yatsuhashi", "hzc", 3);
     yatsuhashi->addSkill(new Canxiang);
