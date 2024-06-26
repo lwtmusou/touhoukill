@@ -7,7 +7,7 @@ return{
 	["byakuren"] = "圣白莲",
 	["#byakuren"] = "被封印的大魔法师",
 	["designer:byakuren"] = "星野梦美☆",
-	
+
 	["illustrator:byakuren"] = "ファルまろ",
 	["origin:byakuren"] = "p号：35810931，个人id：1218472",
 	["illustrator:byakuren_1"] = "ひそな",
@@ -108,7 +108,7 @@ return{
 	--xlc005  势力：星 4血
 	["ichirin"] = "云居一轮",
 	["#ichirin"] = "守护与被守护的大轮",
-	["designer:ichirin"] = "星野梦美☆",
+	["designer:ichirin"] = "谁",
 
 	["illustrator:ichirin"] = " 粟",
 	["origin:ichirin"] = "p号：33024333",
@@ -120,11 +120,12 @@ return{
 	["origin:ichirin_3"] = "p号：26458873，个人id：36168",
 	["illustrator:ichirin_4"] = "ideolo",
 	["origin:ichirin_4"] = "个人id：61513",
-	
-	["lizhi"] = "理智",
-	[":lizhi"] = "当你造成伤害时，你可以防止此伤害，摸两张牌。",
-	["yunshang"] = "云上",
-	[":yunshang"] = "<font color=\"blue\"><b>锁定技，</b></font>当你成为其他角色使用的普通锦囊牌的目标后，若你不在其攻击范围内，此牌对你无效。",
+
+	["rudao"] = "入道",
+	[":rudao"] = "当你使用牌指定其他角色为唯一目标时，或成为其他角色使用牌的唯一目标时，你可以取消此目标，令此牌的使用者摸两张牌，每回合限一次。",
+	["huicui"] = "挥摧",
+	[":huicui"] = "结束阶段开始时，若你于此回合内没有造成过伤害，你可以弃置你攻击范围内一名角色装备区或判定区里的一张牌。",
+	["@huicui-select"] = "挥摧请选择一名你攻击范围内的角色弃置其装备区或判定区一张牌",
 
 --*******************************************
 	--xlc006  势力：星 3血
@@ -226,7 +227,7 @@ return{
 
 	["illustrator:kyouko_sp"] = "さな",
 	["origin:kyouko_sp"] = "p号：49675337，个人id：11749824",
-	
+
 	["yexiang"] = "夜响",
 	[":yexiang"] = "当一次性的延时类锦囊牌从其他角色的判定区移出后，你可以依次弃置其两张手牌。",
 	["huisheng"] = "回声",
