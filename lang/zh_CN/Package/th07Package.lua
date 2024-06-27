@@ -8,7 +8,8 @@ return
 	["#yuyuko"] = "华胥的亡灵",
 	["designer:yuyuko"] = "三国有单",
 
-	["illustrator:yuyuko"] = "uni8",
+	["illustrator:yuyuko"] = "カズ",
+	["origin:yuyuko"] = "p号=77021367，个人id=137496",
 	["illustrator:yuyuko_1"] = "伊神",
 	["origin:yuyuko_1"] = "p号：37042965，个人id：7563462",
 	["illustrator:yuyuko_2"] = "カズ",
@@ -21,6 +22,7 @@ return
 	["origin:yuyuko_5"] = "p号：41565155，个人id：36168",
 	["illustrator:yuyuko_6"] = " ふなむし のもれ ",
 	["origin:yuyuko_6"] = "p号：35614917，个人id：2159525",
+	["illustrator:yuyuko_7"] = "uni8",
 
 	["sidie"] = "死蝶",
 	[":sidie"] = "出牌阶段结束时，你可以视为对一名手牌数小于你的角色使用【杀】。",

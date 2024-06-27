@@ -191,12 +191,14 @@ return{
 	["#kisume"] = "可怕的水井妖怪",
 	["designer:kisume"] = "星野梦美☆",
 
-	["illustrator:kisume"] = "まるかた",
-	["origin:kisume"] = "p号：8537445，个人id：6359",
+	["illustrator:kisume"] = "菊月",
+	["origin:kisume"] = "p号=64134547，个人id=429883",
 	["illustrator:kisume_1"] = "くろぬこネーロ",
 	["origin:kisume_1"] = "p号：33450740，个人id：335493",
 	["illustrator:kisume_2"] = "LZH",
 	["origin:kisume_2"] = "p号：41926467，个人id：571766",
+	["illustrator:kisume_3"] = "まるかた",
+	["origin:kisume_3"] = "p号：8537445，个人id：6359",
 
 	["liaoluo"] = "燎落",
 	[":liaoluo"] = "一名角色的结束阶段开始时，若你于此回合内使用过牌，你可以视为对一名此回合内未受到过伤害的其他角色使用火【杀】，以此法造成伤害后，你重置人物牌。",
