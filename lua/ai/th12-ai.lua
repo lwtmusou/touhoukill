@@ -561,6 +561,18 @@ sgs.ai_skill_invoke.yunshang =function(self,data)
 	--end
 	return false
 end
+sgs.ai_skill_invoke.yunshang_hegemony =function(self,data)
+	local user = self.room:getTag("yunshang_use"):toCardUse().from
+	local card=self.room:getTag("yunshang_use"):toCardUse().card
+	if not user then  return false end
+	local res=wunian_judge(self,user,card)
+	if res==1 then--杀等危害性牌
+		return true
+	end
+	--if res==2  then --有益牌
+	--end
+	return false
+end
 
 --娜兹玲
 --旧版技能已经没用

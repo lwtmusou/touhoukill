@@ -863,6 +863,50 @@ public:
     }
 };
 
+class YunshangHegemony : public TriggerSkill
+{
+public:
+    YunshangHegemony()
+        : TriggerSkill("yunshang_hegemony")
+    {
+        frequency = Compulsory;
+        events << TargetConfirmed;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+
+        if (use.from != nullptr && use.card->isNDTrick()) {
+            foreach (ServerPlayer *p, use.to) {
+                if (p->hasSkill(this) && !use.from->inMyAttackRange(p) && use.from != p)
+                    d << SkillInvokeDetail(this, p, p, nullptr, true);
+            }
+        }
+
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        //for AI
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->setTag("yunshang_use", data);
+        return (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data));
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.nullified_list << invoke->invoker->objectName();
+        data = QVariant::fromValue(use);
+        room->notifySkillInvoked(invoke->invoker, objectName());
+
+        return false;
+    }
+};
+
 class JingxiaHegemony : public MasochismSkill
 {
 public:
@@ -3076,6 +3120,46 @@ public:
     }
 };
 
+class TongjuHegemony : public TriggerSkill
+{
+public:
+    TongjuHegemony()
+        : TriggerSkill("tongju_hegemony")
+    {
+        events << TargetConfirming;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    {
+        QList<SkillInvokeDetail> d;
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("SavageAssault") || use.card->isKindOf("IronChain") || use.card->isKindOf("ArcheryAttack")) {
+            foreach (ServerPlayer *p, use.to) {
+                if (p->hasSkill(this))
+                    d << SkillInvokeDetail(this, p, p, nullptr, true);
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        room->notifySkillInvoked(invoke->invoker, objectName());
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.to.removeAll(invoke->invoker);
+        data = QVariant::fromValue(use);
+        LogMessage log;
+        log.type = "#SkillAvoid";
+        log.from = invoke->invoker;
+        log.arg = objectName();
+        log.arg2 = use.card->objectName();
+        room->sendLog(log);
+
+        return false;
+    }
+};
+
 class CuijiHegemony : public TriggerSkill
 {
 public:
@@ -4283,7 +4367,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *ichirin_hegemony = new General(this, "ichirin_hegemony", "wu", 4);
     ichirin_hegemony->addSkill(new LizhiHegemony);
-    ichirin_hegemony->addSkill("yunshang");
+    ichirin_hegemony->addSkill(new YunshangHegemony);
 
     General *nazrin_hegemony = new General(this, "nazrin_hegemony", "wu", 3);
     nazrin_hegemony->addSkill("xunbao");
@@ -4543,7 +4627,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *kisume_hegemony = new General(this, "kisume_hegemony", "qun", 3);
     kisume_hegemony->addSkill(new DiaopingHegemony);
-    kisume_hegemony->addSkill("tongju");
+    kisume_hegemony->addSkill(new TongjuHegemony);
 
     General *suika_hegemony = new General(this, "suika_hegemony", "qun", 4);
     suika_hegemony->addSkill("zuiyue");
