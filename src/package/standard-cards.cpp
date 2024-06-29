@@ -2486,35 +2486,9 @@ bool SavingEnergy::targetFilter(const QList<const Player *> &targets, const Play
 
 void SavingEnergy::takeEffect(ServerPlayer *target) const
 {
+    target->drawCards(1, objectName());
     target->skip(Player::Discard);
-    target->setFlags("savingEnergy");
 }
-
-class SavingEnergySkill : public TriggerSkill
-{
-public:
-    SavingEnergySkill()
-        : TriggerSkill("saving_energy_effect")
-    {
-        events << EventPhaseStart;
-        global = true;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
-    {
-        ServerPlayer *p = data.value<ServerPlayer *>();
-        if (p->getPhase() == Player::Finish && p->hasFlag("savingEnergy"))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nullptr, p, nullptr, true);
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        invoke->invoker->drawCards(2, "saving_energy");
-        return false;
-    }
-};
 
 class DeathSickleSkill : public WeaponSkill
 {
@@ -2749,6 +2723,8 @@ StandardCardPackage::StandardCardPackage()
 
     // clang-format on
 
+    skills << new FakeMoveSkill("dismantle");
+
     foreach (Card *card, cards)
         card->setParent(this);
 }
@@ -2776,7 +2752,7 @@ StandardExCardPackage::StandardExCardPackage()
     // clang-format on
 
     skills << new RenwangShieldSkill << new IceSwordSkill << new WoodenOxSkill << new WoodenOxTriggerSkill << new LureTigerSkill << new LureTigerProhibit << new KnownBothSkill
-           << new SavingEnergySkill << new DeathSickleSkill << new FakeMoveSkill("dismantle");
+           << new DeathSickleSkill;
     insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
 
     foreach (Card *card, cards)

@@ -529,7 +529,7 @@ sgs.ai_skill_playerchosen.youle = function(self, targets)
 	for _,t in sgs.qlist(targets) do
 		if self:isFriend(t) then
 			local num = 0
-			if t:getHandCardNum() > 0 then num = num + 1 end
+			if t:getHandcardNum() > 0 then num = num + 1 end
 			if not t:getEquips():isEmpty() then num = num + 1 end
 			if t:containsTrick("supply_shortage") or t:containsTrick("indulgence") then
 				if (not self:isWeak(self.player)) or num >= 1 then return t end
@@ -539,7 +539,7 @@ sgs.ai_skill_playerchosen.youle = function(self, targets)
 	for _,t in sgs.qlist(targets) do
 		if self:isEnemy(t) then
 			local num = 0
-			if t:getHandCardNum() > 0 then num = num + 1 end
+			if t:getHandcardNum() > 0 then num = num + 1 end
 			if not t:getEquips():isEmpty() then num = num + 1 end
 			if t:containsTrick("spring_breath") or t:containsTrick("saving_energy") then
 				if num >= 1 then return t end

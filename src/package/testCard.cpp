@@ -192,25 +192,6 @@ bool SuperPeach::matchTypeOrName(const QString &pattern) const
         return Peach::matchTypeOrName(pattern);
 }
 
-/*bool SuperPeach::targetFixed(const Player *Self) const
-{
-    bool globalDying = false;
-    if (Self != nullptr) {
-        QList<const Player *> players = Self->getSiblings();
-        players << Self;
-        foreach (const Player *p, players) {
-            if (p->hasFlag("Global_Dying") && p->isAlive()) {
-                globalDying = true;
-                break;
-            }
-        }
-    }
-
-    if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
-        return true;
-    return false;
-}*/
-
 void SuperPeach::onEffect(const CardEffectStruct &effect) const
 {
     if (effect.to->isDead())
@@ -229,71 +210,6 @@ void SuperPeach::onEffect(const CardEffectStruct &effect) const
     if (effect.to->isChained())
         effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
 }
-/*
-bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
-        if (Self != to_select)
-            return true;
-    }
-
-    if (Self->hasFlag("Global_shehuoInvokerFailed"))
-        return (to_select->hasFlag("Global_shehuoFailed") && to_select->isDebuffStatus());
-
-    if (Self->hasSkill("riyue") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
-        if ((canDamage() && isRed()) || (canRecover() && isBlack()))
-            return to_select->isDebuffStatus();
-    }
-
-    if (targets.isEmpty()) {
-        bool globalDying = false;
-        QList<const Player *> players = Self->getSiblings();
-        players << Self;
-        foreach (const Player *p, players) {
-            if (p->hasFlag("Global_Dying") && p->isAlive()) {
-                globalDying = true;
-                break;
-            }
-        }
-
-        if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
-        } else {
-            if (to_select->isDebuffStatus())
-                return true;
-        }
-    }
-    return false;
-}
-*/
-/*
-bool SuperPeach::isAvailable(const Player *player) const
-{
-    if (!BasicCard::isAvailable(player))
-        return false;
-    bool isPlay = Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
-    bool ignore = (player->hasSkill("tianqu") && isPlay && !hasFlag("IgnoreFailed"));
-    if (ignore)
-        return true;
-
-    if ((player->isDebuffStatus() || player->hasFlag("Global_Dying")) && !player->isProhibited(player, this))
-        return true;
-    foreach (const Player *p, player->getAliveSiblings()) {
-        if (p->isDebuffStatus() && !player->isProhibited(p, this))
-            return true;
-    }
-
-    foreach (const Player *p, player->getAliveSiblings()) {
-        if (!player->isProhibited(p, this)) {
-            if (p->hasFlag("Global_Dying") && !isPlay)
-                return true;
-            if (p->hasLordSkill("yanhui") && (p->isWounded() || p->isDebuffStatus()) && player->getKingdom() == "zhan" && player->getPhase() == Player::Play)
-                return true;
-        }
-    }
-    return false;
-}
-*/
 
 class GunSkill : public WeaponSkill
 {
@@ -343,74 +259,6 @@ Gun::Gun(Suit suit, int number)
     : Weapon(suit, number, 4)
 {
     setObjectName("Gun");
-}
-
-class PillarSkillVS : public OneCardViewAsSkill
-{
-public:
-    PillarSkillVS()
-        : OneCardViewAsSkill("Pillar")
-    {
-        response_pattern = "@@Pillar";
-        response_or_use = true;
-    }
-
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
-    {
-        if (selected.length() == 0 && to_select->getTypeId() == Card::TypeBasic)
-            return true;
-        return false;
-    }
-
-    const Card *viewAs(const Card *originalCard) const override
-    {
-        if (originalCard != nullptr) {
-            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-            slash->addSubcard(originalCard);
-            slash->setSkillName("_Pillar");
-            return slash;
-        }
-        return nullptr;
-    }
-};
-
-class PillarSkill : public WeaponSkill
-{
-public:
-    PillarSkill()
-        : WeaponSkill("Pillar")
-    {
-        events << EventPhaseEnd;
-        frequency = Compulsory;
-        view_as_skill = new PillarSkillVS;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->isDead() || player->getPhase() != Player::Finish)
-            return QList<SkillInvokeDetail>();
-        if (!equipAvailable(player, EquipCard::WeaponLocation, objectName()))
-            return QList<SkillInvokeDetail>();
-
-        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        const Card *c = room->askForUseCard(invoke->invoker, "@@Pillar", "@Pillar", -1, Card::MethodUse, false, objectName());
-        if (c == nullptr && (invoke->invoker->getWeapon() != nullptr) && invoke->invoker->getWeapon()->objectName() == objectName()) {
-            int id = invoke->invoker->getWeapon()->getId();
-            invoke->invoker->addBrokenEquips(QList<int>() << id);
-        }
-        return false;
-    }
-};
-
-Pillar::Pillar(Suit suit, int number)
-    : Weapon(suit, number, 3)
-{
-    setObjectName("Pillar");
 }
 
 class HakkeroSkill : public WeaponSkill
@@ -668,33 +516,12 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName())) {
-                int count = 0;
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->getArmor() != nullptr)
-                        count++;
-                }
-                if (count == 1)
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
-            }
-        } else {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.to);
-            if ((invoker != nullptr) && move.to_place == Player::PlaceEquip && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
-                for (int i = 0; i < move.card_ids.size(); i++) {
-                    const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
-                    if (card->objectName() == objectName()) {
-                        foreach (ServerPlayer *p, room->getAllPlayers()) {
-                            if ((p->getArmor() != nullptr) && p->getArmor()->objectName() != objectName())
-                                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, invoker, invoker, nullptr, true);
-                        }
-                    }
-                }
-            }
+            if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -706,23 +533,24 @@ public:
             room->setEmotion(invoke->invoker, "armor/camouflage");
 
             LogMessage log;
-            log.type = "#Camouflage";
+            log.type = "#HuanweiTrigger";
             log.from = invoke->invoker;
-            log.arg = QString::number(damage.damage);
-            log.arg2 = objectName();
+            log.arg2 = "1";
+            log.arg = objectName();
+            log.to = {damage.to};
             room->sendLog(log);
-            return true;
-        } else {
-            QList<ServerPlayer *> targets;
+
+            --damage.damage;
+            data = QVariant::fromValue(damage);
+
+            QList<ServerPlayer *> players;
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if ((p->getArmor() != nullptr) && p->getArmor()->objectName() != objectName()) {
-                    targets << p;
-                }
+                if (p->getArmor() != nullptr)
+                    players << p;
             }
-            if (!targets.isEmpty()) {
-                ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "camouflage", "@camouflage");
-                room->throwCard(target->getArmor()->getId(), target, invoke->invoker);
-            }
+            ServerPlayer *victim = room->askForPlayerChosen(invoke->invoker, players, objectName(), "@Camouflage", false, false);
+            room->throwCard(victim->getArmor(), victim, invoke->invoker);
+            return damage.damage == 0;
         }
 
         return false;
@@ -885,7 +713,7 @@ void BoneHealing::onEffect(const CardEffectStruct &effect) const
 }
 
 SpringBreath::SpringBreath(Suit suit, int number)
-    : DelayedTrick(suit, number, false, true)
+    : DelayedTrick(suit, number, true)
 {
     setObjectName("spring_breath");
 
@@ -897,7 +725,7 @@ SpringBreath::SpringBreath(Suit suit, int number)
 
 QString SpringBreath::getSubtype() const
 {
-    return "unmovable_delayed_trick";
+    return "movable_delayed_trick";
 }
 
 bool SpringBreath::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -912,6 +740,57 @@ void SpringBreath::takeEffect(ServerPlayer *target) const
     target->drawCards(6);
 }
 
+void SpringBreath::onNullified(ServerPlayer *target) const
+{
+    Room *room = target->getRoom();
+    RoomThread *thread = room->getThread();
+
+    bool targetConfirmed = false;
+    do {
+        if ((room->getCardPlace(getEffectiveId()) == Player::PlaceTable) || (room->getCardPlace(getEffectiveId()) == Player::PlaceDelayedTrick)) {
+            if (!target->isAlive())
+                break;
+
+            if (target->containsTrick(objectName()))
+                break;
+
+            const ProhibitSkill *skill = room->isProhibited(nullptr, target, this);
+            if (skill != nullptr) {
+                LogMessage log;
+                log.type = "#SkillAvoid";
+                log.from = target;
+                log.arg = skill->objectName();
+                log.arg2 = objectName();
+                room->sendLog(log);
+
+                room->broadcastSkillInvoke(skill->objectName());
+                break;
+            }
+
+            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), getSkillName(), QString());
+            room->moveCardTo(this, target, target, Player::PlaceDelayedTrick, reason, true);
+
+            CardUseStruct use;
+            use.from = nullptr;
+            use.to << target;
+            use.card = this;
+            QVariant data = QVariant::fromValue(use);
+            thread->trigger(TargetConfirming, room, data);
+            CardUseStruct new_use = data.value<CardUseStruct>();
+            if (new_use.to.isEmpty())
+                break;
+
+            targetConfirmed = true;
+            thread->trigger(TargetConfirmed, room, data);
+        }
+    } while (false);
+
+    if (!targetConfirmed) {
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
+        room->throwCard(this, reason, nullptr);
+    }
+}
+
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
 {
@@ -921,8 +800,7 @@ TestCardPackage::TestCardPackage()
 
     cards
         // Equip
-        << new Gun(Card::Diamond, 1)//Card::Club, 13
-        //<< new Pillar(Card::Diamond, 1)
+        << new Gun(Card::Diamond, 1)
         << new Hakkero(Card::Spade, 11)
         << new JadeSeal(Card::Heart, 13)
         << new Pagoda(Card::Spade, 12)
@@ -974,8 +852,8 @@ TestCardPackage::TestCardPackage()
     foreach (Card *card, cards)
         card->setParent(this);
 
-    skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill << new PillarSkill
-           << new HakkeroSkill << new HagoromoSkill;
+    skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill << new HakkeroSkill
+           << new HagoromoSkill;
 }
 
 ADD_PACKAGE(TestCard)

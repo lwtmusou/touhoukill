@@ -324,7 +324,7 @@ sgs.ai_skill_playerchosen.zangfa = function(self, targets)
 		local res = wunian_judge(self,p, use.card)
 		if res==1 and self:isEnemy(p) then
 			return p
-		elseif res==2 and self:isFriend(target)  then
+		elseif res==2 and self:isFriend(p)  then
 			return p
 		end
 	end
