@@ -419,8 +419,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
     if (movable) {
         QList<ServerPlayer *> players = room->getOtherPlayers(target);
         players << target;
-        ServerPlayer *next = nullptr; //next meaning this next one
-        bool next2next = false; //it's meaning another next(a second next) is necessary
+        bool targetConfirmed = false;
         foreach (ServerPlayer *player, players) {
             if (player->containsTrick(objectName()))
                 continue;
@@ -438,11 +437,12 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
                 continue;
             }
 
-            next = player;
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), getSkillName(), QString());
             room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
-            if (target == player)
+            if (target == player) {
+                targetConfirmed = true;
                 break;
+            }
 
             CardUseStruct use;
             use.from = nullptr;
@@ -451,22 +451,18 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
             QVariant data = QVariant::fromValue(use);
             thread->trigger(TargetConfirming, room, data);
             CardUseStruct new_use = data.value<CardUseStruct>();
-            if (new_use.to.isEmpty()) {
-                next2next = true;
-                break;
-            }
+            if (new_use.to.isEmpty())
+                continue;
 
+            targetConfirmed = true;
             thread->trigger(TargetConfirmed, room, data);
             break;
         }
-        //case:stop.
-        if (next == nullptr) {
+        // case: All target cancelled - this trick should go back to original player
+        if (!targetConfirmed) {
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), getSkillName(), QString());
             room->moveCardTo(this, target, target, Player::PlaceDelayedTrick, reason, true);
         }
-        //case: next2next
-        if ((next != nullptr) && next2next)
-            onNullified(next);
     } else {
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
         room->throwCard(this, reason, nullptr);
