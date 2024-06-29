@@ -1453,7 +1453,6 @@ public:
         : TriggerSkill("#huanwei")
     {
         events << EventAcquireSkill << EventLoseSkill << GameStart << EventSkillInvalidityChange << EventPhaseStart << DamageCaused;
-
         frequency = Compulsory;
     }
 
@@ -1475,7 +1474,6 @@ public:
             foreach (SkillInvalidStruct v, invalids) {
                 if ((v.skill == nullptr) || v.skill->objectName() == "huanwei") {
                     room->filterCards(v.player, v.player->getCards("hes"), true);
-                    //if (!v.invalid)
                 }
             }
         }

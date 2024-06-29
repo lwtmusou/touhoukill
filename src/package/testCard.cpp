@@ -516,33 +516,12 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName())) {
-                int count = 0;
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->getArmor() != nullptr)
-                        count++;
-                }
-                if (count == 1)
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
-            }
-        } else {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.to);
-            if ((invoker != nullptr) && move.to_place == Player::PlaceEquip && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
-                for (int i = 0; i < move.card_ids.size(); i++) {
-                    const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
-                    if (card->objectName() == objectName()) {
-                        foreach (ServerPlayer *p, room->getAllPlayers()) {
-                            if ((p->getArmor() != nullptr) && p->getArmor()->objectName() != objectName())
-                                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, invoker, invoker, nullptr, true);
-                        }
-                    }
-                }
-            }
+            if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -554,23 +533,24 @@ public:
             room->setEmotion(invoke->invoker, "armor/camouflage");
 
             LogMessage log;
-            log.type = "#Camouflage";
+            log.type = "#HuanweiTrigger";
             log.from = invoke->invoker;
-            log.arg = QString::number(damage.damage);
-            log.arg2 = objectName();
+            log.arg2 = "1";
+            log.arg = objectName();
+            log.to = {damage.to};
             room->sendLog(log);
-            return true;
-        } else {
-            QList<ServerPlayer *> targets;
+
+            --damage.damage;
+            data = QVariant::fromValue(damage);
+
+            QList<ServerPlayer *> players;
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if ((p->getArmor() != nullptr) && p->getArmor()->objectName() != objectName()) {
-                    targets << p;
-                }
+                if (p->getArmor() != nullptr)
+                    players << p;
             }
-            if (!targets.isEmpty()) {
-                ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "camouflage", "@camouflage");
-                room->throwCard(target->getArmor()->getId(), target, invoke->invoker);
-            }
+            ServerPlayer *victim = room->askForPlayerChosen(invoke->invoker, players, objectName(), "@Camouflage", false, false);
+            room->throwCard(victim->getArmor(), victim, invoke->invoker);
+            return damage.damage == 0;
         }
 
         return false;
