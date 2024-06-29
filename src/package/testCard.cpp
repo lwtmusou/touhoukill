@@ -192,25 +192,6 @@ bool SuperPeach::matchTypeOrName(const QString &pattern) const
         return Peach::matchTypeOrName(pattern);
 }
 
-/*bool SuperPeach::targetFixed(const Player *Self) const
-{
-    bool globalDying = false;
-    if (Self != nullptr) {
-        QList<const Player *> players = Self->getSiblings();
-        players << Self;
-        foreach (const Player *p, players) {
-            if (p->hasFlag("Global_Dying") && p->isAlive()) {
-                globalDying = true;
-                break;
-            }
-        }
-    }
-
-    if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
-        return true;
-    return false;
-}*/
-
 void SuperPeach::onEffect(const CardEffectStruct &effect) const
 {
     if (effect.to->isDead())
@@ -229,71 +210,6 @@ void SuperPeach::onEffect(const CardEffectStruct &effect) const
     if (effect.to->isChained())
         effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
 }
-/*
-bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
-        if (Self != to_select)
-            return true;
-    }
-
-    if (Self->hasFlag("Global_shehuoInvokerFailed"))
-        return (to_select->hasFlag("Global_shehuoFailed") && to_select->isDebuffStatus());
-
-    if (Self->hasSkill("riyue") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
-        if ((canDamage() && isRed()) || (canRecover() && isBlack()))
-            return to_select->isDebuffStatus();
-    }
-
-    if (targets.isEmpty()) {
-        bool globalDying = false;
-        QList<const Player *> players = Self->getSiblings();
-        players << Self;
-        foreach (const Player *p, players) {
-            if (p->hasFlag("Global_Dying") && p->isAlive()) {
-                globalDying = true;
-                break;
-            }
-        }
-
-        if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
-        } else {
-            if (to_select->isDebuffStatus())
-                return true;
-        }
-    }
-    return false;
-}
-*/
-/*
-bool SuperPeach::isAvailable(const Player *player) const
-{
-    if (!BasicCard::isAvailable(player))
-        return false;
-    bool isPlay = Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
-    bool ignore = (player->hasSkill("tianqu") && isPlay && !hasFlag("IgnoreFailed"));
-    if (ignore)
-        return true;
-
-    if ((player->isDebuffStatus() || player->hasFlag("Global_Dying")) && !player->isProhibited(player, this))
-        return true;
-    foreach (const Player *p, player->getAliveSiblings()) {
-        if (p->isDebuffStatus() && !player->isProhibited(p, this))
-            return true;
-    }
-
-    foreach (const Player *p, player->getAliveSiblings()) {
-        if (!player->isProhibited(p, this)) {
-            if (p->hasFlag("Global_Dying") && !isPlay)
-                return true;
-            if (p->hasLordSkill("yanhui") && (p->isWounded() || p->isDebuffStatus()) && player->getKingdom() == "zhan" && player->getPhase() == Player::Play)
-                return true;
-        }
-    }
-    return false;
-}
-*/
 
 class GunSkill : public WeaponSkill
 {
@@ -343,74 +259,6 @@ Gun::Gun(Suit suit, int number)
     : Weapon(suit, number, 4)
 {
     setObjectName("Gun");
-}
-
-class PillarSkillVS : public OneCardViewAsSkill
-{
-public:
-    PillarSkillVS()
-        : OneCardViewAsSkill("Pillar")
-    {
-        response_pattern = "@@Pillar";
-        response_or_use = true;
-    }
-
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
-    {
-        if (selected.length() == 0 && to_select->getTypeId() == Card::TypeBasic)
-            return true;
-        return false;
-    }
-
-    const Card *viewAs(const Card *originalCard) const override
-    {
-        if (originalCard != nullptr) {
-            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-            slash->addSubcard(originalCard);
-            slash->setSkillName("_Pillar");
-            return slash;
-        }
-        return nullptr;
-    }
-};
-
-class PillarSkill : public WeaponSkill
-{
-public:
-    PillarSkill()
-        : WeaponSkill("Pillar")
-    {
-        events << EventPhaseEnd;
-        frequency = Compulsory;
-        view_as_skill = new PillarSkillVS;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->isDead() || player->getPhase() != Player::Finish)
-            return QList<SkillInvokeDetail>();
-        if (!equipAvailable(player, EquipCard::WeaponLocation, objectName()))
-            return QList<SkillInvokeDetail>();
-
-        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        const Card *c = room->askForUseCard(invoke->invoker, "@@Pillar", "@Pillar", -1, Card::MethodUse, false, objectName());
-        if (c == nullptr && (invoke->invoker->getWeapon() != nullptr) && invoke->invoker->getWeapon()->objectName() == objectName()) {
-            int id = invoke->invoker->getWeapon()->getId();
-            invoke->invoker->addBrokenEquips(QList<int>() << id);
-        }
-        return false;
-    }
-};
-
-Pillar::Pillar(Suit suit, int number)
-    : Weapon(suit, number, 3)
-{
-    setObjectName("Pillar");
 }
 
 class HakkeroSkill : public WeaponSkill
@@ -972,8 +820,7 @@ TestCardPackage::TestCardPackage()
 
     cards
         // Equip
-        << new Gun(Card::Diamond, 1)//Card::Club, 13
-        //<< new Pillar(Card::Diamond, 1)
+        << new Gun(Card::Diamond, 1)
         << new Hakkero(Card::Spade, 11)
         << new JadeSeal(Card::Heart, 13)
         << new Pagoda(Card::Spade, 12)
@@ -1025,8 +872,8 @@ TestCardPackage::TestCardPackage()
     foreach (Card *card, cards)
         card->setParent(this);
 
-    skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill << new PillarSkill
-           << new HakkeroSkill << new HagoromoSkill;
+    skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill << new HakkeroSkill
+           << new HagoromoSkill;
 }
 
 ADD_PACKAGE(TestCard)

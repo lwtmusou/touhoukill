@@ -469,11 +469,8 @@ class Drowning : public AOE
 public:
     Q_INVOKABLE Drowning(Card::Suit suit, int number);
 
-    //virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     bool isCancelable(const CardEffectStruct &effect) const override;
     void onEffect(const CardEffectStruct &effect) const override;
-    // virtual bool isAvailable(const Player *player) const;
-    //virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
 class KnownBoth : public TrickCard

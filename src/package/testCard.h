@@ -91,9 +91,6 @@ public:
     bool matchTypeOrName(const QString &pattern) const override;
 
     void onEffect(const CardEffectStruct &effect) const override;
-    //bool targetFixed(const Player *Self) const override;
-    //bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    //bool isAvailable(const Player *player) const override;
 };
 
 class Gun : public Weapon
@@ -102,14 +99,6 @@ class Gun : public Weapon
 
 public:
     Q_INVOKABLE Gun(Card::Suit suit, int number);
-};
-
-class Pillar : public Weapon
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Pillar(Card::Suit suit, int number);
 };
 
 class Hakkero : public Weapon
@@ -196,8 +185,6 @@ class SpringBreath : public DelayedTrick
 
 public:
     Q_INVOKABLE SpringBreath(Card::Suit suit, int number);
-
-    //virtual bool isAvailable(const Player *player) const;
 
     QString getSubtype() const override;
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
