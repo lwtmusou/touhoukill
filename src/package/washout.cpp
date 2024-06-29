@@ -1,4 +1,4 @@
-#include "testCard.h"
+#include "washout.h"
 #include "client.h"
 #include "engine.h"
 #include "general.h"
@@ -791,8 +791,8 @@ void SpringBreath::onNullified(ServerPlayer *target) const
     }
 }
 
-TestCardPackage::TestCardPackage()
-    : Package("test_card", Package::CardPack)
+WashOutPackage::WashOutPackage()
+    : Package("wash_out", Package::CardPack)
 {
     QList<Card *> cards;
 
@@ -856,4 +856,4 @@ TestCardPackage::TestCardPackage()
            << new HagoromoSkill;
 }
 
-ADD_PACKAGE(TestCard)
+ADD_PACKAGE(WashOut)

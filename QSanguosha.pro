@@ -78,6 +78,7 @@ SOURCES += \
     src/package/thndj.cpp \
     src/package/touhougod.cpp \
     src/package/hegemonyGeneral.cpp \
+    src/package/washout.cpp \
     src/server/ai.cpp \
     src/server/gamerule.cpp \
     src/server/generalselector.cpp \
@@ -125,7 +126,6 @@ SOURCES += \
     src/ui/lightboxanimation.cpp \
     src/ui/chooseoptionsbox.cpp \
     src/ui/playercardbox.cpp \
-    src/package/testCard.cpp \
     src/package/hegemonyCard.cpp \
     src/package/playground.cpp \
     src/ui/hegemonyrolecombobox.cpp \
@@ -187,6 +187,7 @@ HEADERS += \
     src/package/thndj.h \
     src/package/touhougod.h \
     src/package/hegemonyGeneral.h \
+    src/package/washout.h \
     src/server/ai.h \
     src/server/gamerule.h \
     src/server/generalselector.h \
@@ -235,7 +236,6 @@ HEADERS += \
     src/ui/hegemonyrolecombobox.h \
     src/ui/chooseoptionsbox.h \
     src/ui/playercardbox.h \
-    src/package/testCard.h \
     src/package/hegemonyCard.h \
     src/package/playground.h \
     src/pch.h \

@@ -5,7 +5,7 @@
 #include "maneuvering.h"
 #include "skill.h"
 #include "standard.h"
-#include "testCard.h"
+#include "washout.h"
 
 QiuwenCard::QiuwenCard()
 {

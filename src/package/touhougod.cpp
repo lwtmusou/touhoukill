@@ -8,10 +8,10 @@
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
-#include "testCard.h"
 #include "th09.h"
 #include "th10.h"
 #include "th15.h"
+#include "washout.h"
 #include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QMetaObject>

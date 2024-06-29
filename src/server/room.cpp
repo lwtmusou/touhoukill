@@ -9,7 +9,7 @@
 #include "settings.h"
 #include "standard.h"
 #include "structs.h"
-#include "testCard.h"
+#include "washout.h"
 
 #include <QDateTime>
 #include <QDir>

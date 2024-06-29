@@ -58,7 +58,6 @@ sgs.ai_skill_discard.qingting = function(self)
 		end
 	end
 
-
 	if target:hasSkill("chunxi") or target:hasSkill("xingyun") or target:hasSkill("xingyun_hegemony") then
 		local redcard
 		for _,c in sgs.qlist(self.player:getHandcards())do
@@ -80,7 +79,6 @@ sgs.ai_skill_discard.qingting = function(self)
 		end
 	end
 
-
 	local cards={}
 	if self.player:getHandcards():length() > need_give then
 		local tmpcards = sgs.QList2Table(self.player:getHandcards())
@@ -91,13 +89,13 @@ sgs.ai_skill_discard.qingting = function(self)
 	else
 		cards = sgs.QList2Table(self.player:getHandcards())
 	end
-	
+
 	if self:isFriend(target) then
 		self:sortByUseValue(cards, true)
 	else
 		self:sortByUseValue(cards)
 	end
-	
+
 	local tmpCard = cards[1]
 	if self:isEnemy(target) and tmpCard:isKindOf("Peach") then
 		for var= 1, #cards, 1 do
@@ -223,7 +221,7 @@ xihua_skill.getTurnUseCard = function(self)
 	local guhuo = "slash|jink|peach|ex_nihilo|snatch|dismantlement|amazing_grace|archery_attack|savage_assault"
 	local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
 	if not ban:match("maneuvering") then guhuo = guhuo .. "|fire_attack|analeptic|thunder_slash|fire_slash" end
-	if not ban:match("test_card") then guhuo = guhuo .. "|super_peach|magic_analeptic|light_slash|iron_slash|power_slash" end
+	if not ban:match("wash_out") then guhuo = guhuo .. "|super_peach|magic_analeptic|light_slash|iron_slash|power_slash" end
 	local guhuos = guhuo:split("|")
 	for i = 1, #guhuos do
 		local forbidden = guhuos[i]
@@ -281,7 +279,7 @@ function sgs.ai_cardsview_valuable.xihua(self, class_name, player)
 		["ChainJink"] = "chain_jink", ["LightJink"] = "light_jink",
 		["MagicAnaleptic"] = "magic_analeptic",["SuperPeach"] = "super_peach"
 	}
-	
+
 	if self.player:getRoom():getMode():find("hegemony") then
 		classname2objectname = {
 		["Slash"] = "slash", ["Jink"] = "jink",
@@ -299,9 +297,8 @@ function sgs.ai_cardsview_valuable.xihua(self, class_name, player)
 			return "@XihuaCard=.:".. classname2objectname[class_name]
 		end
 	end
-	
-end
 
+end
 
 function SmartAI:canUseXihuaCard(card, at_play)
 	local player = self.player
@@ -349,12 +346,11 @@ sgs.ai_skill_cardchosen.xihua = function(self, who, flags)
 	return cards[j]
 end
 
-
 sgs.ai_cardneed.xihua = function(to, card, self)
     if not self.player:getRoom():getMode():find("hegemony") then
 	    return card:getNumber() > 10
 	else
-	    return nil 
+	    return nil
 	end
 end
 
@@ -497,11 +493,10 @@ end
 --[忿雷]
 sgs.ai_skill_playerchosen.fenlei_hegemony = function(self,targets)
 	if #self.enemies == 0 then return nil end
-	
+
 	self:sort(self.enemies,"hp")
 	return self.enemies[1]
 end
-
 
 --霍青娥
 --[邪法]
@@ -600,7 +595,6 @@ sgs.ai_skill_use_func.XiefaCard = function(card, use, self)
 		end
 end
 
-
 --[穿壁]
 sgs.ai_skill_invoke.chuanbi = function(self,data)
 	local slash_source
@@ -644,7 +638,6 @@ sgs.ai_slash_prohibit.chuanbi = function(self, from, to, card)
 	end
 	return true
 end
-
 
 --宫古芳香
 --[毒爪]
@@ -758,7 +751,6 @@ sgs.ai_skill_playerchosen.chuixue = function(self, targets)
 	return nil
 end
 
-
 sgs.ai_playerchosen_intention.chuixue = 50
 
 --[无寿]
@@ -842,7 +834,6 @@ local function findBumingTarget(self,card)
 		rangefix=rangefix+1
 		bumingType=2
 	end
-
 
 	for _, p in ipairs(self.enemies) do
 
@@ -1063,7 +1054,6 @@ sgs.ai_damage_prohibit.qingyu = function(self, from, to, damage)
 	end
 	return true
 end
-
 
 --[过客]
 sgs.ai_skill_invoke.guoke = true

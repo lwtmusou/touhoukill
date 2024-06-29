@@ -1,7 +1,7 @@
 -- translation for ManeuveringPackage
 
 return {
-	["test_card"] = "东方杀测试牌",
+	["wash_out"] = "荡涤瑕秽",
 
 	["light_slash"] = "秽杀",
 	[":light_slash"] = "基本牌<br />使用时机：出牌阶段限一次。<br />使用目标：一名在你攻击范围内的其他角色。<br />作用效果：你明置目标角色的<font color=\"green\"><b>一张</b></font>手牌，然后对其造成<font color=\"green\"><b>1点</b></font>伤害。",

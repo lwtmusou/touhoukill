@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "skill.h"
-#include "testCard.h"
+#include "washout.h"
 
 MishenCard::MishenCard()
 {

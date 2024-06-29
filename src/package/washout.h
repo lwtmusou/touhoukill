@@ -1,5 +1,5 @@
-#ifndef _TESTCARD_H
-#define _TESTCARD_H
+#ifndef THKILL_WASHOUT_H
+#define THKILL_WASHOUT_H
 
 #include "maneuvering.h"
 #include "standard.h"
@@ -193,12 +193,12 @@ public:
     void onNullified(ServerPlayer *target) const override;
 };
 
-class TestCardPackage : public Package
+class WashOutPackage : public Package
 {
     Q_OBJECT
 
 public:
-    TestCardPackage();
+    WashOutPackage();
 };
 
 #endif

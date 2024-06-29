@@ -5,8 +5,8 @@
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
-#include "testCard.h"
 #include "th13.h"
+#include "washout.h"
 #include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QPointer>

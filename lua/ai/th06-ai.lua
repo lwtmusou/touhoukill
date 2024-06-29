@@ -23,7 +23,6 @@ function sgs.ai_cardsview_valuable.skltkexue_attach(self, class_name, player)
 	end
 end
 
-
 sgs.ai_card_intention.SkltKexueCard = sgs.ai_card_intention.Peach
 sgs.ai_use_priority.SkltKexueCard = sgs.ai_use_priority.Peach + 0.1
 function SmartAI:canKexue(player)
@@ -90,7 +89,6 @@ function SmartAI:slashProhibitToEghitDiagram(card,from,enemy)
 	end
 	return false
 end
-
 
 sgs.ai_skill_invoke.skltkexue =  true
 
@@ -253,7 +251,6 @@ sgs.ai_skill_invoke.shengyan = function(self)
 		return not self:needKongcheng(self.player, true)
 end
 
-
 --十六夜咲夜
 --[锁定]
 local suoding_skill = {}
@@ -318,7 +315,6 @@ sgs.ai_skillProperty.huisu = function(self)
 	return "cause_judge"
 end
 
-
 --帕秋莉·诺蕾姬
 --[博览]
 sgs.ai_skill_invoke.bolan = true
@@ -337,7 +333,7 @@ hezhou_skill.getTurnUseCard = function(self)
 	local guhuo = "slash|jink|peach|ex_nihilo|snatch|dismantlement|amazing_grace|archery_attack|savage_assault"
 	local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
 	if not ban:match("maneuvering") then guhuo = guhuo .. "|fire_attack|analeptic|thunder_slash|fire_slash" end
-	if not ban:match("test_card") then guhuo = guhuo .. "|super_peach|magic_analeptic|light_slash|iron_slash|power_slash" end
+	if not ban:match("wash_out") then guhuo = guhuo .. "|super_peach|magic_analeptic|light_slash|iron_slash|power_slash" end
 	local guhuos = guhuo:split("|")
 	for i = 1, #guhuos do
 		local forbidden = guhuos[i]
@@ -413,7 +409,6 @@ function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 
 end
 
-
 --[合咒 国]
 function sgs.ai_cardsview_valuable.hezhou_hegemony(self, class_name, player)
 	if self:touhouClassMatch(class_name, "Peach") then
@@ -468,7 +463,6 @@ function sgs.ai_cardsview_valuable.hezhou_hegemony(self, class_name, player)
 			end
 		end
 
-
 		if #cards == 2 then
 			local card_id1 = cards[1]:getEffectiveId()
 			local card_id2 = cards[2]:getEffectiveId()
@@ -509,8 +503,6 @@ sgs.ai_skill_playerchosen.hezhou_hegemony = function(self, targets)
 	end
 	return nil
 end
-
-
 
 --红美铃
 --[太极]
@@ -576,7 +568,6 @@ beishui_skill.getTurnUseCard = function(self)
 		end
 	end
 
-
 	local parsed_card = sgs.Card_Parse(card_str)
 	return parsed_card
 end
@@ -606,7 +597,6 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 		count = count + 1
 		if (count >= x) then break end
 	end
-
 
 	local card_str
 	if class_name == "Peach" then
@@ -684,7 +674,6 @@ beishui_hegemony_skill.getTurnUseCard = function(self)
 		end
 	end
 
-
 	local parsed_card = sgs.Card_Parse(card_str)
 	return parsed_card
 end
@@ -696,7 +685,6 @@ function sgs.ai_cardsview_valuable.beishui_hegemony(self, class_name, player)
 	if self.player:getMark("beishui") > 0 then return nil end
     --不考虑酒
     if class_name ~= "Peach"  and class_name ~= "Jink" and class_name ~= "Slash" then return nil end
-
 
 	local roles = 1
     if self.player:getRole() ~= "careerist" then
@@ -724,7 +712,6 @@ function sgs.ai_cardsview_valuable.beishui_hegemony(self, class_name, player)
 		if (count >= x) then break end
 	end
 
-
 	local card_str
 	if class_name == "Peach" then
 		local dying = player:getRoom():getCurrentDyingPlayer()
@@ -746,7 +733,6 @@ function sgs.ai_cardsview_valuable.beishui_hegemony(self, class_name, player)
 	end
 	return card_str
 end
-
 
 --琪露诺
 --[冻结]
@@ -811,7 +797,6 @@ end
 
 sgs.ai_skill_invoke.bingpo_hegemony =  true
 
-
 --露米娅
 --[真夜]
 sgs.ai_skill_playerchosen.zhenye = function(self, targets)
@@ -860,7 +845,6 @@ sgs.ai_skill_playerchosen.zhenye_hegemony = function(self, targets)
 	return nil
 end
 
-
 --[暗域]
 sgs.ai_skill_invoke.anyu = true
 sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
@@ -869,7 +853,6 @@ sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 	if self:isFriend(from, to) then return false end
 	return not self:isWeak(to) and not to:faceUp()
 end
-
 
 --小恶魔
 --[魔契]
@@ -917,7 +900,6 @@ sgs.ai_skill_playerchosen.sishu = function(self, targets)
 	return self.player
 end
 sgs.ai_playerchosen_intention.sishu = -20
-
 
 --大妖精
 --[具现]
@@ -1062,7 +1044,6 @@ sgs.ai_choicemade_filter.skillInvoke.yinren = function(self, player, promptlist,
 		sgs.updateIntention(player, to, 60)
 	end
 end
-
 
 --冴月麟
 --[消隐]

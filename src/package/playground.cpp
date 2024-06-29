@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "skill.h"
-#include "testCard.h"
+#include "washout.h"
 
 #include <QAbstractButton>
 #include <QApplication>
@@ -1122,21 +1122,21 @@ public:
     TianMing()
         : TriggerSkill("TianMing")
     {
-        events << Damaged;//ShiJi Wei ShouShangHou
-        frequency = Compulsory;//JiNengPinLv(LeiXing) SuoDingJi
+        events << Damaged; //ShiJi Wei ShouShangHou
+        frequency = Compulsory; //JiNengPinLv(LeiXing) SuoDingJi
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override//PanDuanNengFou ChuFa
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override //PanDuanNengFou ChuFa
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->hasSkill(this) && damage.to->isAlive())//RuGuo ShouShangDeRen YouZheJiNeng BingQie HuanHuoZhe
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);//'true' BiaoShi BuXunWen
+        if (damage.to->hasSkill(this) && damage.to->isAlive()) //RuGuo ShouShangDeRen YouZheJiNeng BingQie HuanHuoZhe
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true); //'true' BiaoShi BuXunWen
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override//XiaoGuo
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override //XiaoGuo
     {
-        invoke->invoker->drawCards(2, objectName());//Mo 2 Zhang Pai
+        invoke->invoker->drawCards(2, objectName()); //Mo 2 Zhang Pai
         return false;
     }
 };
@@ -1181,7 +1181,6 @@ PlaygroundPackage::PlaygroundPackage()
 
     General *huochairen = new General(this, "huochairen", "touhougod", 4, true);
     huochairen->addSkill(new TianMing);
-
 }
 
 ADD_PACKAGE(Playground)

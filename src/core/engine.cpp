@@ -253,7 +253,7 @@ QStringList Engine::getBanPackages() const
             QList<const Package *> packs = getPackages();
             QStringList needPacks;
             needPacks << "hegemonyGeneral"
-                      << "hegemony_card"; //<< "standard_cards" << "standard_ex_cards" << "test_card" << "maneuvering"
+                      << "hegemony_card";
             foreach (const Package *pa, packs) {
                 if (!needPacks.contains(pa->objectName()))
                     ban << pa->objectName();
@@ -267,7 +267,7 @@ QStringList Engine::getBanPackages() const
                 ban << "hegemony_card";
 
             if (ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "04_2v2")
-                ban << "test_card"
+                ban << "wash_out"
                     << "touhougod";
             return ban;
         }

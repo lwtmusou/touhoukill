@@ -4,7 +4,7 @@
 #include "general.h"
 #include "maneuvering.h"
 #include "skill.h"
-#include "testCard.h"
+#include "washout.h"
 
 class Meiling : public TriggerSkill
 {

@@ -6,9 +6,9 @@
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
-#include "testCard.h"
 #include "th10.h"
 #include "util.h"
+#include "washout.h"
 
 #include <QApplication>
 #include <QCommandLinkButton>

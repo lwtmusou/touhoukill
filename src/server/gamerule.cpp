@@ -5,7 +5,7 @@
 #include "serverplayer.h"
 #include "settings.h"
 #include "standard.h"
-#include "testCard.h"
+#include "washout.h"
 #include <QTime>
 
 GameRule::GameRule(QObject *)

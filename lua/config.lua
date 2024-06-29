@@ -59,7 +59,7 @@ config = {
 		--卡牌包
 		"StandardCard",
 		"StandardExCard",
-		"TestCard",
+		"WashOut",
 		"Maneuvering",
 		"HegemonyCard",
 
