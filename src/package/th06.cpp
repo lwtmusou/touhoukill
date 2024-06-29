@@ -60,7 +60,7 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        if (player->getHp() > player->dyingThreshold() && pattern.contains("peach")) {
+        if (player->getHp() > player->dyingThreshold() && pattern.contains("peach") && !player->isRemoved()) {
             foreach (const Player *p, player->getAliveSiblings()) {
                 if (p->hasFlag("Global_Dying") && p->hasSkill("skltkexue", false, false))
                     return true;

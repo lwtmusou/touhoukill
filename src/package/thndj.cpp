@@ -617,7 +617,7 @@ public:
             return d;
 
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p != damage.from && (p->inMyAttackRange(damage.to) || p == damage.to))
+            if (p != damage.from && (p->inMyAttackRange(damage.to) || p == damage.to) && !p->isRemoved())
                 d << SkillInvokeDetail(this, p, p, nullptr, false, damage.from);
         }
         return d;

@@ -1274,7 +1274,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->isAlive() && damage.to->hasSkill(this))
+        if (damage.to->isAlive() && damage.to->hasSkill(this) && !damage.to->isRemoved())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -4080,7 +4080,7 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const override
     {
-        return !player->hasUsed("BanyueHegemonyCard");
+        return !player->hasUsed("BanyueHegemonyCard") && !player->isRemoved();
     }
 
     const Card *viewAs() const override
