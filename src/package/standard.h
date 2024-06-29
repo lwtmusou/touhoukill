@@ -220,7 +220,7 @@ class DelayedTrick : public TrickCard
     Q_OBJECT
 
 public:
-    DelayedTrick(Suit suit, int number, bool movable = false, bool returnable = false);
+    DelayedTrick(Suit suit, int number, bool movable = false);
     void onNullified(ServerPlayer *target) const override;
 
     void onUse(Room *room, const CardUseStruct &card_use) const override;
@@ -235,7 +235,6 @@ protected:
 
 private:
     bool movable;
-    bool returnable;
 };
 
 class Indulgence : public DelayedTrick

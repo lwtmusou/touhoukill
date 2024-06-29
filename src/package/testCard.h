@@ -202,6 +202,8 @@ public:
     QString getSubtype() const override;
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     void takeEffect(ServerPlayer *target) const override;
+
+    void onNullified(ServerPlayer *target) const override;
 };
 
 class TestCardPackage : public Package

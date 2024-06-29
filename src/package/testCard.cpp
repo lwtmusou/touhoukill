@@ -885,7 +885,7 @@ void BoneHealing::onEffect(const CardEffectStruct &effect) const
 }
 
 SpringBreath::SpringBreath(Suit suit, int number)
-    : DelayedTrick(suit, number, false, true)
+    : DelayedTrick(suit, number, true)
 {
     setObjectName("spring_breath");
 
@@ -897,7 +897,7 @@ SpringBreath::SpringBreath(Suit suit, int number)
 
 QString SpringBreath::getSubtype() const
 {
-    return "unmovable_delayed_trick";
+    return "movable_delayed_trick";
 }
 
 bool SpringBreath::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -910,6 +910,57 @@ bool SpringBreath::targetFilter(const QList<const Player *> &targets, const Play
 void SpringBreath::takeEffect(ServerPlayer *target) const
 {
     target->drawCards(6);
+}
+
+void SpringBreath::onNullified(ServerPlayer *target) const
+{
+    Room *room = target->getRoom();
+    RoomThread *thread = room->getThread();
+
+    bool targetConfirmed = false;
+    do {
+        if ((room->getCardPlace(getEffectiveId()) == Player::PlaceTable) || (room->getCardPlace(getEffectiveId()) == Player::PlaceDelayedTrick)) {
+            if (!target->isAlive())
+                break;
+
+            if (target->containsTrick(objectName()))
+                break;
+
+            const ProhibitSkill *skill = room->isProhibited(nullptr, target, this);
+            if (skill != nullptr) {
+                LogMessage log;
+                log.type = "#SkillAvoid";
+                log.from = target;
+                log.arg = skill->objectName();
+                log.arg2 = objectName();
+                room->sendLog(log);
+
+                room->broadcastSkillInvoke(skill->objectName());
+                break;
+            }
+
+            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), getSkillName(), QString());
+            room->moveCardTo(this, target, target, Player::PlaceDelayedTrick, reason, true);
+
+            CardUseStruct use;
+            use.from = nullptr;
+            use.to << target;
+            use.card = this;
+            QVariant data = QVariant::fromValue(use);
+            thread->trigger(TargetConfirming, room, data);
+            CardUseStruct new_use = data.value<CardUseStruct>();
+            if (new_use.to.isEmpty())
+                break;
+
+            targetConfirmed = true;
+            thread->trigger(TargetConfirmed, room, data);
+        }
+    } while (false);
+
+    if (!targetConfirmed) {
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
+        room->throwCard(this, reason, nullptr);
+    }
 }
 
 TestCardPackage::TestCardPackage()
