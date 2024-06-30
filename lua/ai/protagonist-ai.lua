@@ -831,7 +831,7 @@ sgs.chunxi_suit_value = {
 function bllmwuyu_discard(player)
 	local cards = sgs.QList2Table(player:getCards("hes"))
 	local all_hearts={}
-	for _,c in pairs(cards) do
+	for _,c in ipairs(cards) do
 		if c:getSuit()==sgs.Card_Heart
 		and not (c:isKindOf("Peach") or c:isKindOf("Slash") or c:isKindOf("DefensiveHorse"))
 		and not c:hasFlag("AIGlobal_SearchForAnaleptic") then
