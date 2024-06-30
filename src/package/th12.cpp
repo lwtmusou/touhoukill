@@ -339,8 +339,13 @@ public:
         l.card_str = IntList2StringList(ids).join("+");
         room->sendLog(l);
 
-        if (ids.length() > 1)
+        if (ids.length() > 1) {
+            // askForGuanxing needs getNCards (and thus the card is not in room->getDrawPile)
+            // it is assumed that room->getNCards(ids.length(),false,true) returns ids
+            foreach (int id, ids)
+                room->getDrawPile().removeOne(id);
             room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
+        }
 
         return false;
     }
