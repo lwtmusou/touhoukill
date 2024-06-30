@@ -90,7 +90,7 @@ return {
 	
 	["mayumi"] = "杖刀偶磨弓" ,
 	["#mayumi"] = "埴轮兵长" ,
-	["designer:mayumi"] = "谁",
+	["designer:mayumi"] = "秦朵露",
 	["illustrator:mayumi"] = "京田スズカ",
 	["origin:mayumi"] = "p号：81411406；个人id：3718340",
 	["junzhen"] = "军阵",
@@ -106,14 +106,14 @@ return {
 
 	["saki"] = "骊驹早鬼" ,
 	["#saki"] = "劲牙组组长" ,
-	["designer:saki"] = "谁",
+	["designer:saki"] = "秦朵露",
 	["illustrator:saki"] = "syuri22",
 	["origin:saki"] = "p号：80004447；个人id：132450",
 	["jinji"] = "劲疾",
 	[":jinji"] = "<font color=\"blue\"><b>锁定技，</b></font>你与其他角色的距离-1，且其他角色与你的距离+1；当你你使用或打出基本牌时，此技能于此回合内无效。",
 	["tianxing"] = "天行",
 	[":tianxing"] = "一名角色的出牌阶段结束时，若你攻击范围内的角色数与此阶段开始时不同，你可以视为使用无视距离的幻【杀】。",
-	["@tianxing-slash"] = "天行：一名角色的出牌阶段结束了。你可以使用无视距离的幻【杀】",
+	["@tianxing-slash"] = "天行：你攻击范围内的角色数量发生了变化，现在你可以使用无视距离的幻【杀】",
 	["~tianxing"] = "选择目标 -> 确定",
 	
 }

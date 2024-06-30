@@ -291,7 +291,7 @@ return {
 	--pc98012 矜羯罗 势力：旧 4血
 	["konngara"] = "矜羯罗",
 	["#konngara"] = "星幽剑士" ,
-	["designer:konngara"] = "谁",
+	["designer:konngara"] = "辰焰天明",
 
 	["illustrator:konngara"] = "カタケイ",
 	["origin:konngara"] = "p号：40023503",
@@ -412,8 +412,9 @@ return {
 
 	["ellen"] = "爱莲",
 	["#ellen"] = "空白少女",
-	["designer:ellen"] = "??",
-	["illustrator:ellen"] = "??",
+	["designer:ellen"] = "223",
+	["illustrator:ellen"] = "Culter＠2日目ツ51a",
+	["origin:ellen"] = "p号：47505791；个人id：542147",
 	["kongbai"] = "空白",
 	[":kongbai"] = "一名角色的非额外回合结束时，若你于此回合内失去过牌，你可以令一名此回合内失去牌数量唯一最多的角色获得一个额外的回合，然后若其不为你，你失去1点体力。",
 	["moou"] = "魔偶",
@@ -422,8 +423,9 @@ return {
 
 	["sara"] = "萨拉",
 	["#sara"] = "魔界门番",
-	["designer:sara"] = "??",
-	["illustrator:sara"] = "??",
+	["designer:sara"] = "223",
+	["illustrator:sara"] = "ことぅぬ",
+	["origin:sara"] = "p号：30157985；个人id：444909",
 	["mowei"] = "魔卫",
 	[":mowei"] = "当与你距离为1或势力与你相同的其他角色成为另一名其他角色使用具有伤害效果的牌的唯一目标时，你可以获得前者一张手牌，将该目标转移给你，然后你可以将一张牌交给前者。",
 	["mowei:invoke"]= "你可以发动“魔卫”将 <font color=\"#00FF00\"><b>%src </b></font> 对 <font color=\"#00FF00\"><b>%dest </b></font> 使用的 【%arg】 转移给自己。",
