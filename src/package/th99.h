@@ -25,17 +25,6 @@ public:
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
-class XiufuMoveCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE XiufuMoveCard();
-
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
-};
-
 class XiufuCard : public SkillCard
 {
     Q_OBJECT
@@ -43,12 +32,8 @@ class XiufuCard : public SkillCard
 public:
     Q_INVOKABLE XiufuCard();
 
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, const CardUseStruct &card_use) const override;
-
-private:
-    static bool putToPile(Room *room, ServerPlayer *mori);
-    static void cleanUp(Room *room, ServerPlayer *mori);
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class LianxiCard : public SkillCard

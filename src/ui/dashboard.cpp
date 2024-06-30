@@ -1306,6 +1306,11 @@ void Dashboard::expandPileCards(const QString &pile_name)
             if (c->getSuit() == Card::Club && (c->isNDTrick() || c->getTypeId() == Card::TypeBasic))
                 pile << c->getEffectiveId();
         }
+    } else if (pile_name == "#xiufu_temp") {
+        foreach (const Card *c, ClientInstance->discarded_list) {
+            if (c->getTypeId() == Card::TypeEquip)
+                pile << c->getEffectiveId();
+        }
     } else if (pile_name == "#shijie") {
         QString dyingPlayerName = Self->property("currentdying").toString();
         const Player *p = ClientInstance->findChild<const Player *>(dyingPlayerName);

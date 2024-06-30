@@ -250,44 +250,23 @@ local xiufu_skill = {}
 xiufu_skill.name = "xiufu"
 table.insert(sgs.ai_skills, xiufu_skill)
 xiufu_skill.getTurnUseCard = function(self)
-
-	--if self.player:hasUsed("XiufuCard") then return nil end
-	if self.player:hasFlag("xiufu_used") then return nil end
-	--or self.player:hasFlag("Global_xiufuFailed")
+	if self.player:hasUsed("XiufuCard") then return nil end
 	local ids = equip_in_discardpile(self)
 	if #ids == 0 then return nil end
 	choose_xiufuId(self, ids)
 	local card_id=self.player:getTag("xiufu_equipid"):toInt()
 	local target=self.player:getTag("xiufu_target"):toPlayer()
 	if target then
-		return sgs.Card_Parse("@XiufuCard=.")
+		return sgs.Card_Parse("@XiufuCard=" .. tostring(card_id) .. "->" .. target:objectName())
 	end
 	return nil
 end
-
-sgs.ai_skill_askforag.xiufu = function(self, card_ids)
-	local data =self.player:getTag("xiufu_equipid")
-	if not data then
-		return card_ids[1]
-	end
-	local id = data:toInt()
-	return id
-end
-sgs.ai_skill_playerchosen.xiufu = function(self, targets)
-	local target = self.player:getTag("xiufu_target"):toPlayer()
-	if not target then target = self.friends[1] end
-	return target
-end
-
-
 sgs.ai_skill_use_func.XiufuCard=function(card,use,self)
 	 use.card = card
 end
 
-
 sgs.ai_use_value.xiufu = 7
---sgs.ai_card_intention.XiufuCard = -70
-sgs.ai_playerchosen_intention.xiufu = -70
+sgs.ai_card_intention.XiufuCard = -70
 
 
 

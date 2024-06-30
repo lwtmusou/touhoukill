@@ -188,119 +188,26 @@ public:
 
 XiufuCard::XiufuCard()
 {
-    target_fixed = true;
+    will_throw = false;
+    handling_method = Card::MethodNone;
 }
 
-bool XiufuCard::putToPile(Room *room, ServerPlayer *mori)
+bool XiufuCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
 {
-    QList<int> discardpile = room->getDiscardPile();
-    QList<int> equips;
-    foreach (int id, discardpile) {
-        if (Sanguosha->getCard(id)->isKindOf("EquipCard"))
-            equips << id;
-    }
-
-    if (equips.isEmpty())
-        return false;
-
-    CardsMoveStruct move;
-    move.from_place = Player::DiscardPile;
-    move.to = mori;
-    move.to_player_name = mori->objectName();
-    move.to_pile_name = "#xiufu_temp";
-    move.card_ids = equips;
-    move.to_place = Player::PlaceSpecial;
-    move.open = true;
-
-    QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-    QList<ServerPlayer *> _mori = QList<ServerPlayer *>() << mori;
-    room->setPlayerFlag(mori, "xiufu_InTempMoving");
-    room->notifyMoveCards(true, _moves, true, _mori);
-    room->notifyMoveCards(false, _moves, true, _mori);
-    room->setPlayerFlag(mori, "-xiufu_InTempMoving");
-
-    QVariantList tag = IntList2VariantList(equips);
-    mori->tag["xiufu_tempcards"] = tag;
-    return true;
+    return targets.isEmpty();
 }
 
-void XiufuCard::cleanUp(Room *room, ServerPlayer *mori)
+void XiufuCard::onEffect(const CardEffectStruct &effect) const
 {
-    QList<int> equips = VariantList2IntList(mori->tag.value("xiufu_tempcards", QVariantList()).toList());
-    mori->tag.remove("xiufu_tempcards");
-    if (equips.isEmpty())
-        return;
-
-    CardsMoveStruct move;
-    move.from = mori;
-    move.from_player_name = mori->objectName();
-    move.from_place = Player::PlaceSpecial;
-    move.from_pile_name = "#xiufu_temp";
-    move.to_place = Player::DiscardPile;
-    move.open = true;
-    move.card_ids = equips;
-
-    QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-    QList<ServerPlayer *> _mori = QList<ServerPlayer *>() << mori;
-    room->setPlayerFlag(mori, "xiufu_InTempMoving");
-    room->notifyMoveCards(true, _moves, true, _mori);
-    room->notifyMoveCards(false, _moves, true, _mori);
-    room->setPlayerFlag(mori, "-xiufu_InTempMoving");
-}
-
-void XiufuCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    ServerPlayer *mori = card_use.from;
-    if (mori->isOnline()) {
-        if (!putToPile(room, mori)) {
-            room->setPlayerFlag(mori, "Global_xiufuFailed");
-            return;
-        }
-
-        bool used = room->askForUseCard(mori, "@@xiufumove", "@xiufu-move", -1, Card::MethodNone, true, "xiufu") != nullptr;
-
-        cleanUp(room, mori);
-        if (!used) {
-            room->setPlayerFlag(mori, "Global_xiufuFailed");
-            return;
-        }
-    } else {
-        room->setPlayerFlag(mori, "xiufu_used");
-        // we use askforag and askforplayerchosen for AI
-        QList<int> discardpile = room->getDiscardPile();
-        QList<int> equips;
-        foreach (int id, discardpile) {
-            if (Sanguosha->getCard(id)->isKindOf("EquipCard"))
-                equips << id;
-        }
-
-        int id = room->askForAG(mori, equips, true, "xiufu");
-        if (id == -1)
-            return;
-
-        ServerPlayer *target = room->askForPlayerChosen(mori, room->getAllPlayers(), "xiufu", QString(), true);
-        if (target == nullptr)
-            return;
-
-        mori->tag["xiufu_id"] = id;
-        mori->tag["xiufu_to"] = QVariant::fromValue(target);
-    }
-
-    SkillCard::onUse(room, card_use);
-}
-
-void XiufuCard::use(Room *room, const CardUseStruct &card_use) const
-{
-    ServerPlayer *mori = card_use.from;
-
-    room->setPlayerFlag(mori, "xiufu_used");
+    ServerPlayer *mori = effect.from;
+    Room *room = mori->getRoom();
     //process move
-    int xiufu_id = mori->tag.value("xiufu_id", -1).toInt();
+    int xiufu_id = subcards.first();
     if (xiufu_id == -1)
         return;
 
     const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(xiufu_id)->getRealCard());
-    ServerPlayer *target = mori->tag.value("xiufu_to", QVariant::fromValue((ServerPlayer *)nullptr)).value<ServerPlayer *>();
+    ServerPlayer *target = effect.to;
 
     int equipped_id = -1;
     if (target->getEquip(equip->location()) != nullptr)
@@ -325,62 +232,35 @@ void XiufuCard::use(Room *room, const CardUseStruct &card_use) const
     room->moveCardsAtomic(exchangeMove, true);
 }
 
-XiufuMoveCard::XiufuMoveCard()
-{
-    will_throw = false;
-    handling_method = Card::MethodNone;
-}
-
-bool XiufuMoveCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
-{
-    return targets.isEmpty();
-}
-
-void XiufuMoveCard::onUse(Room *, const CardUseStruct &card_use) const
-{
-    card_use.from->tag["xiufu_id"] = subcards.first();
-    card_use.from->tag["xiufu_to"] = QVariant::fromValue(card_use.to.first());
-}
-
-class XiufuMove : public OneCardViewAsSkill
+class Xiufu : public OneCardViewAsSkill
 {
 public:
-    XiufuMove()
-        : OneCardViewAsSkill("xiufumove")
+    Xiufu()
+        : OneCardViewAsSkill("xiufu")
     {
-        response_pattern = "@@xiufumove";
         expand_pile = "#xiufu_temp";
+    }
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("XiufuCard") || (player->getMark("@xiufudebug") > 0);
     }
 
     bool viewFilter(const Card *to_select) const override
     {
-        return Self->getPile("#xiufu_temp").contains(to_select->getId());
+        foreach (const Card *c, ClientInstance->discarded_list) {
+            if (c->getTypeId() == Card::TypeEquip && to_select->getId() == c->getId())
+                return true;
+        }
+
+        return false;
     }
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        XiufuMoveCard *move = new XiufuMoveCard;
-        move->addSubcard(originalCard);
-        return move;
-    }
-};
-
-class Xiufu : public ZeroCardViewAsSkill
-{
-public:
-    Xiufu()
-        : ZeroCardViewAsSkill("xiufu")
-    {
-    }
-
-    bool isEnabledAtPlay(const Player *player) const override
-    {
-        return (!player->hasFlag("Global_xiufuFailed") && !player->hasFlag("xiufu_used")) || player->getMark("@xiufudebug") > 0;
-    }
-
-    const Card *viewAs() const override
-    {
-        return new XiufuCard;
+        XiufuCard *c = new XiufuCard;
+        c->addSubcard(originalCard);
+        return c;
     }
 };
 
@@ -390,29 +270,23 @@ public:
     XiufuDebug()
         : TriggerSkill("xiufu")
     {
-        events << MarkChanged << EventPhaseChanging;
+        events << MarkChanged;
         view_as_skill = new Xiufu;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    void record(TriggerEvent, Room *room, QVariant &data) const override
     {
-        if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->isAlive() && change.player->hasFlag("xiufu_used") && change.to == Player::Play)
-                room->setPlayerFlag(change.player, "-xiufu_used");
-        } else {
-            MarkChangeStruct change = data.value<MarkChangeStruct>();
-            if (change.name == "@xiufudebug") {
-                QList<int> equips;
-                foreach (int id, Sanguosha->getRandomCards()) {
-                    const Card *card = Sanguosha->getEngineCard(id);
-                    if (card->isKindOf("EquipCard") && room->getCardPlace(id) != Player::DiscardPile)
-                        equips << id;
-                }
-
-                DummyCard dummy(equips);
-                room->moveCardTo(&dummy, nullptr, Player::DiscardPile);
+        MarkChangeStruct change = data.value<MarkChangeStruct>();
+        if (change.name == "@xiufudebug") {
+            QList<int> equips;
+            foreach (int id, Sanguosha->getRandomCards()) {
+                const Card *card = Sanguosha->getEngineCard(id);
+                if (card->isKindOf("EquipCard") && room->getCardPlace(id) != Player::DiscardPile)
+                    equips << id;
             }
+
+            DummyCard dummy(equips);
+            room->moveCardTo(&dummy, nullptr, Player::DiscardPile);
         }
     }
 };
@@ -2628,7 +2502,6 @@ TH99Package::TH99Package()
     addMetaObject<QiuwenCard>();
     addMetaObject<DangjiaCard>();
     addMetaObject<XiufuCard>();
-    addMetaObject<XiufuMoveCard>();
     addMetaObject<LianxiCard>();
     addMetaObject<ZhesheCard>();
     addMetaObject<ZhuonongCard>();
@@ -2636,7 +2509,7 @@ TH99Package::TH99Package()
     addMetaObject<PanduCard>();
     addMetaObject<XieliCard>();
 
-    skills << new DangjiaVS << new Luanying << new XiufuMove << new XunshiDistance << new LiyouDistance << new Xieli; //<< new GanyingHandler
+    skills << new DangjiaVS << new Luanying << new XunshiDistance << new LiyouDistance << new Xieli; //<< new GanyingHandler
 }
 
 ADD_PACKAGE(TH99)
