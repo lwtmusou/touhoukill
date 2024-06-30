@@ -133,55 +133,49 @@ public:
     Chiling()
         : TriggerSkill("chiling$")
     {
-        events << CardsMoveOneTime;
+        events = {TargetConfirming};
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *miko = qobject_cast<ServerPlayer *>(move.from);
-        if (miko != nullptr && miko->isAlive() && miko->hasLordSkill(objectName()) && move.from_places.contains(Player::PlaceHand)
-            && (move.to_place == Player::PlaceHand && (move.to != nullptr) && move.to != miko && move.to->getKingdom() == "slm"))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, miko, miko);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *target = qobject_cast<ServerPlayer *>(move.to);
-
-        bool isSlash = false;
-        foreach (int id, move.card_ids) {
-            if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand) {
-                if (Sanguosha->getCard(id)->isKindOf("Slash")) {
-                    isSlash = true;
-                    break;
-                }
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from != nullptr && use.to.length() == 1 && use.from != use.to.first() && use.to.first()->isAlive() && use.to.first()->hasLordSkill(this)
+            && use.card->isKindOf("Slash")) {
+            QList<ServerPlayer *> moreHpLieges;
+            foreach (ServerPlayer *p, room->getLieges("slm", use.to.first())) {
+                if (p->getHp() > use.to.first()->getHp() && p != use.from && use.from->canSlash(p, use.card, false))
+                    moreHpLieges << p;
             }
+            if (!moreHpLieges.isEmpty())
+                return {SkillInvokeDetail(this, use.to.first(), use.to.first(), moreHpLieges)};
         }
-        if (isSlash)
-            invoke->invoker->tag["chiling_showslash"] = QVariant::fromValue(1);
-        else
-            invoke->invoker->tag["chiling_showslash"] = QVariant::fromValue(0);
 
-        invoke->invoker->tag["chiling_givener"] = QVariant::fromValue(target);
-        return invoke->invoker->askForSkillInvoke(objectName(), "showcard:" + target->objectName());
+        return {};
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *target = qobject_cast<ServerPlayer *>(move.to);
+        room->sortByActionOrder(invoke->targets);
+        foreach (ServerPlayer *p, invoke->targets) {
+            if (p->askForSkillInvoke(objectName() + "_target", data, "384318315")) {
+                CardUseStruct use = data.value<CardUseStruct>();
+                use.to.clear();
+                use.to << p;
+                data = QVariant::fromValue(use);
 
-        foreach (int id, move.card_ids) {
-            if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand)
-                room->showCard(target, id);
+                LogMessage l;
+                l.type = "$CancelTarget";
+                l.from = use.from;
+                l.to = {invoke->invoker};
+                l.arg = use.card->objectName();
+                room->sendLog(l);
+                l.type = "#huzhu_change";
+                l.to = {p};
+                room->sendLog(l);
+                break;
+            }
         }
 
-        int can_slash = invoke->invoker->tag["chiling_showslash"].toInt();
-        if (can_slash > 0)
-            room->askForUseCard(target, "slash", "@chiling:" + invoke->invoker->objectName(), -1, Card::MethodUse, false);
         return false;
     }
 };

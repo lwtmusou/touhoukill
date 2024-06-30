@@ -28,9 +28,8 @@ return{
 	["qingtingGive"]= "<font color=\"#00FF00\"><b>%src </b></font> 发动了“倾听”，请将一张手牌交给 <font color=\"#00FF00\"><b>%src </b></font>。",
 	["qingtingReturn"]= "请将一张手牌交给被“倾听”的角色 <font color=\"#00FF00\"><b>%src </b></font>。",
 	["chiling"] = "敕令",
-	[":chiling"] = "<font color=\"orange\"><b>主公技，</b></font>当其他灵势力角色获得你的手牌后，你可以令其展示之，若其中有【杀】，其可以使用【杀】。",
-	["chiling:showcard"] = "<font color=\"#00FF00\"><b>%src </b></font> 获得了你的手牌，你可以发动“敕令”，令其展示这些牌。",
-	["@chiling"] = "你从 <font color=\"#00FF00\"><b>%src </b></font> 处获得了【杀】，你可以使用一张【杀】。",
+	[":chiling"] = "<font color=\"orange\"><b>主公技，</b></font>当你成为其他角色使用的【杀】的唯一目标时，你可以令体力值大于你的其他灵势力角色选择是否将此牌目标转移给其。",
+	["chiling_target:384318315"] = "敕令你可以将目标为主公的【杀】转移给你",
 
 --*********************************************
 	--slm002  势力：灵 4血

@@ -137,16 +137,8 @@ sgs.ai_use_value.QingtingHegemonyCard = 7
 sgs.ai_use_priority.QingtingHegemonyCard = 7
 
 --[敕令]
-sgs.ai_skill_invoke.chiling = function(self,data)
-	local isSlash=self.player:getTag("chiling_showslash"):toInt()
-	local slasher=self.player:getTag("chiling_givener"):toPlayer()
-	if isSlash==1 then
-		return self:isFriend(slasher)
-	else
-		return self:isEnemy(slasher)
-	end
-	return false
-end
+-- 搁置
+
 --[摄政 国]
 sgs.ai_skill_invoke.shezheng_hegemony = true
 
