@@ -355,60 +355,60 @@ sgs.ai_cardneed.xihua = function(to, card, self)
 end
 
 --物部布都
---[尸解]
---[[
+sgs.ai_skill_invoke.fengshui = true
+
 function sgs.ai_cardsview_valuable.shijie(self, class_name, player)
 	if class_name == "Peach" then
 		local dying = player:getRoom():getCurrentDyingPlayer()
-		if not dying or not self:isFriend(dying, player) or player:isKongcheng() then return nil end
-		local cards = sgs.QList2Table(player:getCards("hs"))
-		self:sortByKeepValue(cards)
-		return "@ShijieCard="..cards[1]:getId()
+		if not dying then return nil end
+		local card
+		repeat
+			if self:isFriend(dying, player) then
+				-- 优先度：狮子，连弩，2距离武器，-1，其他武器，+1，宝物，防具
+				if dying:getArmor() and dying:getArmor():objectName() == "SilverLion" then
+					card = dying:getArmor()
+					break
+				end
+				if dying:getWeapon() and dying:getWeapon():objectName() == "Crossbow" then
+					card = dying:getWeapon()
+					break
+				end
+				if dying:getWeapon() then
+					local weapon = dying:getWeapon():getRealCard():toWeapon()
+					if weapon and weapon:getRange() == 2 then
+						card = dying:getWeapon()
+						break
+					end
+				end
+				if dying:getOffensiveHorse() then
+					card = dying:getOffensiveHorse()
+					break
+				end
+				if dying:getWeapon() then
+					card = dying:getWeapon()
+					break
+				end
+				if dying:getDefensiveHorse() then
+					card = dying:getDefensiveHorse()
+					break
+				end
+				if dying:getTreasure() then
+					card = dying:getTreasure()
+					break
+				end
+				if dying:getArmor() then
+					card = dying:getArmor()
+					break
+				end
+			end
+			if self:isEnemy(dying, player) then
+				-- 暂时不管
+			end
+		until true
+		if card then return "peach:shijie[to_be_decided:-1]=" .. tostring(card:getEffectiveId()) end
 	end
-end
-sgs.ai_skill_playerchosen.shijie = function(self, targets)
-	for _,p in sgs.qlist(targets) do
-		if self:isEnemy(p) then
-			return p
-		end
-	end
-	for _,p in sgs.qlist(targets) do
-		if not self:isFriend(p) then
-			return p
-		end
-	end
-	return targets:first()
-end
-sgs.ai_skill_cardchosen.shijie = function(self, who, flags)
-	local suit_id = self.player:getTag("shijie_suit"):toString()
-	for _,c in sgs.qlist(who:getCards("e")) do
-		if c:getSuitString() == suit_id then
-			return c
-		end
-	end
-	return who:getCards("e"):first()
-end
-]]
---[风水]
---[[
-sgs.ai_skill_invoke.fengshui = function(self,data)
-	return true
 end
 
-sgs.ai_skill_invoke.fengshui_retrial = function(self,data)
-	local id = self.player:getTag("fengshui_id"):toInt()
-	self.player:removeTag("fengshui_id")
-	local judge=data:toJudge()
-	local cards={}
-	table.insert(cards,judge.card)
-	local ex_id=self:getRetrialCardId(cards, judge)
-	--ex_id==-1
-	if ex_id ==-1 then
-		return true
-	end
-	return false
-end
-]]
 --苏我屠自古
 --[雷矢]
 local leishi_skill = {}

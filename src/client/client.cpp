@@ -1879,10 +1879,6 @@ void Client::askForSinglePeach(const QVariant &arg)
 
     } else {
         QString dying_general = getPlayerName(dying->objectName());
-        /*if (dying->hasLordSkill("yanhui") && Self->getKingdom() == "zhan") {
-            prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es)(or analeptic) to save him").arg(dying_general).arg(peaches));
-            pattern << "analeptic";
-        } else*/
         prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
     }
 
