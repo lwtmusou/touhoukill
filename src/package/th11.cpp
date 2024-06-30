@@ -68,6 +68,121 @@ public:
     }
 };
 
+ZhushiCard::ZhushiCard()
+{
+    will_throw = false;
+}
+
+bool ZhushiCard::targetFixed(const Player *Self) const
+{
+    const Card *originalCard = Sanguosha->getCard(subcards.first());
+    return originalCard->targetFixed(Self);
+}
+
+bool ZhushiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    const Card *originalCard = Sanguosha->getCard(subcards.first());
+    return originalCard->targetsFeasible(targets, Self);
+}
+
+bool ZhushiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    const Card *originalCard = Sanguosha->getCard(subcards.first());
+    return originalCard->targetFilter(targets, to_select, Self);
+}
+
+const Card *ZhushiCard::validate(CardUseStruct &) const
+{
+    return Sanguosha->getCard(subcards.first());
+}
+
+class ZhushiOtherVS : public OneCardViewAsSkill
+{
+public:
+    ZhushiOtherVS()
+        : OneCardViewAsSkill("ZhushiOtherVS")
+    {
+        response_pattern = "@@ZhushiOtherVS";
+        expand_pile = "*zhushi_cardid";
+    }
+
+    bool viewFilter(const Card *to_select) const override
+    {
+        bool ok = false;
+        int id = Self->property("zhushi_cardid").toString().toInt(&ok);
+        if (ok)
+            return to_select->getId() == id;
+
+        return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        ZhushiCard *c = new ZhushiCard;
+        c->addSubcard(originalCard);
+        return c;
+    }
+};
+
+class Zhushi : public TriggerSkill
+{
+public:
+    Zhushi()
+        : TriggerSkill("zhushi$")
+    {
+        events = {CardsMoveOneTime};
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *satori = qobject_cast<ServerPlayer *>(move.from);
+        if (satori != nullptr && satori->getPhase() == Player::Discard && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
+            && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) && satori->isAlive() && satori->hasLordSkill(this)) {
+            QList<ServerPlayer *> lieges = room->getLieges("dld", satori);
+            if (!lieges.isEmpty())
+                return {SkillInvokeDetail(this, satori, satori)};
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        ServerPlayer *satori = invoke->invoker;
+        satori->tag[objectName()] = data;
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getLieges("dld", satori), objectName(), "@zhushi-select", true, true);
+        if (target != nullptr) {
+            invoke->targets << target;
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *target = invoke->targets.first();
+        QList<int> ids;
+        for (int i = 0; i < move.card_ids.length(); ++i) {
+            if (move.from_places[i] == Player::PlaceHand || move.from_places[i] == Player::PlaceEquip)
+                ids << move.card_ids[i];
+        }
+
+        // Q_ASSERT(!ids.isEmpty());
+        room->fillAG(ids, target);
+        int id = room->askForAG(target, ids, false, objectName());
+        room->clearAG(target);
+
+        room->setPlayerProperty(target, "zhushi_cardid", QString::number(id));
+        if (!room->askForUseCard(target, "@@ZhushiOtherVS", "@zhushi-othervs"))
+            room->obtainCard(target, id);
+
+        return false;
+    }
+};
+
 MaihuoCard::MaihuoCard()
 {
     will_throw = false;
@@ -1126,7 +1241,7 @@ TH11Package::TH11Package()
     satori->addSkill(new Xiangqi);
     //Room::askForCardChosen
     satori->addSkill(new Skill("duxin", Skill::Compulsory, "static"));
-    satori->addSkill(new Skill("youtong$"));
+    satori->addSkill(new Zhushi);
 
     General *koishi = new General(this, "koishi", "dld", 3);
     koishi->addSkill(new Maihuo);
@@ -1165,6 +1280,9 @@ TH11Package::TH11Package()
     suika_sp->addSkill(new Jiuchong);
     related_skills.insertMulti("cuiji", "#cuiji");
 
+    skills << new ZhushiOtherVS;
+
+    addMetaObject<ZhushiCard>();
     addMetaObject<MaihuoCard>();
     addMetaObject<YaobanCard>();
     addMetaObject<JiuhaoCard>();

@@ -86,7 +86,6 @@ sgs.ai_skill_cardchosen.xiangqi = function(self, who, flags)
 
 	local damage_effect = self:xiangqiDamageEffect(to)
 
-
 	local cards = from:getHandcards()
 	cards = sgs.QList2Table(cards)
 
@@ -166,70 +165,6 @@ sgs.ai_cardneed.xiangqi = function(to, card, self)
 end
 --[读心 国]
 sgs.ai_skill_invoke.duxin_hegemony = true
-
-
---  技能 护主 已经没用
-sgs.ai_skill_invoke.huzhu = function(self,data)
-	cards =self.player:getCards("hs")
-	cardname="Jink"
-	for _,card in sgs.qlist(cards) do
-		if card:isKindOf(cardname) then
-			return false
-		end
-	end
-	if self:isWeak(self.player) then
-		return true
-	else
-		self:sort(self.friends_noself)
-		for _,p in pairs (self.friends_noself) do
-			if not self:isWeak(p) then
-				return true
-			end
-		end
-	end
-	return false
-end
-sgs.ai_skill_invoke.huzhu_change = function(self,data)
-	local lord=self.room:getTag("huzhu_target"):toPlayer()
-	local jinks={}
-	if not self:isFriend(lord) then return false end
-	for _,card in sgs.qlist(self.player:getCards("hs")) do
-		if card:isKindOf("Jink") then
-			table.insert(jinks,card)
-		end
-	end
-	if #jinks <2 then
-		if self:isWeak(lord) then
-			return true
-		else
-			return false
-		end
-	end
-	if #jinks >1 then return true end
-end
-sgs.ai_choicemade_filter.skillInvoke.huzhu_change = function(self, player, args)
-	local target=self.room:getTag("huzhu_target"):toPlayer()
-	if target and args[#args] == "yes" then
-			sgs.updateIntention(player, target, -60)
-	end
-end
-
---[幽瞳]
-sgs.ai_skill_playerchosen.youtong = function(self, targets)
-	for _,p in sgs.qlist(targets) do
-		if self:isFriend(p) and p:hasSkill("duxin") then
-			return p
-		end
-	end
-	return nil
-end
-sgs.ai_playerchosen_intention.youtong = -10
-sgs.ai_no_playerchosen_intention.youtong =function(self, from)
-	local lord =self.room:getLord()
-	if lord and lord:hasSkill("duxin") then
-		sgs.updateIntention(from, lord, 10)
-	end
-end
 
 --古明地恋
 --[埋火]
@@ -484,16 +419,16 @@ function sgs.ai_cardsview_valuable.songzang(self, class_name, player)
 	end
 	if #cards==0 then return nil end
 	self:sortByKeepValue(cards)
-	
+
 	local need_kill=false
-	
+
 	if self.player:getRoom():getMode():find("hegemony") then
 		need_kill = self:isEnemy(target)
 	else
 		local self_role = self.player:getRole()
-		
+
 		local target_role=sgs.ai_role[target:objectName()]
-	
+
 		local need_peachs = math.abs(target:dyingThreshold()-target:getHp())
 		if self_role== "loyalist" or self_role =="lord" then
 			if self:isEnemy(target)  then
@@ -557,7 +492,7 @@ function sgs.ai_cardsview_valuable.songzang(self, class_name, player)
 		end
 
 	end
-	
+
 	if not need_kill  then return nil end
 	return "@SongzangCard="..cards[1]:getId()
 end
@@ -633,7 +568,6 @@ sgs.ai_skill_use_func.JiuhaoCard=function(card,use,self)
 
 	if not dummy_use.card then return end
 
-
 	if dummy_use.to and not dummy_use.to:isEmpty() then
 		slash_targets = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
 		for _, p in sgs.qlist(dummy_use.to) do
@@ -676,7 +610,7 @@ sgs.ai_skill_invoke.gelong = function(self,data)
 	--local damage = data:toDamage()
 	--return not self:isFriend(damage.from)
 	local target = data:toPlayer()
-	return (not self:isFriend(target))  and target:faceUp()  
+	return (not self:isFriend(target))  and target:faceUp()
 end
 sgs.ai_skill_choice.gelong= function(self)
 	if not self.player:faceUp() or self.player:isWounded() then
@@ -708,7 +642,7 @@ sgs.ai_skill_playerchosen.chuanran = function(self, targets)
 		--和damageEffect
 		return enemyTargets[1]
 	end
-	
+
 	return otherTargets[1]
 end
 
@@ -840,9 +774,8 @@ end
 sgs.ai_skill_invoke.tongju  = true
 sgs.ai_skill_invoke.diaoping_hegemony  =function(self,data)
 	if self.player:isKongcheng() then return false end
-    return true 
+    return true
 end
-
 
 --地灵殿SP萃香
 --[萃集]
@@ -874,8 +807,8 @@ sgs.ai_skill_choice.cuiji_hegemony_suit = function(self, choices, data)
 			break
 		end
 	end
-	
-	if slash or not nonbasic then 
+
+	if slash or not nonbasic then
 		return "nonbasic"
 	end
 	return "basic"

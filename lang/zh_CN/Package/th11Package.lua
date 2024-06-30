@@ -27,11 +27,13 @@ return{
 	["xiangqi:show"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用【%arg】对 <font color=\"#00FF00\"><b>%dest </b></font> 造成了伤害，你可以发动“想起”。",
 	["duxin"] = "读心",
 	[":duxin"] = "<font color=\"blue\"><b>锁定技，</b></font>当你选择其他角色的牌时，其手牌对你可见。",
-
-	["youtong"]= "幽瞳",
-	[":youtong"]= "<font color=\"orange\"><b>主公技，</b></font>其他地势力角色选择另一名角色的牌时（除使用选择牌外），其可以令你代为选择。",
-	["@youtong"]= "你可以令 拥有主公技 “幽瞳” 的角色 代替你选择  %src 的牌。",
-	["#huzhu_change"]= "%to 代替其成为 %from 使用的 %arg 的目标。",
+	["zhushi"] = "嘱事",
+	[":zhushi"] = "<font color=\"orange\"><b>主公技，</b></font>弃牌阶段弃牌后，你可以令一名其他地势力角色选择获得或使用其中一张牌。",
+	["@zhushi-select"] = "嘱事你于弃牌阶段弃置了牌，你可以选择一名地势力角色令其获得或者使用其中一张牌。",
+	["ZhushiOtherVS"] = "嘱事",
+	["@zhushi-othervs"] = "嘱事你可以获得或使用你选择的这张牌。",
+	["~ZhushiOtherVS"] = "（使用）选择目标 -> “确定”；（获得）“取消”",
+	["*zhushi_cardid"] = "嘱事(后续)",
 
 --*********************************************
 	--dld002  势力：地 3血

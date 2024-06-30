@@ -1539,7 +1539,7 @@ public:
     {
         QList<int> blackList = StringList2IntList(Self->property("kuaizhao_black").toString().split("+"));
         if (!blackList.isEmpty())
-            return "#kuaizhao";
+            return "*kuaizhao_black";
 
         return {};
     }

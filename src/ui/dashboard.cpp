@@ -1308,8 +1308,8 @@ void Dashboard::expandPileCards(const QString &pile_name)
         }
     } else if (pile_name == "#judging_area") {
         pile = Self->getJudgingAreaID();
-    } else if (pile_name == "#kuaizhao") {
-        pile = StringList2IntList(Self->property("kuaizhao_black").toString().split("+"));
+    } else if (pile_name.startsWith("*")) {
+        pile = StringList2IntList(Self->property(pile_name.mid(1).toUtf8().constData()).toString().split("+"));
     } else {
         pile = Self->getPile(new_name);
     }
