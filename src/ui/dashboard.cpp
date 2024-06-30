@@ -1342,7 +1342,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
                 }
             }
         }
-        if (pile_name == "#mengxiang_temp") {
+        if (pile_name == "*mengxiang_temp") {
             QString target_name = "";
             foreach (const Player *p, Self->getAliveSiblings()) {
                 if (p->hasFlag("mengxiangtarget")) {

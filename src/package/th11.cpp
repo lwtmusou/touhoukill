@@ -82,13 +82,15 @@ bool ZhushiCard::targetFixed(const Player *Self) const
 bool ZhushiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     const Card *originalCard = Sanguosha->getCard(subcards.first());
+    if (originalCard->canRecast() && targets.length() == 0)
+        return false;
     return originalCard->targetsFeasible(targets, Self);
 }
 
 bool ZhushiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     const Card *originalCard = Sanguosha->getCard(subcards.first());
-    return originalCard->targetFilter(targets, to_select, Self);
+    return originalCard->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, originalCard, targets);
 }
 
 const Card *ZhushiCard::validate(CardUseStruct &) const

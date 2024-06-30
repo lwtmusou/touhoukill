@@ -2296,19 +2296,17 @@ public:
 
 MengxiangTargetCard::MengxiangTargetCard()
 {
+    m_skillName = "mengxiang";
 }
 
 bool MengxiangTargetCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.length() < Self->getMark("mengxiang") && !to_select->isKongcheng(); //
+    return targets.length() < Self->getMark("mengxiang") && !to_select->isKongcheng();
 }
 
 void MengxiangTargetCard::use(Room *room, const CardUseStruct &card_use) const
 {
-    ServerPlayer *source = card_use.from;
     const QList<ServerPlayer *> &targets = card_use.to;
-
-    room->notifySkillInvoked(source, "mengxiang");
     foreach (ServerPlayer *p, targets)
         room->setPlayerMark(p, "mengxiangtarget", 1);
 }
@@ -2342,9 +2340,7 @@ const Card *MengxiangCard::validate(CardUseStruct &use) const
 {
     Room *room = use.from->getRoom();
     const Card *card = Sanguosha->getCard(subcards.first());
-    use.from->showHiddenSkill("mengxiang");
 
-    room->notifySkillInvoked(use.from, "mengxiang");
     LogMessage mes;
     mes.type = "$mengxiang";
     mes.from = use.from;
@@ -2362,18 +2358,17 @@ public:
     MengxiangVS()
         : ViewAsSkill("mengxiang")
     {
-        expand_pile = "#mengxiang_temp";
+        expand_pile = "*mengxiang_temp";
     }
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
     {
-        //if (Self->hasFlag("Global_mengxiangFailed")) {
         if (Sanguosha->getCurrentCardUsePattern() == "@@mengxiang-card2") {
             if ((to_select->isKindOf("Jink") || to_select->isKindOf("Nullification")))
                 return false;
             if (to_select->isKindOf("Peach") && !to_select->isAvailable(Self))
                 return false;
-            return selected.isEmpty() && Self->getPile("#mengxiang_temp").contains(to_select->getId());
+            return selected.isEmpty() && StringList2IntList(Self->property("mengxiang_temp").toString().split("+")).contains(to_select->getId());
         }
         return false;
     }
@@ -2390,17 +2385,18 @@ public:
 
     const Card *viewAs(const QList<const Card *> &cards) const override
     {
-        if (cards.length() > 1)
-            return nullptr;
-
         if (Sanguosha->getCurrentCardUsePattern() == "@@mengxiang-card2") {
-            MengxiangCard *card = new MengxiangCard;
-            card->addSubcards(cards);
-            return card;
+            if (cards.length() == 1) {
+                MengxiangCard *card = new MengxiangCard;
+                card->addSubcards(cards);
+                return card;
+            }
         } else {
-            MengxiangTargetCard *card = new MengxiangTargetCard;
-            return card;
+            if (cards.length() == 0)
+                return new MengxiangTargetCard;
         }
+
+        return nullptr;
     }
 };
 
@@ -2462,7 +2458,7 @@ public:
         } else if (triggerEvent == EventPhaseEnd) {
             room->askForUseCard(invoke->invoker, "@@mengxiang-card1", "@mengxiang");
 
-            foreach (ServerPlayer *player, room->getAllPlayers(false)) {
+            foreach (ServerPlayer *player, room->getAllPlayers()) {
                 if (player->getMark("mengxiangtarget") == 1) {
                     invoke->targets << player;
                     player->removeMark("mengxiangtarget");
@@ -2487,9 +2483,7 @@ public:
                     ids << c->getEffectiveId();
 
                 if (!ids.isEmpty()) {
-                    putToPile(room, invoke->invoker, ids);
-
-                    //Flag  mengxiangtarget is only for DashBoard UI
+                    // Flag mengxiangtarget is only for DashBoard UI
                     foreach (ServerPlayer *t, room->getAllPlayers()) {
                         if (t == p)
                             room->setPlayerFlag(t, "mengxiangtarget");
@@ -2497,60 +2491,19 @@ public:
                             room->setPlayerFlag(t, "-mengxiangtarget");
                     }
 
-                    if ((room->askForUseCard(invoke->invoker, "@@mengxiang-card2", "@mengxiang_use:" + p->objectName()) != nullptr) && p->isAlive())
-                        p->drawCards(1);
-                    cleanUp(room, invoke->invoker);
+                    room->setPlayerProperty(invoke->invoker, "mengxiang_temp", IntList2StringList(ids).join("+"));
+                    const Card *c = room->askForUseCard(invoke->invoker, "@@mengxiang-card2", "@mengxiang_use:" + p->objectName());
+                    room->setPlayerProperty(invoke->invoker, "mengxiang_temp", QString());
+
+                    if (c != nullptr && p->isAlive()) {
+                        const Card *originalCard = Sanguosha->getCard(c->getEffectiveId());
+                        if (originalCard->getTypeId() != Card::TypeBasic)
+                            p->drawCards(1, objectName());
+                    }
                 }
             }
         }
         return false;
-    }
-
-    static bool putToPile(Room *room, ServerPlayer *player, QList<int> ids)
-    {
-        CardsMoveStruct move;
-        move.from_place = Player::DiscardPile;
-        move.to = player;
-        move.to_player_name = player->objectName();
-        move.to_pile_name = "#mengxiang_temp";
-        move.card_ids = ids;
-        move.to_place = Player::PlaceSpecial;
-        move.open = true;
-
-        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
-        room->setPlayerFlag(player, "mengxiang_InTempMoving");
-        room->notifyMoveCards(true, _moves, true, _player);
-        room->notifyMoveCards(false, _moves, true, _player);
-        room->setPlayerFlag(player, "-mengxiang_InTempMoving");
-
-        QVariantList tag = IntList2VariantList(ids);
-        player->tag["mengxiang_tempcards"] = tag;
-        return true;
-    }
-
-    static void cleanUp(Room *room, ServerPlayer *player)
-    {
-        QList<int> hands = VariantList2IntList(player->tag.value("mengxiang_tempcards", QVariantList()).toList());
-        player->tag.remove("mengxiang_tempcards");
-        if (hands.isEmpty())
-            return;
-
-        CardsMoveStruct move;
-        move.from = player;
-        move.from_player_name = player->objectName();
-        move.from_place = Player::PlaceSpecial;
-        move.from_pile_name = "#mengxiang_temp";
-        move.to_place = Player::DiscardPile;
-        move.open = true;
-        move.card_ids = hands;
-
-        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
-        room->setPlayerFlag(player, "mengxiang_InTempMoving");
-        room->notifyMoveCards(true, _moves, true, _player);
-        room->notifyMoveCards(false, _moves, true, _player);
-        room->setPlayerFlag(player, "-mengxiang_InTempMoving");
     }
 };
 
@@ -2567,7 +2520,6 @@ void JishiCard::use(Room *room, const CardUseStruct &card_use) const
     int x = subcards.length();
     CardsMoveStruct move;
     move.card_ids = subcards;
-    //move.from = source;
     move.to_place = Player::DrawPile;
     room->moveCardsAtomic(move, false);
     if (x > 1)
@@ -2581,12 +2533,12 @@ public:
         : ViewAsSkill("jishi")
     {
         response_pattern = "@@jishi";
-        expand_pile = "#jishi_temp";
+        expand_pile = "*jishi_temp";
     }
 
     bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
     {
-        return Self->getPile("#jishi_temp").contains(to_select->getId());
+        return StringList2IntList(Self->property("jishi_temp").toString().split("+")).contains(to_select->getId());
     }
 
     const Card *viewAs(const QList<const Card *> &cards) const override //
@@ -2655,58 +2607,12 @@ public:
         if (ids.isEmpty())
             return false;
 
-        putToPile(room, invoke->invoker, ids);
+        invoke->invoker->tag["jishi_tempcards"] = IntList2VariantList(ids);
+        room->setPlayerProperty(invoke->invoker, "jishi_temp", IntList2StringList(ids).join("+"));
         room->askForUseCard(invoke->invoker, "@@jishi", "@jishi");
-        cleanUp(room, invoke->invoker);
+        room->setPlayerProperty(invoke->invoker, "jishi_temp", QString());
 
         return false;
-    }
-
-    static bool putToPile(Room *room, ServerPlayer *player, QList<int> ids)
-    {
-        CardsMoveStruct move;
-        move.from_place = Player::DiscardPile;
-        move.to = player;
-        move.to_player_name = player->objectName();
-        move.to_pile_name = "#jishi_temp";
-        move.card_ids = ids;
-        move.to_place = Player::PlaceSpecial;
-        move.open = true;
-
-        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
-        room->setPlayerFlag(player, "jishi_InTempMoving");
-        room->notifyMoveCards(true, _moves, true, _player);
-        room->notifyMoveCards(false, _moves, true, _player);
-        room->setPlayerFlag(player, "-jishi_InTempMoving");
-
-        QVariantList tag = IntList2VariantList(ids);
-        player->tag["jishi_tempcards"] = tag;
-        return true;
-    }
-
-    static void cleanUp(Room *room, ServerPlayer *player)
-    {
-        QList<int> cards = VariantList2IntList(player->tag.value("jishi_tempcards", QVariantList()).toList());
-        player->tag.remove("jishi_tempcards");
-        if (cards.isEmpty())
-            return;
-
-        CardsMoveStruct move;
-        move.from = player;
-        move.from_player_name = player->objectName();
-        move.from_place = Player::PlaceSpecial;
-        move.from_pile_name = "#jishi_temp";
-        move.to_place = Player::DiscardPile;
-        move.open = true;
-        move.card_ids = cards;
-
-        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
-        room->setPlayerFlag(player, "jishi_InTempMoving");
-        room->notifyMoveCards(true, _moves, true, _player);
-        room->notifyMoveCards(false, _moves, true, _player);
-        room->setPlayerFlag(player, "-jishi_InTempMoving");
     }
 };
 
