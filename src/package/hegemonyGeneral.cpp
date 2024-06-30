@@ -3658,12 +3658,12 @@ public:
     ChunhenHegemonyVS()
         : ViewAsSkill("chunhen_hegemony")
     {
-        expand_pile = "#chunhen_temp";
+        expand_pile = "*chunhen_temp";
     }
 
     bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
     {
-        return Self->getPile("#chunhen_temp").contains(to_select->getId());
+        return StringList2IntList(Self->property("chunhen_temp").toString().split("+")).contains(to_select->getId());
     }
 
     bool isEnabledAtPlay(const Player *) const override
@@ -3701,58 +3701,11 @@ public:
         return true;
     }
 
-    static bool putToPile(Room *room, ServerPlayer *player, QList<int> ids)
-    {
-        CardsMoveStruct move;
-        move.from_place = Player::DiscardPile;
-        move.to = player;
-        move.to_player_name = player->objectName();
-        move.to_pile_name = "#chunhen_temp";
-        move.card_ids = ids;
-        move.to_place = Player::PlaceSpecial;
-        move.open = true;
-
-        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
-        room->setPlayerFlag(player, "chunhen_InTempMoving");
-        room->notifyMoveCards(true, _moves, true, _player);
-        room->notifyMoveCards(false, _moves, true, _player);
-        room->setPlayerFlag(player, "-chunhen_InTempMoving");
-
-        QVariantList tag = IntList2VariantList(ids);
-        player->tag["chunhen_tempcards"] = tag;
-        return true;
-    }
-
-    static void cleanUp(Room *room, ServerPlayer *player)
-    {
-        QList<int> reds = VariantList2IntList(player->tag.value("chunhen_tempcards", QVariantList()).toList());
-        player->tag.remove("chunhen_tempcards");
-        if (reds.isEmpty())
-            return;
-
-        CardsMoveStruct move;
-        move.from = player;
-        move.from_player_name = player->objectName();
-        move.from_place = Player::PlaceSpecial;
-        move.from_pile_name = "#chunhen_temp";
-        move.to_place = Player::DiscardPile;
-        move.open = true;
-        move.card_ids = reds;
-
-        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
-        room->setPlayerFlag(player, "chunhen_InTempMoving");
-        room->notifyMoveCards(true, _moves, true, _player);
-        room->notifyMoveCards(false, _moves, true, _player);
-        room->setPlayerFlag(player, "-chunhen_InTempMoving");
-    }
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (player == nullptr || !player->hasSkill(this) || player->isDead()) // || player->tag["chunhen_to_judge"].toStringList().isEmpty()
+        if (player == nullptr || !player->hasSkill(this) || player->isDead())
             return QList<SkillInvokeDetail>();
 
         if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
@@ -3784,14 +3737,11 @@ public:
             if (ids.isEmpty())
                 return false;
 
-            ServerPlayer *player = invoke->invoker;
-            if (!putToPile(room, player, ids))
-                return false;
+            invoke->invoker->tag["chunhen_cards"] = IntList2VariantList(ids);
+            room->setPlayerProperty(invoke->invoker, "chunhen_temp", IntList2StringList(ids).join("+"));
+            const Card *usecard = room->askForUseCard(invoke->invoker, "@@chunhen_hegemony", "@chunhen_give", -1, Card::MethodNone);
+            room->setPlayerProperty(invoke->invoker, "chunhen_temp", QString());
 
-            QVariantList listc = IntList2VariantList(ids);
-            invoke->invoker->tag["chunhen_cards"] = listc; //for ai
-            const Card *usecard = room->askForUseCard(player, "@@chunhen_hegemony", "@chunhen_give", -1, Card::MethodNone);
-            cleanUp(room, player);
             if (usecard != nullptr)
                 disable += usecard->getSubcards();
             else

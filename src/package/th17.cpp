@@ -510,12 +510,12 @@ public:
         : OneCardViewAsSkill("liaogu")
     {
         response_pattern = "@@liaogu";
-        expand_pile = "#liaoguTemp";
+        expand_pile = "*liaogu_temp";
     }
 
     bool viewFilter(const Card *to_select) const override
     {
-        return Self->getPile("#liaoguTemp").contains(to_select->getEffectiveId()) && to_select->isAvailable(Self);
+        return StringList2IntList(Self->property("liaogu_temp").toString().split("+")).contains(to_select->getEffectiveId()) && to_select->isAvailable(Self);
     }
 
     const Card *viewAs(const Card *originalCard) const override
@@ -529,63 +529,6 @@ public:
 class Liaogu : public TriggerSkill
 {
 public:
-    // notify liaogu card move
-    static void liaoguTempMove(Room *room, ServerPlayer *to, QList<int> inCards)
-    {
-        QList<int> inCardsCopy = inCards;
-        QList<int> outCards = VariantList2IntList(to->tag.value("liaogu_tempmove", QVariantList()).toList());
-        QList<CardsMoveStruct> moves;
-
-        // remove duplicate
-        foreach (int c, inCardsCopy) {
-            if (outCards.contains(c)) {
-                inCards.removeAll(c);
-                outCards.removeAll(c);
-            }
-        }
-
-        if (!outCards.isEmpty()) {
-            CardsMoveStruct move;
-            move.card_ids = outCards;
-            move.open = true;
-            move.from = to;
-            move.from_player_name = to->objectName();
-            move.from_place = Player::PlaceSpecial;
-            move.from_pile_name = "#liaoguTemp";
-            move.to = nullptr;
-            move.to_place = Player::DiscardPile;
-
-            moves << move;
-        }
-
-        if (!inCards.isEmpty()) {
-            CardsMoveStruct move;
-            move.card_ids = inCards;
-            move.open = true;
-            move.from = nullptr;
-            move.from_place = Player::DiscardPile;
-            move.to = to;
-            move.to_player_name = to->objectName();
-            move.to_place = Player::PlaceSpecial;
-            move.to_pile_name = "#liaoguTemp";
-
-            moves << move;
-        }
-
-        if (!inCardsCopy.isEmpty())
-            to->tag["liaogu_tempmove"] = IntList2VariantList(inCardsCopy);
-        else
-            to->tag.remove("liaogu_tempmove");
-
-        if (moves.isEmpty())
-            return;
-
-        room->setPlayerFlag(to, "liaogu_InTempMoving");
-        room->notifyMoveCards(true, moves, true, {to});
-        room->notifyMoveCards(false, moves, true, {to});
-        room->setPlayerFlag(to, "-liaogu_InTempMoving");
-    }
-
     Liaogu()
         : TriggerSkill("liaogu")
     {
@@ -649,11 +592,10 @@ public:
                 discardIds << cardid;
         }
 
-        liaoguTempMove(room, invoke->invoker, discardIds);
-
-        if (!room->askForUseCard(invoke->invoker, "@@liaogu", "@liaogu-use"))
-            liaoguTempMove(room, invoke->invoker, {});
-
+        invoke->invoker->tag["liaogu_tempmove"] = IntList2VariantList(discardIds);
+        room->setPlayerProperty(invoke->invoker, "liaogu_temp", IntList2StringList(discardIds).join("+"));
+        room->askForUseCard(invoke->invoker, "@@liaogu", "@liaogu-use");
+        room->setPlayerProperty(invoke->invoker, "liaogu_temp", QString());
         return false;
     }
 
@@ -685,12 +627,6 @@ bool LiaoguCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     if (oc->canRecast() && targets.length() == 0)
         return false;
     return oc->targetsFeasible(targets, Self);
-}
-
-void LiaoguCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    Liaogu::liaoguTempMove(room, card_use.from, {});
-    SkillCard::onUse(room, card_use);
 }
 
 void LiaoguCard::use(Room *room, const CardUseStruct &card_use) const

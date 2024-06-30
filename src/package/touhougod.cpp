@@ -6187,12 +6187,12 @@ public:
         : ViewAsSkill("wenyue")
     {
         response_pattern = "@@wenyue";
-        expand_pile = "#wenyue_temp";
+        expand_pile = "*wenyue_temp";
     }
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
     {
-        QList<int> temp = Self->getPile("#wenyue_temp");
+        QList<int> temp = StringList2IntList(Self->property("wenyue_temp").toString().split("+"));
         if (selected.isEmpty()) {
             return temp.contains(to_select->getId()) || (to_select->getTypeId() != Card::TypeEquip && !Self->isJilei(to_select));
         } else if (selected.length() == 1) {
@@ -6223,53 +6223,6 @@ public:
     {
         events << CardsMoveOneTime << GameStart;
         view_as_skill = new WenyueVS;
-    }
-
-    static bool putToPile(Room *room, ServerPlayer *alice, QList<int> ids)
-    {
-        CardsMoveStruct move;
-        move.from_place = Player::DiscardPile;
-        move.to = alice;
-        move.to_player_name = alice->objectName();
-        move.to_pile_name = "#wenyue_temp";
-        move.card_ids = ids;
-        move.to_place = Player::PlaceSpecial;
-        move.open = true;
-
-        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-        QList<ServerPlayer *> _alice = QList<ServerPlayer *>() << alice;
-        room->setPlayerFlag(alice, "wenyue_InTempMoving");
-        room->notifyMoveCards(true, _moves, true, _alice);
-        room->notifyMoveCards(false, _moves, true, _alice);
-        room->setPlayerFlag(alice, "-wenyue_InTempMoving");
-
-        QVariantList tag = IntList2VariantList(ids);
-        alice->tag["wenyue_tempcards"] = tag;
-        return true;
-    }
-
-    static void cleanUp(Room *room, ServerPlayer *alice)
-    {
-        QList<int> equips = VariantList2IntList(alice->tag.value("wenyue_tempcards", QVariantList()).toList());
-        alice->tag.remove("wenyue_tempcards");
-        if (equips.isEmpty())
-            return;
-
-        CardsMoveStruct move;
-        move.from = alice;
-        move.from_player_name = alice->objectName();
-        move.from_place = Player::PlaceSpecial;
-        move.from_pile_name = "#wenyue_temp";
-        move.to_place = Player::DiscardPile;
-        move.open = true;
-        move.card_ids = equips;
-
-        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
-        QList<ServerPlayer *> _alice = QList<ServerPlayer *>() << alice;
-        room->setPlayerFlag(alice, "wenyue_InTempMoving");
-        room->notifyMoveCards(true, _moves, true, _alice);
-        room->notifyMoveCards(false, _moves, true, _alice);
-        room->setPlayerFlag(alice, "-wenyue_InTempMoving");
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -6343,15 +6296,12 @@ public:
             ServerPlayer *alice = invoke->invoker;
             if (!alice->canDiscard(alice, "hs"))
                 return false;
-            if (!putToPile(room, alice, equip_ids))
-                return false;
-
             room->setPlayerFlag(player, "Global_wenyueFailed");
             alice->tag["wenyueOwner"] = QVariant::fromValue(player);
-            QVariantList listc = IntList2VariantList(equip_ids);
-            invoke->invoker->tag["wenyue_cards"] = listc;
+            invoke->invoker->tag["wenyue_cards"] = IntList2VariantList(equip_ids);
+            room->setPlayerProperty(alice, "wenyue_temp", IntList2StringList(equip_ids).join("+"));
             const Card *usecard = room->askForUseCard(alice, "@@wenyue", "@wenyue");
-            cleanUp(room, alice);
+            room->setPlayerProperty(alice, "wenyue_temp", QString());
             if (usecard == nullptr)
                 return false;
         }

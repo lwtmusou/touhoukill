@@ -1696,6 +1696,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         use.to << invoke->targets;
         use.to.removeOne(invoke->invoker);
+        room->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);
 
         QList<ServerPlayer *> logto;
