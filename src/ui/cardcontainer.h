@@ -85,14 +85,15 @@ public:
     void reply();
 
 public slots:
-    void doGuanxing(const QList<int> &card_ids, bool up_only);
+    void doGuanxing(const QList<int> &card_ids, bool up_only, QString skillName);
     void adjust();
 
 private:
     QList<CardItem *> up_items, down_items;
     bool up_only;
+    QString skillName;
 
-    static const int start_x = 76; // no Chinese comments in Source Codes!!
+    static const int start_x = 76;
     static const int start_y1 = 105;
     static const int start_y2 = 249;
     static const int middle_y = 173;

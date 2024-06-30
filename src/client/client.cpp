@@ -2009,7 +2009,7 @@ void Client::askForGuanxing(const QVariant &arg)
     QList<int> card_ids;
     JsonUtils::tryParse(deck, card_ids);
 
-    emit guanxing(card_ids, single_side);
+    emit guanxing(card_ids, single_side, highlight_skill_name);
     setStatus(AskForGuanxing);
 }
 

@@ -6080,12 +6080,18 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     notifyMoveFocus(zhuge, S_COMMAND_SKILL_GUANXING);
 
     AI *ai = zhuge->getAI();
-    if (ai != nullptr) {
-        ai->askForGuanxing(cards, top_cards, bottom_cards, (int)guanxing_type);
-    } else if (guanxing_type == GuanxingUpOnly && cards.length() == 1) {
+    if (guanxing_type == GuanxingUpOnly && cards.length() == 1) {
         top_cards = cards;
     } else if (guanxing_type == GuanxingDownOnly && cards.length() == 1) {
         bottom_cards = cards;
+    } else if (ai != nullptr) {
+        ai->askForGuanxing(cards, top_cards, bottom_cards, (int)guanxing_type);
+
+        // I'm too lazy to deal with this AI so....
+        if (skillName == "fengshui") {
+            top_cards << bottom_cards;
+            bottom_cards = {top_cards.takeLast()};
+        }
     } else {
         JsonArray guanxingArgs;
         guanxingArgs << JsonUtils::toJsonArray(cards);
@@ -6114,7 +6120,10 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     bool length_equal = top_cards.length() + bottom_cards.length() == cards.length();
     bool result_equal = top_cards.toSet() + bottom_cards.toSet() == cards.toSet();
     if (!length_equal || !result_equal) {
-        if (guanxing_type == GuanxingDownOnly) {
+        if (skillName == "fengshui") {
+            top_cards = {cards.first()};
+            bottom_cards = {cards.last()};
+        } else if (guanxing_type == GuanxingDownOnly) {
             bottom_cards = cards;
             top_cards.clear();
         } else {

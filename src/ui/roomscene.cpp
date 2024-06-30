@@ -187,7 +187,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(guanxing_box);
     guanxing_box->setZValue(20000.0);
 
-    connect(ClientInstance, SIGNAL(guanxing(QList<int>, bool)), guanxing_box, SLOT(doGuanxing(QList<int>, bool)));
+    connect(ClientInstance, SIGNAL(guanxing(QList<int>, bool, QString)), guanxing_box, SLOT(doGuanxing(QList<int>, bool, QString)));
     guanxing_box->moveBy(-120, 0);
 
     m_chooseOptionsBox = new ChooseOptionsBox;

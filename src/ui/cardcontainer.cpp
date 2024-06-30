@@ -335,7 +335,7 @@ GuanxingBox::GuanxingBox()
     setFlag(ItemIsMovable);
 }
 
-void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
+void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only, QString skillName)
 {
     if (card_ids.isEmpty()) {
         clear();
@@ -343,7 +343,9 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
     }
 
     this->up_only = up_only;
+    this->skillName = skillName;
     up_items.clear();
+    down_items.clear();
 
     foreach (int card_id, card_ids) {
         CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
@@ -351,7 +353,11 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
         card_item->setFlag(QGraphicsItem::ItemIsFocusable);
         connect(card_item, SIGNAL(released()), this, SLOT(adjust()));
 
-        up_items << card_item;
+        if (skillName == "fengshui" && !up_items.isEmpty())
+            down_items << card_item;
+        else
+            up_items << card_item;
+
         card_item->setParentItem(this);
         card_item->setAcceptedMouseButtons(Qt::LeftButton);
     }
@@ -362,6 +368,13 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
     for (int i = 0; i < up_items.length(); i++) {
         CardItem *card_item = up_items.at(i);
         QPointF pos(start_x + i * skip, start_y1);
+        card_item->setPos(source);
+        card_item->setHomePos(pos);
+        card_item->goBack(true);
+    }
+    for (int i = 0; i < down_items.length(); i++) {
+        CardItem *card_item = down_items.at(i);
+        QPointF pos(start_x + i * skip, start_y2);
         card_item->setPos(source);
         card_item->setHomePos(pos);
         card_item->goBack(true);
@@ -378,6 +391,9 @@ void GuanxingBox::adjust()
     down_items.removeOne(item);
 
     QList<CardItem *> *items = (up_only || item->y() <= middle_y) ? &up_items : &down_items;
+    if (skillName == "fengshui" && !items->isEmpty())
+        qSwap(up_items, down_items);
+
     int c = (item->x() + item->boundingRect().width() / 2 - start_x) / G_COMMON_LAYOUT.m_cardNormalWidth;
     c = qBound(0, c, items->length());
     items->insert(c, item);
