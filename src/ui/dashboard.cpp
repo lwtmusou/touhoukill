@@ -619,13 +619,9 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
     const Skill *skill = Sanguosha->getSkill(skillName);
     Q_ASSERT(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill") && !skill->inherits("TreasureSkill"));
 #endif
-    if (_m_skillDock->getSkillButtonByName(skillName) != nullptr && head) {
-        //_m_button_recycle.append(_m_skillDock->getSkillButtonByName(skillName));
+    if (_m_skillDock->getSkillButtonByName(skillName) != nullptr && head)
         return nullptr;
-    }
-
     if (_m_rightSkillDock->getSkillButtonByName(skillName) != nullptr && !head)
-        //_m_button_recycle.append(_m_leftSkillDock->getSkillButtonByName(skillName));
         return nullptr;
 
     QSanInvokeSkillDock *dock = head ? _m_skillDock : _m_rightSkillDock;
@@ -658,9 +654,6 @@ QSanSkillButton *Dashboard::removeSkillButton(const QString &skillName, bool hea
     if (btn == nullptr) {
         QSanInvokeSkillDock *dock = head ? _m_skillDock : _m_rightSkillDock;
         QSanSkillButton *temp = dock->getSkillButtonByName(skillName);
-        //if (_m_button_recycle.contains(temp))
-        //    _m_button_recycle.removeOne(temp);
-        //else
         if (temp != nullptr)
             btn = dock->removeSkillButtonByName(skillName);
     }
