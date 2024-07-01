@@ -2354,19 +2354,6 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
     }
 
     effect.to->addToShownHandCards(ids);
-
-    // linsa effect
-    /*if (effect.from->isAlive() && effect.from->hasSkill("linsa") && effect.from != effect.to) {
-        DummyCard *dummy = new DummyCard;
-
-        foreach(int cardid, ids) {
-            if (Sanguosha->getCard(cardid)->getSuit() == getSuit() &&  effect.from->canDiscard(effect.to, cardid))
-                dummy->addSubcard(cardid);
-        }
-        if (dummy->getSubcards().length() > 0 &&  effect.from->askForSkillInvoke("linsa", QVariant::fromValue(effect.to)))
-            room->throwCard(dummy, effect.to, effect.from);
-        delete dummy;
-    }*/
 }
 
 void KnownBoth::use(Room *room, const CardUseStruct &card_use) const

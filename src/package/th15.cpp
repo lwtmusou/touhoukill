@@ -976,162 +976,203 @@ public:
     }
 };
 
-class Emeng : public TriggerSkill
+class ChihouVS : public ViewAsSkill
 {
 public:
-    Emeng()
-        : TriggerSkill("emeng")
+    ChihouVS()
+        : ViewAsSkill("chihou")
     {
-        events << TargetSpecified;
+        response_or_use = true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    const Player *getChihouOther(const Player *apple) const
     {
-        CardUseStruct use = data.value<CardUseStruct>();
-        QList<SkillInvokeDetail> d;
-        if (use.card->hasFlag("showncards") && use.from != nullptr && use.from->hasSkill(this) && use.to.length() == 1) {
-            foreach (ServerPlayer *p, use.to) {
-                if (!p->getShownHandcards().isEmpty())
-                    d << SkillInvokeDetail(this, use.from, use.from, nullptr, true, p);
+        QString name = apple->property((objectName() + "_target").toUtf8().constData()).toString();
+        return apple->parent()->findChild<const Player *>(name);
+    }
+
+    bool isMagicAnalepticAvailable(const Player *apple, const QString &pattern = QString()) const
+    {
+        if (apple->getMark("ViewAsSkill_" + objectName() + "Effect") > 0 && apple->getPhase() == Player::Play) {
+            if (apple->hasUsed(objectName() + "MagicAnaleptic"))
+                return false;
+            const Player *other = getChihouOther(apple);
+            if (other == nullptr)
+                return false;
+            QList<int> shownHandcards = apple->getShownHandcards() + other->getShownHandcards();
+            bool flag = false;
+            foreach (int id, shownHandcards) {
+                const Card *c = Sanguosha->getCard(id);
+                if (c->isBlack()) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag)
+                return false;
+            if (pattern.isEmpty())
+                return true;
+
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+            if (cardPattern != nullptr) {
+                MagicAnaleptic *ma = new MagicAnaleptic(Card::NoSuit, 0);
+                DELETE_OVER_SCOPE(MagicAnaleptic, ma)
+                if (cardPattern->match(apple, ma))
+                    return true;
             }
         }
-        return d;
-    }
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        ServerPlayer *target = invoke->targets.first();
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
-        room->notifySkillInvoked(invoke->invoker, objectName());
-        int num = qMin(3, target->getShownHandcards().length());
-        target->drawCards(num);
-        target->turnOver();
         return false;
     }
-};
 
-YuejianCard::YuejianCard()
-{
-    will_throw = false;
-}
-
-bool YuejianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
-}
-
-void YuejianCard::use(Room *, const CardUseStruct &card_use) const
-{
-    ServerPlayer *source = card_use.from;
-    const QList<ServerPlayer *> &targets = card_use.to;
-
-    ServerPlayer *target = targets.first();
-    source->pindian(target, "yuejian");
-}
-
-class YuejianVS : public ZeroCardViewAsSkill
-{
-public:
-    YuejianVS()
-        : ZeroCardViewAsSkill("yuejian")
+    bool isAwaitExhaustedAvailable(const Player *apple, const QString &pattern = QString()) const
     {
-        response_pattern = "@@yuejian!";
-    }
+        if (apple->getMark("ViewAsSkill_" + objectName() + "Effect") > 0 && apple->getPhase() == Player::Play) {
+            if (apple->hasUsed(objectName() + "AwaitExhausted"))
+                return false;
+            const Player *other = getChihouOther(apple);
+            if (other == nullptr)
+                return false;
+            QList<int> shownHandcards = apple->getShownHandcards() + other->getShownHandcards();
+            bool flag = false;
+            foreach (int id, shownHandcards) {
+                const Card *c = Sanguosha->getCard(id);
+                if (c->isRed()) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag)
+                return false;
+            if (pattern.isEmpty())
+                return true;
 
-    bool isEnabledAtPlay(const Player *player) const override
-    {
-        if (player->isKongcheng() || player->hasUsed("YuejianCard"))
-            return false;
-        return true;
-    }
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+            if (cardPattern != nullptr) {
+                AwaitExhausted *ae = new AwaitExhausted(Card::NoSuit, 0);
+                DELETE_OVER_SCOPE(AwaitExhausted, ae)
 
-    const Card *viewAs() const override
-    {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-            YuejianCard *c = new YuejianCard;
-            return c;
-        } else {
-            AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
-            card->setSkillName(objectName());
-            return card;
+                if (cardPattern->match(apple, ae))
+                    return true;
+            }
         }
+        return false;
+    }
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    {
+        QString pattern;
+        if (Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY)
+            pattern = Sanguosha->getCurrentCardUsePattern();
+
+        if (selected.isEmpty() && isMagicAnalepticAvailable(Self, pattern))
+            return !Self->hasEquip(to_select);
+
+        return false;
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const override
+    {
+        QString pattern;
+        if (Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY)
+            pattern = Sanguosha->getCurrentCardUsePattern();
+
+        if (isAwaitExhaustedAvailable(Self, pattern) && cards.isEmpty()) {
+            AwaitExhausted *ae = new AwaitExhausted(Card::NoSuit, 0);
+            ae->setSkillName("_" + objectName());
+            return ae;
+        }
+        if (isMagicAnalepticAvailable(Self, pattern) && cards.length() == 1) {
+            MagicAnaleptic *ma = new MagicAnaleptic(Card::SuitToBeDecided, -1);
+            ma->addSubcards(cards);
+            ma->setSkillName("_" + objectName());
+            return ma;
+        }
+
         return nullptr;
     }
+
+    bool isEnabledAtPlay(const Player *apple) const override
+    {
+        return isMagicAnalepticAvailable(apple) || isAwaitExhaustedAvailable(apple);
+    }
+
+    bool isEnabledAtResponse(const Player *apple, const QString &pattern) const override
+    {
+        return isMagicAnalepticAvailable(apple, pattern) || isAwaitExhaustedAvailable(apple, pattern);
+    }
 };
 
-class Yuejian : public TriggerSkill
+class Chihou : public TriggerSkill
 {
 public:
-    Yuejian()
-        : TriggerSkill("yuejian")
+    Chihou()
+        : TriggerSkill("chihou")
     {
-        events << Pindian;
-        view_as_skill = new YuejianVS;
-        related_pile = "dango";
+        events = {EventPhaseStart, PreCardUsed, EventPhaseChanging};
+        view_as_skill = new ChihouVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        if (triggerEvent == Pindian) {
-            PindianStruct *pindian = data.value<PindianStruct *>();
-            if (pindian->reason == objectName() && pindian->from->isAlive()) {
-                if (pindian->success) {
-                    AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
-                    DELETE_OVER_SCOPE(AwaitExhausted, card);
-                    card->setSkillName(objectName());
-                    if (pindian->from->isCardLimited(card, Card::MethodUse))
-                        return QList<SkillInvokeDetail>();
-                }
-
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, nullptr, true, nullptr, false);
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == objectName() && use.from != nullptr && use.m_addHistory)
+                room->addPlayerHistory(use.from, objectName() + use.card->getClassName());
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play && change.player->getMark("ViewAsSkill_" + objectName() + "Effect") > 0) {
+                room->setPlayerMark(change.player, "ViewAsSkill_" + objectName() + "Effect", 0);
+                room->setPlayerProperty(change.player, (objectName() + "_target").toUtf8().constData(), QString());
             }
         }
-        return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
-        PindianStruct *pindian = data.value<PindianStruct *>();
-        if (pindian->success) {
-            room->setPlayerFlag(invoke->invoker, "yuejianSuccess");
-            room->askForUseCard(invoke->invoker, "@@yuejian!", "@yuejian1");
-        } else {
-            invoke->invoker->addToPile("dango", pindian->from_card);
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *apple = data.value<ServerPlayer *>();
+            if (apple->isAlive() && apple->hasSkill(this) && apple->getPhase() == Player::Play && !apple->isKongcheng()) {
+                foreach (ServerPlayer *p, room->getOtherPlayers(apple)) {
+                    if (!p->isKongcheng())
+                        return {SkillInvokeDetail(this, apple, apple)};
+                }
+            }
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        ServerPlayer *apple = invoke->invoker;
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, room->getOtherPlayers(apple)) {
+            if (!p->isKongcheng())
+                targets << p;
+        }
+
+        ServerPlayer *target = room->askForPlayerChosen(apple, targets, objectName(), "@chihou-apple", true, true);
+        if (target != nullptr) {
+            invoke->targets << target;
+            return true;
         }
         return false;
     }
-};
 
-class Jiangguo : public OneCardViewAsSkill
-{
-public:
-    Jiangguo()
-        : OneCardViewAsSkill("jiangguo")
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        expand_pile = "dango";
-        filter_pattern = ".|.|.|dango";
-        related_pile = "dango";
-    }
+        ServerPlayer *apple = invoke->invoker;
+        ServerPlayer *target = invoke->targets.first();
 
-    bool isEnabledAtPlay(const Player *player) const override
-    {
-        return player->getPile("dango").length() > 0 && MagicAnaleptic::IsAvailable(player);
-    }
+        room->setPlayerMark(apple, "ViewAsSkill_" + objectName() + "Effect", 1);
+        room->setPlayerProperty(apple, (objectName() + "_target").toUtf8().constData(), target->objectName());
 
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
-    {
-        MagicAnaleptic *card = new MagicAnaleptic(Card::SuitToBeDecided, -1);
-        DELETE_OVER_SCOPE(MagicAnaleptic, card)
-        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        const Card *d = room->askForExchange(target, objectName(), 1, 1, false, "@chihou-show1:" + apple->objectName());
+        target->addToShownHandCards({d->getEffectiveId()});
+        const Card *c = room->askForExchange(apple, objectName(), 1, 1, false, "@chihou-show2:" + target->objectName());
+        apple->addToShownHandCards({c->getEffectiveId()});
 
-        return cardPattern != nullptr && cardPattern->match(player, card) && player->getPile("dango").length() > 0;
-    }
-
-    const Card *viewAs(const Card *originalCard) const override
-    {
-        MagicAnaleptic *ana = new MagicAnaleptic(Card::SuitToBeDecided, -1);
-        ana->addSubcard(originalCard);
-        ana->setSkillName(objectName());
-        return ana;
+        return false;
     }
 };
 
@@ -1321,8 +1362,7 @@ TH15Package::TH15Package()
     doremy->addSkill(new Rumeng);
 
     General *ringo = new General(this, "ringo", "gzz", 3);
-    ringo->addSkill(new Yuejian);
-    ringo->addSkill(new Jiangguo);
+    ringo->addSkill(new Chihou);
 
     General *seiran = new General(this, "seiran", "gzz", 4);
     seiran->addSkill(new Yidan);
@@ -1330,7 +1370,6 @@ TH15Package::TH15Package()
     related_skills.insertMulti("yidan", "#yidanmod");
     seiran->addSkill(new Xuechu);
 
-    addMetaObject<YuejianCard>();
     addMetaObject<YidanCard>();
     skills << new ShehuoProhibit << new ShehuoTargetMod;
 }
