@@ -1098,7 +1098,10 @@ public:
 
     bool isEnabledAtResponse(const Player *apple, const QString &pattern) const override
     {
-        return isMagicAnalepticAvailable(apple, pattern) || isAwaitExhaustedAvailable(apple, pattern);
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+            return isMagicAnalepticAvailable(apple, pattern) || isAwaitExhaustedAvailable(apple, pattern);
+
+        return false;
     }
 };
 
