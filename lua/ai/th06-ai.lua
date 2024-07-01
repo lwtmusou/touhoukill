@@ -330,10 +330,10 @@ hezhou_skill.getTurnUseCard = function(self)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local HezhouCards = {}
 
-	local guhuo = "slash|jink|peach|ex_nihilo|snatch|dismantlement|amazing_grace|archery_attack|savage_assault"
+	local guhuo = "ex_nihilo|snatch|dismantlement"
 	local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
-	if not ban:match("maneuvering") then guhuo = guhuo .. "|fire_attack|analeptic|thunder_slash|fire_slash" end
-	if not ban:match("wash_out") then guhuo = guhuo .. "|super_peach|magic_analeptic|light_slash|iron_slash|power_slash" end
+	if not ban:match("maneuvering") then guhuo = guhuo .. "|fire_attack" end
+	if not ban:match("wash_out") then guhuo = "bone_healing|" .. guhuo end
 	local guhuos = guhuo:split("|")
 	for i = 1, #guhuos do
 		local forbidden = guhuos[i]
@@ -377,26 +377,13 @@ end
 
 function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
     if (player:hasFlag("hezhou_used")) then return nil end
-	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_UNKNOWN) then
+	if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 		return nil
 	end
 	local classname2objectname = {
-		["Slash"] = "slash", ["Jink"] = "jink",
-		["Peach"] = "peach", ["Analeptic"] = "analeptic",
-		--["Nullification"] = "nullification",
-		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash",
-		["ChainJink"] = "chain_jink", ["LightJink"] = "light_jink",
-		["MagicAnaleptic"] = "magic_analeptic",["SuperPeach"] = "super_peach"
+		["Peach"] = "peach",
 	}
 
-	--[[if self.player:getRoom():getMode():find("hegemony") then
-		classname2objectname = {
-		["Slash"] = "slash", ["Jink"] = "jink",
-		["Peach"] = "peach", ["Analeptic"] = "analeptic",
-		["Nullification"] = "nullification",
-		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash"
-		}
-	end]]
 	if classname2objectname[class_name] then
 		local viewcard = sgs.cloneCard(classname2objectname[class_name])
 		if self.player:isLocked(viewcard) then
