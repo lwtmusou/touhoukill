@@ -238,8 +238,9 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
 
     avatarList = new QListView;
     avatarList->setIconSize(QSize(80, 80));
+    avatarList->setGridSize(QSize(85, 95));
     avatarList->setViewMode(QListView::IconMode);
-    avatarList->setUniformItemSizes(true);
+    // avatarList->setUniformItemSizes(true);
     avatarList->setMinimumWidth(500);
     avatarList->hide();
     connect(avatarList, &QListView::doubleClicked, this, &ConnectionDialog::on_avatarList_doubleClicked);
