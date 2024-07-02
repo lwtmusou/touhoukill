@@ -1119,7 +1119,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->getSkillName() == objectName() && use.from != nullptr && use.m_addHistory)
+            if (use.card->getSkillName() == objectName() && use.from != nullptr && use.from->getPhase() == Player::Play)
                 room->addPlayerHistory(use.from, objectName() + use.card->getClassName());
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
