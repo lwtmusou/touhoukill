@@ -1126,6 +1126,7 @@ public:
             if (change.from == Player::Play && change.player->getMark("ViewAsSkill_" + objectName() + "Effect") > 0) {
                 room->setPlayerMark(change.player, "ViewAsSkill_" + objectName() + "Effect", 0);
                 room->setPlayerProperty(change.player, (objectName() + "_target").toUtf8().constData(), QString());
+                change.player->tag.remove(objectName() + "_target");
             }
         }
     }
@@ -1169,6 +1170,7 @@ public:
 
         room->setPlayerMark(apple, "ViewAsSkill_" + objectName() + "Effect", 1);
         room->setPlayerProperty(apple, (objectName() + "_target").toUtf8().constData(), target->objectName());
+        apple->tag[objectName() + "_target"] = QVariant::fromValue(target);
 
         const Card *d = room->askForExchange(target, objectName(), 1, 1, false, "@chihou-show1:" + apple->objectName());
         target->addToShownHandCards({d->getEffectiveId()});
