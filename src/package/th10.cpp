@@ -420,7 +420,7 @@ public:
             invoke->invoker->setFlags(objectName());
             return true;
         } else if (e == EventPhaseChanging) {
-            room->touhouLogmessage("#TouhouBuff", invoke->invoker, objectName());
+            room->sendLog("#TouhouBuff", invoke->invoker, objectName());
             room->notifySkillInvoked(invoke->invoker, objectName());
             invoke->invoker->drawCards(3);
         }
@@ -1009,7 +1009,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *player = invoke->invoker;
-        room->touhouLogmessage("#micai01", player, "micai", QList<ServerPlayer *>(), QString::number(1));
+        room->sendLog("#micai01", player, "micai", QList<ServerPlayer *>(), QString::number(1));
         damage.damage = damage.damage - 1;
         room->notifySkillInvoked(player, objectName());
         if (damage.damage == 0)
@@ -1108,7 +1108,7 @@ public:
         if (card != nullptr) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, hina->objectName(), player->objectName());
             room->notifySkillInvoked(hina, objectName());
-            room->touhouLogmessage("#InvokeSkill", hina, objectName());
+            room->sendLog("#InvokeSkill", hina, objectName());
 
             room->obtainCard(player, card, true);
             return true;
@@ -1188,7 +1188,7 @@ public:
         card->setSkillName(objectName());
         card->deleteLater();
         if (choice == "skillInvalid") {
-            room->touhouLogmessage("#changshi01", invoke->invoker, "changshi");
+            room->sendLog("#changshi01", invoke->invoker, "changshi");
             room->notifySkillInvoked(invoke->invoker, objectName());
 
             foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
@@ -1216,7 +1216,7 @@ public:
         if (select.length() > 1) {
             QString choice = room->askForChoice(invoke->invoker, objectName(), select.join("+"), data);
             if (choice == "skillInvalid") {
-                room->touhouLogmessage("#changshi01", invoke->invoker, "changshi");
+                room->sendLog("#changshi01", invoke->invoker, "changshi");
                 room->notifySkillInvoked(invoke->invoker, objectName());
 
                 foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
@@ -1488,7 +1488,7 @@ public:
             invoke->targets.first()->addToShownHandCards(QList<int>() << id);
         } else {
             DamageStruct damage = data.value<DamageStruct>();
-            room->touhouLogmessage("#shaojie", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
+            room->sendLog("#shaojie", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
             room->notifySkillInvoked(invoke->invoker, objectName());
             return true;
         }

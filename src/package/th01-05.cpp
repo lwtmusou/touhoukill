@@ -588,7 +588,7 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->sendLog("#TriggerSkill", invoke->invoker, objectName());
         if (triggerEvent == AfterDrawInitialCards)
             invoke->invoker->drawCards(24);
         else if (triggerEvent == CardsMoveOneTime) {
@@ -702,7 +702,7 @@ public:
     {
         QVariantList ids = invoke->invoker->tag["qiusuo"].toList();
         invoke->invoker->tag.remove("qiusuo");
-        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        room->sendLog("#InvokeSkill", invoke->invoker, objectName());
         QList<int> get_ids;
         foreach (const QVariant &card_data, ids) {
             int id = card_data.toInt();
@@ -862,7 +862,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         damage.damage = damage.damage - 1;
 
-        room->touhouLogmessage("#lubiao", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(1));
+        room->sendLog("#lubiao", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(1));
         room->notifySkillInvoked(invoke->invoker, objectName());
 
         if (damage.damage == 0)
@@ -904,7 +904,7 @@ public:
 
         QList<ServerPlayer *> logto;
         logto << invoke->targets;
-        room->touhouLogmessage("#yeyan", invoke->invoker, objectName(), logto, use.card->objectName());
+        room->sendLog("#yeyan", invoke->invoker, objectName(), logto, use.card->objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         foreach (ServerPlayer *to, invoke->targets) {
             if (to->isKongcheng())
@@ -1149,7 +1149,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->sendLog("#TriggerSkill", invoke->invoker, objectName());
         CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, invoke->invoker->objectName(), nullptr, objectName(), "");
         CardsMoveStruct move(invoke->invoker->getPile("dream"), invoke->invoker, Player::DiscardPile, reason);
         room->moveCardsAtomic(move, true);
@@ -1198,9 +1198,9 @@ public:
         if (invoke->invoker->pindian(invoke->targets.first(), objectName())) {
             DamageStruct new_damage = invoke->invoker->tag.value("xuxiang").value<DamageStruct>();
             if (new_damage.damage < damage.damage)
-                room->touhouLogmessage("#Xuxiang_minus", damage.to, objectName(), QList<ServerPlayer *>(), QString::number(1));
+                room->sendLog("#Xuxiang_minus", damage.to, objectName(), QList<ServerPlayer *>(), QString::number(1));
             if (new_damage.damage > damage.damage)
-                room->touhouLogmessage("#Xuxiang_plus", damage.to, objectName(), QList<ServerPlayer *>(), QString::number(1));
+                room->sendLog("#Xuxiang_plus", damage.to, objectName(), QList<ServerPlayer *>(), QString::number(1));
             if (new_damage.damage == 0)
                 return true;
             data = QVariant::fromValue(new_damage);
@@ -1504,7 +1504,7 @@ public:
         damage.damage = damage.damage - 1;
         QList<ServerPlayer *> logto;
         logto << damage.to;
-        room->touhouLogmessage("#HuanweiTrigger", invoke->invoker, "huanwei", logto, QString::number(1));
+        room->sendLog("#HuanweiTrigger", invoke->invoker, "huanwei", logto, QString::number(1));
         room->notifySkillInvoked(invoke->invoker, "huanwei");
         data = QVariant::fromValue(damage);
         if (damage.damage == 0)
@@ -1715,7 +1715,7 @@ public:
         data = QVariant::fromValue(resp);
 
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->touhouLogmessage("#shenwei", resp.m_from, objectName(), QList<ServerPlayer *>(), resp.m_card->objectName());
+        room->sendLog("#shenwei", resp.m_from, objectName(), QList<ServerPlayer *>(), resp.m_card->objectName());
         return false;
     }
 };
@@ -3062,7 +3062,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         room->setPlayerFlag(invoke->invoker, "xiewu");
-        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        room->sendLog("#InvokeSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         QString choice = invoke->tag.value(objectName()).toString();
@@ -3842,7 +3842,7 @@ public:
         if (!room->getThread()->hasExtraTurn()) {
             QList<ServerPlayer *> logto;
             logto << invoke->targets.first();
-            room->touhouLogmessage("#touhouExtraTurn", invoke->targets.first(), nullptr, logto);
+            room->sendLog("#touhouExtraTurn", invoke->targets.first(), nullptr, logto);
             invoke->targets.first()->gainAnExtraTurn();
             if (invoke->targets.first() != invoke->invoker)
                 room->loseHp(invoke->invoker, 1);
@@ -4005,10 +4005,10 @@ public:
 
         QList<ServerPlayer *> logto;
         logto << target;
-        room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), logto);
+        room->sendLog("$CancelTarget", use.from, use.card->objectName(), logto);
         logto << invoke->invoker;
         logto.removeOne(target);
-        room->touhouLogmessage("#mowei_change", use.from, use.card->objectName(), logto);
+        room->sendLog("#mowei_change", use.from, use.card->objectName(), logto);
 
         const Card *card = room->askForExchange(invoke->invoker, "mowei", 1, 1, false, "moweiReturn:" + target->objectName());
         DELETE_OVER_SCOPE(const Card, card)
@@ -4083,7 +4083,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         room->setPlayerFlag(invoke->invoker, "menshao_used");
-        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        room->sendLog("#InvokeSkill", invoke->invoker, objectName());
         QStringList select = invoke->tag["menshao_choices"].toStringList();
         QString choice = invoke->tag["menshao_choice"].toString();
         //effect1

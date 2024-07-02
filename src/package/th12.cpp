@@ -130,10 +130,10 @@ public:
 
                 QList<ServerPlayer *> logto;
                 logto << invoke->invoker;
-                room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), logto);
+                room->sendLog("$CancelTarget", use.from, use.card->objectName(), logto);
                 logto << p;
                 logto.removeOne(invoke->invoker);
-                room->touhouLogmessage("#fahua_change", use.from, use.card->objectName(), logto);
+                room->sendLog("#fahua_change", use.from, use.card->objectName(), logto);
 
                 break;
             }
@@ -222,7 +222,7 @@ public:
     {
         ServerPlayer *player = invoke->invoker;
         room->notifySkillInvoked(player, objectName());
-        room->touhouLogmessage("#TriggerSkill", player, "weizhuang");
+        room->sendLog("#TriggerSkill", player, "weizhuang");
         CardUseStruct use = data.value<CardUseStruct>();
         use.from->tag["weizhuang_target"] = QVariant::fromValue(player);
         QString prompt = "@weizhuang-discard:" + player->objectName() + ":" + use.card->objectName();
@@ -1226,7 +1226,7 @@ public:
 
         QString choice = invoke->tag.value("jingxia").toString();
 
-        room->touhouLogmessage("#InvokeSkill", player, objectName());
+        room->sendLog("#InvokeSkill", player, objectName());
         room->notifySkillInvoked(player, objectName());
         if (choice == "discard") {
             for (int i = 0; i < 2; i++) {
@@ -1311,7 +1311,7 @@ void NuhuoCard::use(Room *room, const CardUseStruct &card_use) const
         ServerPlayer *victim = room->askForPlayerChosen(target, all, "nuhuo", "@nuhuo:" + source->objectName(), false);
         QList<ServerPlayer *> logto;
         logto << victim;
-        room->touhouLogmessage("#nuhuoChoose", target, "nuhuo", logto);
+        room->sendLog("#nuhuoChoose", target, "nuhuo", logto);
 
         Slash *slash = new Slash(Card::NoSuit, 0);
         CardUseStruct carduse;

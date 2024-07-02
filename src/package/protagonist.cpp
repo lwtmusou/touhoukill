@@ -254,7 +254,7 @@ MofaCard::MofaCard()
 void MofaCard::use(Room *room, const CardUseStruct &card_use) const
 {
     ServerPlayer *source = card_use.from;
-    room->touhouLogmessage("#mofa_notice", source, "mofa");
+    room->sendLog("#mofa_notice", source, "mofa");
     source->setFlags("mofa_invoked");
 }
 
@@ -315,10 +315,10 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *marisa = invoke->invoker;
             if (marisa != nullptr) {
-                room->touhouLogmessage("#TouhouBuff", marisa, objectName());
+                room->sendLog("#TouhouBuff", marisa, objectName());
                 QList<ServerPlayer *> logto;
                 logto << damage.to;
-                room->touhouLogmessage("#mofa_damage", marisa, QString::number(damage.damage + 1), logto, QString::number(damage.damage));
+                room->sendLog("#mofa_damage", marisa, QString::number(damage.damage + 1), logto, QString::number(damage.damage));
             }
             damage.damage = damage.damage + 1;
             data = QVariant::fromValue(damage);
@@ -500,7 +500,7 @@ void SaiqianCard::use(Room *room, const CardUseStruct &card_use) const
         if (choice == "cancel_saiqian")
             return;
         else if (choice == "losehp_saiqian") {
-            room->touhouLogmessage("#saiqian_lose", reimu, "saiqian");
+            room->sendLog("#saiqian_lose", reimu, "saiqian");
             room->loseHp(reimu);
             room->recover(source, recov);
         } else if (choice == "discard_saiqian") {
@@ -743,7 +743,7 @@ void ShoucangCard::use(Room *room, const CardUseStruct &card_use) const
 
     foreach (int id, subcards)
         room->showCard(source, id);
-    room->touhouLogmessage("#shoucang_max", source, "shoucang", QList<ServerPlayer *>(), QString::number(subcards.length()));
+    room->sendLog("#shoucang_max", source, "shoucang", QList<ServerPlayer *>(), QString::number(subcards.length()));
     source->tag["shoucang"] = QVariant::fromValue(subcards.length());
 }
 
@@ -1264,13 +1264,13 @@ public:
         bllm->tag["wuyu_prompt"] = QVariant::fromValue(prompt);
         if (bllm->getMark("@yu") > 0 && bllm->askForSkillInvoke("bllmwuyu", "useyu:" + prompt)) {
             bllm->loseMark("@yu");
-            room->touhouLogmessage("#InvokeSkill", bllm, prompt);
+            room->sendLog("#InvokeSkill", bllm, prompt);
             room->notifySkillInvoked(bllm, prompt);
             return true;
         } else {
             const Card *card = room->askForCard(bllm, "..H", "@bllm-discard:" + prompt, QVariant(), "bllmwuyu");
             if (card != nullptr) {
-                room->touhouLogmessage("#InvokeSkill", bllm, prompt);
+                room->sendLog("#InvokeSkill", bllm, prompt);
                 room->notifySkillInvoked(bllm, prompt);
                 return true;
             }
@@ -1958,10 +1958,10 @@ public:
             }
 
             invoke->invoker->addMark("siyuinvoke");
-            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+            room->sendLog("#TriggerSkill", invoke->invoker, objectName());
             room->notifySkillInvoked(invoke->invoker, objectName());
 
-            room->touhouLogmessage("#touhouExtraTurn", invoke->invoker, objectName());
+            room->sendLog("#touhouExtraTurn", invoke->invoker, objectName());
 
             invoke->invoker->gainAnExtraTurn();
 

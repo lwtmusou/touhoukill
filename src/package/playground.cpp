@@ -875,7 +875,7 @@ public:
             QStringList conflictingSkills = {"huanwei", "ftmsuanshu"};
             foreach (const QString &conflict, conflictingSkills) {
                 if (invoke->targets.first()->hasSkill(conflict, true, true)) {
-                    room->touhouLogmessage("#bmmaoji-conflictingskill", invoke->targets.first(), conflict);
+                    room->sendLog("#bmmaoji-conflictingskill", invoke->targets.first(), conflict);
                     skills << (QStringLiteral("-") + conflict);
                 }
             }

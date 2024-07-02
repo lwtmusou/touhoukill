@@ -173,7 +173,7 @@ public:
         death.useViewAsKiller = true;
         data = QVariant::fromValue(death);
 
-        room->touhouLogmessage("#TriggerSkill", invoke->owner, "tymhwuyu");
+        room->sendLog("#TriggerSkill", invoke->owner, "tymhwuyu");
         room->notifySkillInvoked(invoke->owner, objectName());
         return false;
     }
@@ -299,7 +299,7 @@ public:
             const Card *c = room->askForCard(invoke->invoker, "@@huanyue-card2", prompt, data, Card::MethodNone, nullptr, false, "huanyue", false, 2);
             if (c != nullptr) {
                 room->notifySkillInvoked(invoke->invoker, objectName());
-                room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+                room->sendLog("#InvokeSkill", invoke->invoker, objectName());
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), nullptr, objectName(), QString());
                 room->throwCard(c, reason, nullptr);
@@ -332,7 +332,7 @@ public:
         } else {
             QList<ServerPlayer *> logto;
             logto << damage.to;
-            room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
+            room->sendLog("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
             damage.damage = damage.damage + 1;
             data = QVariant::fromValue(damage);
         }
@@ -574,8 +574,8 @@ void HunpoCard::use(Room *room, const CardUseStruct &card_use) const
     ServerPlayer *source = card_use.from;
 
     room->setPlayerProperty(source, "maxhp", source->getMaxHp() + 1);
-    room->touhouLogmessage("#GainMaxHp", source, QString::number(1));
-    room->touhouLogmessage("#GetHp", source, QString::number(source->getHp()), QList<ServerPlayer *>(), QString::number(source->getMaxHp()));
+    room->sendLog("#GainMaxHp", source, QString::number(1));
+    room->sendLog("#GetHp", source, QString::number(source->getHp()), QList<ServerPlayer *>(), QString::number(source->getMaxHp()));
 }
 
 class Hunpo : public OneCardViewAsSkill
@@ -781,7 +781,7 @@ public:
             data = QVariant::fromValue(use);
             target->drawCards(1);
 
-            room->touhouLogmessage("#liexi_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << target);
+            room->sendLog("#liexi_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << target);
         } else {
             use.nullified_list << "_ALL_TARGETS";
             data = QVariant::fromValue(use);
@@ -896,7 +896,7 @@ public:
                 data = QVariant::fromValue(use);
                 invoke->targets.first()->drawCards(1);
 
-                room->touhouLogmessage("#mengwei_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << invoke->targets.first());
+                room->sendLog("#mengwei_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << invoke->targets.first());
             }
         } else if (e == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();

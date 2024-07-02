@@ -206,12 +206,12 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
 
         QString choice = invoke->tag.value("chunhua").toString();
-        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        room->sendLog("#InvokeSkill", invoke->invoker, objectName());
         if (!use.to.isEmpty()) {
             if (choice == "red")
-                room->touhouLogmessage("#ChunhuaRed", use.from, use.card->objectName(), use.to);
+                room->sendLog("#ChunhuaRed", use.from, use.card->objectName(), use.to);
             else
-                room->touhouLogmessage("#ChunhuaBlack", use.from, use.card->objectName(), use.to);
+                room->sendLog("#ChunhuaBlack", use.from, use.card->objectName(), use.to);
         }
 
         room->setCardFlag(use.card, "chunhua");
@@ -255,7 +255,7 @@ public:
     {
         if (e == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->touhouLogmessage("#CancelChunhua", effect.to, effect.slash->objectName());
+            room->sendLog("#CancelChunhua", effect.to, effect.slash->objectName());
             room->setEmotion(effect.to, "skill_nullify");
             return true;
         }
@@ -264,7 +264,7 @@ public:
             room->setEmotion(effect.to, "skill_nullify");
             effect.nullified = true;
             data = QVariant::fromValue(effect);
-            room->touhouLogmessage("#CancelChunhua", effect.to, effect.card->objectName());
+            room->sendLog("#CancelChunhua", effect.to, effect.card->objectName());
             return false;
         }
         return false;
@@ -297,7 +297,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *player = invoke->invoker;
-        room->touhouLogmessage("#TriggerSkill", player, objectName());
+        room->sendLog("#TriggerSkill", player, objectName());
         room->notifySkillInvoked(player, objectName());
 
         QList<Player::Phase> phases = player->getPhases();
@@ -479,7 +479,7 @@ public:
     {
         if (invoke->invoker->askForSkillInvoke("kuangluan1", QVariant::fromValue(invoke->preferredTarget))) {
             room->notifySkillInvoked(invoke->invoker, "kuangluan");
-            room->touhouLogmessage("#InvokeSkill", invoke->owner, objectName());
+            room->sendLog("#InvokeSkill", invoke->owner, objectName());
             return true;
         }
         return false;
@@ -548,7 +548,7 @@ public:
     {
         if (invoke->invoker->askForSkillInvoke("kuangluan2", QVariant::fromValue(invoke->preferredTarget))) {
             room->notifySkillInvoked(invoke->invoker, "kuangluan");
-            room->touhouLogmessage("#InvokeSkill", invoke->owner, objectName());
+            room->sendLog("#InvokeSkill", invoke->owner, objectName());
 
             return true;
         }
@@ -560,7 +560,7 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         if (!invoke->targets.first()->hasFlag("kuangluan_invalidity")) {
             room->setPlayerMark(invoke->targets.first(), "kuangluan_invalidity", 1);
-            room->touhouLogmessage("#kuangluan_invalidity", invoke->targets.first(), "kuangluan");
+            room->sendLog("#kuangluan_invalidity", invoke->targets.first(), "kuangluan");
             room->setPlayerSkillInvalidity(invoke->targets.first(), nullptr, true);
         }
         return false;
@@ -602,7 +602,7 @@ public:
         room->throwCard(id, damage.from, invoke->invoker);
         const Card *c = invoke->tag.value("yuyi").value<const Card *>();
         if (c->getColor() != Sanguosha->getCard(id)->getColor()) {
-            room->touhouLogmessage("#YuyiTrigger", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(1));
+            room->sendLog("#YuyiTrigger", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(1));
             damage.damage = damage.damage - 1;
             data = QVariant::fromValue(damage);
             if (damage.damage <= 0)
@@ -665,7 +665,7 @@ public:
         const Card *c = room->askForUseCard(player, pattern, prompt, -1, Card::MethodUse, false, objectName());
 
         if (c != nullptr) {
-            room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), use.to);
+            room->sendLog("$CancelTarget", use.from, use.card->objectName(), use.to);
             foreach (ServerPlayer *p, use.to)
                 room->setEmotion(p, "skill_nullify");
             use.to.clear();
@@ -971,7 +971,7 @@ public:
     {
         ServerPlayer *current = room->getCurrent();
         room->setPlayerFlag(current, "Global_PlayPhaseTerminated");
-        room->touhouLogmessage("#rumeng_skip", current, "rumeng_skip", QList<ServerPlayer *>(), objectName());
+        room->sendLog("#rumeng_skip", current, "rumeng_skip", QList<ServerPlayer *>(), objectName());
         return false;
     }
 };

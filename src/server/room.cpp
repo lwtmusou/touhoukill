@@ -311,7 +311,7 @@ void Room::revivePlayer(ServerPlayer *player, bool initialize)
         setPlayerProperty(player, "maxhp", player->getGeneral()->getMaxHp());
         setPlayerProperty(player, "hp", player->getMaxHp());
         setEmotion(player, "revive");
-        touhouLogmessage("#Revive", player);
+        sendLog("#Revive", player);
 
         foreach (const Skill *skill, player->getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
@@ -7166,7 +7166,7 @@ void Room::defaultHeroSkin()
     }
 }
 
-void Room::touhouLogmessage(const QString &logtype, ServerPlayer *logfrom, const QString &logarg, const QList<ServerPlayer *> &logto, const QString &logarg2)
+void Room::sendLog(const QString &logtype, ServerPlayer *logfrom, const QString &logarg, const QList<ServerPlayer *> &logto, const QString &logarg2)
 {
     LogMessage alog;
 

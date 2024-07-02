@@ -1656,7 +1656,7 @@ void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
     room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
 
     foreach (const QString &name, generals) {
-        room->touhouLogmessage("#RemoveHiddenGeneral", this, name);
+        room->sendLog("#RemoveHiddenGeneral", this, name);
         foreach (const Skill *skill, Sanguosha->getGeneral(name)->getVisibleSkillList()) {
             room->handleAcquireDetachSkills(this, "-" + skill->objectName(), true);
         }
@@ -1685,7 +1685,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if ((reimu != nullptr) && !hasShownRole() && skill != nullptr && skill->getFrequency() != Skill::Eternal && !skill->isAttachedLordSkill() && !hasEquipSkill(skill_name)) {
             QString role = getRole();
-            room->touhouLogmessage("#YibianShow", this, role, room->getAllPlayers());
+            room->sendLog("#YibianShow", this, role, room->getAllPlayers());
             room->broadcastProperty(this, "role");
             room->setPlayerProperty(this, "role_shown", true); //important! to notify client
 
@@ -1714,7 +1714,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             }
 
             if (generalName != nullptr) {
-                room->touhouLogmessage("#ShowHiddenGeneral", this, generalName);
+                room->sendLog("#ShowHiddenGeneral", this, generalName);
 
                 JsonArray arg;
                 arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;

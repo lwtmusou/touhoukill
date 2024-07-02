@@ -66,7 +66,7 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->sendLog("#TriggerSkill", invoke->invoker, objectName());
         if (triggerEvent == EventPhaseChanging)
             invoke->invoker->skip(Player::Discard);
         else if (triggerEvent == EventPhaseStart)
@@ -607,7 +607,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         room->doLightbox("$mengxianAnimate", 4000);
-        room->touhouLogmessage("#MengxianWake", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(invoke->invoker->getPile("jingjie").length()));
+        room->sendLog("#MengxianWake", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(invoke->invoker->getPile("jingjie").length()));
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->addPlayerMark(invoke->invoker, "mengxian");
         if (room->changeMaxHpForAwakenSkill(invoke->invoker) && invoke->invoker->getMark("mengxian") > 0) {
@@ -731,7 +731,7 @@ public:
 
         if (c != nullptr) {
             room->obtainCard(user, c, true);
-            room->touhouLogmessage("#weiya", user, objectName(), QList<ServerPlayer *>(), card->objectName());
+            room->sendLog("#weiya", user, objectName(), QList<ServerPlayer *>(), card->objectName());
 
             return true;
         }
@@ -876,7 +876,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *toyo = invoke->invoker;
-        room->touhouLogmessage("#YueshiWake", toyo, "yueshi");
+        room->sendLog("#YueshiWake", toyo, "yueshi");
         room->doLightbox("$yueshiAnimate", 4000);
         room->notifySkillInvoked(toyo, objectName());
         return room->changeMaxHpForAwakenSkill(invoke->invoker, -1);
@@ -975,7 +975,7 @@ public:
             return false;
 
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        room->sendLog("#InvokeSkill", invoke->invoker, objectName());
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
 
         const Skill *skill = Sanguosha->getSkill(skill_name);
@@ -1221,7 +1221,7 @@ void ZhuonongCard::onEffect(const CardEffectStruct &effect) const
     QString logtype = (choice == "rd") ? "#zhuonong_rd" : "#zhuonong_dr";
     QList<ServerPlayer *> logto;
     logto << effect.to;
-    room->touhouLogmessage(logtype, effect.from, "zhuonong", logto, QString::number(1));
+    room->sendLog(logtype, effect.from, "zhuonong", logto, QString::number(1));
     if (choice == "rd" && effect.to->isWounded())
         room->recover(effect.to, recover);
     room->damage(damage);
@@ -1519,7 +1519,7 @@ void YushouCard::onUse(Room *room, const CardUseStruct &card_use) const
     ServerPlayer *to2 = card_use.to.at(1);
     QList<ServerPlayer *> logto;
     logto << to1 << to2;
-    room->touhouLogmessage("#ChoosePlayerWithSkill", from, "yushou", logto, "");
+    room->sendLog("#ChoosePlayerWithSkill", from, "yushou", logto, "");
     room->notifySkillInvoked(card_use.from, "yushou");
     QList<int> disable;
 
@@ -1703,8 +1703,8 @@ public:
         logto << invoke->invoker;
         QList<ServerPlayer *> logto1;
         logto1 << invoke->targets;
-        room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), logto);
-        room->touhouLogmessage("#huzhu_change", use.from, use.card->objectName(), logto1);
+        room->sendLog("$CancelTarget", use.from, use.card->objectName(), logto);
+        room->sendLog("#huzhu_change", use.from, use.card->objectName(), logto1);
 
         return false;
     }
@@ -1810,7 +1810,7 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), use.from->objectName());
         QList<ServerPlayer *> logto;
         logto << invoke->invoker;
-        room->touhouLogmessage("#xunshi", use.from, use.card->objectName(), logto, objectName());
+        room->sendLog("#xunshi", use.from, use.card->objectName(), logto, objectName());
 
         //wtf!?  this flag can not detected in sgs.ai_choicemade_filter.cardChosen.snatch
         // Fs: so delete this
@@ -1976,7 +1976,7 @@ public:
                 move.to_place = Player::PlaceHand;
                 move.to = invoke->invoker;
                 room->moveCardsAtomic(move, false);
-                room->touhouLogmessage("#zhangmu_return", invoke->invoker, "zhang", QList<ServerPlayer *>(), QString::number(move.card_ids.length()));
+                room->sendLog("#zhangmu_return", invoke->invoker, "zhang", QList<ServerPlayer *>(), QString::number(move.card_ids.length()));
             } else {
                 DummyCard dummy;
                 dummy.addSubcards(invoke->invoker->getPile("zhang"));

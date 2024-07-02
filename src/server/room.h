@@ -119,6 +119,8 @@ public:
     void provide(const Card *card, ServerPlayer *who = nullptr);
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
+    void sendLog(const QString &logtype, ServerPlayer *logfrom, const QString &logarg = QString(), const QList<ServerPlayer *> &logto = QList<ServerPlayer *>(),
+                 const QString &logarg2 = QString());
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = nullptr);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = nullptr);
     void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, const QString &skill_name, bool exchange = false);
@@ -292,8 +294,6 @@ public:
 
     void sortByActionOrder(QList<ServerPlayer *> &players);
     void defaultHeroSkin();
-    void touhouLogmessage(const QString &logtype, ServerPlayer *logfrom, const QString &logarg = QString(), const QList<ServerPlayer *> &logto = QList<ServerPlayer *>(),
-                          const QString &logarg2 = QString());
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
 

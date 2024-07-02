@@ -246,7 +246,7 @@ public:
         }
         if (!ids.isEmpty()) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
-            room->touhouLogmessage("#Gun", invoke->invoker, objectName(), QList<ServerPlayer *>() << target);
+            room->sendLog("#Gun", invoke->invoker, objectName(), QList<ServerPlayer *>() << target);
             room->setEmotion(invoke->invoker, "weapon/gun");
             target->addBrokenEquips(ids);
         }

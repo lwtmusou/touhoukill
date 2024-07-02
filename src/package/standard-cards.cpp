@@ -1152,7 +1152,7 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &use) const
     foreach (ServerPlayer *p, room->getAllPlayers()) {
         if (p->hasSkill("shouhuo") && p->hasShownSkill("shouhuo")) {
             room->notifySkillInvoked(p, "shouhuo");
-            room->touhouLogmessage("#TriggerSkill", p, "shouhuo");
+            room->sendLog("#TriggerSkill", p, "shouhuo");
             count++;
         }
     }
@@ -2142,7 +2142,7 @@ void LureTiger::onEffect(const CardEffectStruct &effect) const
     if (effect.to->isDead())
         return;
     Room *room = effect.to->getRoom();
-    room->touhouLogmessage("#Shenyin1", effect.to, objectName(), QList<ServerPlayer *>());
+    room->sendLog("#Shenyin1", effect.to, objectName(), QList<ServerPlayer *>());
 
     room->setPlayerCardLimitation(effect.to, "use", ".", "lure_tiger", true);
     room->setPlayerProperty(effect.to, "removed", true);
@@ -2166,7 +2166,7 @@ public:
         if (change.to == Player::NotActive) {
             foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                 if (p->isRemoved()) {
-                    room->touhouLogmessage("#Shenyin2", p, objectName(), QList<ServerPlayer *>());
+                    room->sendLog("#Shenyin2", p, objectName(), QList<ServerPlayer *>());
                     room->setPlayerProperty(p, "removed", false);
                     room->removePlayerCardLimitation(p, "use", ".$1", "lure_tiger");
                 }
@@ -2391,7 +2391,7 @@ void KnownBoth::use(Room *room, const CardUseStruct &card_use) const
     room->removeTag("targets" + this->toString());
 
     if (source != nullptr && source->isAlive() && source->isCurrent()) {
-        room->touhouLogmessage("#KnownBothLimit", source);
+        room->sendLog("#KnownBothLimit", source);
         room->setTag("KnownBothUsed", true);
         foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
             if (p->getMark("KnownBoth_Limit") == 0) {
@@ -2542,7 +2542,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *target = invoke->targets.first();
-        room->touhouLogmessage("#DeathSickle", target, QString::number(target->dyingThreshold() + 1), QList<ServerPlayer *>(), QString::number(1));
+        room->sendLog("#DeathSickle", target, QString::number(target->dyingThreshold() + 1), QList<ServerPlayer *>(), QString::number(1));
         QStringList death = target->property("DeathSickle").toStringList();
         if (!death.contains(use.card->toString())) {
             death << use.card->toString();

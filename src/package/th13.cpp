@@ -42,7 +42,7 @@ public:
     {
         room->addPlayerMark(invoke->invoker, objectName());
         room->doLightbox("$shenggeAnimate", 4000);
-        room->touhouLogmessage("#ShenggeWake", invoke->invoker, objectName());
+        room->sendLog("#ShenggeWake", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         if (room->changeMaxHpForAwakenSkill(invoke->invoker))
             invoke->invoker->drawCards(3);
@@ -476,7 +476,7 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
     tanuki->tag["xihua_id"] = QVariant::fromValue(to_show);
     if (!success) {
         room->throwCard(to_show, tanuki);
-        room->touhouLogmessage("#Xihua_failed", tanuki, "xihua", QList<ServerPlayer *>(), xihuacard->objectName());
+        room->sendLog("#Xihua_failed", tanuki, "xihua", QList<ServerPlayer *>(), xihuacard->objectName());
     }
     return success;
 }
@@ -1540,7 +1540,7 @@ void BumingCard::use(Room *room, const CardUseStruct &card_use) const
         new_use.card = slash;
     else if (choice == "duel_buming")
         new_use.card = duel;
-    room->touhouLogmessage("#buming_choose", target, new_use.card->objectName());
+    room->sendLog("#buming_choose", target, new_use.card->objectName());
     new_use.to << target;
     new_use.from = source;
     room->useCard(new_use, false);

@@ -22,7 +22,7 @@ public:
         Room *room = player->getRoom();
         int hc_num = player->getHandcardNum();
         if (card_num != hc_num) {
-            room->touhouLogmessage("#TriggerSkill", player, reason);
+            room->sendLog("#TriggerSkill", player, reason);
             room->notifySkillInvoked(player, reason);
         }
         if (card_num > hc_num)
@@ -68,7 +68,7 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::Discard) {
-                room->touhouLogmessage("#TriggerSkill", invoke->invoker, "yongheng");
+                room->sendLog("#TriggerSkill", invoke->invoker, "yongheng");
                 room->notifySkillInvoked(invoke->invoker, objectName());
                 invoke->invoker->skip(change.to);
                 adjustHandcardNum(invoke->invoker, 4, "yongheng");
@@ -516,7 +516,7 @@ public:
             use.from->tag["xushi_use"] = data;
             ServerPlayer *newTarget = room->askForPlayerChosen(use.from, targets, objectName(), "@xushi_newTarget:" + use.card->objectName());
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), newTarget->objectName());
-            room->touhouLogmessage("#xushi_newTarget", use.from, use.card->objectName(), QList<ServerPlayer *>() << newTarget);
+            room->sendLog("#xushi_newTarget", use.from, use.card->objectName(), QList<ServerPlayer *>() << newTarget);
 
             use.to.clear();
             use.to << newTarget;
@@ -999,7 +999,7 @@ public:
         if (e == DamageCaused)
             damage.damage = damage.damage + 1;
 
-        room->touhouLogmessage("#laolong_damage", damage.to, QString::number(damage.damage), QList<ServerPlayer *>(), QString::number(record));
+        room->sendLog("#laolong_damage", damage.to, QString::number(damage.damage), QList<ServerPlayer *>(), QString::number(record));
         data = QVariant::fromValue(damage);
         if (damage.damage == 0)
             return true;
@@ -1498,7 +1498,7 @@ const Card *HuweiCard::validate(CardUseStruct &cardUse) const
 {
     cardUse.from->showHiddenSkill("huwei");
     Room *room = cardUse.from->getRoom();
-    room->touhouLogmessage("#InvokeSkill", cardUse.from, "huwei");
+    room->sendLog("#InvokeSkill", cardUse.from, "huwei");
     room->notifySkillInvoked(cardUse.from, "huwei");
     cardUse.from->drawCards(2);
     room->setPlayerFlag(cardUse.from, "Global_huweiFailed");
@@ -1701,11 +1701,11 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *player = invoke->targets.first();
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->sendLog("#TriggerSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), player->objectName());
 
-        room->touhouLogmessage("#yemangRange", player, "yemang");
+        room->sendLog("#yemangRange", player, "yemang");
         room->setPlayerMark(player, "yemang", player->getMark("yemang") + 1);
         return false;
     }
@@ -1781,7 +1781,7 @@ void MingmuCard::use(Room *room, const CardUseStruct &card_use) const
             if (!option.contains("cancel"))
                 option << "cancel";
             room->setPlayerMark(source, "mingmu", source->getMark("mingmu") + 1);
-            room->touhouLogmessage("#mingmuRange", source, "mingmu");
+            room->sendLog("#mingmuRange", source, "mingmu");
         } else if (choice == "cancel")
             break;
 

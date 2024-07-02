@@ -285,7 +285,7 @@ public:
             damage.from = nullptr;
             damage.by_user = false;
 
-            room->touhouLogmessage("#TriggerSkill", invoke->invoker, "wunian");
+            room->sendLog("#TriggerSkill", invoke->invoker, "wunian");
             room->notifySkillInvoked(invoke->invoker, objectName());
             data = QVariant::fromValue(damage);
         } else if (e == TargetConfirming) {
@@ -409,10 +409,10 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *player = invoke->invoker;
-        room->touhouLogmessage("#TriggerSkill", player, "here");
+        room->sendLog("#TriggerSkill", player, "here");
         room->notifySkillInvoked(player, objectName());
         if (use.from != nullptr)
-            room->touhouLogmessage("#HereFilter", use.from, "here");
+            room->sendLog("#HereFilter", use.from, "here");
 
         FireSlash *new_slash = new FireSlash(use.card->getSuit(), use.card->getNumber());
         if (use.card->getSubcards().length() > 0)
@@ -694,10 +694,10 @@ public:
         } else if (e == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.from != nullptr) {
-                room->touhouLogmessage("#TouhouBuff", damage.from, objectName());
+                room->sendLog("#TouhouBuff", damage.from, objectName());
                 QList<ServerPlayer *> logto;
                 logto << damage.to;
-                room->touhouLogmessage("#jidu_damage", damage.from, QString::number(damage.damage + 1), logto, QString::number(damage.damage));
+                room->sendLog("#jidu_damage", damage.from, QString::number(damage.damage + 1), logto, QString::number(damage.damage));
             }
             damage.damage = damage.damage + 1;
             data = QVariant::fromValue(damage);
@@ -1085,7 +1085,7 @@ public:
         Room *room = player->getRoom();
         QString choice = room->askForChoice(player, "cuiji_suit", "red+black");
         bool isred = (choice == "red");
-        room->touhouLogmessage("#cuiji_choice", player, "cuiji", QList<ServerPlayer *>(), choice);
+        room->sendLog("#cuiji_choice", player, "cuiji", QList<ServerPlayer *>(), choice);
         room->notifySkillInvoked(player, "cuiji");
         int acquired = 0;
         QList<int> throwIds;

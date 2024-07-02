@@ -282,7 +282,7 @@ public:
     {
         if (!invoke->targets.first()->isRemoved()) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-            room->touhouLogmessage("#Shenyin1", invoke->targets.first(), objectName(), QList<ServerPlayer *>());
+            room->sendLog("#Shenyin1", invoke->targets.first(), objectName(), QList<ServerPlayer *>());
             room->setPlayerCardLimitation(invoke->targets.first(), "use", ".", "lure_tiger", true);
             room->setPlayerProperty(invoke->targets.first(), "removed", true);
         }
@@ -560,7 +560,7 @@ public:
         ServerPlayer *yukari = invoke->invoker;
         ServerPlayer *who = data.value<DyingStruct>().who;
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yukari->objectName(), who->objectName());
-        room->touhouLogmessage("#ChoosePlayerWithSkill", yukari, objectName(), QList<ServerPlayer *>() << who);
+        room->sendLog("#ChoosePlayerWithSkill", yukari, objectName(), QList<ServerPlayer *>() << who);
 
         int id2 = 0;
         if (yukari == who) {
@@ -618,7 +618,7 @@ public:
         const Card *c = room->askForCard(yukari, "@@jingdong", prompt, QVariant::fromValue(player), Card::MethodNone, nullptr, false, "jingdong");
         if (c != nullptr) {
             room->notifySkillInvoked(invoke->invoker, objectName());
-            room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+            room->sendLog("#InvokeSkill", invoke->invoker, objectName());
             CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", nullptr, objectName(), "");
             room->throwCard(c, reason, nullptr);
 
@@ -1510,7 +1510,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *player = invoke->invoker;
-        room->touhouLogmessage("#TriggerSkill", player, objectName());
+        room->sendLog("#TriggerSkill", player, objectName());
         room->notifySkillInvoked(player, objectName());
         player->turnOver();
         return false;
@@ -1578,9 +1578,9 @@ public:
         room->notifySkillInvoked(player, objectName());
 
         room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 1);
-        room->touhouLogmessage("#TriggerSkill", player, objectName());
-        room->touhouLogmessage("#GainMaxHp", player, QString::number(1));
-        room->touhouLogmessage("#GetHp", player, QString::number(player->getHp()), QList<ServerPlayer *>(), QString::number(player->getMaxHp()));
+        room->sendLog("#TriggerSkill", player, objectName());
+        room->sendLog("#GainMaxHp", player, QString::number(1));
+        room->sendLog("#GetHp", player, QString::number(player->getHp()), QList<ServerPlayer *>(), QString::number(player->getMaxHp()));
         return false;
     }
 };
@@ -1626,7 +1626,7 @@ public:
         use.nullified_list << invoke->targets.first()->objectName();
         data = QVariant::fromValue(use);
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        room->touhouLogmessage("#zhancaoTarget", invoke->invoker, objectName(), QList<ServerPlayer *>() << invoke->targets.first());
+        room->sendLog("#zhancaoTarget", invoke->invoker, objectName(), QList<ServerPlayer *>() << invoke->targets.first());
 
         return false;
     }
@@ -1714,7 +1714,7 @@ public:
     {
         ServerPlayer *player = invoke->invoker;
         room->notifySkillInvoked(player, objectName());
-        room->touhouLogmessage("#TriggerSkill", player, objectName());
+        room->sendLog("#TriggerSkill", player, objectName());
 
         int i = invoke->tag.value("i").toInt();
         if (i == 1)

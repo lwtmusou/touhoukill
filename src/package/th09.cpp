@@ -261,7 +261,7 @@ public:
                     if ((use.card->getSkillName() == objectName())) {
                         QList<ServerPlayer *> logto;
                         logto << p;
-                        room->touhouLogmessage("#InvokeOthersSkill", use.from, objectName(), logto);
+                        room->sendLog("#InvokeOthersSkill", use.from, objectName(), logto);
                         room->notifySkillInvoked(p, objectName());
                     }
                 }
@@ -527,7 +527,7 @@ public:
 
         QList<ServerPlayer *> logto;
         logto << damage.to;
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName(), logto);
+        room->sendLog("#TriggerSkill", invoke->invoker, objectName(), logto);
         room->notifySkillInvoked(invoke->invoker, objectName());
         damage.damage = damage.damage + 2;
         data = QVariant::fromValue(damage);
@@ -573,10 +573,10 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Nullification")) {
                 room->notifySkillInvoked(current, objectName());
-                room->touhouLogmessage("#weiya_ask", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
+                room->sendLog("#weiya_ask", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
                 if (room->askForCard(use.from, "nullification", "@weiya:nullification", data) != nullptr)
                     return false;
-                room->touhouLogmessage("#weiya", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
+                room->sendLog("#weiya", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
                 room->setPlayerFlag(use.from, "nullifiationNul");
             } else if (use.card->isKindOf("BasicCard")) {
                 weiya_pattern = use.card->objectName();
@@ -589,10 +589,10 @@ public:
                 else if (use.card->isKindOf("Peach"))
                     weiya_pattern = "peach";
                 room->notifySkillInvoked(current, objectName());
-                room->touhouLogmessage("#weiya_ask", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
+                room->sendLog("#weiya_ask", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
                 if (room->askForCard(use.from, weiya_pattern, "@weiya:" + use.card->objectName(), data) != nullptr)
                     return false;
-                room->touhouLogmessage("#weiya", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
+                room->sendLog("#weiya", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
                 use.nullified_list << "_ALL_TARGETS";
                 data = QVariant::fromValue(use);
             }
@@ -609,10 +609,10 @@ public:
             else if (card_star->isKindOf("Peach"))
                 weiya_pattern = "peach";
             room->notifySkillInvoked(current, objectName());
-            room->touhouLogmessage("#weiya_ask", resp.m_from, objectName(), QList<ServerPlayer *>(), card_star->objectName());
+            room->sendLog("#weiya_ask", resp.m_from, objectName(), QList<ServerPlayer *>(), card_star->objectName());
             if (room->askForCard(resp.m_from, weiya_pattern, "@weiya:" + card_star->objectName(), data) != nullptr)
                 return false;
-            room->touhouLogmessage("#weiya", resp.m_from, objectName(), QList<ServerPlayer *>(), card_star->objectName());
+            room->sendLog("#weiya", resp.m_from, objectName(), QList<ServerPlayer *>(), card_star->objectName());
             resp.m_isNullified = true;
             data = QVariant::fromValue(resp);
         }
@@ -811,7 +811,7 @@ public:
             room->useCard(carduse);
         } else if (triggerEvent == DamageCaused) { //need not check weather damage.from has this skill
             DamageStruct damage = data.value<DamageStruct>();
-            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+            room->sendLog("#TriggerSkill", invoke->invoker, objectName());
             room->notifySkillInvoked(invoke->invoker, objectName());
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.from->objectName(), damage.to->objectName());
             RecoverStruct recov;
@@ -1325,7 +1325,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        room->touhouLogmessage("#leiyu", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
+        room->sendLog("#leiyu", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->drawCards(invoke->invoker, 2, objectName());
         return true;
@@ -1823,7 +1823,7 @@ public:
             room->notifySkillInvoked(lord, objectName());
             QList<ServerPlayer *> logto;
             logto << lord;
-            room->touhouLogmessage("#InvokeOthersSkill", current, objectName(), logto);
+            room->sendLog("#InvokeOthersSkill", current, objectName(), logto);
 
             current->tag["xiwang_id"] = QVariant::fromValue(card->getEffectiveId());
             return true;
@@ -2280,7 +2280,7 @@ public:
     {
         ServerPlayer *player = invoke->invoker;
         room->notifySkillInvoked(player, objectName());
-        room->touhouLogmessage("#TriggerSkill", player, objectName());
+        room->sendLog("#TriggerSkill", player, objectName());
         CardUseStruct use = data.value<CardUseStruct>();
         use.from->tag["yishen_target"] = QVariant::fromValue(player);
         QString prompt = "@yishen-discard:" + player->objectName() + ":" + use.card->objectName();

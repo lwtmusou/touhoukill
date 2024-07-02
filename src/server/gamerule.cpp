@@ -610,7 +610,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (effect.to->isAlive() || effect.card->isKindOf("Slash")) {
                 //do chunhua effect
                 if (effect.card->hasFlag("chunhua") && !effect.card->isKindOf("Slash")) {
-                    room->touhouLogmessage("#Chunhua", effect.to, effect.card->objectName());
+                    room->sendLog("#Chunhua", effect.to, effect.card->objectName());
                     if (effect.card->hasFlag("chunhua_black")) {
                         DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.first(), DamageStruct::Normal);
                         room->damage(d);
@@ -858,7 +858,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         //do chunhua effect
         if (effect.slash->hasFlag("chunhua")) {
-            room->touhouLogmessage("#Chunhua", effect.to, effect.slash->objectName());
+            room->sendLog("#Chunhua", effect.to, effect.slash->objectName());
             effect.nature = DamageStruct::Normal;
             if (effect.slash->hasFlag("chunhua_red")) {
                 RecoverStruct recover;
@@ -1007,7 +1007,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (room->getMode() == "04_2v2") {
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 if (death.who->getRole() == p->getRole()) {
-                    room->touhouLogmessage("#contest2v2Buff", p);
+                    room->sendLog("#contest2v2Buff", p);
                     p->drawCards(1);
                 }
             }

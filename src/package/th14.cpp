@@ -49,7 +49,7 @@ public:
             room->setPlayerFlag(player, objectName());
         } else if (player->getPhase() == Player::Discard) {
             room->setPlayerFlag(player, "-" + objectName());
-            room->touhouLogmessage("#BaochuiBuff", player, objectName(), QList<ServerPlayer *>(), objectName());
+            room->sendLog("#BaochuiBuff", player, objectName(), QList<ServerPlayer *>(), objectName());
             room->loseHp(player, 1);
         }
         return false;
@@ -83,7 +83,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->sendLog("#TriggerSkill", invoke->invoker, objectName());
         use.nullified_list << invoke->invoker->objectName();
         data = QVariant::fromValue(use);
         return false;

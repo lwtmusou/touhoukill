@@ -184,7 +184,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         if (room->askForSkillInvoke(invoke->targets.first(), "houguanghide", "hide")) {
-            room->touhouLogmessage("#Shenyin1", invoke->targets.first(), objectName(), QList<ServerPlayer *>());
+            room->sendLog("#Shenyin1", invoke->targets.first(), objectName(), QList<ServerPlayer *>());
 
             room->setPlayerCardLimitation(invoke->targets.first(), "use", ".", "lure_tiger", true);
             room->setPlayerProperty(invoke->targets.first(), "removed", true);
@@ -278,7 +278,7 @@ public:
                 break;
             }
         }
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->sendLog("#TriggerSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         ServerPlayer *next = invoke->tag["door"].value<ServerPlayer *>();
         if (next != nullptr)
@@ -344,7 +344,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             QList<ServerPlayer *> logto;
             logto << invoke->targets.first();
-            room->touhouLogmessage("#houhu", invoke->invoker, use.card->objectName(), logto, objectName());
+            room->sendLog("#houhu", invoke->invoker, use.card->objectName(), logto, objectName());
 
             use.to << invoke->targets.first();
             room->sortByActionOrder(use.to);
@@ -1225,7 +1225,7 @@ public:
         data = QVariant::fromValue<CardUseStruct>(use);
 
         //log notice
-        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        room->sendLog("#InvokeSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
 
         foreach (ServerPlayer *p, invoke->targets)

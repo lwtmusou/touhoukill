@@ -290,7 +290,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
     {
         ServerPlayer *fldl = data.value<ServerPlayer *>();
-        room->touhouLogmessage("#TriggerSkill", fldl, objectName());
+        room->sendLog("#TriggerSkill", fldl, objectName());
         room->notifySkillInvoked(fldl, objectName());
         room->broadcastSkillInvoke(objectName());
 
@@ -388,7 +388,7 @@ public:
         if (damage.from != nullptr) {
             QList<ServerPlayer *> logto;
             logto << damage.to;
-            room->touhouLogmessage("#yuxue_damage", damage.from, "yuxue", logto);
+            room->sendLog("#yuxue_damage", damage.from, "yuxue", logto);
         }
         data = QVariant::fromValue(damage);
         return false;
@@ -575,7 +575,7 @@ public:
                 moves << move;
                 QList<ServerPlayer *> logto;
                 logto << liege;
-                room->touhouLogmessage("#suoding_Trigger", invoke->invoker, objectName(), logto, QString::number(move.card_ids.length()));
+                room->sendLog("#suoding_Trigger", invoke->invoker, objectName(), logto, QString::number(move.card_ids.length()));
             }
         }
 
@@ -1393,7 +1393,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        room->touhouLogmessage("#bingpolog", invoke->invoker, "bingpo", QList<ServerPlayer *>(), QString::number(damage.damage));
+        room->sendLog("#bingpolog", invoke->invoker, "bingpo", QList<ServerPlayer *>(), QString::number(damage.damage));
         room->notifySkillInvoked(invoke->invoker, objectName());
         return true;
     }
@@ -1665,7 +1665,7 @@ public:
             Card::Suit suit = room->askForSuit(invoke->invoker, objectName());
             invoke->invoker->tag.remove("juxian_cards");
 
-            room->touhouLogmessage("#ChooseSuit", invoke->invoker, Card::Suit2String(suit));
+            room->sendLog("#ChooseSuit", invoke->invoker, Card::Suit2String(suit));
 
             QList<int> get;
             QList<int> thro;
@@ -2095,10 +2095,10 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->sendLog("#TriggerSkill", invoke->invoker, objectName());
         if (triggerEvent == PreHpRecover) {
             RecoverStruct r = data.value<RecoverStruct>();
-            room->touhouLogmessage("#shixue1", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(r.recover));
+            room->sendLog("#shixue1", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(r.recover));
             invoke->invoker->drawCards(2);
             return true;
         }
@@ -2138,7 +2138,7 @@ public:
     {
         room->addPlayerMark(invoke->invoker, objectName());
         room->doLightbox("$ziyeAnimate", 4000);
-        room->touhouLogmessage("#ZiyeWake", invoke->invoker, objectName());
+        room->sendLog("#ZiyeWake", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         if (room->changeMaxHpForAwakenSkill(invoke->invoker))
             room->handleAcquireDetachSkills(invoke->invoker, "anyue");
