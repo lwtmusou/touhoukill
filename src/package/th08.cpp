@@ -1489,56 +1489,32 @@ public:
     }
 };
 
-HuweiCard::HuweiCard()
-{
-    target_fixed = true;
-}
-
-const Card *HuweiCard::validate(CardUseStruct &cardUse) const
-{
-    cardUse.from->showHiddenSkill("huwei");
-    Room *room = cardUse.from->getRoom();
-    room->sendLog("#InvokeSkill", cardUse.from, "huwei");
-    room->notifySkillInvoked(cardUse.from, "huwei");
-    cardUse.from->drawCards(2);
-    room->setPlayerFlag(cardUse.from, "Global_huweiFailed");
-    return nullptr;
-}
-
-class HuweiVS : public ZeroCardViewAsSkill
+class HuweiRecord : public TriggerSkill
 {
 public:
-    HuweiVS()
-        : ZeroCardViewAsSkill("huwei")
+    HuweiRecord()
+        : TriggerSkill("#huwei")
     {
+        events = {DamageDone, EventPhaseChanging};
+        global = true;
     }
 
-    const Card *viewAs() const override
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        return new HuweiCard;
-    }
-
-    bool isEnabledAtPlay(const Player *) const override
-    {
-        return false;
-    }
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
-    {
-        Slash *card = new Slash(Card::SuitToBeDecided, -1);
-        DELETE_OVER_SCOPE(Slash, card)
-        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
-
-        if ((!player->hasFlag("Global_huweiFailed") && (cardPattern != nullptr && cardPattern->match(player, card))
-             && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)) {
-            if (player->isCardLimited(card, Card::MethodUse))
-                return false;
-            //check available target
-            foreach (const Player *p, player->getAliveSiblings()) {
-                if (card->targetFilter(QList<const Player *>(), p, player))
-                    return true;
+        if (triggerEvent == DamageDone) {
+            DamageStruct bigHorseBrother = data.value<DamageStruct>();
+            if (bigHorseBrother.from != nullptr && bigHorseBrother.card != nullptr && bigHorseBrother.card->isKindOf("Slash")) {
+                QSet<QString> l = bigHorseBrother.to->tag.value("huwei", QStringList()).toStringList().toSet();
+                l << bigHorseBrother.from->objectName();
+                bigHorseBrother.to->tag["huwei"] = QStringList(l.toList());
+            }
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::Play) {
+                foreach (ServerPlayer *p, room->getAllPlayers())
+                    p->tag.remove("huwei");
             }
         }
-        return false;
     }
 };
 
@@ -1548,73 +1524,127 @@ public:
     Huwei()
         : TriggerSkill("huwei")
     {
-        events << CardAsked << CardUsed << CardsMoveOneTime << CardResponded;
-        view_as_skill = new HuweiVS;
+        events = {TargetSpecifying, EventPhaseEnd};
     }
 
-    bool canPreshow() const override
-    {
-        return true;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> d;
-        if (triggerEvent == CardAsked) {
-            CardAskedStruct s = data.value<CardAskedStruct>();
-            const CardPattern *cardPattern = Sanguosha->getPattern(s.pattern);
-
-            Slash *tmpslash = new Slash(Card::NoSuit, 0);
-            tmpslash->deleteLater();
-
-            if (cardPattern != nullptr && cardPattern->match(s.player, tmpslash) && s.player->hasSkill(this) && s.player->getPhase() != Player::Play) {
-                if (!s.player->isCardLimited(tmpslash, s.method))
-                    d << SkillInvokeDetail(this, s.player, s.player);
-            }
-        } else if (triggerEvent == CardUsed) {
+        if (triggerEvent == TargetSpecifying) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash") && use.from->hasSkill(this) && use.from->getPhase() != Player::Play)
-                d << SkillInvokeDetail(this, use.from, use.from);
-        } else if (triggerEvent == CardResponded) {
-            CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (resp.m_card->isKindOf("Slash") && resp.m_from->hasSkill(this) && resp.m_from->getPhase() != Player::Play)
-                d << SkillInvokeDetail(this, resp.m_from, resp.m_from);
-        } else if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player != nullptr && player->isAlive() && player->hasSkill(this) && player->getPhase() != Player::Play
-                && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
-                foreach (int id, move.card_ids) {
-                    if (Sanguosha->getCard(id)->isKindOf("Slash"))
-                        d << SkillInvokeDetail(this, player, player);
+            if (use.from != nullptr && use.card->isKindOf("Slash")) {
+                foreach (ServerPlayer *mokou, room->getOtherPlayers(use.from)) {
+                    if (mokou->hasSkill(this) && !use.to.contains(mokou)) {
+                        foreach (ServerPlayer *to, use.to) {
+                            if (mokou->inMyAttackRange(to)) {
+                                d << SkillInvokeDetail(this, mokou, mokou);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (triggerEvent == EventPhaseEnd) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current->getPhase() == Player::Play && current->isAlive()) {
+                foreach (ServerPlayer *mokou, room->getOtherPlayers(current)) {
+                    if (mokou->hasSkill(this) && mokou->tag.value("huwei", QStringList()).toStringList().contains(current->objectName()) && !mokou->isKongcheng()) {
+                        Dismantlement *dis = new Dismantlement(Card::NoSuit, 0);
+                        DELETE_OVER_SCOPE(Dismantlement, dis)
+
+                        bool slashAvailable = mokou->canSlash(current, false);
+                        bool dismantlementAvailable = (dis->isAvailable(mokou) && !mokou->isProhibited(current, dis));
+
+                        if (slashAvailable || dismantlementAvailable) {
+                            SkillInvokeDetail s(this, mokou, mokou, current);
+                            s.tag["slashAvailable"] = slashAvailable;
+                            s.tag["dismantlementAvailable"] = dismantlementAvailable;
+                            d << s;
+                        }
+                    }
                 }
             }
         }
-
         return d;
     }
 
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        if (triggerEvent == CardAsked) {
-            return room->askForSkillInvoke(invoke->invoker, objectName(), data);
-        } else {
-            // how to notice player the remain times?
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@huwei_targetdraw", true, true);
+        ServerPlayer *mokou = invoke->invoker;
+        if (triggerEvent == TargetSpecifying) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            QList<ServerPlayer *> targets;
+            foreach (ServerPlayer *to, use.to) {
+                if (mokou->inMyAttackRange(to))
+                    targets << to;
+            }
+            ServerPlayer *target = room->askForPlayerChosen(mokou, targets, objectName(), "@huwei-redirect:" + use.from->objectName(), true, true);
             if (target != nullptr) {
                 invoke->targets << target;
                 return true;
             }
+        } else if (triggerEvent == EventPhaseEnd) {
+            bool slashAvailable = invoke->tag.value("slashAvailable", false).toBool();
+            bool dismantlementAvailable = invoke->tag.value("dismantlementAvailable", false).toBool();
+
+            QStringList prompt = {
+                QString(), invoke->targets.first()->objectName(), QString(), QString(), QString(),
+            };
+
+            if (slashAvailable && dismantlementAvailable) {
+                prompt[0] = "@huwei-discard2";
+            } else {
+                prompt[0] = "@huwei-discard1";
+                if (slashAvailable) {
+                    prompt[3] = "slash";
+                    prompt[4] = "dismantlement";
+                } else {
+                    prompt[3] = "dismantlement";
+                    prompt[4] = "slash";
+                }
+            }
+
+            return room->askForCard(invoke->invoker, ".", prompt.join(":"), QVariant(), Card::MethodDiscard, nullptr, false, objectName());
         }
+
         return false;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        if (triggerEvent == CardAsked)
-            invoke->invoker->drawCards(2);
-        else
-            invoke->targets.first()->drawCards(2);
+        if (triggerEvent == TargetSpecifying) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.to.removeAll(invoke->targets.first());
+            use.to << invoke->invoker;
+            room->sortByActionOrder(use.to);
+            data = QVariant::fromValue(use);
+
+            LogMessage l;
+            l.type = "$CancelTarget";
+            l.from = use.from;
+            l.to = {invoke->targets.first()};
+            l.arg = use.card->objectName();
+            room->sendLog(l);
+            l.type = "#huzhu_change";
+            l.to = {invoke->invoker};
+            room->sendLog(l);
+        } else if (triggerEvent == EventPhaseEnd) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            bool slashAvailable = invoke->tag.value("slashAvailable", false).toBool();
+            bool dismantlementAvailable = invoke->tag.value("dismantlementAvailable", false).toBool();
+
+            QString className = "slash";
+            if (!slashAvailable)
+                className = "dismantlement";
+            else if (dismantlementAvailable)
+                className = room->askForChoice(invoke->invoker, objectName(), "slash+dismantlement", data);
+
+            Card *c = Sanguosha->cloneCard(className);
+            c->setSkillName(objectName());
+            CardUseStruct use(c, invoke->invoker, {current});
+            room->useCard(use, false);
+        }
+
         return false;
     }
 };
@@ -1921,6 +1951,8 @@ TH08Package::TH08Package()
 
     General *mokou_sp = new General(this, "mokou_sp", "yyc", 4);
     mokou_sp->addSkill(new Huwei);
+    mokou_sp->addSkill(new HuweiRecord);
+    related_skills.insertMulti("huwei", "#huwei");
     mokou_sp->addSkill(new Jinxi);
 
     General *mystia_sp = new General(this, "mystia_sp", "yyc", 3);
@@ -1934,7 +1966,6 @@ TH08Package::TH08Package()
     addMetaObject<YegeCard>();
     addMetaObject<YinghuoCard>();
     addMetaObject<ChuangshiCard>();
-    addMetaObject<HuweiCard>();
     addMetaObject<JinxiCard>();
     addMetaObject<MingmuCard>();
 

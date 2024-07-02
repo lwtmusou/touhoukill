@@ -161,6 +161,7 @@ public:
                 CardUseStruct use = data.value<CardUseStruct>();
                 use.to.clear();
                 use.to << p;
+                room->sortByActionOrder(use.to);
                 data = QVariant::fromValue(use);
 
                 LogMessage l;

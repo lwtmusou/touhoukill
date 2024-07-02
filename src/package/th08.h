@@ -85,16 +85,6 @@ public:
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
-class HuweiCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE HuweiCard();
-
-    const Card *validate(CardUseStruct &card_use) const override;
-};
-
 class JinxiCard : public SkillCard
 {
     Q_OBJECT
