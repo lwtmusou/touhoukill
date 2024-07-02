@@ -6073,7 +6073,7 @@ ServerPlayer *Room::getLord(const QString &, bool) const
     return nullptr;
 }
 
-void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type, QString skillName)
+void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type, const QString &skillName)
 {
     // ATTENTION: DO REMOVE THE CARD FROM getDrawPile (But keep their place in DrawPile, via getNCards or something) BEFORE USING THIS FUNCTION!
     // Else duplicated card ids will appear in the bottom of draw pile, which will cause card stuck when accessed, and (maybe other) subsequent Client / Server misbehave

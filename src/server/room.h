@@ -110,7 +110,7 @@ public:
     QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
     void returnToDrawPile(const QList<int> &cards, bool bottom = false);
     ServerPlayer *getLord(const QString &kingdom = "wei", bool include_death = false) const;
-    void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, QString skillName = "");
+    void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, const QString &skillName = {});
     int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), QString skill_name = "gongxin", bool cancellable = true);
     int drawCard(bool bottom = false);
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = nullptr, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
@@ -119,8 +119,7 @@ public:
     void provide(const Card *card, ServerPlayer *who = nullptr);
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
-    void sendLog(const QString &logtype, ServerPlayer *logfrom, const QString &logarg = QString(), const QList<ServerPlayer *> &logto = QList<ServerPlayer *>(),
-                 const QString &logarg2 = QString());
+    void sendLog(const QString &logtype, ServerPlayer *logfrom, const QString &logarg = {}, const QList<ServerPlayer *> &logto = {}, const QString &logarg2 = {});
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = nullptr);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = nullptr);
     void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, const QString &skill_name, bool exchange = false);
