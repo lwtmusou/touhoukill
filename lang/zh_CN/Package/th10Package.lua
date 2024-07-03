@@ -21,17 +21,17 @@ return{
 	["origin:kanako_5"] = "p号：77299232；个人id：3718340",
 
 	["shende"] = "神德",
-	["~shende"] = "选择两张“神德” -> 确定",
-	["@shende-twoCards"] = "你可以发动“神德”，将两张“神德”当【桃】使用。",
-	[":shende"] = "当你使用或打出【杀】时，你可以摸一张牌，然后将一张手牌置于人物牌上，称为“神德”；你可以将两张“神德”当【桃】使用。",
-	["shendedummy"]= "神德",
+	[":shende"] = "当你使用或打出【杀】时，或于弃牌阶段弃置【杀】后，你可以摸一张牌，然后将一张手牌置于人物牌上，称为“神德”；你可以将两张“神德”当任意基本牌使用。",
 	["shende-exchange"] = "请将一张手牌作为“神德”置于人物牌上。",
 	["qiankun"] = "乾坤",
 	[":qiankun"] = "<font color=\"blue\"><b>锁定技，</b></font>你的手牌上限和攻击范围+1。",
 	["gongfeng"] = "供奉",
-	[":gongfeng"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他风势力角色的出牌阶段限一次，</b></font>其可以将一张【杀】交给你。",
+	[":gongfeng"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他风势力角色的出牌阶段限一次，</b></font>其可以将一张【杀】交给你，然后可以令你选择是否使用一张【杀】（计入其本回合的使用次数）。",
 	["gongfeng_attach"]= "供奉给杀",
-	[":gongfeng_attach"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>若你属于风势力，你可以将一张【杀】交给拥有主公技“供奉”的角色。",
+	[":gongfeng_attach"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>若你属于风势力，你可以将一张【杀】交给拥有主公技“供奉”的角色，然后可以令其选择是否使用一张【杀】（计入你本回合的使用次数）。",
+	["#gongfeng-addhistory"] = "%from 受“%arg2”的影响，使用【%arg】的次数 +1。",
+	["gongfeng_attach:tooTroublesome"] = "供奉你可以令 %src 选择是否使用一张【杀】（计入你的使用次数）",
+	["@gongfeng-slash"] = "供奉你可以使用一张【杀】（计入 %src 的使用次数）。",
 
 --************************************************
 	--fsl002  势力：风 3血
@@ -131,10 +131,9 @@ return{
 	["#nitori"] = "超妖怪弹头",
 	["designer:nitori"] = "星野梦美☆",
 
-	
 	["illustrator:nitori"] = "ZYANNA",
 	["origin:nitori"] = "p号：59280317",
-	
+
 	["illustrator:nitori_1"] = "しがらき",
 	["origin:nitori_1"] = "p号：18985064，个人id：1004274",
 	["illustrator:nitori_2"] = "bon",
@@ -176,7 +175,7 @@ return{
 	["origin:hina_5"] = "p号：41982562，个人id：260156",
 	["illustrator:hina_6"] = "遠坂あさぎ",
 	["origin:hina_6"] = "p号：25504583，个人id：3302692",
-	
+
 	["jie"] = "集厄",
 	[":jie"] = "当其他角色受到伤害时，你可以摸一张牌，将此伤害转移给你。",
 	["jie:transfer1"]= " <font color=\"#FF8000\"><b>%src </b></font> 将受到来自 <font color=\"#00FF00\"><b>%dest </b></font> 的%arg点伤害[%arg2]，你是否发动“集厄”。",
@@ -206,14 +205,12 @@ return{
 	["origin:sanae_sp_4"] = "p号：28943095，个人id：1593245",
 
 	["changshi"] = "常识",
-	--[":changshi"] = "<font color=\"#808080\"><b>永久技，</b></font>回合开始时，你令所有其他角色的技能于此回合内无效（除永久技外），将所有置于人物牌上、人物牌旁和移出游戏的游戏牌置入弃牌堆，弃所有标记。",
 	[":changshi"] = "回合开始时，你可以选择一至两项：1.令所有其他角色的技能于此回合内无效（除永久技外）；2.视为使用【联军盛宴】。",
 	["#changshi01"]= "%from 的 “%arg”被触发，所有其他角色的技能（除永久技外）于%from 的回合内无效。",
 	["@changshi"] = "常识",
 	["changshi:skillInvalid"] = "令所有其他角色的技能无效",
 	["changshi:debuff"] = "视为使用【联军盛宴】",
-	
-	
+
 	["jinian"] = "纪念",
 	[":jinian"] = "当你失去的最后的手牌置入弃牌堆后，你可以获得之。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	["#jinian_clear"] = "纪念(后续)",
@@ -225,7 +222,7 @@ return{
 
 	["illustrator:momizi"] = " 海緒ユカ",
 	["origin:momizi"] = "p号：36115216，个人id：179619",
-	
+
 	["illustrator:momizi_1"] = "みや",
 	["origin:momizi_1"] = "p号：16407016，个人id：41977",
 	["illustrator:momizi_2"] = "kirero",

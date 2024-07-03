@@ -371,7 +371,6 @@ public:
             if (c == nullptr)
                 room->setPlayerFlag(invoke->invoker, "-SlashRecorder_yuxueSlash");
             return c != nullptr;
-
         } else if (triggerEvent == ConfirmDamage)
             return true;
 
