@@ -6089,12 +6089,6 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         bottom_cards = cards;
     } else if (ai != nullptr) {
         ai->askForGuanxing(cards, top_cards, bottom_cards, (int)guanxing_type);
-
-        // I'm too lazy to deal with this AI so....
-        if (skillName == "fengshui") {
-            top_cards << bottom_cards;
-            bottom_cards = {top_cards.takeLast()};
-        }
     } else {
         JsonArray guanxingArgs;
         guanxingArgs << JsonUtils::toJsonArray(cards);
@@ -6118,6 +6112,12 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
                 top_cards.clear();
             }
         }
+    }
+
+    // I'm too lazy to deal with AI and trust mechanism so....
+    if (skillName == "fengshui" && top_cards.length() != 1) {
+        top_cards << bottom_cards;
+        bottom_cards = {top_cards.takeLast()};
     }
 
     bool length_equal = top_cards.length() + bottom_cards.length() == cards.length();

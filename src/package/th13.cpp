@@ -682,6 +682,14 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
+        // We don't need a way to get the card of top of draw pile and bottom of draw pile at same time
+        // Imagine: if there are more than 2 cards then getting it separately is already fine
+        // If there are 0 cards, the first getNCards will trigger reshuffle and it'll be same as the case of more than 2 cards.
+        // If there is only one card in the draw pile: the reshuffle process put the shuffled cards in the bottom of the draw pile
+        // Getting one card from each the top and bottom = first reshuffle (which do not change the card on the top), then getting a card from each the top and bottom
+        // Getting one card from top, then bottom = getting the only card, then reshuffle, then getting a card from bottom
+        // It seems to be same provided that the reshuffled cards are put to bottom of draw pile. The card got this way is always same
+
         QList<int> cards = room->getNCards(1, false, false) + room->getNCards(1, false, true);
 
         // Coupling askForGuanxing / Client GuanxingBox
