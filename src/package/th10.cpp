@@ -279,9 +279,9 @@ public:
             }
         } else if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card != nullptr && use.card->isKindOf("Slash") && use.card->hasFlag("gongfeng")) {
+            if (use.card != nullptr && use.card->isKindOf("Slash") && use.card->hasFlag("gongfeng") && use.from != nullptr) {
                 QVariant gongfeng_useV = use.from->tag.value("gongfeng_use");
-                if (gongfeng_useV.canConvert<CardUseStruct>() && use.from != nullptr) {
+                if (gongfeng_useV.canConvert<CardUseStruct>()) {
                     CardUseStruct gongfeng_use = gongfeng_useV.value<CardUseStruct>();
                     if (gongfeng_use.from && gongfeng_use.from->isAlive() && gongfeng_use.from->getPhase() == Player::Play) {
                         room->sendLog("#gongfeng-addhistory", gongfeng_use.from, use.card->objectName(), {}, objectName());
