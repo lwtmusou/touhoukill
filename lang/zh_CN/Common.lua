@@ -74,6 +74,7 @@ CommonTranslationTable = {
 	["discardPile"] = "弃牌堆",
 	["drawPileTop"] = "牌堆顶",
 	
+	["#judging_area"] = "判定区",
 	["PlaceDelayedTrick"] = "判定区" ,
 	["PlaceEquip"] = "装备区" ,
 	["PlaceHand"] = "手牌区" ,

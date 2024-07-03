@@ -1494,9 +1494,11 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
 void ServerPlayer::addToShownHandCards(QList<int> card_ids)
 {
     QList<int> add_ids;
-    foreach (int id, card_ids)
+    foreach (int id, card_ids) {
         if (!shown_handcards.contains(id) && room->getCardOwner(id) == this)
             add_ids.append(id);
+    }
+
     if (add_ids.isEmpty())
         return;
 
@@ -1528,12 +1530,14 @@ void ServerPlayer::addToShownHandCards(QList<int> card_ids)
 
 void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool moveFromHand)
 {
-    if (card_ids.isEmpty())
-        return;
+    QList<int> removed_ids;
+    foreach (int id, card_ids) {
+        if (shown_handcards.removeAll(id) > 0)
+            removed_ids << id;
+    }
 
-    foreach (int id, card_ids)
-        if (shown_handcards.contains(id))
-            shown_handcards.removeOne(id);
+    if (removed_ids.isEmpty())
+        return;
 
     JsonArray arg;
     arg << objectName();
@@ -1546,13 +1550,13 @@ void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool 
         LogMessage log;
         log.type = "$RemoveShownHand";
         log.from = this;
-        log.card_str = IntList2StringList(card_ids).join("+");
+        log.card_str = IntList2StringList(removed_ids).join("+");
         room->sendLog(log);
         room->getThread()->delay();
     }
 
     ShownCardChangedStruct s;
-    s.ids = card_ids;
+    s.ids = removed_ids;
     s.player = this;
     s.shown = false;
     s.moveFromHand = moveFromHand;
@@ -1562,7 +1566,16 @@ void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool 
 
 void ServerPlayer::addBrokenEquips(QList<int> card_ids)
 {
-    broken_equips.append(card_ids);
+    QList<int> add_ids;
+    foreach (int id, card_ids) {
+        if (!broken_equips.contains(id) && room->getCardOwner(id) == this)
+            add_ids.append(id);
+    }
+
+    if (add_ids.isEmpty())
+        return;
+
+    broken_equips.append(add_ids);
 
     JsonArray arg;
     arg << objectName();
@@ -1577,13 +1590,13 @@ void ServerPlayer::addBrokenEquips(QList<int> card_ids)
     LogMessage log;
     log.type = "$AddBrokenEquip";
     log.from = this;
-    log.card_str = IntList2StringList(card_ids).join("+");
+    log.card_str = IntList2StringList(add_ids).join("+");
     room->sendLog(log);
     room->getThread()->delay();
 
     BrokenEquipChangedStruct b;
     b.player = this;
-    b.ids = card_ids;
+    b.ids = add_ids;
     b.broken = true;
     QVariant bv = QVariant::fromValue(b);
     room->getThread()->trigger(BrokenEquipChanged, room, bv);
@@ -1591,11 +1604,14 @@ void ServerPlayer::addBrokenEquips(QList<int> card_ids)
 
 void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog, bool moveFromEquip)
 {
-    if (card_ids.isEmpty())
-        return;
+    QList<int> removed_ids;
+    foreach (int id, card_ids) {
+        if (broken_equips.removeAll(id) > 0)
+            removed_ids << id;
+    }
 
-    foreach (int id, card_ids)
-        broken_equips.removeOne(id);
+    if (removed_ids.isEmpty())
+        return;
 
     JsonArray arg;
     arg << objectName();
@@ -1608,13 +1624,13 @@ void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog, bool mo
         LogMessage log;
         log.type = "$RemoveBrokenEquip";
         log.from = this;
-        log.card_str = IntList2StringList(card_ids).join("+");
+        log.card_str = IntList2StringList(removed_ids).join("+");
         room->sendLog(log);
         room->getThread()->delay();
     }
     BrokenEquipChangedStruct b;
     b.player = this;
-    b.ids = card_ids;
+    b.ids = removed_ids;
     b.broken = false;
     b.moveFromEquip = moveFromEquip;
     QVariant bv = QVariant::fromValue(b);

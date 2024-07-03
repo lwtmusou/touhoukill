@@ -690,8 +690,8 @@ enum TriggerEvent
     TurnedOver,
     ChainStateChanged,
     RemoveStateChanged,
-    BrokenEquipChanged,
-    ShownCardChanged,
+    BrokenEquipChanged, // note: see skill "Weiling" in th17 when this value got modified
+    ShownCardChanged, // note: see skill "Weiling" in th17 when this value got modified
     RoleShownChanged,
 
     ConfirmDamage, // confirm the damage's count and damage's nature
