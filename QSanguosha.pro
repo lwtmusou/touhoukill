@@ -413,6 +413,15 @@ android:DEFINES += "\"getlocaledecpoint()='.'\""
 }
 
 SWIGFILES += $$_PRO_FILE_PWD_/swig/sanguosha.i
+SWIGDEPENDS += $$_PRO_FILE_PWD_/swig/sanguosha.i \
+               $$_PRO_FILE_PWD_/swig/ai.i \
+               $$_PRO_FILE_PWD_/swig/card.i \
+               $$_PRO_FILE_PWD_/swig/general_select.i \
+               $$_PRO_FILE_PWD_/swig/list.i \
+               $$_PRO_FILE_PWD_/swig/luaskills.i \
+               $$_PRO_FILE_PWD_/swig/native.i \
+               $$_PRO_FILE_PWD_/swig/naturalvar.i \
+               $$_PRO_FILE_PWD_/swig/qvariant.i
 
 SWIG_bin = "swig"
 contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig.exe"
@@ -420,7 +429,7 @@ contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig
 swig.commands = "$$system_path($$SWIG_bin) -c++ -lua -cppext cpp -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}"
 swig.CONFIG = target_predeps
 swig.dependency_type = TYPE_C
-swig.depends = $$SWIGFILES
+swig.depends = $$SWIGDEPENDS
 swig.input = SWIGFILES
 swig.name = "Generating ${QMAKE_FILE_NAME}..."
 swig.output = ${QMAKE_FILE_BASE}_wrap.cpp

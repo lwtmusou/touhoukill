@@ -1926,7 +1926,7 @@ bool Player::hasPreshowedSkill(const Skill *skill) const
     return hasPreshowedSkill(skill->objectName());
 }
 
-bool Player::isHidden(const bool &head_general) const
+bool Player::isHidden(bool head_general) const
 {
     if (head_general ? general_showed : general2_showed)
         return false;

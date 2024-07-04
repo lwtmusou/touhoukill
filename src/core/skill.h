@@ -51,12 +51,10 @@ public:
     QString getShowType() const; //nue_god
     virtual bool canPreshow() const; //hegemony
     virtual bool relateToPlace(bool head = true) const;
-
-    //for LUA
-    //inline void setRelateToPlace(const char *rtp)
-    //{
-    //    relate_to_place = rtp;
-    //}
+    inline void setRelateToPlace(const QString &rtp)
+    {
+        relate_to_place = rtp;
+    }
 
 protected:
     Frequency frequency;

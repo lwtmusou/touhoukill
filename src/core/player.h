@@ -349,7 +349,7 @@ public:
     void setSkillsPreshowed(const QString &flag = "hd", bool preshowed = true);
     bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
-    bool isHidden(const bool &head_general) const;
+    bool isHidden(bool head_general) const;
 
     bool hasShownGeneral() const;
     void setGeneralShowed(bool showed);
