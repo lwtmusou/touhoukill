@@ -328,7 +328,7 @@ public:
     void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
     void moveCardsAtomic(CardsMoveStruct cards_move, bool forceMoveVisible);
     void moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible = false);
-    QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
+    QList<CardsMoveStruct> _breakDownCardMoves(const QList<CardsMoveStruct> &cards_moves);
 
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
@@ -416,36 +416,6 @@ protected:
     int _m_Id;
 
 private:
-    struct _MoveSourceClassifier
-    {
-        explicit inline _MoveSourceClassifier(const CardsMoveStruct &move)
-        {
-            m_from = move.from;
-            m_from_place = move.from_place;
-            m_from_pile_name = move.from_pile_name;
-            m_from_player_name = move.from_player_name;
-        }
-        inline void copyTo(CardsMoveStruct &move) const
-        {
-            move.from = m_from;
-            move.from_place = m_from_place;
-            move.from_pile_name = m_from_pile_name;
-            move.from_player_name = m_from_player_name;
-        }
-        inline bool operator==(const _MoveSourceClassifier &other) const
-        {
-            return m_from == other.m_from && m_from_place == other.m_from_place && m_from_pile_name == other.m_from_pile_name && m_from_player_name == other.m_from_player_name;
-        }
-        inline bool operator<(const _MoveSourceClassifier &other) const
-        {
-            return m_from < other.m_from || m_from_place < other.m_from_place || m_from_pile_name < other.m_from_pile_name || m_from_player_name < other.m_from_player_name;
-        }
-        Player *m_from;
-        Player::Place m_from_place;
-        QString m_from_pile_name;
-        QString m_from_player_name;
-    };
-
     struct _MoveMergeClassifier
     {
         explicit inline _MoveMergeClassifier(const CardsMoveStruct &move)
@@ -515,9 +485,9 @@ private:
     };
 
     int _m_lastMovementId;
-    void _fillMoveInfo(CardsMoveStruct &moves, int card_index) const;
-    QList<CardsMoveOneTimeStruct> _mergeMoves(QList<CardsMoveStruct> cards_moves);
-    QList<CardsMoveStruct> _separateMoves(QList<CardsMoveOneTimeStruct> moveOneTimes);
+    void _fillMoveInfo(CardsMoveStruct &moves) const;
+    QList<CardsMoveOneTimeStruct> _mergeMoves(const QList<CardsMoveStruct> &cards_moves);
+    QList<CardsMoveStruct> _separateMoves(const QList<CardsMoveOneTimeStruct> &moveOneTimes);
     QString _chooseDefaultGeneral(ServerPlayer *player) const;
     QStringList _chooseDefaultGenerals(ServerPlayer *player) const;
     bool _setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst);

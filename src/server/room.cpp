@@ -4765,9 +4765,9 @@ void Room::moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *d
     moveCardsAtomic(moves, forceMoveVisible);
 }
 
-void Room::_fillMoveInfo(CardsMoveStruct &moves, int card_index) const
+void Room::_fillMoveInfo(CardsMoveStruct &moves) const
 {
-    int card_id = moves.card_ids[card_index];
+    int card_id = moves.card_ids[0];
     if (moves.from == nullptr)
         moves.from = getCardOwner(card_id);
     moves.from_place = getCardPlace(card_id);
@@ -4780,13 +4780,13 @@ void Room::_fillMoveInfo(CardsMoveStruct &moves, int card_index) const
     if (moves.to != nullptr) {
         if (moves.to_player_name.isEmpty())
             moves.to_player_name = moves.to->objectName();
-        int card_id = moves.card_ids[card_index];
+        int card_id = moves.card_ids[0];
         if (moves.to_place == Player::PlaceSpecial || moves.to_place == Player::PlaceTable)
             moves.to_pile_name = moves.to->getPileName(card_id);
     }
 }
 
-QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_moves)
+QList<CardsMoveOneTimeStruct> Room::_mergeMoves(const QList<CardsMoveStruct> &cards_moves)
 {
     QMap<_MoveMergeClassifier, QList<CardsMoveStruct>> moveMap;
 
@@ -4845,7 +4845,7 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
     return result;
 }
 
-QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOneTimes)
+QList<CardsMoveStruct> Room::_separateMoves(const QList<CardsMoveOneTimeStruct> &moveOneTimes)
 {
     QList<_MoveSeparateClassifier> classifiers;
     QList<QList<int>> ids;
@@ -5122,7 +5122,7 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible)
 
     //trigger event
     moveOneTimes = _mergeMoves(cards_moves);
-    foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
+    foreach (const CardsMoveOneTimeStruct &moveOneTime, moveOneTimes) {
         if (moveOneTime.card_ids.size() == 0)
             continue;
         QVariant data = QVariant::fromValue(moveOneTime);
@@ -5130,27 +5130,19 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible)
     }
 }
 
-QList<CardsMoveStruct> Room::_breakDownCardMoves(QList<CardsMoveStruct> &cards_moves)
+QList<CardsMoveStruct> Room::_breakDownCardMoves(const QList<CardsMoveStruct> &cards_moves)
 {
     QList<CardsMoveStruct> all_sub_moves;
+
     for (int i = 0; i < cards_moves.size(); i++) {
-        CardsMoveStruct &move = cards_moves[i];
+        const CardsMoveStruct &move = cards_moves[i];
         if (move.card_ids.size() == 0)
             continue;
-        QMap<_MoveSourceClassifier, QList<int>> moveMap;
-        // reassemble move sources
-        for (int j = 0; j < move.card_ids.size(); j++) {
-            _fillMoveInfo(move, j);
-            _MoveSourceClassifier classifier(move);
-            moveMap[classifier].append(move.card_ids[j]);
-        }
-        foreach (const _MoveSourceClassifier &cls, moveMap.keys()) {
-            CardsMoveStruct sub_move = move;
-            cls.copyTo(sub_move);
-            if ((sub_move.from == sub_move.to && sub_move.from_place == sub_move.to_place) || sub_move.card_ids.size() == 0)
-                continue;
-            sub_move.card_ids = moveMap[cls];
-            all_sub_moves.append(sub_move);
+        foreach (int id, move.card_ids) {
+            CardsMoveStruct submove = move;
+            submove.card_ids = {id};
+            _fillMoveInfo(submove);
+            all_sub_moves << submove;
         }
     }
     return all_sub_moves;
