@@ -5687,13 +5687,13 @@ void Room::askForLuckCard()
             QList<CardsMoveStruct> moves;
             CardsMoveStruct move;
             move.from = player;
+            move.from_player_name = player->objectName();
             move.from_place = Player::PlaceHand;
             move.to = nullptr;
             move.to_place = Player::DrawPile;
             move.card_ids = player->handCards();
             move.reason = reason;
             moves.append(move);
-            moves = _breakDownCardMoves(moves);
 
             QList<ServerPlayer *> tmp_list;
             tmp_list.append(player);
@@ -5725,10 +5725,10 @@ void Room::askForLuckCard()
             move.from = nullptr;
             move.from_place = Player::DrawPile;
             move.to = player;
+            move.to_player_name = player->objectName();
             move.to_place = Player::PlaceHand;
             move.card_ids = getNCards(draw_list.at(index), false);
             moves.append(move);
-            moves = _breakDownCardMoves(moves);
 
             notifyMoveCards(true, moves, false);
             for (int j = 0; j < move.card_ids.size(); j++) {
