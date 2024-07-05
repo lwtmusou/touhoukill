@@ -1596,6 +1596,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     s.pattern = pattern;
     s.prompt = prompt;
     s.method = method;
+    s.originalData = data;
     QVariant asked_data = QVariant::fromValue(s);
     if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial && !player->hasFlag("continuing"))
         thread->trigger(CardAsked, this, asked_data);

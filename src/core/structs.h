@@ -505,6 +505,7 @@ struct CardAskedStruct
     QString prompt;
     ServerPlayer *player;
     Card::HandlingMethod method;
+    QVariant originalData;
 };
 
 struct SkillInvokeDetail

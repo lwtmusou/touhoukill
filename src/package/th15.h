@@ -4,15 +4,31 @@
 #include "card.h"
 #include "package.h"
 
-class YidanCard : public SkillCard
+#include <QAbstractButton>
+#include <QButtonGroup>
+#include <QDialog>
+#include <QVBoxLayout>
+
+class YidanDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE YidanCard();
+    static YidanDialog *getInstance();
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    const Card *validate(CardUseStruct &card_use) const override;
+public slots:
+    void popup();
+    void selectCard(QAbstractButton *button);
+
+private:
+    explicit YidanDialog();
+
+    QAbstractButton *createButton(const QString &name);
+    QButtonGroup *group;
+    QHash<QString, const Card *> map;
+
+signals:
+    void onButtonClick();
 };
 
 class TH15Package : public Package
