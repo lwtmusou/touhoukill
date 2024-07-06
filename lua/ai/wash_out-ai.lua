@@ -33,7 +33,7 @@ sgs.dynamic_value.damage_card.PowerSlash = true
 
 function SmartAI:shouldUseMagicAnaleptic(trick)
 	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
-	
+
 	local nul_f, nul_e = 0, 0
 	for _, f in ipairs(self.friends)do
 		nul_f = nul_f + getCardsNum("Nullification", f)
@@ -51,8 +51,6 @@ function SmartAI:searchForMagicAnaleptic(use, enemy, trick)
 
 	local analeptic = self:getCard("MagicAnaleptic")
 	if not analeptic then return nil end
-
-
 	if not sgs.Analeptic_IsAvailable(self.player) then return nil end
 	--local shouldUse = false
 	--有一些防锦囊的技能需要判断
@@ -77,6 +75,7 @@ sgs.ai_use_priority.MagicAnaleptic = sgs.ai_use_priority.Analeptic  - 0.2
 function SmartAI:useCardSuperPeach(...)
 	self:useCardPeach(...)
 end
+sgs.ai_use_value.SuperPeach = sgs.ai_use_value.Peach - 0.2
 sgs.ai_use_priority.SuperPeach = 0.7
 --[[
 function SmartAI:useCardSuperPeach(card, use)
@@ -98,8 +97,6 @@ function SmartAI:useCardSuperPeach(card, use)
 	if #targets <= 0 then return end
 
 	local lord= getLord(self.player)
-
-
 	if self.player:isDebuffStatus() and self.player:isWounded() then
 		if self.player:hasArmorEffect("SilverLion") then
 			for _, card in sgs.qlist(self.player:getHandcards()) do
@@ -126,8 +123,6 @@ function SmartAI:useCardSuperPeach(card, use)
 		end
 	end
 
-
-
 	if #good_targets > 0 then
 		self:sort(good_targets, "hp")
 		for _,p in ipairs(good_targets) do
@@ -140,8 +135,6 @@ function SmartAI:useCardSuperPeach(card, use)
 			end
 		end
 	end
-
-
 	local mustusepeach = false
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:getHandcardNum() < 3 and
@@ -207,8 +200,6 @@ sgs.ai_skill_use["@@Pillar"] = function(self, prompt, method)
 	end
 	return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
 end
-
-
 sgs.weapon_range.Hakkero = 3
 sgs.ai_skill_invoke.Hakkero = function(self, data)
 	local effect = data:toSlashEffect()
@@ -274,14 +265,10 @@ sgs.ai_skill_invoke.Pagoda = function(self,data)
 	return false
 end
 
-
-
 function SmartAI:useCardAwaitExhausted(card, use)
 
 	local targets = sgs.PlayerList()
 	local total_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
-
-
 	self:sort(self.friends, "defense")
 	sgs.reverse(self.friends)
 	for _, friend in ipairs(self.friends) do
@@ -311,7 +298,8 @@ function SmartAI:useCardAwaitExhausted(card, use)
 		end
 	end
 end
-sgs.ai_use_priority.AwaitExhausted = sgs.ai_use_value.ExNihilo - 1
+sgs.ai_use_value.AwaitExhausted = 7
+sgs.ai_use_priority.AwaitExhausted = sgs.ai_use_priority.ExNihilo - 1
 sgs.ai_card_intention.AwaitExhausted = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
 		local gaoao = to:hasSkill("gaoao") and not to:isCurrent()
@@ -322,7 +310,6 @@ sgs.ai_card_intention.AwaitExhausted = function(self, card, from, tos)
 		end
 	end
 end
-
 
 function SmartAI:willUseAllianceFeast(card)
 	if not card then self.room:writeToConsole(debug.traceback()) return false end
@@ -358,12 +345,10 @@ function SmartAI:useCardAllianceFeast(card, use)
 		use.card = card
 	end
 end
-
+sgs.ai_use_value.AllianceFeast = 3.6
 sgs.ai_use_priority.AllianceFeast = 7.1
 sgs.ai_keep_value.AllianceFeast = 3.32
 sgs.dynamic_value.benefit.AllianceFeast = true
-
-
 
 function SmartAI:useCardBoneHealing(card, use)
 	local total_num = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
@@ -388,6 +373,7 @@ function SmartAI:useCardBoneHealing(card, use)
 		end
 	end
 end
+sgs.ai_use_value.BoneHealing = 5.1
 sgs.ai_use_priority.BoneHealing = sgs.ai_use_priority.ThunderSlash + 0.1
 sgs.ai_keep_value.BoneHealing = 2.5
 sgs.dynamic_value.damage_card.BoneHealing = true
@@ -398,7 +384,7 @@ function SmartAI:useCardSpringBreath(card, use)
 	local friends = self:exclude(self.friends, card)
 	if #friends == 0 then return end
 	--local target = self:touhouFindPlayerToDraw(false, 6)
-	
+
 	local target  = friends[1]
 	if target then
 		use.card = card
@@ -406,7 +392,6 @@ function SmartAI:useCardSpringBreath(card, use)
 		return
 	end
 end
+sgs.ai_use_value.SpringBreath = 11
 sgs.ai_use_priority.SpringBreath = sgs.ai_use_priority.SavingEnergy
 sgs.ai_card_intention.SpringBreath = -20
-
-

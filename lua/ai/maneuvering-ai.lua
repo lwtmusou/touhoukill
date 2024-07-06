@@ -131,7 +131,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if not self:touhouNeedAvoidAttack(fakeDamage,self.player,target) or fakeDamage.damage<2 then
 		return false
 	end
-	
+
 	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then
 		return
 	end
@@ -192,7 +192,7 @@ function SmartAI:useCardAnaleptic(card, use)
 	if self:cautionDoujiu(self.player,card) then
 		return
 	end
-	
+
 	if not self.player:hasEquip(card) and not self:hasLoseHandcardEffective() and not self:isWeak()
 		and sgs.Analeptic_IsAvailable(self.player, card) then
 		use.card = card
@@ -212,14 +212,14 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 			return viewAsAnalaptic
 		end
 	end
-	
+
 	if use.from:hasSkill("xieli") then
 		-- 对于xieli，千万不能横置武器和-1，否则。。。。。。。。。。
 		-- 优先度：+1 防具 宝物
 		viewAsAnalaptic:setSkillName("_xieli")
 		if sgs.Analeptic_IsAvailable(self.player, viewAsAnalaptic) then
 			local prio = { "DefensiveHorse", "Armor", "Treasure" }
-			
+
 			local xieli
 			for _, p in ipairs(prio) do
 				if self.player["get" .. p](self.player) and not self.player:isBrokenEquip(self.player["get" .. p](self.player):getId()) then
@@ -246,12 +246,9 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 	if analepticAvail > 1 and analepticAvail < slashAvail then return nil end
 	if not sgs.Analeptic_IsAvailable(self.player) then return nil end
 
-
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:fillSkillCards(cards)
-
-
 
 	local card_str = self:getCardId("Analeptic")
 	--local card_str = self:getCardId("Analeptic", nil, nil, "MagicAnaleptic")
@@ -295,14 +292,11 @@ function SmartAI:useCardSupplyShortage(card, use)
 		end
 	end
 
-
 	--东方杀中类张郃的角色
 	local mouko = self.room:findPlayerBySkillName("sidou")
 	local mouko_seat = mouko and mouko:faceUp() and not self:isFriend(mouko) and mouko:getSeat() or 0
 	local marisa = self.room:findPlayerBySkillName("jiezou")
 	local marisa_seat = marisa and card:getSuit()==sgs.Card_Spade and marisa:faceUp()  and not self:isFriend(marisa) and marisa:getSeat() or 0
-
-
 
 	local getvalue = function(enemy)
 		if enemy:containsTrick("supply_shortage") then return -100 end
@@ -314,9 +308,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 		if marisa_seat > 0 and (self:playerGetRound(marisa) < self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
 			return - 100 end
 
-
 		local value = 0 - enemy:getHandcardNum()
-
 
 		if self:hasSkills(sgs.cardneed_skill,enemy) --tianxiang
 			then value = value + 5
@@ -393,7 +385,6 @@ sgs.ai_judge_model.supply_shortage = function(self, who)
 	return judge
 end
 
-
 function SmartAI:getChainedFriends(player)
 	player = player or self.player
 	local chainedFriends = {}
@@ -439,7 +430,6 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 		if who:hasArmorEffect("Vine") then damagecount = damagecount + 1 end
 	end
 
-
 	if not self:damageIsEffective(who, nature, source) then return end
 
 	if who:hasArmorEffect("SilverLion") then damagecount = 1 end
@@ -464,7 +454,6 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 		if target:hasArmorEffect("SilverLion") then return newvalue - 1 end
 		return newvalue - damagecount - (dmg or 0)
 	end
-
 
 	local value = getChainedPlayerValue(who)
 	if self:isFriend(who) then
@@ -563,7 +552,6 @@ function SmartAI:useCardIronChain(card, use)
 			end
 		end
 	end
-
 
 	local chainSelf = (not use.current_targets or not table.contains(use.current_targets, self.player:objectName()))
 						and (self:needToLoseHp(self.player) or self:getDamagedEffects(self.player)) and not self.player:isChained()
@@ -690,12 +678,10 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 		end
 	end
 
-
 	local suitnum = 0
 	for suit,islack in pairs(lack) do
 		if not islack then suitnum = suitnum + 1  end
 	end
-
 
 	self:sort(self.enemies, "defense")
 	--明置手牌的版本需要这个函数
@@ -853,7 +839,6 @@ sgs.ai_skill_cardask["@fire_attack_show"] = function(self, data)
 		end
 	end
 
-
 	requester = data:toCardEffect().to
 	if requester:objectName() == self.player:objectName() then
 		self:sortByUseValue(cards, true)
@@ -883,7 +868,6 @@ sgs.ai_skill_discard.fire_attack = function(self,discard_num, min_num)
 	return to_discard
 end
 
-
 sgs.ai_use_value.FireAttack = 4.8
 sgs.ai_keep_value.FireAttack = 3.3
 sgs.ai_use_priority.FireAttack = sgs.ai_use_priority.Dismantlement + 0.1
@@ -906,8 +890,6 @@ end
 
 sgs.ai_use_priority.IronArmor = 0.82
 
-
 sgs.ai_skill_invoke.SilverLion = function(self, data)
 	return true
 end
-

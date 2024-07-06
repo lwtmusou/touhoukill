@@ -778,10 +778,14 @@ end
 function SmartAI:kuaizhaoValue(player)
 	if player:isKongcheng() then return 0 end
 	local value=0
+	-- 竟然获得手牌列表，不是AI自己内部记录的内容
 	for _, card in sgs.qlist(player:getHandcards()) do
 		local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), player:objectName())
 		if  card:hasFlag("visible") or card:hasFlag(flag) then
 			if card:isKindOf("BasicCard") then
+				value = value + 10
+			end
+			if (card:isKindOf("BasicCard") or card:isNDTrick()) and card:isBlack() then
 				value=value+10
 			end
 		else
@@ -790,8 +794,7 @@ function SmartAI:kuaizhaoValue(player)
 	end
 	return value
 end
-
-sgs.ai_skill_playerchosen.kuaizhao = function(self, targets)
+local kuaizhaoPlayerChosen = function(self)
 	self:sort(self.enemies,"handcard")
 	local enemies = self.enemies
 	for _,p in pairs(self.enemies) do
@@ -806,12 +809,70 @@ sgs.ai_skill_playerchosen.kuaizhao = function(self, targets)
 		return self:kuaizhaoValue(a) > self:kuaizhaoValue(b)
 	end
 	table.sort(enemies, compare_func)
-	if enemies[1] and self:kuaizhaoValue(enemies[1])>=15 then
+	if enemies[1] and self:kuaizhaoValue(enemies[1])>=20 then
 		return enemies[1]
 	end
 	return nil
 end
-sgs.ai_playerchosen_intention.kuaizhao = 80
+sgs.ai_skill_use["@@kuaizhao-card1"] = function(self)
+	local target = kuaizhaoPlayerChosen(self)
+	if not target then return end
+	local hatate = self.player
+	local cards = hatate:getHandcards()
+	local cards_without_peach = {}
+	for _, c in sgs.qlist(cards) do
+		if not c:isKindOf("Peach") then
+			table.insert(cards_without_peach, c)
+		end
+	end
+	if #cards_without_peach == 0 then return end
+	self:sortByUseValue(cards_without_peach, true)
+	return "@KuaizhaoCard=" .. tostring(cards_without_peach[1]:getId()) .. "->" .. target:objectName()
+end
+sgs.ai_skill_use["@@kuaizhao-card2"] = function(self)
+	local kuaizhao_black = string.split(self.player:property("kuaizhao_black"):toString(), "+")
+	local kuaizhao_used = string.split(self.player:property("kuaizhao_used"):toString(), "+")
+	local kuaizhao_notused = {}
+	for _, idStr in ipairs(kuaizhao_black) do
+		local card = sgs.Sanguosha:getCard(tonumber(idStr))
+		if card:isAvailable(self.player) then
+			local originalCardType = card:getClassName()
+			local cardType = originalCardType
+			if string.match(originalCardType, "Slash$") then cardType = "Slash" end
+			if string.match(originalCardType, "Peach$") then cardType = "Peach" end
+			if string.match(originalCardType, "Analeptic$") then cardType = "Analeptic" end
+			if not table.contains(kuaizhao_used, cardType) and not table.contains(kuaizhao_notused, originalCardType) then
+				table.insert(kuaizhao_notused, originalCardType)
+			end
+		end
+	end
+	if #kuaizhao_notused == 0 then return end
+	local kuaizhao_notused_cards = {}
+	for _, className in ipairs(kuaizhao_notused) do
+		local view_as_card = sgs.Sanguosha:cloneCard(className, sgs.Card_NoSuit, 0)
+		view_as_card:setSkillName("_kuaizhao")
+		view_as_card:deleteLater()
+		table.insert(kuaizhao_notused_cards, view_as_card)
+	end
+	self:sortByUseValue(kuaizhao_notused_cards)
+	local willUse
+	local use = {to = sgs.SPlayerList(), isDummy = true}
+	for _, card in ipairs(kuaizhao_notused_cards) do
+		self:useCardByClassName(card, use)
+		if use.card then
+			willUse = card
+			break
+		end
+	end
+	if #kuaizhao_used == 0 then
+		if self:getUseValue(willUse) < (sgs.ai_use_value.Slash - 0.1) then return end
+	end
+	local realUse = sgs.CardUseStruct()
+	realUse.card = willUse
+	realUse.to = use.to
+	return realUse:toString()
+end
+sgs.ai_card_intention.KuaizhaoCard = 80
 
 --[快照 国]
 sgs.ai_skill_invoke.kuaizhao_hegemony = true

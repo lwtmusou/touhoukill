@@ -353,7 +353,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 
 	local nature = natures[slash:getClassName()]
 	self.equipsToDec = sgs.getCardNumAtCertainPlace(slash, from, sgs.Player_PlaceEquip)
-	local eff = self:damageIsEffective(to, nature, from) 
+	local eff = self:damageIsEffective(to, nature, from)
 	if to:hasSkill("ciou") and nature == sgs.DamageStruct_Normal then eff = true end
 	self.equipsToDec = 0
 	if not eff then return false end
@@ -428,7 +428,7 @@ end
 
 function SmartAI:slashIsAvailable(player, slash) -- @todo: param of slashIsAvailable
 	player = player or self.player
-	slash = slash --self:getCard("Slash", player)   
+	slash = slash --self:getCard("Slash", player)
 	-- getUseValue -> slashIsAvailable -> self:getCard -> self: sortByUseValue  -> getUseValue  国战下这tm是一条死循环
 	if not slash or not slash:isKindOf("Slash") then slash = sgs.cloneCard("slash") end
 	assert(slash)
@@ -1082,7 +1082,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	return getJink() --or "."
 end
 sgs.ai_choicemade_filter.cardResponded["slash-jink"] = function(self, player, args)
-	--目前只有闪死蝶杀有仇恨
+	--目前只有闪死蝶杀有仇恨。。。吗？闪理智（旧）杀就是有仇恨的！
 	--[[if args[#args] ~= "_nil_" then
 		local uuz = findPlayerByObjectName(self.room, (args[2]:split(":"))[2])
 		if uuz and uuz:isLord() and self:sidieEffect(uuz) then
@@ -2207,7 +2207,7 @@ sgs.ai_skill_cardask["duel-slash"] = function(self, data, pattern, target)
 			return "."
 		end
 	end
-	
+
 	if (not self:isFriend(target) and self:getCardsNum("Slash") >= getCardsNum("Slash", target, self.player))
 		or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("Peach") == 0) then
 		return self:getCardId("Slash")
@@ -4068,11 +4068,11 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 			end
 		end
 	end
-	
+
 	--重铸
 	use.card = LureTiger return
-	
-	
+
+
 	--还有其他要用调虎的时候么？  太复杂了
 	--[[players = sgs.PlayerList()
 
@@ -4086,7 +4086,7 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 			end
 		end
 	end]]
-	
+
 
 end
 
@@ -4124,13 +4124,13 @@ function SmartAI:useCardKnownBoth(KnownBoth, use)
 			end
 		end
 	end
-	
+
 	local needTarget = (KnownBoth:getSkillName() == "xihua" or KnownBoth:getSkillName() == "qiji" or sgs.Sanguosha:getCurrentCardUsePattern() == "@@mengxiang-card2"
 	       or KnownBoth:getSkillName() == "chaoren" or KnownBoth:getSkillName() == "xiuye")
 	if not needTarget then
 		needTarget = self.player:getPile("wooden_ox"):contains(KnownBoth:getEffectiveId())
 	end
-	
+
 	if not needTarget then
 	--if (self.room:getTag("KnownBothUsed"):toBool()) then
 		if KnownBoth:canRecast() then
