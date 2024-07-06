@@ -1339,8 +1339,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
                     break;
                 }
             }
-        }
-        if (pile_name == "*mengxiang_temp") {
+        } else if (pile_name == "*mengxiang_temp") {
             QString target_name = "";
             foreach (const Player *p, Self->getAliveSiblings()) {
                 if (p->hasFlag("mengxiangtarget")) {
@@ -1351,6 +1350,14 @@ void Dashboard::expandPileCards(const QString &pile_name)
             if (target_name == "")
                 target_name = Self->objectName();
             pile_string = ClientInstance->getPlayerName(target_name);
+        } else if (pile_name == "*chunhua") {
+            bool isUse = false;
+            if (card_items.indexOf(card_item) == 0)
+                isUse = Self->property("chunhua_firstCardIsUsing").toString() == "1";
+            if (isUse)
+                pile_string = "use";
+            else
+                pile_string = "%shown_card";
         }
         _addHandCard(card_item, true, Sanguosha->translate(pile_string));
     }

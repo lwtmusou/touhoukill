@@ -650,6 +650,8 @@ struct ExtraTurnStruct
     ServerPlayer *extraTarget; //record related target  --qinlue
 };
 
+// Note: Check various skill when this event list got modified.
+// There is currently some skill which make use of the value itself (by static_cast<int>) when searching for translation
 enum TriggerEvent
 {
     NonTrigger,
@@ -691,8 +693,8 @@ enum TriggerEvent
     TurnedOver,
     ChainStateChanged,
     RemoveStateChanged,
-    BrokenEquipChanged, // note: see skill "Weiling" in th17 when this value got modified
-    ShownCardChanged, // note: see skill "Weiling" in th17 when this value got modified
+    BrokenEquipChanged,
+    ShownCardChanged,
     RoleShownChanged,
 
     ConfirmDamage, // confirm the damage's count and damage's nature
