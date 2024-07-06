@@ -244,7 +244,7 @@ return
 	["mokou_sp"] = "SP自警队妹红",
 	["&mokou_sp"] = "自警队妹红",
 	["#mokou_sp"] = "红之自警队",
-	["designer:mokou_sp"] = "星野梦美☆",
+	["designer:mokou_sp"] = "裁缝",
 
 	["illustrator:mokou_sp"] = "藍空",
 	["origin:mokou_sp"] = "p号：22011676，个人id：74414",

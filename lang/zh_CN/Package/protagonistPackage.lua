@@ -13,7 +13,7 @@ return {
 	--zhu001 势力：主 4血
 	["reimu"] = "博丽灵梦",
 	["#reimu"] = "乐园的美妙巫女",
-	["designer:reimu"] = "星野梦美☆",
+	["designer:reimu"] = "三国有单",
 
 	["illustrator:reimu"] = "tearfish",
 	["origin:reimu"] = "p号：5228650",

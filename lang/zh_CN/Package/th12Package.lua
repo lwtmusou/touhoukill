@@ -108,7 +108,7 @@ return{
 	--xlc005  势力：星 4血
 	["ichirin"] = "云居一轮",
 	["#ichirin"] = "守护与被守护的大轮",
-	["designer:ichirin"] = "谁",
+	["designer:ichirin"] = "车波",
 
 	["illustrator:ichirin"] = " 粟",
 	["origin:ichirin"] = "p号：33024333",

@@ -191,7 +191,7 @@ return{
 	--dld008  势力：地 3血
 	["kisume"] = "琪斯美",
 	["#kisume"] = "可怕的水井妖怪",
-	["designer:kisume"] = "星野梦美☆",
+	["designer:kisume"] = "裁缝",
 
 	["illustrator:kisume"] = "菊月",
 	["origin:kisume"] = "p号=64134547，个人id=429883",
