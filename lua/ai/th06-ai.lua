@@ -93,45 +93,6 @@ end
 sgs.ai_skill_invoke.skltkexue =  true
 
 --[命运]
---sgs.ai_skill_invoke.EightDiagram
---sgs.ai_armor_value.EightDiagram
---SmartAI:getFinalRetrial
---SmartAI:canRetrial
--- temporarily comment it out since it don't work
--- "mingyun_judge" tag is not always available
---[[
-sgs.ai_skill_invoke.mingyun = true
-sgs.ai_skill_askforag.mingyun = function(self, card_ids)
-	local judge = self.player:getTag("mingyun_judge"):toJudge()
-	local mingyun={}
-	local mingyun1={}
-	local mingyun2={}
-
-	judge.card = sgs.Sanguosha:getCard(card_ids[1])
-	table.insert(mingyun1,judge.card)
-	table.insert(mingyun,judge.card)
-	local ex_id1=self:getRetrialCardId(mingyun1, judge)
-
-	judge.card = sgs.Sanguosha:getCard(card_ids[2])
-	table.insert(mingyun2,judge.card)
-	table.insert(mingyun,judge.card)
-	local ex_id2=self:getRetrialCardId(mingyun2, judge)
-
-	--ex_id==-1 means the Retrial result are not good for remilia
-	if ex_id1==ex_id2 or (ex_id1~=-1 and  ex_id2~=-1) then
-		self:sortByKeepValue(mingyun,true)
-		return mingyun[1]:getId()
-	elseif ex_id1==-1 then
-		return card_ids[1]
-	elseif ex_id2==-1 then
-		return card_ids[2]
-	end
-	return card_ids[1]
-end
-sgs.ai_skillProperty.mingyun = function(self)
-	return "wizard_harm"
-end
-]]
 
 --[血裔]
 sgs.ai_skill_invoke.xueyi = function(self, data)
@@ -733,6 +694,7 @@ sgs.ai_skill_invoke.dongjie = function(self, data)
 		end
 		return self:isFriend(to) ~= to:faceUp()
 end
+-- sgs.ai_skill_cardask["@dongjie-give"] = ???
 sgs.ai_choicemade_filter.skillInvoke.dongjie = function(self, player, args ,data)
 	local to=player:getTag("dongjie"):toDamage().to
 	if to then
@@ -775,7 +737,6 @@ sgs.ai_skill_invoke.bingpo =  true
 sgs.ai_damageInflicted.bingpo =function(self, damage)
 	if damage.nature ~= sgs.DamageStruct_Fire then
 		if damage.damage >= damage.to:getHp() then
-		--if damage.damage>1 or damage.to:getHp()==1 then
 			damage.damage=0
 		end
 	end

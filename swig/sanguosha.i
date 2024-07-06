@@ -589,6 +589,8 @@ struct CardUseStruct {
     void parse(const char *str, Room *room);
     bool tryParse(const QVariant &, Room *room);
 
+    QString toString() const;
+
     const Card *card;
     ServerPlayer *from;
     QList<ServerPlayer *> to;
