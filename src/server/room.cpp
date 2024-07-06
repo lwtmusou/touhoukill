@@ -7336,12 +7336,8 @@ void Room::transformGeneral(ServerPlayer *player, QString general_name, int head
         return; //check sujiang
 
     QStringList names;
-    //names << player->getActualGeneral1Name() << player->getActualGeneral2Name();
     QStringList generals = getTag(player->objectName()).toStringList();
     names << generals.first() << generals.last();
-
-    //handleUsedGeneral("-" + player->getActualGeneral2Name());
-    //handleUsedGeneral(general_name);
 
     player->removeGeneral(head != 0);
     QList<const TriggerSkill *> game_start;
@@ -7351,12 +7347,11 @@ void Room::transformGeneral(ServerPlayer *player, QString general_name, int head
             const TriggerSkill *tr = qobject_cast<const TriggerSkill *>(skill);
             if (tr != nullptr) {
                 getThread()->addTriggerSkill(tr);
-                if (tr->getTriggerEvents().contains(GameStart)) // && !tr->triggerable(GameStart, this, player, void_data).isEmpty()
+                if (tr->getTriggerEvents().contains(GameStart))
                     game_start << tr;
             }
         }
         player->addSkill(skill->objectName(), head != 0);
-        //invoke->invoker->sendSkillsToOthers(head);//check shown
     }
 
     if (head != 0) {
@@ -7389,14 +7384,6 @@ void Room::transformGeneral(ServerPlayer *player, QString general_name, int head
         QVariant v = QVariant::fromValue(player);
         thread->trigger(GameStart, this, v);
     }
-    /*foreach(const TriggerSkill *skill, game_start) {
-    if (skill->cost(GameStart, this, player, void_data, player))
-    skill->effect(GameStart, this, player, void_data, player);
-    }*/
 
-    //do not consider CompanionEffect
-    //if (Sanguosha->getGeneral(names[0])->isCompanionWith(general_name))
-    //	setPlayerMark(player, "CompanionEffect", 1);
-    //if (need_show)
     player->showGeneral(head != 0);
 }

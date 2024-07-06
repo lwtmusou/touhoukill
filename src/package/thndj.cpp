@@ -1653,19 +1653,23 @@ public:
         if (e == EventPhaseChanging)
             return;
 
-        static QString attachName = "yaoliattach";
+        static QString attachName = "yaoli_attach";
         QList<ServerPlayer *> sklts;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasSkill(this, true) && p->hasShownSkill(this))
                 sklts << p;
         }
 
-        if (sklts.length() > 0) {
+        if (sklts.length() > 1) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill(this)) {
-                    if (p->hasSkill(attachName))
-                        room->detachSkillFromPlayer(p, attachName, true);
-                } else if (!p->hasSkill(attachName))
+                if (!p->hasSkill(attachName, true))
+                    room->attachSkillToPlayer(p, attachName);
+            }
+        } else if (sklts.length() == 1) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill(this, true) && p->hasSkill(attachName, true))
+                    room->detachSkillFromPlayer(p, attachName, true);
+                else if (!p->hasSkill(this, true) && !p->hasSkill(attachName, true))
                     room->attachSkillToPlayer(p, attachName);
             }
         } else { // the case that sklts is empty
@@ -2102,7 +2106,7 @@ THNDJPackage::THNDJPackage()
     addMetaObject<HunpoCard>();
     addMetaObject<YaoliCard>();
 
-    skills << new YaoliVS("yaoliattach", true) << new YaoliBasic << new YaoliEquip << new YaoliTrick;
+    skills << new YaoliVS("yaoli_attach", true) << new YaoliBasic << new YaoliEquip << new YaoliTrick;
 }
 
 ADD_PACKAGE(THNDJ)

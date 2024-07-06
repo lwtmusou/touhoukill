@@ -143,15 +143,13 @@ return{
 	[":kuaibao"]= "其他角色的准备阶段开始时，若“机”数大于你的体力值，你可以获得所有“机”，对其造成1点伤害。",
 	["$Kuaibao"] = "%from 发动 “%arg” ， 获得  %card ",
 
-	
-	
 	["tenshi_ndj"] = "年代记SP天子" ,
 	["&tenshi_ndj"] = "年代记天子",
 	["#tenshi_ndj"] = "勇者代行者" ,
 	["designer:tenshi_ndj"] = "辰焰天明",
-	
+
 	["illustrator:tenshi_ndj"] = "年代记",
-	
+
 	["youle"]= "忧乐",
 	[":youle"]= "一名角色的非额外回合结束时，若你于此回合内造成或受到过伤害，你可以弃置一名此回合内未造成过伤害的角色有牌区域各一张牌，令其获得一个额外的回合，然后若此次你仅弃置了其他角色一张牌，你失去1点体力。",
 	["@youle"]= "你可以选择一名此回合内未造成过伤害的有牌的一名角色作为“忧乐”的目标。",
@@ -160,23 +158,22 @@ return{
 	["&eirin_ndj"] = "年代记永琳",
 	["#eirin_ndj"] = "月之慧首",
 	["designer:eirin_ndj"] = "风的呓语",
-	
+
 	["illustrator:eirin_ndj"] = "年代记",
-	
+
 	["yaoli"] = "药理",
 	[":yaoli"] = "<font color=\"green\"><b>每名角色的出牌阶段限一次，</b></font>其可以弃置一张牌，若如此做，你可以摸一张牌，然后弃置一张牌，若弃置的这两张牌对应下列同一种分类，则当其于此阶段内使用下一张该类的牌指定目标时，触发相应效果：<br /><font color=\"orange\"><b>基本</b></font>：此牌的第一个效果值+1。<br /><font color=\"orange\"><b>普通锦囊</b></font>：其令一名角色成为此牌的额外目标或取消一个目标角色。<br /><font color=\"orange\"><b>装备、延时类锦囊</b></font>：其弃置一名角色的装备区和判定区里所有的牌。",
-	["yaoliattach"] = "药理",
-	[":yaoliattach"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张牌，若如此做，有“药理”技能的角色可以摸一张牌，然后弃置一张牌，若弃置的这两张牌对应下列同一种分类，则当你于此阶段内使用下一张该类的牌指定目标时，触发相应效果：<br /><font color=\"orange\"><b>基本</b></font>：此牌的第一个效果值+1。<br /><font color=\"orange\"><b>普通锦囊</b></font>：你令一名角色成为此牌的额外目标或取消一个目标角色。<br /><font color=\"orange\"><b>装备、延时类锦囊</b></font>：你弃置一名角色的装备区和判定区里所有的牌。",
+	["yaoli_attach"] = "药理",
+	[":yaoli_attach"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张牌，若如此做，有“药理”技能的角色可以摸一张牌，然后弃置一张牌，若弃置的这两张牌对应下列同一种分类，则当你于此阶段内使用下一张该类的牌指定目标时，触发相应效果：<br /><font color=\"orange\"><b>基本</b></font>：此牌的第一个效果值+1。<br /><font color=\"orange\"><b>普通锦囊</b></font>：你令一名角色成为此牌的额外目标或取消一个目标角色。<br /><font color=\"orange\"><b>装备、延时类锦囊</b></font>：你弃置一名角色的装备区和判定区里所有的牌。",
 	["yaolibasic"] = "药理（基本牌）",
 	[":yaolibasic"] = "药理（基本牌）的描述",
 	["yaoliequip"] = "药理（装备牌或延时锦囊牌）",
 	[":yaoliequip"] = "药理（装备牌或延时锦囊牌）的描述",
 	["yaolitrick"] = "药理（普通锦囊牌）",
 	[":yaolitrick"] = "药理（普通锦囊牌）的描述",
-	
+
 	["yaoliothercard"] = "装备牌或延时锦囊牌",
 
-	
 	["#yaolistart"] = "%from 获得了 <font color=\"#FF8000\"><b>“药理”</b></font>（%arg） 的效果。",
 	["#yaolifinish"] = "%from 的出牌阶段结束，<font color=\"#FF8000\"><b>“药理”</b></font>（%arg） 的效果消失。",
 	["yaoli-draw:hahahahahaha"] = "%src 对你发动“药理”，你可以摸 1 张牌然后弃置 1 张牌。" ,
@@ -188,5 +185,4 @@ return{
 	["@yaolitrick"] = "您执行“药理”（普通锦囊牌）的效果，请选择 %arg 的额外目标或要取消的目标。",
 	["#yaolitrick_nullification"] = "%from 执行“药理”（普通锦囊牌）的效果，但此牌是【无懈可击】，因而无法修改目标。",
 	["#yaolitrick_noAvailable"] = "%from 执行“药理”（普通锦囊牌）的效果，但此牌当前无目标且无合法目标，因而无法修改目标。",
-	
 }
