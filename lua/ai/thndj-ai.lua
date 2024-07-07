@@ -698,7 +698,11 @@ sgs.ai_skill_cardask["@yaoli-discard"] = function(self, data)
 	end
 
 	if #cards_without_peach > 0 then
-		self.player:hasSkill("yaoli") and self:sortByUseValue(cards_without_peach, true) or self:sortByKeepValue(cards_without_peach, true)
+		if self.player:hasSkill("yaoli")  then
+			self:sortByUseValue(cards_without_peach, true) 
+		else
+			self:sortByKeepValue(cards_without_peach, true)
+		end
 		return "$" .. tostring(cards_without_peach[1]:getEffectiveId())
 	end
 

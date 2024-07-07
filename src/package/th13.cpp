@@ -1651,6 +1651,7 @@ public:
         if (triggerEvent == Damaged) {
             return invoke->invoker->askForSkillInvoke(this, data, "@zhengti-rob:" + invoke->targets.first()->objectName());
         } else {
+            invoke->invoker->tag["zhengti_damage"] = data;
             if (room->askForUseCard(invoke->invoker, "@@zhengti", "@zhengti-redirect", -1, Card::MethodNone, true, objectName())) {
                 invoke->targets << invoke->invoker->tag.value("zhengti_target").value<ServerPlayer *>();
                 return true;
@@ -1824,6 +1825,7 @@ TH13Package::TH13Package()
     addMetaObject<LeishiCard>();
     addMetaObject<XiefaCard>();
     addMetaObject<BumingCard>();
+    addMetaObject<ZhengtiCard>();
 }
 
 ADD_PACKAGE(TH13)
