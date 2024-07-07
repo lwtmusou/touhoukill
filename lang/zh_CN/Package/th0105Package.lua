@@ -104,6 +104,9 @@ return {
 
 	["illustrator:rikako"] = "べる",
 	["origin:rikako"] = "p号：7874458 ,个人id：125888",
+	["illustrator:rikako_1"] = "グウミン",
+	["origin:rikako_1"] = "p号：103892431；个人id：44056178",
+	
 	["zhenli"] = "真理",
 	[":zhenli"] = "<font color=\"blue\"><b>锁定技，</b></font>分发起始手牌后，你摸二十四张牌；当你从牌堆顶摸牌后，你将之扣置于人物牌上，称为“真理”。",
 	["qiusuo"] = "求索",
@@ -146,6 +149,8 @@ return {
 	["origin:yuka_old_1"] = ":",
 	["illustrator:yuka_old_2"] = "くろぬこネーロ",
 	["origin:yuka_old_2"] = "p号：32809829,个人id：335493",
+	["illustrator:yuka_old_3"] = "赤束子",
+	["origin:yuka_old_3"] = "p号：70778448；个人id：359082",
 
 	["yeyan"] = "夜魇",
 	[":yeyan"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】或普通锦囊牌指定目标后，除你外的目标角色各弃置一张手牌并令你选择一项：展示一张与之类别相同的手牌；或令此牌对其无效。",
@@ -194,10 +199,16 @@ return {
 	["origin:elly"] = "p号：23409861,个人id：19359",
 	["illustrator:elly_1"] = "sheya",
 	["origin:elly_1"] = "p号：59479020,个人id：11764388",
-	["illustrator:elly_2"] = "shouen kigashi ",
-	["origin:elly_2"] = "",
+	["illustrator:elly_2"] = "カミカ",
+	["origin:elly_2"] = "p号：31088970",
 	["illustrator:elly_3"] = "菊月",
 	["origin:elly_3"] = "p号：43923582,个人id：429883",
+	["illustrator:elly_4"] = "EO",
+	["origin:elly_4"] = "p号：59993835；个人id：3261838",
+	["illustrator:elly_5"] = "加能",
+	["origin:elly_5"] = "p号：59555608；个人id：7204265",
+	["illustrator:elly_6"] = "猫田ゆず",
+	["origin:elly_6"] = "p号：106429435；个人id：54834022",
 
 	["lianmu"] = "镰幕",
 	[":lianmu"] = "当你使用【杀】结算结束后，若此牌未造成过伤害，你可以视为使用【杀】（无距离限制）并能额外选择一个目标。<font color=\"green\"><b>每阶段限一次。</b></font>",
@@ -371,6 +382,10 @@ return {
 	["designer:rika"] = "223",
 	["illustrator:rika"] = "一日一枚（3ヶ月目）ネーロ",
 	["origin:rika"] = "p号：32914214；个人id：335493",
+	["illustrator:rika_1"] = "グウミン",
+	["origin:rika_1"] = "p号：119037478；个人id：44056178",
+	["illustrator:rika_2"] = "高倉詩音",
+	["origin:rika_2"] = "p号：31115420；个人id：2270347",
 
 	["zhanche"] = "战车",
 	[":zhanche"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张牌，令一名装备区里有牌的其他角色将其一张装备牌交给你，然后若你是装备区里牌数最多的角色，你于此阶段内使用牌无距离限制。",

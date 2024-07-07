@@ -10,6 +10,10 @@ return {
 	
 	["illustrator:okina"] = "べらぼう",
 	["origin:okina"] = "p号：64759772；个人id：6259229",
+	["illustrator:okina_1"] = "多多良葛三",
+	["origin:okina_1"] = "p号：74273117；个人id：20972118",
+	["illustrator:okina_2"] = "かめぱすた",
+	["origin:okina_2"] = "p号：99276414；个人id：49675420",
 	
 	["mishen"] = "秘神", 
 	[":mishen"] = "你可以横置人物牌或装备区的一张牌并视为使用【调虎离山】。",
@@ -62,6 +66,10 @@ return {
 	
 	["illustrator:nemuno"] = "针鼠修罗",
 	["origin:nemuno"] = "p号：62793220；个人id：3442252",
+	["illustrator:nemuno_1"] = "gla",
+	["origin:nemuno_1"] = "p号：62791460；个人id：6303597",
+	["illustrator:nemuno_2"] = "相生青唯",
+	["origin:nemuno_2"] = "p号：62843426；个人id：16301",
 	
 	["shengyu"]= "圣域",
 	[":shengyu"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】或普通锦囊指定一名其他角色为目标后，你令其选择一项：横置其装备区里所有颜色相同的牌；或于此牌结算完毕前不能使用或打出颜色相同的牌。",
@@ -90,6 +98,12 @@ return {
 	
 	["illustrator:narumi"] = "サクラメ",
 	["origin:narumi"] = "p号：68269792；个人id：91140",
+	["illustrator:narumi_1"] = "いづる",
+	["origin:narumi_1"] = "p号：66385505；个人id：18445234",
+	["illustrator:narumi_2"] = "白山ゆーき",
+	["origin:narumi_2"] = "p号：110712973；个人id：5771665",
+	["illustrator:narumi_3"] = "皆村春樹",
+	["origin:narumi_3"] = "p号：66672618；个人id：6098",
 	
 	
 	["puti"] = "菩提",

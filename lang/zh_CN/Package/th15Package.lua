@@ -123,6 +123,14 @@ return {
 	["origin:sagume_3"] = "p号：59446347；个人id：218591",
 	["illustrator:sagume_4"] = "りひと",
 	["origin:sagume_4"] = "p号：63054617；个人id：1463626",
+	["illustrator:sagume_5"] = "カズ",
+	["origin:sagume_5"] = "p号：67836323；个人id：137496",
+	["illustrator:sagume_6"] = "EO",
+	["origin:sagume_6"] = "p号：89315574；个人id：3261838",
+	["illustrator:sagume_7"] = "ぎヴちょこ",
+	["origin:sagume_7"] = "p号：56594425；个人id：745461",
+	["illustrator:sagume_8"] = "あぶそる",
+	["origin:sagume_8"] = "p号：54100241；个人id：3202270",
 
 	["shehuo"] = "舌祸",
 	[":shehuo"] = "当一名角色使用【杀】或普通锦囊牌指定另一名角色为唯一目标时，若你为两者之一，你可以令目标角色选择一项：取消此目标并对此牌的使用者使用与之类别不同的牌（无距离限制），或令此牌不能被所有角色使用牌响应。",
@@ -196,7 +204,11 @@ return {
 	["illustrator:seiran_1"] = "りひと",
 	["origin:seiran_1"] = "p号：57754046",
 	["illustrator:seiran_2"] = "ちくわさび",
-	["origin:seiran_2"] = "p号：63297982；个人id：4447218",
+	["origin:seiran_2"] = "p号：63297982；个人id：4447218",、
+	["illustrator:seiran_3"] = "EO",
+	["origin:seiran_3"] = "p号：50276985；个人id：3261838",
+	["illustrator:seiran_4"] = "春雨",
+	["origin:seiran_4"] = "p号：51800021；个人id：294970",
 
 	["yidan"] = "异弹",
 	[":yidan"] = "出牌阶段，你可以将一张手牌当无次数和距离限制的缚【杀】或秽【杀】使用（处于异常状态的角色不是合法目标，每种【杀】每回合限转化一次），在你攻击范围外的目标可以将一张基本牌当【闪】使用以响应此【杀】。",
