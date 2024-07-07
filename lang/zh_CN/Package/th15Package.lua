@@ -204,7 +204,7 @@ return {
 	["illustrator:seiran_1"] = "りひと",
 	["origin:seiran_1"] = "p号：57754046",
 	["illustrator:seiran_2"] = "ちくわさび",
-	["origin:seiran_2"] = "p号：63297982；个人id：4447218",、
+	["origin:seiran_2"] = "p号：63297982；个人id：4447218",
 	["illustrator:seiran_3"] = "EO",
 	["origin:seiran_3"] = "p号：50276985；个人id：3261838",
 	["illustrator:seiran_4"] = "春雨",

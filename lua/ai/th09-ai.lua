@@ -978,61 +978,44 @@ function SmartAI:nianliColor(cards)
 	end
 end
 
---念力: 使用念力技能卡
+--念力
 local nianli_skill = {}
 nianli_skill.name = "nianli"
 table.insert(sgs.ai_skills, nianli_skill)
 nianli_skill.getTurnUseCard = function(self)
-	if self.player:hasUsed("NianliCard") then return nil end
-	if self.player:getPhase() ~= sgs.Player_Play then return nil end
+	-- 要什么NianliCard，直接视为牌就完事了，还不用处理有效性，直接默认AI
+	-- 副作用就是会触发洗牌，但是平时堇子用神秘就会洗牌，所以无所谓啦
+	if not self:isWeak(self.player) then
+		local nianliCards={}
+		if not self.player:hasUsed("nianlisnatch") then table.insert(nianliCards, "Snatch") end
+		if not self.player:hasUsed("nianlislash") then table.insert(nianliCards, "Slash") end
+		if 2 - #nianliCards - self.player:usedTimes("nianliextra") > 0 then return end
 
-
-	local nianliCards = {}
-	local nianli = "slash|snatch"
-	local nianlis = nianli:split("|")
-	for i = 1, #nianlis do
-		local forbidden = nianlis[i]
-		local forbid = sgs.cloneCard(forbidden)
-		if not self.player:isLocked(forbid)  then
-			table.insert(nianliCards,forbid)
-		end
+		local cards = self.room:getNCards(2)
+		self.room:returnToDrawPile(cards)
+		local n = sgs.QList2Table(cards)
+		return sgs.Card_Parse(nianliCards[1] .. ":nianli[to_be_decided:-1]=" .. tostring(n[1]) .. "+" .. tostring(n[2]))
 	end
-
-	self:sortByUseValue(nianliCards, false)
-	for _,nianliCard in pairs (nianliCards) do
-		local dummyuse = { isDummy = true }
-		if nianliCard:isKindOf("BasicCard") then
-			self:useBasicCard(nianliCard, dummyuse)
-		else
-			self:useTrickCard(nianliCard, dummyuse)
-		end
-		if dummyuse.card then
-			fakeCard = sgs.Card_Parse("@NianliCard=.:" .. nianliCard:objectName())
-			return fakeCard
-		end
-	end
-	return nil
 end
---念力: 念力技能卡选择目标
-sgs.ai_skill_use_func.NianliCard=function(card,use,self)
-	local userstring=card:toString()
-	userstring=(userstring:split(":"))[3]
-	local nianlicard=sgs.cloneCard(userstring)
-	nianlicard:setSkillName("nianli")
-	if nianlicard:getTypeId() == sgs.Card_TypeBasic then self:useBasicCard(nianlicard, use)
-	else
-		assert(nianlicard)
-		self:useTrickCard(nianlicard, use)
+sgs.ai_skill_cardask["@nianli-discard1"] = function(self)
+	-- 看看能不能再发动一次
+	if not self:isWeak(self.player) then
+		local cards = sgs.QList2Table(self.player:getHandcards())
+		if #cards > 0 then
+			self:sortByCardNeed(cards)
+			return "$" .. cards[#cards]:getEffectiveId()
+		end
 	end
-	if not use.card then return end
-	use.card=card
 end
-
-
-sgs.ai_use_priority.NianliCard = 9
+sgs.ai_skill_cardask["@nianli-discard2"] = function(self)
+	-- 给下个人送牌的，暂且忽略吧
+	-- 能看到的就是给下个人送延时锦囊判定牌
+end
 
 --[深秘] 暂无想法
 -- guanxing-ai.lua 里面有默认的代码，暂时先用着吧
+-- 主要是看自己要用杀还是用顺手。。。
+-- frequency = Frequent 啥也不用写
 
 --密封梦魇堇子
 
