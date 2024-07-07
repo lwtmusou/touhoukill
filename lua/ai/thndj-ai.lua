@@ -583,10 +583,11 @@ yaoli_skill.getTurnUseCard = function(self)
 		-- 基本牌比较多，容易触发，但是也是效果最不靠谱的（桃除外）
 		-- 普通锦囊如果priority低的话，可能不如药理扔了好
 		-- 如果简单考虑的话，普通锦囊 / 基本 / 装备吧（懒）
+		-- 自己是永林的话，至少有三张同类型牌才值得发动药理，否则药理获得了效果，回来连用的牌都没有，亏炸
 		local priority = {2, 1, 3}
 		for _, prio in ipairs(priority) do
 			local collection = cards_sort[prio]
-			if #collection > 1 then
+			if #collection > (self.player:hasSkill("yaoli") and 2 or 1) then
 				self:sortByUseValue(collection, true)
 				discard = collection[1]
 				break
@@ -697,7 +698,7 @@ sgs.ai_skill_cardask["@yaoli-discard"] = function(self, data)
 	end
 
 	if #cards_without_peach > 0 then
-		self:sortByKeepValue(cards_without_peach, true)
+		self.player:hasSkill("yaoli") and self:sortByUseValue(cards_without_peach, true) or self:sortByKeepValue(cards_without_peach, true)
 		return "$" .. tostring(cards_without_peach[1]:getEffectiveId())
 	end
 
