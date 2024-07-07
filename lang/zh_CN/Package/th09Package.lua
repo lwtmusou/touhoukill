@@ -243,6 +243,10 @@ return
 	["origin:hatate_3"] = "p号：21411887，个人id：1225738",
 	["illustrator:hatate_4"] = "c7肘",
 	["origin:hatate_4"] = "p号：29166434，个人id：217707",
+	["illustrator:hatate_5"] = "緋比ユキ",
+	["origin:hatate_5"] = "p号：73661881；个人id：14037377",
+	["illustrator:hatate_6"] = "キヌコ",
+	["origin:hatate_6"] = "p号：90380642；个人id：462527",
 
 	["kuaizhao"] = "快照",
 	[":kuaizhao"] = "摸牌阶段结束时，你可以弃置一张牌并展示你攻击范围内的一名角色的手牌，若其中有基本牌，你选择一项：1.摸X张牌（X为其中的基本牌数且至多为2）；2.依次视为使用其中一至X张黑色的基本牌或普通锦囊牌（不能同名）。",

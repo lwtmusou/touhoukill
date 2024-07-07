@@ -117,6 +117,8 @@ return{
 	["origin:utsuho_god_1"] = "p号：20315372，个人id：341747" ,
 	["illustrator:utsuho_god_2"] = "うき",
 	["origin:utsuho_god_2"] = "p号：5189374，个人id：134944" ,
+	["illustrator:utsuho_god_3"] = "Blanc",
+	["origin:utsuho_god_3"] = "p号：06163734；个人id：37999683" ,
 
 	["shikong"] = "失控",
 	[":shikong"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】时，此牌目标改为所有是你使用此【杀】的合法目标的角色。",
@@ -141,6 +143,14 @@ return{
 	["origin:suika_god_1"] = "p号：13669192，个人id：778201",
 	["illustrator:suika_god_2"] = "チョモラン ティア",
 	["origin:suika_god_2"] = "p号：32178545，个人id：76370",
+	["illustrator:suika_god_3"] = "モツバ",
+	["origin:suika_god_3"] = "p号：67190679；个人id：10490756",
+	["illustrator:suika_god_4"] = "こぞう",
+	["origin:suika_god_4"] = "p号：72203667；个人id：5626224",
+	["illustrator:suika_god_5"] = "らみぃ",
+	["origin:suika_god_5"] = "p号：97058374；个人id：13815675",
+	["illustrator:suika_god_6"] = "KAYA_",
+	["origin:suika_god_6"] = "p号：114003696；个人id：24535359",
 
 	["huanmeng"] = "幻梦",
 	[":huanmeng"] = "<font color=\"#808080\"><b>永久技，</b></font>你没有体力和体力上限；你跳过摸牌阶段和弃牌阶段；回合开始时，若你没有手牌，你死亡。",
@@ -294,6 +304,12 @@ return{
 	["origin:sanae_god_1"] = "p号：7765131，个人id：98455",
 	["illustrator:sanae_god_2"] = "Riv",
 	["origin:sanae_god_2"] = "p号：8271655，个人id：64821",
+	["illustrator:sanae_god_3"] = "久蒼穹",
+	["origin:sanae_god_3"] = "p号：102964765；个人id：66038798",
+	["illustrator:sanae_god_4"] = "Uroam",
+	["origin:sanae_god_4"] = "p号：111810355；个人id：55184092",
+	["illustrator:sanae_god_5"] = "まあち",
+	["origin:sanae_god_5"] = "p号：107306796；个人id：23177484",
 
 	["shenshou"] = "神授",
 	[":shenshou"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以展示一张手牌并将此牌交给一名其他角色，若此牌是：<br /> 1. 【杀】，你可以令其视为对其攻击范围内你选择的一名角色使用【杀】。<br />2. <font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你可以令其获得其攻击范围内你选择的一名角色的一张手牌。 <br />3. 点数为5-9的牌，你可以摸一张牌。<br />（若此牌是你最后的手牌，你依然能发动上列三个效果）",
@@ -807,6 +823,9 @@ return{
 	["origin:alice_god_1"] = "p号：37256385",
 	["illustrator:alice_god_2"] = " 60枚",
 	["origin:alice_god_2"] = "p号：43066179，个人id：3322006",
+	["illustrator:alice_god_3"] = " こぞう",
+	["origin:alice_god_3"] = "p号：68579085；个人id：5626224",
+	
 
 
 	["wenyue"] = "文乐",

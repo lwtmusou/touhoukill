@@ -258,6 +258,8 @@ return{
 	["origin:minoriko_2"] = "p号：45941278，个人id：1218472",
 	["illustrator:minoriko_3"] = "shinia",
 	["origin:minoriko_3"] = "p号：31553367，个人id：44778",
+	["illustrator:minoriko_4"] = "Tonan",
+	["origin:minoriko_4"] = "p号：112520210；个人id：10847637",
 
 	["fengrang"] = "丰穰",
 	[":fengrang"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以视为使用【五谷丰登】。",
@@ -280,6 +282,8 @@ return{
 	["origin:shizuha_3"] = "p号：34359840，个人id：4103725",
 	["illustrator:shizuha_4"] = "ポップル",
 	["origin:shizuha_4"] = "p号：7048869，个人id：888775",
+	["illustrator:shizuha_5"] = "海緒ユカ",
+	["origin:shizuha_5"] = "p号：47759499；个人id：179619",
 
 	["jiliao"] = "寂寥",
 	[":jiliao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令一名角色获得其装备区里的所有牌（可以为零），然后若其手牌数大于其手牌上限，你可以弃置其一张手牌。",

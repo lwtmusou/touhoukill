@@ -86,6 +86,9 @@ return{
 	["origin:renko_2"] = "p号：21521777，个人id：38674",
 	["illustrator:renko_3"] = "An2A",
 	["origin:renko_3"] = "个人id：173876",
+	["illustrator:renko_4"] = "たみく",
+	["origin:renko_4"] = "p号：85151423；个人id：20926215",
+
 
 	["shitu"] = "识途",
 	[":shitu"] = "非额外的回合结束时，你可以令一名角色获得一个仅有相应阶段的额外回合：若此回合内你未造成过伤害，有摸牌阶段；若此回合内你使用过牌且仅你失去过牌，有出牌阶段。",
@@ -351,6 +354,10 @@ return{
 	["origin:reisen2"] = "p号：56463981,个人id：8780063",
 	["illustrator:reisen2_1"] = "くろぬこネーロ",
 	["origin:reisen2_1"] = "p号：33268695,个人id：335493",
+	["illustrator:reisen2_2"] = "まほろ",
+	["origin:reisen2_2"] = "p号：80398268；个人id：30112361",
+	["illustrator:reisen2_3"] = "碧葉",
+	["origin:reisen2_3"] = "p号：95817518；个人id：68073396",
 
 	["sixiang"] = "思乡",
 	[":sixiang"] = "<font color=\"blue\"><b>锁定技，</b></font>一名角色的准备阶段开始时，若你不处于连环状态，你回复1点体力，然后横置。",

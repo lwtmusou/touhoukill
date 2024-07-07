@@ -75,6 +75,12 @@ return
 	["origin:mokou_4"] = "p号：2318512，个人id：19937",
 	["illustrator:mokou_5"] = " Yuli ",
 	["origin:mokou_5"] = "p号：58856726，个人id：13458459",
+	["illustrator:mokou_6"] = " いくらうに ",
+	["origin:mokou_6"] = "p号：88320680；个人id：501583",
+	["illustrator:mokou_7"] = " Tio ",
+	["origin:mokou_7"] = "p号：101936580；个人id：26092571",
+	["illustrator:mokou_8"] = " .SIN ",
+	["origin:mokou_8"] = "p号：71817609；个人id：1763655",
 
 	["kaifeng"] = "凯风",
 	[":kaifeng"] = "当你对其他角色造成火焰伤害时或你受到其他角色造成的火焰伤害后，你可以将体力值回复至X点（X为其体力值）。",
@@ -173,6 +179,12 @@ return
 	["origin:mystia_1"] = "p号：25455215，个人id：36615",
 	["illustrator:mystia_2"] = "祭唄",
 	["origin:mystia_2"] = "p号：4633013，个人id：70822",
+	["illustrator:mystia_3"] = "KOXO-01",
+	["origin:mystia_3"] = "p号：39356692；个人id：5849896",
+	["illustrator:mystia_4"] = "EO",
+	["origin:mystia_4"] = "p号：60868174；个人id：3261838",
+	["illustrator:mystia_5"] = "ファルケン",
+	["origin:mystia_5"] = "p号：71701008；个人id：6415776",
 
 	["yege"] = "夜歌",
 	[":yege"] = "其他角色的出牌阶段开始时，若场上没有【乐不思蜀】，你可以将一张手牌当【乐不思蜀】对其使用，若如此做，你摸一张牌。",
@@ -274,6 +286,10 @@ return
 
 	["illustrator:mystia_sp"] = "めぶら",
 	["origin:mystia_sp"] = "p号：53551952，个人id：6762438",
+	["illustrator:mystia_sp_1"] = "たま。",
+	["origin:mystia_sp_1"] = "p号：36845245；个人id：3038880",
+	["illustrator:mystia_sp_2"] = "零块方解石",
+	["origin:mystia_sp_2"] = "p号：111219584；个人id：66398434",
 
 	["yemang"] = "夜盲",
 	[":yemang"] = "<font color=\"blue\"><b>锁定技，</b></font>其他角色的出牌阶段开始时，若其在你的攻击范围内，其攻击范围于此阶段内-1。",

@@ -295,6 +295,8 @@ return{ ["th06"] = "红魔乡",
 
 	["illustrator:satsuki"] = "kaze",
 	["origin:satsuki"] = "p号：46647754 个人id：2579204",
+	["illustrator:satsuki_1"] = "久蒼穹",
+	["origin:satsuki_1"] = "p号：118078258；个人id：66038798",
 
 	["xiaoyin"]= "消隐",
 	[":xiaoyin"]= "其他角色的出牌阶段开始时，若你在其攻击范围内，你可以令其摸一张牌，然后其将一张牌当【调虎离山】对你使用（其他角色不是此牌的合法目标）。",

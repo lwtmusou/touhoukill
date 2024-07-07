@@ -9,7 +9,7 @@ return
 	["designer:yuyuko"] = "三国有单",
 
 	["illustrator:yuyuko"] = "カズ",
-	["origin:yuyuko"] = "p号=77021367，个人id=137496",
+	["origin:yuyuko"] = "p号：77021367，个人id：137496",
 	["illustrator:yuyuko_1"] = "伊神",
 	["origin:yuyuko_1"] = "p号：37042965，个人id：7563462",
 	["illustrator:yuyuko_2"] = "カズ",
@@ -246,6 +246,12 @@ return
 	["origin:letty_3"] = "p号：41617791，个人id：3682550",
 	["illustrator:letty_4"] = "粟",
 	["origin:letty_4"] = "p号：14753954，个人id：36168",
+	["illustrator:letty_5"] = "kajatony",
+	["origin:letty_5"] = "p号：116936684；个人id：26750883",
+	["illustrator:letty_6"] = "ことぅぬ",
+	["origin:letty_6"] = "p号：41171720；个人id：444909",
+	["illustrator:letty_7"] = "にゃんあや",
+	["origin:letty_7"] = "p号：95693202；个人id：45511030",
 
 	["jiyi"]= "记忆",
 	[":jiyi"]= "当你翻面后，你可以摸两张牌，然后可以将一至两张手牌交给其他角色。",

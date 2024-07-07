@@ -25,6 +25,11 @@ return {
 	["origin:reimu_3"] = "p号：22911671",
 	["illustrator:reimu_4"] = "pico",
 	["origin:reimu_4"] = "p号：20132493",
+	["illustrator:reimu_5"] = "Uroam",
+	["origin:reimu_5"] = "p号：112111536；个人id：55184092",
+	["illustrator:reimu_6"] = "ののこ",
+	["origin:reimu_6"] = "p号：70624197；个人id：2458",
+
 
 	["qixiang"] = "绮想",
 	[":qixiang"] = "当牌因使用、打出或弃置以外的原因置入弃牌堆后，若其中有<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，你可以令一名角色摸一张牌。",
@@ -86,6 +91,8 @@ return {
 	["origin:reimu_sp_1"] = "p号：31824198，个人id：37336",
 	["illustrator:reimu_sp_2"] = "しがらき",
 	["origin:reimu_sp_2"] = "p号：19597658，个人id：1004274",
+	["illustrator:reimu_sp_3"] = "玄月ちひろ",
+	["origin:reimu_sp_3"] = "p号：36617322；个人id：1661046",
 
 
 	["saiqian"] = "赛钱",
@@ -157,6 +164,8 @@ return {
 	["origin:reimu_yym_1"] = "p号：9705615，个人id：60103",
 	["illustrator:reimu_yym_2"] = "かがよ",
 	["origin:reimu_yym_2"] = "p号：9056340，个人id：693172",
+	["illustrator:reimu_yym_3"] = "Mimi N",
+	["origin:reimu_yym_3"] = "p号：43852830；个人id：3380373",
 
 	["zhize"]= "职责",
 	[":zhize"]= "<font color=\"blue\"><b>锁定技，</b></font>摸牌阶段，你少摸一张牌并选择一名有手牌的其他角色，观看其手牌并获得其中一张牌。",
@@ -181,6 +190,8 @@ return {
 	["origin:reimu_slm_2"] = "p号：13295146，个人id：49165",
 	["illustrator:reimu_slm_3"] = "きんたろ",
 	["origin:reimu_slm_3"] = "p号：18697741，个人id：10009",
+	["illustrator:reimu_slm_4"] = "butyou",
+	["origin:reimu_slm_4"] = "p号：109934381；个人id：4321558",
 
 	["bllmwuyu"] = "五欲" ,
 	[":bllmwuyu"] = "准备阶段开始时，你可以将“欲”标记补至X枚（X为你已损失的体力值+1）；你可以弃1枚“欲”标记或弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，发动下列中的一项技能：<br /><font color=\"orange\"><b>“名欲”</b></font>（你跳过判定阶段）。<br /><font color=\"orange\"><b>“财欲”</b></font>（摸牌阶段开始时，你摸一张牌）。<br /><font color=\"orange\"><b>“色欲”</b></font>（出牌阶段，你于此回合内使用【杀】的额外次数上限+1）。<br /><font color=\"orange\"><b>“睡欲”</b></font>（弃牌阶段开始时，你的手牌上限于此阶段内视为4）。<br /><font color=\"orange\"><b>“食欲”</b></font>（你可以将一张手牌当【酒】使用）。" ,
@@ -302,6 +313,10 @@ return {
 	["origin:marisa_old"] = "p号：52502794，个人id：iLed@いきなりアニメ原画",
 	["illustrator:marisa_old_1"] = "カタケイ",
 	["origin:marisa_old_1"] = "p号：50400667，个人id：90042",
+	["illustrator:marisa_old_2"] = "グウミン",
+	["origin:marisa_old_2"] = "p号：109713097；个人id：44056178",
+	["illustrator:marisa_old_3"] = "グウミン",
+	["origin:marisa_old_3"] = "p号：110390303；个人id：44056178",
 
 	["toushi"] = "偷师" ,
 	[":toushi"] = "其他角色的出牌阶段结束时，若其于此阶段内使用的最后的牌为【杀】或普通锦囊牌，你可以将一张非锦囊牌当同名牌使用。当你以此法使用<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌时，摸一张牌。" ,
