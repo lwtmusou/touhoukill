@@ -898,77 +898,81 @@ end
 
 sgs.ai_card_intention.BumingCard = 70
 --[正体]
-sgs.ai_skill_invoke.zhengti =  true
-
---[[
-sgs.ai_skill_playerchosen.zhengti = function(self, targets)
-	target_table =sgs.QList2Table(targets)
-	for _,p in pairs (target_table) do
-		if self:isEnemy(p) then
-			return p
-		end
-	end
-	return target_table[1]
+sgs.ai_skill_invoke.zhengti = function(self, data)
+	local damage = data:toDamage()
+	if self:isFriend(damage.from) and damage.from:getArmor() and damage.from:getArmor():isKindOf("SilverLion") and damage.from:isWounded() then return true end
+	return self:isEnemy(damage.from)
 end
-
---sgs.ai_playerchosen_intention.zhengti = 10
-sgs.ai_damageInflicted.zhengti =function(self, damage)
-	local can =false
-	for _,p in sgs.qlist(self.room:getOtherPlayers(damage.to)) do
-		if p:getMark("@zhengti")>0 then
-			can=true
-			break
-		end
-	end
-	if can then
-		damage.damage=0
-	end
-	return damage
+local zhengtiCardTargetFilter = function(self, card, to_select)
+	if type(card) == "number" then card = sgs.Sanguosha:getCard(card) end
+	if not card:isKindOf("EquipCard") then return end
+	local ecard = card:getRealCard():toEquipCard()
+	local location = ecard:location()
+	local filter = not to_select:getEquip(location)
+	return filter
 end
-function SmartAI:zhengtiParse(from,to)
+-- sgs.ai_skill_cardchosen.zhengti 用默认的就行
+sgs.ai_skill_use["@@zhengti"] = function(self)
+	local cards = sgs.QList2Table(self.player:getCards("hes"))
+	local equipCardsGiveToEnemy = {}
+	for _, e in ipairs(cards) do
+		local names = {
+			-- 简单评估一下每个装备的重要性
 
-	local weak_friends={}
-	local friends={}
-	local enemies={}
-	local t_enemies={}
-	local can_transfer=false
-	if not to:hasSkill("zhengti") then return false end
-	--if self:isFriend(from,to) then return false end
-	for _,p in sgs.qlist(self.room:getOtherPlayers(to)) do
-		if self:isEnemy(from,p) then
-			table.insert(enemies,p)
-		end
-		if p:getMark("@zhengti")>0 then
-			can_transfer=true
-			if self:isEnemy(from,p) then
-				table.insert(t_enemies,p)
+			"Weapon", -- 武器 / -1 - 给敌方
+			"OffensiveHorse",
+			-- +1 - 暂且不给
+			"EightDiagram", -- 八卦 暂且不给，如果己方有改判，可以给敌方
+			-- 护心镜 可能会导致目标挡伤害，不给
+			-- 仁王盾 不给
+			-- 母牛 不给
+			"JadeSeal", -- 玉玺 给敌方
+			-- 宝塔 不给
+			-- 光学迷彩 不给
+			-- 羽衣 不给
+			-- 白银狮子 （若在装备区且伤害值为1，且没有符合条件的敌方）给最健康友方，否则不给
+			"Vine", -- 藤甲 给敌方
+		}
+		local e_flag = false
+		for _, name in ipairs(names) do
+			local flag = true
+			if name == "EightDiagram" then
+				local wizard_harm
+				for _, friends in ipairs(self.friends_noself) do
+					if friends:hasSkills(sgs.wizard_harm_skill) then wizard_harm = true end
+				end
+				if not wizard_harm then flag = false end
 			end
-			if self:isFriend(from,p) then
-				table.insert(friends,p)
-				if self:isWeak(p) then
-					table.insert(weak_friends,p)
+			if flag then
+				if e:isKindOf(name) then e_flag = true break end
+			end
+		end
+		if e_flag then table.insert(equipCardsGiveToEnemy, e) end
+	end
+	self:sortByUseValue(equipCardsGiveToEnemy, true)
+
+	if #equipCardsGiveToEnemy > 0 and #self.enemies > 0 then
+		self:sort(self.enemies, "defense")
+		for _, e in ipairs(self.enemies) do
+			for _, c in ipairs(equipCardsGiveToEnemy) do
+				if zhengtiCardTargetFilter(self, c, e) then
+					return "@ZhengtiCard=" .. tostring(c:getEffectiveId()) .. "->" .. e:objectName()
 				end
 			end
 		end
 	end
 
-	local result = true
-	local target = nil
-	if #weak_friends>0 then
-		result = true
-		target = weak_friends[1]
-	elseif #enemies==0 then
-		result = false
-	elseif #friends==0  and  #t_enemies>0 then
-		result = false
-		target = t_enemies[1]
+	if self.player:getArmor() and self.player:getArmor():objectName() == "SilverLion" and self.player:isWounded() then
+		self:sort(self.friends_noself, "defense")
+		self:reverse(self.friends_noself)
+
+		for _, e in ipairs(self.friends_noself) do
+			if zhengtiCardTargetFilter(self, self.player:getArmor(), e) then
+				return "@ZhengtiCard=" .. tostring(self.player:getArmor():getEffectiveId()) .. "->" .. e:objectName()
+			end
+		end
 	end
-	if #friends >0 and not target then
-		target = friends[1]
-	end
-	return result, target
 end
-]]
 
 --神灵庙SP小伞
 --[晴雨]

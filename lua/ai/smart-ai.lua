@@ -144,11 +144,11 @@ function setInitialTables()
 	sgs.save_skill =        "hezhou"
 	--只有张角雷击目标用到了
 	--sgs.exclusive_skill =       "huilei|duanchang|wuhun|buqu|dushi"
-	sgs.cardneed_skill =  "mofa|jiezou"
+	sgs.cardneed_skill =  "mofa|jiezou|xueling"
 	sgs.drawpeach_skill =       "zhize|chunxi|toupai"
 	sgs.recover_skill =     "juxian"
-	sgs.use_lion_skill =  "baoyi|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|shouhui|hunpo|luanwu|qinlue"
-	sgs.need_equip_skill =  "baoyi|mokai|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|shouhui|hunpo|luanwu|qinlue|zhancao|wunian|yiwang"
+	sgs.use_lion_skill =  "baoyi|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|shouhui|hunpo|luanwu|qinlue|lunni"
+	sgs.need_equip_skill =  "baoyi|mokai|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|shouhui|hunpo|luanwu|qinlue|zhancao|wunian|yiwang|junzhen|lunni"
 	sgs.judge_reason =  "lingqi|pohuai|huisu"
 	sgs.no_intention_damage = "nuhuo|pohuai|zhuonong|meiling"
 	sgs.attackRange_skill = "nengwu|bushu|xiangqi|fanji|xiubu|huantong"
@@ -3414,6 +3414,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 
 	-- 瓷偶 不一定合适，先加在这
 	if to:hasSkill("ciou") and (slash and ((slash:getClassName() == "Slash") or (slash:isKindOf("DebuffSlash")))) then dmg = dmg + 1 end
+	if from:getMark("yaolieffect1") > 0 and not from:hasFlag("yaolieffect1") then dmg = dmg + 1 end
 	if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
     if from:hasSkill("hanbo_hegemony") and slash and not slash:isKindOf("NatureSlash") and to:isKongcheng() then dmg = dmg + 1 end
@@ -3710,8 +3711,8 @@ function SmartAI:askForYiji(card_ids, reason)
 end
 
 function SmartAI:askForPindian(requester, reason)
-	--local passive = { "mizhao", "lieren" }
-	if self.player:objectName() == requester:objectName()  then --and not table.contains(passive, reason)
+	local passive = {"buxian"}
+	if self.player:objectName() == requester:objectName() and not table.contains(passive, reason) then
 		if self[reason .. "_card"] then
 			return sgs.Sanguosha:getCard(self[reason .. "_card"])
 		else
@@ -5054,14 +5055,15 @@ function SmartAI:useSkillCard(card,use)
 	if not use.isDummy then
 		--modian 和 modian_attach两个skill都能发动  但技能卡的skillname注明的是modian_attach
 		--魔典强行耦合。。。
-		if (card:getSkillName() == "modian_attach") then
-			if not self.player:hasSkill("modian") and not self.player:hasSkill("modian_attach") then
-				return
-			end
-		else
-			if not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then
-				return
-			end
+		local skillname = card:getSkillName()
+		if string.sub(skillname, -7) == "_attach" then
+			skillname = string.sub(skillname, 1, -8)
+		end
+
+		if  not self.player:hasSkill(skillname)
+		and not self.player:hasSkill(skillname .. "_attach")
+		and not self.player:hasLordSkill(skillname) then
+			return
 		end
 	end
 	if sgs.ai_skill_use_func[name] then
