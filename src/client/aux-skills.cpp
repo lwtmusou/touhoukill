@@ -91,6 +91,11 @@ bool ResponseSkill::viewFilter(const Card *card) const
 
 const Card *ResponseSkill::viewAs(const Card *originalCard) const
 {
+    // This is a bit tricky.
+    // Typically a OneCardViewAsSkill can't just return originalCard, since it may be deleted by client for freeing memory resources
+    // But here it returns just the original card. I doubt it be deleted some time but I have no evidence.
+
+    // Temporarily keep it here but it may be refactored later if anything is more clear.
     return originalCard;
 }
 

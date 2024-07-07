@@ -4063,7 +4063,7 @@ public:
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        return originalCard;
+        return new DummyCard({originalCard->getEffectiveId()});
     }
 };
 
@@ -4201,7 +4201,7 @@ public:
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        return originalCard;
+        return new DummyCard({originalCard->getEffectiveId()});
     }
 };
 
