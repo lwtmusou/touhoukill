@@ -5055,14 +5055,15 @@ function SmartAI:useSkillCard(card,use)
 	if not use.isDummy then
 		--modian 和 modian_attach两个skill都能发动  但技能卡的skillname注明的是modian_attach
 		--魔典强行耦合。。。
-		if (card:getSkillName() == "modian_attach") then
-			if not self.player:hasSkill("modian") and not self.player:hasSkill("modian_attach") then
-				return
-			end
-		else
-			if not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then
-				return
-			end
+		local skillname = card:getSkillName()
+		if string.sub(skillname, -7) == "_attach" then
+			skillname = string.sub(skillname, 1, -8)
+		end
+
+		if  not self.player:hasSkill(skillname)
+		and not self.player:hasSkill(skillname .. "_attach")
+		and not self.player:hasLordSkill(skillname) then
+			return
 		end
 	end
 	if sgs.ai_skill_use_func[name] then

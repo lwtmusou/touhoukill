@@ -1711,7 +1711,7 @@ QStringList Yaoli::el {"", "BasicCard", "ndtrick", "yaoliothercard"};
 YaoliCard::YaoliCard()
 {
     will_throw = true;
-    m_skillName = "yaoli";
+    m_skillName = "yaoli_attach";
 }
 
 bool YaoliCard::targetFixed(const Player *Self) const
