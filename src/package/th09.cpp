@@ -2144,11 +2144,11 @@ public:
                 room->notifySkillInvoked(sumireko, objectName());
 
             foreach (const QString &remove, removed) {
-                ServerPlayer *p = room->findPlayerByObjectName(remove);
+                ServerPlayer *p = room->findPlayerByObjectName(remove, true);
                 room->setFixedDistance(sumireko, p, -1);
             }
             foreach (const QString &add, added) {
-                ServerPlayer *p = room->findPlayerByObjectName(add);
+                ServerPlayer *p = room->findPlayerByObjectName(add, true);
                 room->setFixedDistance(sumireko, p, 1);
             }
 
