@@ -350,7 +350,7 @@ sgs.ai_use_value.KuangzaoCard = 8
 sgs.ai_use_priority.KuangzaoCard = 0
 sgs.ai_card_intention.KuangzaoCard = 50
 sgs.ai_skill_cardask["@kuangzao-annoying"] = function(self, data)
-	local cards = sgs.QList2Table(self.players:getCards("hes"))
+	local cards = sgs.QList2Table(self.player:getCards("hes"))
 
 	local effect = data:toCardEffect()
 	local from = effect.from

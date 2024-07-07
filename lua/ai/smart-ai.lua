@@ -3710,8 +3710,8 @@ function SmartAI:askForYiji(card_ids, reason)
 end
 
 function SmartAI:askForPindian(requester, reason)
-	--local passive = { "mizhao", "lieren" }
-	if self.player:objectName() == requester:objectName()  then --and not table.contains(passive, reason)
+	local passive = {"buxian"}
+	if self.player:objectName() == requester:objectName() and not table.contains(passive, reason) then
 		if self[reason .. "_card"] then
 			return sgs.Sanguosha:getCard(self[reason .. "_card"])
 		else
