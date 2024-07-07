@@ -3414,6 +3414,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 
 	-- 瓷偶 不一定合适，先加在这
 	if to:hasSkill("ciou") and (slash and ((slash:getClassName() == "Slash") or (slash:isKindOf("DebuffSlash")))) then dmg = dmg + 1 end
+	if from:getMark("yaolieffect1") > 0 and not from:hasFlag("yaolieffect1") then dmg = dmg + 1 end
 	if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
     if from:hasSkill("hanbo_hegemony") and slash and not slash:isKindOf("NatureSlash") and to:isKongcheng() then dmg = dmg + 1 end
