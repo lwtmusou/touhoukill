@@ -699,7 +699,7 @@ sgs.ai_skill_cardask["@yaoli-discard"] = function(self, data)
 
 	if #cards_without_peach > 0 then
 		if self.player:hasSkill("yaoli")  then
-			self:sortByUseValue(cards_without_peach, true) 
+			self:sortByUseValue(cards_without_peach, true)
 		else
 			self:sortByKeepValue(cards_without_peach, true)
 		end
@@ -709,10 +709,21 @@ sgs.ai_skill_cardask["@yaoli-discard"] = function(self, data)
 	-- 砸锅卖铁也得拿出来一张牌。。。。
 	return "$" .. tostring(self.player:getCards("hes"):first():getEffectiveId())
 end
--- update intention
--- 永林不响应药理 = use.from -> eirin +10
--- 永林用不同类型的牌响应药理 = use.from -> eirin +50
--- 永林用相同类型的牌响应药理 = use.from -> eirin -30
+sgs.ai_choicemade_filter.cardResponded["@yaoli-discard"] = function(self, player, args, data)
+	local effect = data:toCardEffect()
+	local card = sgs.Sanguosha:getCard(effect.card:getEffectiveId())
+	local from = effect.from
+	local discarded = string.sub(args[#args], 2, -2)
+	local intention
+	local discardedcard = sgs.Card_Parse(discarded)
+	if discardedcard then
+		discardedcard = sgs.Sanguosha:getCard(discardedcard:getEffectiveId())
+		intention = ((card:getTypeId() == discardedcard:getTypeId()) and -30 or 50)
+	end
+	if intention then
+		sgs.updateIntention(player, effect.from, intention)
+	end
+end
 
 sgs.ai_skill_playerchosen.yaolitrick = function(self, targets)
 	local canadd, cancancel = {}
@@ -836,13 +847,33 @@ sgs.ai_skill_playerchosen.yaolitrick = function(self, targets)
 	-- 随缘啦
 	return targets:first()
 end
--- update intention
--- 五谷：取消的目标 target -> use.from +20 / （秋穰子) +200
--- 桃园 / 联军：若被取消的目标有损血 target -> use.from +50
--- 南蛮 / 万箭：target -> use.from -40
--- 水淹：若被取消的目标没有狮子 target -> use.from -30，有狮子 target -> use.from +40
--- 其余用牌自带intention应该就行 毕竟用的是默认AI
+sgs.ai_choicemade_filter.playerChosen.yaolitrick = function(self, player, args)
+	local use = self.player:getTag("yaolitrick"):toCardUse()
+	local target = self.room:findPlayerByObjectName(args[#args])
+	local intention
+	if target then
+		local iscancel
+		for _, to in sgs.qlist(use.to) do
+			if to:objectName() == target:objectName() then
+				iscancel = true
+				break
+			end
+		end
+		if iscancel then
+			if use.card:isKindOf("AmagingGrace") and target:hasSkill("shouhuo") then
+				intention = 200
+			elseif use.card:isKindOf("GlobalEffect") then
+				intention = 20
+			elseif use.card:isKindOf("AOE") then
+				intention = -20
+			end
+		end
+	end
 
+	if intention then
+		sgs.updateIntention(player, target, intention)
+	end
+end
 
 sgs.ai_skill_playerchosen.yaoliequip = function(self, targets)
 	-- 敌方有超魔理沙 - 无脑扔，一张也要扔
@@ -877,4 +908,27 @@ sgs.ai_skill_playerchosen.yaoliequip = function(self, targets)
 
 	-- 马丹 又要强制选择，我吐了
 	return targets:first()
+end
+sgs.ai_choicemade_filter.playerChosen.yaoliequip = function(self, player, args)
+	local target = self.room:findPlayerByObjectName(args[#args])
+	local intention = 0
+	if target then
+		if t:containsTrick("SpringBreath") then -- 拆春息无条件敌方吧
+			intention = 10
+		else
+			if t:containsTrick("Indulgence") then
+				intention = intention - 10
+			end
+			if t:containsTrick("SupplyShortage") then
+				intention = intention - 10
+			end
+			local equips = t:getEquips():length()
+			if t:isWounded() and t:getArmor() and t:getArmor():isKindOf("SilverLion") then
+				equips = equips - 3
+			end
+			intention = intention + equips * 10
+		end
+	end
+
+	sgs.updateIntention(player, target, intention)
 end

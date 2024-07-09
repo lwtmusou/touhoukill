@@ -1755,15 +1755,16 @@ void YaoliCard::onUse(Room *room, const CardUseStruct &_use) const
 void YaoliCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.from->getRoom();
+    QVariant data = QVariant::fromValue(effect);
     room->setPlayerFlag(effect.to, "yaoliselected");
     effect.from->setFlags("yaolieffected");
 
     int yaoliTagTypeId = 0;
 
-    if (effect.to->askForSkillInvoke("yaoli-draw", QVariant::fromValue(effect), "hahahahahaha:" + effect.from->objectName())) {
+    if (effect.to->askForSkillInvoke("yaoli-draw", data, "hahahahahaha:" + effect.from->objectName())) {
         effect.to->drawCards(1, "yaoli");
         if (effect.to->canDiscard(effect.to, "hes")) {
-            const Card *discard = room->askForCard(effect.to, "..!", "@yaoli-discard", QVariant::fromValue<const Card *>(this));
+            const Card *discard = room->askForCard(effect.to, "..!", "@yaoli-discard", data);
             if (discard == nullptr) {
                 QList<const Card *> allcards = effect.to->getCards("hes");
                 QList<const Card *> cards;
