@@ -4005,6 +4005,15 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
                 else
                     broadcastResetCard(getPlayers(), card_use.card->getEffectiveId());
             }
+
+            if (card_use.card->getTypeId() == Card::TypeSkill) {
+                // recent change made SkillCard do not trigger event (for simplify of skill implementation).
+                // So we need to do AI filterEvent (TargetConfirmed) for a AI intention update
+                QVariant data = QVariant::fromValue(card_use);
+                foreach (AI *ai, ais)
+                    ai->filterEvent(TargetConfirmed, data);
+            }
+
             card_use.card->onUse(this, card_use);
         } else if (card != nullptr) {
             CardUseStruct new_use = card_use;

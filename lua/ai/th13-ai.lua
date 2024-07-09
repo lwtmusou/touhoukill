@@ -911,7 +911,7 @@ local zhengtiCardTargetFilter = function(self, card, to_select)
 	local filter = not to_select:getEquip(location)
 	return filter
 end
--- sgs.ai_skill_cardchosen.zhengti 用默认的就行
+sgs.ai_choicemade_filter.cardChosen.zhengti = sgs.ai_choicemade_filter.cardChosen.snatch
 sgs.ai_skill_use["@@zhengti"] = function(self)
 	local cards = sgs.QList2Table(self.player:getCards("hes"))
 	local equipCardsGiveToEnemy = {}
@@ -962,17 +962,18 @@ sgs.ai_skill_use["@@zhengti"] = function(self)
 		end
 	end
 
-	if self.player:getArmor() and self.player:getArmor():objectName() == "SilverLion" and self.player:isWounded() then
-		self:sort(self.friends_noself, "defense")
-		self:reverse(self.friends_noself)
+--	if self.player:getArmor() and self.player:getArmor():objectName() == "SilverLion" and self.player:isWounded() then
+--		self:sort(self.friends_noself, "defense")
+--		self:reverse(self.friends_noself)
 
-		for _, e in ipairs(self.friends_noself) do
-			if zhengtiCardTargetFilter(self, self.player:getArmor(), e) then
-				return "@ZhengtiCard=" .. tostring(self.player:getArmor():getEffectiveId()) .. "->" .. e:objectName()
-			end
-		end
-	end
+--		for _, e in ipairs(self.friends_noself) do
+--			if zhengtiCardTargetFilter(self, self.player:getArmor(), e) then
+--				return "@ZhengtiCard=" .. tostring(self.player:getArmor():getEffectiveId()) .. "->" .. e:objectName()
+--			end
+--		end
+--	end
 end
+sgs.ai_card_intention.ZhengtiCard = 10
 
 --神灵庙SP小伞
 --[晴雨]
