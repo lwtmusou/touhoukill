@@ -8,7 +8,7 @@ sgs.ai_skill_playerchosen.sidie = function(self, targets)
 	return nil
 end
 
---[华胥]
+--[役灵]
 sgs.ai_skill_invoke.yiling = function(self, data)
 	local current = self.room:getCurrent()
 	if self:isFriend(current) then

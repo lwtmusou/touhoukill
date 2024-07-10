@@ -372,7 +372,7 @@ sgs.ai_skill_cardask["@kuangzao-annoying"] = function(self, data)
 	if self.player:getArmor() and self.player:getArmor():isKindOf("SliverLion") and self.player:isWounded() and not slash then
 		return tostring(self.player:getArmor():getId())
 	end
-	
+
 	self:sortByKeepValue(cards)
 	for _, c in ipairs(cards) do
 		if not slash then

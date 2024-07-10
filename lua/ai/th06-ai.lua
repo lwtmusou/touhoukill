@@ -685,40 +685,34 @@ end
 --琪露诺
 --[冻结]
 sgs.ai_skill_invoke.dongjie = function(self, data)
-		local damage =self.player:getTag("dongjie"):toDamage()
-		local to = damage.to
-		local final_damage = self:touhouDamage(damage, self.player, to, 2)
-		local needAvoidAttack = self:touhouNeedAvoidAttack(damage,self.player,to,true, 2)
-		if self:isEnemy(to) and needAvoidAttack then
-			if final_damage.damage > 1  or final_damage.damage >= to:getHp()  then return false end
-		end
-		return self:isFriend(to) ~= to:faceUp()
+	local current_target = data:toPlayer()
+	if self:isEnemy(current_target) and current_target:faceUp() then return true end
+	if self:isFriend(current_target) and not current_target:faceUp() then return true end
+
+	return false
 end
--- sgs.ai_skill_cardask["@dongjie-give"] = ???
-sgs.ai_choicemade_filter.skillInvoke.dongjie = function(self, player, args ,data)
-	local to=player:getTag("dongjie"):toDamage().to
-	if to then
-		if to:faceUp() then
-			if args[#args] == "yes" then
-				sgs.updateIntention(player, to, 60)
-			end
-		else
-			if args[#args] == "yes" then
-				sgs.updateIntention(player, to, -60)
-			else
-				sgs.updateIntention(player, to, 60)
+sgs.ai_choicemade_filter.skillInvoke.dongjie = function(self, player, args, data)
+	local current_target = data:toPlayer()
+	sgs.updateIntention(player, current_target, current_target:faceUp() and -80 or 100)
+end
+sgs.ai_skill_cardask["@dongjie-give"] = function(self, data, pattern, target)
+	if self:isFriend(target) or (not self.player:faceUp()) then return "." end
+	local handcard = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(handcard)
+	local e, b, t = {}, {}, {}
+	for _, c in ipairs(handcard) do
+		if c:isRed() then
+			if     c:getTypeId() == sgs.Card_TypeEquip then table.insert(e, c)
+			elseif c:getTypeId() == sgs.Card_TypeBasic then table.insert(b, c)
+			elseif c:getTypeId() == sgs.Card_TypeTrick then table.insert(t, c)
 			end
 		end
 	end
+	if #e > 0 then return tostring(e[1]:getEffectiveId()) end
+	if #b > 0 then return tostring(b[1]:getEffectiveId()) end
+	if #t > 0 then return tostring(t[1]:getEffectiveId()) end
+	return "."
 end
-sgs.ai_cardneed.dongjie = function(to, card, self)
-	return getCardsNum("Slash", to, self.player) <1
-	 and card:isKindOf("Slash")
-end
-sgs.dongjie_keep_value = {
-	Peach           = 5.5,
-	Slash           = 6.4
-}
 
 --[冻结 国]
 sgs.ai_skill_invoke.dongjie_hegemony = function(self, data)
