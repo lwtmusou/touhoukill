@@ -1420,7 +1420,7 @@ sgs.ai_skill_discard.nanti = function(self, n)
 
 	return {}
 end
-sgs.ai_skill_carduse["@@nanti"] = function(self)
+sgs.ai_skill_use["@@nanti"] = function(self)
 	local slash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_NoSuit, 0)
 	slash:setSkillName("_nanti")
 	slash:deleteLater()
