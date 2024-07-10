@@ -197,6 +197,9 @@ function SmartAI:useCardAnaleptic(card, use)
 		and sgs.Analeptic_IsAvailable(self.player, card) then
 		use.card = card
 	end
+
+	-- 应该如何在有特定技能的情况下，出牌阶段最后一张用酒？
+	-- 难题，死蝶
 end
 
 function SmartAI:searchForAnaleptic(use, enemy, slash)

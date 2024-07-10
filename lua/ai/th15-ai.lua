@@ -290,6 +290,7 @@ sgs.ai_skill_playerchosen.chihou = function(self,targets)
 	self:sort(targets_list,"defense")
 	return targets_list[1]
 end
+-- sgs.ai_playerchosen_intention.chihou = 10 -- TBD, concider Chunhua
 
 local isChihouMagicAnalepticAvailable = function(self)
 	local apple = self.player
@@ -350,13 +351,10 @@ chihouskill.getTurnUseCard = function(self)
 end
 
 sgs.ai_cardsview_valuable.chihou = function(self,class_name,player)
-	if class_name == "Analeptic" then
-	    local dying = self.room:getCurrentDyingPlayer()
-		if dying and dying:objectName() == self.player:objectName() and isChihouMagicAnalepticAvailable(self) then
-			local cards = sgs.QList2Table(self.player:getHandcards())
-			self:sortByUseValue(cards)
-			return "magic_analeptic:_chihou[to_be_decided:-1]=" .. cards[#cards]:getEffectiveId()
-		end
+	if class_name == "Analeptic" and isChihouMagicAnalepticAvailable(self) then
+		local cards = sgs.QList2Table(self.player:getHandcards())
+		self:sortByUseValue(cards)
+		return "magic_analeptic:_chihou[to_be_decided:-1]=" .. cards[#cards]:getEffectiveId()
 	end
 end
 

@@ -1393,6 +1393,47 @@ sgs.ai_view_as.shenbao_attach = function(card, player, card_place)
 	end
 end
 
+-- 难题
+sgs.ai_skill_invoke.nanti = true
+sgs.ai_skill_discard.nanti = function(self, n)
+	if n >= 3 then return {} end
+	local slash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_NoSuit, 0)
+	slash:setSkillName("_nanti")
+	slash:deleteLater()
+	local use = {isDummy = true, to = sgs.SPlayerList()}
+	self:useCardSlash(slash, use)
+	if use.card then
+		if use.to:length() == 1 and n == 2 then
+			-- 如果只能杀一个，且需要弃两张牌，就要看必要性了
+			local t = use.to:first()
+			if self:hasHeavySlashDamage(self.player, slash, t) or self:isWeak(t) then
+				-- 先杀着
+			else
+				use.card = nil
+			end
+		end
+	end
+
+	if use.card then
+		return sgs.ai_skill_discard.gamerule(self, n, n)
+	end
+
+	return {}
+end
+sgs.ai_skill_carduse["@@nanti"] = function(self)
+	local slash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_NoSuit, 0)
+	slash:setSkillName("_nanti")
+	slash:deleteLater()
+	local use = {isDummy = true, to = sgs.SPlayerList()}
+	self:useCardSlash(slash, use)
+	if use.card then
+		local cardUse = sgs.CardUseStruct()
+		cardUse.card = use.card
+		cardUse.to = use.to
+		return cardUse:toString()
+	end
+end
+
 --神 小野塚小町
 --[引渡]
 function SmartAI:executorRewardOrPunish(victim,damage)

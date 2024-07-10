@@ -2788,9 +2788,6 @@ sgs.ai_skill_discard.gamerule = function(self, discard_num, min_num)
 	self:sortByKeepValue(cards)
 	local to_discard = {}
 
-	local least = min_num
-	if discard_num - min_num > 1 then least = discard_num - 1 end
-
 	for _, card in ipairs(cards) do
 		if not self.player:isCardLimited(card, sgs.Card_MethodDiscard, true) then
 			table.insert(to_discard, card:getId())
@@ -5088,7 +5085,7 @@ function SmartAI:useBasicCard(card, use)
 	if not card then global_room:writeToConsole(debug.traceback()) return end
 	if self:touhouNeedBear(card)  then return end
 	if self:hasSkill("chaoren") then
-		local acard = sgs.Sanguosha:getCard(self.room:getDrawPile():first())
+		local acard = sgs.Sanguosha:getCard(self.room:getDrawPile():first()) -- 啊？黑桃7杀？？？？（cardid=0)
 		if acard:getClassName()==card:getClassName() then
 			self:useCardByClassName(acard, use)
 		elseif acard:isKindOf("Slash") and card:isKindOf("Slash") then
