@@ -631,7 +631,7 @@ sgs.ai_skill_playerchosen.duozhi = function(self, targets)
 				table.insert(friends, t)
 			end
 		end
-		
+
 		if #friends > 0 then
 			self:sort(friends, "handcard")
 			return friends[1]
@@ -644,7 +644,7 @@ sgs.ai_skill_playerchosen.duozhi = function(self, targets)
 				table.insert(friends, t)
 			end
 		end
-		
+
 		if #friends > 0 then
 			self:sort(friends, "handcard")
 			return friends[1]
@@ -757,39 +757,22 @@ end
 -- 【瓷偶】锁定技 当你受到伤害时，若受到的是【杀】造成的无属性伤害，此伤害结算结束后你失去1点体力，否则此伤害值-1。
 -- 本体无需AI，防御要调整
 
--- 【劲疾】锁定技 你与其他角色的距离-X（X为你装备区里的牌数），其他角色与你的距离+Y（Y为你装备区里横置的牌数）。
+--劲疾: 锁定技，你与其他角色的距离-1，且其他角色与你的距离+1；当你你使用或打出基本牌时，此技能于此回合内无效。
 -- None needed
 
--- 【天行】一名其他角色的准备阶段开始时，你可以横置装备区里的一张牌，视为对其使用【杀】；当你使用【杀】对一名角色造成伤害后，其于此回合内不能使用以你为唯一目标的牌。
--- 用默认杀的策略，只是杀换成了视为的
-
---[[sgs.ai_skill_cardask["@tianxing-discard"] = function(self, data)
-	local current = data:toPlayer()
-	if self:isFriend(current) then return "." end
-
+--天行: 一名角色的出牌阶段结束时，若你攻击范围内的角色数与此阶段开始时不同，你可以视为使用无视距离的幻【杀】。
+sgs.ai_skill_use["@@tianxing"] = function(self)
 	local viewAsSlash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
-	viewAsSlash:setSkillName("_tianxing")
+	viewAsSlash:setSkillName("tianxing")
+	viewAsSlash:setShowSkill("tianxing")
 	local use = {isDummy = true, to = sgs.SPlayerList()}
-	use.to:append(current)
 	self:useCardSlash(viewAsSlash, use)
 	viewAsSlash:deleteLater()
-	if not use.card then return "." end
-
-
-	-- 横置优先级： -1，武器，+1，宝物，防具
-	local __first = true
-	local id
-	while __first do
-		__first = false
-		if self.player:getOffensiveHorse() and not self.player:isBrokenEquip(self.player:getOffensiveHorse():getId()) then id = self.player:getOffensiveHorse():getId() break end
-		if self.player:getWeapon() and not self.player:isBrokenEquip(self.player:getWeapon():getId()) then id = self.player:getWeapon():getId() break end
-		if self.player:getDefensiveHorse() and not self.player:isBrokenEquip(self.player:getDefensiveHorse():getId()) then id = self.player:getDefensiveHorse():getId() break end
-		if self.player:getTreasure() and not self.player:isBrokenEquip(self.player:getTreasure():getId()) then id = self.player:getTreasure():getId() break end
-		if self.player:getArmor() and not self.player:isBrokenEquip(self.player:getArmor():getId()) then id = self.player:getArmor():getId() break end
+	if use.card then
+		-- 杀！
+		local realUse = sgs.CardUseStruct()
+		realUse.card = viewAsSlash
+		realUse.to = use.to
+		return realUse:toString()
 	end
-
-	if not id then return "." end
-
-	return "$" .. tostring(id)
 end
-]]
