@@ -831,6 +831,7 @@ void WeiyiCard::use(Room *room, const CardUseStruct &card_use) const
 
     if (!room->askForUseSlashTo(a, b, prompt.join(":"), false)) {
         if (!a->isNude() && a != card_use.from) {
+            a->tag["weiyi"] = QVariant::fromValue(card_use);
             QStringList prompt = {"@weiyi-askforexchange"};
             prompt << card_use.from->objectName();
             const Card *c = room->askForExchange(a, "weiyi", 1, 1, true, prompt.join(":"));
