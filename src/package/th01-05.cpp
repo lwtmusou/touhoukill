@@ -4181,7 +4181,7 @@ TH0105Package::TH0105Package()
     sariel->addSkill(new Baosi);
     sariel->addSkill(new Moyan);
 
-    General *konngara = new General(this, "konngara", "pc98", 4);
+    General *konngara = new General(this, "konngara", "pc98", 3);
     konngara->addSkill(new Zongjiu);
     konngara->addSkill(new ZongjiuTM);
     related_skills.insertMulti("zongjiu", "#zongjiu");
