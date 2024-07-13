@@ -962,7 +962,7 @@ public:
                 foreach (ServerPlayer *kisume, room->findPlayersBySkillName(objectName())) {
                     if (kisume->hasSkill(this) && kisume->isAlive() && kisume->getMark("liaoluo_usecard") == 1) {
                         foreach (ServerPlayer *others, room->getOtherPlayers(kisume)) {
-                            if (others->getMark("liaoluo_damage") == 0 && kisume->canSlash(others)) {
+                            if (others->getMark("liaoluo_damage") == 0 && kisume->canSlash(others, false)) {
                                 d << SkillInvokeDetail(this, kisume, kisume);
                                 break;
                             }
@@ -987,7 +987,7 @@ public:
             ServerPlayer *slasher = invoke->invoker;
             QList<ServerPlayer *> victims;
             foreach (ServerPlayer *others, room->getOtherPlayers(slasher)) {
-                if (others->getMark("liaoluo_damage") == 0 && slasher->canSlash(others))
+                if (others->getMark("liaoluo_damage") == 0 && slasher->canSlash(others, false))
                     victims << others;
             }
             Q_ASSERT(!victims.isEmpty());
