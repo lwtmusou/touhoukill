@@ -1600,7 +1600,8 @@ function sgs.ai_cardsview_valuable.xinhua(self, class_name, player)
 end
 
 --神 射命丸文
---无
+--[风靡]
+sgs.ai_skill_invoke.fengmi = true
 
 --神 霍青娥
 --[通灵]
