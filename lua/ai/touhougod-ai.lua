@@ -1604,9 +1604,11 @@ end
 
 --神 霍青娥
 --[通灵]
-local badSkills={"mokai","guangji","xinghui","bendan","moxue","sisheng","jingdong","shishen","chunmian",
-"wangwu","shouye","zhouye","hongwu","shenqiang","yewang","jinguo","rengui","gaoao","caiyu","shenhua"}
-local key_skills={"feixiang","mingyun","yongheng","qiuwen","xiangqi","jiushu","hpymsiyu"}
+local badSkills={"jiyi","chunmian","shiqu","zhenli","qiusuo","mengyan","huanwei","guaiqi","xiaoyin","fenghua",
+"chunyi","jingjie","sisheng","jingdong","shouhuo","menfei","houhu","chunteng",
+"zhouye","hongwu","shenqiang","yewang","jinguo","rengui","gaoao","caiyu","shenhua"}
+local key_skills={"feixiang","mingyun","yongheng","qiuwen","xiangqi","jiushu","hpymsiyu","hezhou","shihui","xiezou","renou","yujian",
+"qiji","fengshen","xinshang","fengrang"}
 sgs.ai_skill_choice.tongling = function(self, choices)
 	local choice_table = choices:split("+")
 	table.removeOne(choice_table, "cancel")
