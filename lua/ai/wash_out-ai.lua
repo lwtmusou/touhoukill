@@ -151,6 +151,8 @@ sgs.ai_skill_playerchosen.Camouflage = function(self, targets)
 	for _, t in sgs.qlist(targets) do
 		if t:getArmor():isKindOf("Camouflage") then s = t break end
 	end
+	if not s then return end
+	if s:objectName() ~= self.player:objectName() and self:isEnemy(s) then return s end
 	for _, t in sgs.qlist(targets) do
 		if t:objectName() ~= s:objectName() then
 			if self:isEnemy(t) then
