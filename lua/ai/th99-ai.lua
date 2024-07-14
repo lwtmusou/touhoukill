@@ -129,11 +129,9 @@ function choose_xiufuId(self, card_ids)
 	local treasure_targets={}
 	local wounded_silverlion
 
-
 	local spades={}
 	local baoyi
 	local baoyi_id
-
 
 	local chosen_cards_id=-1
 	local target
@@ -245,7 +243,6 @@ function equip_in_discardpile(self)
 	return card_ids
 end
 
-
 local xiufu_skill = {}
 xiufu_skill.name = "xiufu"
 table.insert(sgs.ai_skills, xiufu_skill)
@@ -267,8 +264,6 @@ end
 
 sgs.ai_use_value.xiufu = 7
 sgs.ai_card_intention.XiufuCard = -70
-
-
 
 --朱鹭子
 --[泛读]
@@ -335,7 +330,6 @@ sgs.ai_choicemade_filter.skillInvoke.taohuan = function(self, player, args, data
 		end
 	end
 end
-
 
 --宇佐见莲子
 --[识途]
@@ -466,10 +460,9 @@ sgs.ai_skill_cardask["@mengxian_hegemony"] = function(self, data)
 		if target:getCards("hes"):length()<4 and target:getCards("hes"):length()>1 then return getReturn() end
 		return "."
 	end
-	
+
 	return "."
 end
-
 
 --绵月丰姬
 --[月使]
@@ -515,12 +508,10 @@ sgs.ai_cardneed.lianxi = function(to, card, self)
 	return  card:isKindOf("Slash")
 end
 
-
 function SmartAI:needWakeYueshi(player)
 	player = player or self.player
 	if not player:hasSkill("yueshi") then return false end
 	if player:getMark("yueshi")>0 then return false end
-
 
 	local current=self.room:getCurrent()
 	local enemy_num=0
@@ -556,7 +547,6 @@ end
 sgs.ai_needToWake.yueshi=function(self,player)
 	return "Chained","StartPhase"
 end
-
 
 --绵月依姬
 --[凭依]
@@ -600,7 +590,6 @@ local function pingyi_change(player,attacker)
 	end
 	return false
 end
-
 
 sgs.ai_skill_cardask["@pingyi_hegemony"] = function(self, data)
 	local head = self.player:inHeadSkills("pingyi_hegemony")
@@ -664,8 +653,6 @@ sgs.ai_choicemade_filter.cardResponded["@pingyi-discard"] = function(self, playe
 end
 
 --桑尼·米尔克
---技能 贪吃 已取消
-sgs.ai_skill_invoke.tanchi =  true
 --[折射]
 -- 国色雷击肛裂恩怨倾国都是啥？？？？
 -- 遗计不屈双雄再起英魂都是什么鬼。。。。。。。
@@ -762,23 +749,13 @@ function SmartAI:touhouDamageTransfer(player)
 	if player:hasSkill("zheshe") and not player:isKongcheng() then
 		return true
 	end
-	--[[if player:hasSkill("zhengti") then
-		for _,p in sgs.qlist(self.room:getOtherPlayers(player))do
-			if p:getMark("@zhengti")>0 then
-				return true
-			end
-		end
-	end]]
 	return false
 end
 --[助戏]
 sgs.ai_skill_invoke.zhuxi =  function(self, data)
-	--local r = data:toRecover()
-	--return self:isFriend(r.to)
 	local target = data:toPlayer()
 	return self:isFriend(target)
 end
-
 
 --露娜·切露德
 --[捉弄]
@@ -925,7 +902,7 @@ sgs.ai_skill_playerchosen.jijing = function(self, targets)
 			table.insert(good_targets, p)
 		end
 	end
-	
+
 	if #good_targets == 0 then return nil end
 	local sorttype = not self.player:isCurrent()
 	self:sort(good_targets, "defenseSlash")
@@ -933,12 +910,11 @@ sgs.ai_skill_playerchosen.jijing = function(self, targets)
 end
 sgs.ai_playerchosen_intention.jijing = function(self, from, to)
 	if not from:isCurrent() then
-		sgs.updateIntention(from, to, -20) 
+		sgs.updateIntention(from, to, -20)
 	--elseif from:isCurrent() then
-	--	sgs.updateIntention(from, to, 20) 
+	--	sgs.updateIntention(from, to, 20)
 	end
 end
-
 
 --斯塔·萨菲雅
 --[感应]
@@ -953,27 +929,20 @@ sgs.ai_skill_playerchosen.ganying = function(self, targets)
 end
 sgs.ai_playerchosen_intention.ganying = 60
 sgs.ai_skill_invoke.ganying = true
---[[sgs.ai_cardneed.ganying = function(to, card, self)
-	if not self:willSkipPlayPhase(to) then
-		return  (not to:getDefensiveHorse() and  getCardsNum("DefensiveHorse",to,self.player)<1 and card:isKindOf("DefensiveHorse"))
-		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
-	end
-end]]
-
 sgs.ai_skill_playerchosen.ganying = function(self, targets)
 	for _,p in sgs.qlist(targets) do
 		if self:isEnemy(p) and self:isWeak(p) then
 			return p
 		end
 	end
-	
+
 	return self.player
 end
 
 --[独避]
 function SmartAI:canDubi()
 	if self:isWeak() then
-		return self:getCardsNum("Pecah") > 0  or self:getCardsNum("Analeptic") > 0
+		return self:getCardsNum("Peach") > 0  or self:getCardsNum("Analeptic") > 0
 	end
 	return true
 end
@@ -982,8 +951,7 @@ sgs.ai_skill_playerchosen.dubi = function(self, targets)
 	local card=self.player:getTag("dubi_use"):toCardUse().card
 
 	if not self:canDubi() then return nil end
-	
-	--if card:isKindOf("AmazingGrace") then
+
 	if card:isKindOf("GodSalvation") then
 		for _, p in sgs.qlist(targets) do
 			if p:isWounded() and self:isEnemy(p) then
@@ -1138,7 +1106,6 @@ end
 
 sgs.ai_use_priority.YushouCard = 8
 
-
 --本居小铃
 --[判读]
 local pandu_skill = {}
@@ -1255,7 +1222,6 @@ sgs.ai_slash_prohibit.bihuo = function(self, from, to, card)
 	return false
 end
 
-
 --三月精SP琪露诺
 --[寻事]
 sgs.ai_skill_invoke.xunshi =  true
@@ -1274,7 +1240,6 @@ sgs.ai_skill_cardask["jidong-discard"] = function(self, data)
 	if #cards <= 0 then
 		return "."
 	end
-
 
 	local compare_func = function(a, b)
 		return a:getNumber() < b:getNumber()
@@ -1314,7 +1279,6 @@ sgs.ai_choicemade_filter.cardResponded["jidong-confirm"] = function(self, player
 		sgs.updateIntention(player, target, 50)
 	end
 end
-
 
 --铃奈庵SP猯藏
 --[障目]
@@ -1481,7 +1445,6 @@ sgs.ai_damage_prohibit.sixiang = function(self, from, to, damage)
 	return self:touhouDamage(damage,from,to).damage < to:getHp()
 	--暂不考虑连弩
 end
-
 
 -- 【酌志】 出牌阶段限一次，你可以将一张【杀】当【以逸待劳】使用（选择目标含你）。此牌结算结束时，你展示一张手牌，然后获得一张与之类别相同的于此牌结算时因弃置而置入弃牌堆的牌。
 local zhuozhi_skill = {}

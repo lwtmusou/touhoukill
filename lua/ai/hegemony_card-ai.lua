@@ -31,8 +31,6 @@ sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
 	return "all"
 end
 
-
-
 sgs.ai_nullification.ArcheryAttack = function(self, card, from, to, positive, keep)
 	local targets = sgs.SPlayerList()
 	local players = self.room:getTag("targets" .. card:toString()):toList()
@@ -103,7 +101,7 @@ sgs.ai_nullification.ArcheryAttack = function(self, card, from, to, positive, ke
 			return num > 1 or weak, true
 		else
 			if self:isWeak(to) then return true, true end
-		end		
+		end
 	end
 	return
 end
@@ -183,12 +181,10 @@ sgs.ai_nullification.SavageAssault = function(self, card, from, to, positive, ke
 			return num > 1 or weak, true
 		else
 			if self:isWeak(to) then return true, true end
-		end		
+		end
 	end
 	return
 end
-
-
 
 function SmartAI:useCardAwaitExhaustedHegemony(AwaitExhausted, use)
 	if not AwaitExhausted:isAvailable(self.player) then return end
@@ -231,8 +227,6 @@ sgs.ai_nullification.AwaitExhaustedHegemony = function(self, card, from, to, pos
 	end
 	return
 end
-
-
 
 function SmartAI:useCardBefriendAttacking(BefriendAttacking, use)
 	if not BefriendAttacking:isAvailable(self.player) then return end
@@ -301,7 +295,6 @@ sgs.ai_use_priority.BefriendAttacking = 9.28
 sgs.ai_use_value.BefriendAttacking = 8.9
 sgs.ai_keep_value.BefriendAttacking = 3.88
 
-
 sgs.ai_nullification.BefriendAttacking = function(self, card, from, to, positive, keep)
 	if keep then return false end
 	if positive then
@@ -324,7 +317,6 @@ end
 
 sgs.weapon_range.DoubleSwordHegemony = 2
 sgs.weapon_range.SixSwords = 2
-
 
 function SmartAI:useCardKnownBothHegemony(KnownBoth, use)
 	self.knownboth_choice = {}
@@ -377,7 +369,6 @@ function SmartAI:useCardKnownBothHegemony(KnownBoth, use)
 	end
 end
 
-
 sgs.ai_skill_choice.known_both_hegemony = function(self, choices, data)
 	local target = data:toPlayer()
 	if target and self.knownboth_choice and self.knownboth_choice[target:objectName()] then return self.knownboth_choice[target:objectName()] end
@@ -410,7 +401,7 @@ sgs.ai_choicemade_filter.skillChoice.known_both_hegemony = function(self, from, 
 					end
 				end
 				local generals = self.room:getTag(to:objectName()):toList()
-				
+
 				if choice == "showhead" then
 					names[1] = generals:first()
 				else

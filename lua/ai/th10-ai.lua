@@ -12,7 +12,6 @@ sgs.ai_skill_discard.shende = function(self)
 	return to_discard
 end
 
-
 local shende_skill = {}
 shende_skill.name = "shende"
 table.insert(sgs.ai_skills, shende_skill)
@@ -48,7 +47,6 @@ end
 sgs.shende_keep_value = {
 	Slash           = 5.7
 }
-
 
 --[供奉]
 local gongfengvs_skill = {}
@@ -205,12 +203,11 @@ sgs.ai_skill_playerchosen.chuancheng_hegmony = function(self,targets)
 	return nil
 end
 
-
 --东风谷早苗
 --[祭仪]
 sgs.ai_skill_cardask["@dfgzmjiyi-discard"] = function(self)
 	local ids = {}
-	
+
 	local cards = sgs.QList2Table(self.player:getCards("hs"))
 	if #cards > 0 then
 		if self.player:isSkipped(sgs.Player_Play) then
@@ -225,7 +222,7 @@ sgs.ai_skill_cardask["@dfgzmjiyi-discard"] = function(self)
 	elseif #cards > 1 then
 		table.insert(ids, cards[#cards - 1]:getId())
 	end
-	
+
 	if #ids == 2 then
 		local idstrings = {}
 		for _, id in ipairs(ids) do
@@ -255,7 +252,7 @@ qiji_skill.getTurnUseCard = function(self)
 
 	local qiji = "peach|super_peach|savage_assault|archery_attack|ex_nihilo|god_salvation|dismantlement"
 	local qijis = qiji:split("|")
-	if self.room:getMode():find("hegemony") then 
+	if self.room:getMode():find("hegemony") then
 		table.removeOne(qijis, "super_peach")
 	end
 	for i = 1, #qijis do
@@ -333,8 +330,7 @@ function sgs.ai_cardsview_valuable.qiji(self, class_name, player)
             end
         end
     end
-	
-	
+
 	local acard
 	for _,c in sgs.qlist(player:getCards("hs"))do
 				acard=c
@@ -487,8 +483,6 @@ sgs.ai_need_damaged.fengshen = function(self, attacker, player)
 	return false
 end
 
-
-
 --河城荷取
 --[心伤]
 local xinshang_skill = {}
@@ -541,7 +535,6 @@ sgs.ai_damageInflicted.micai =function(self, damage)
 	end
 	return damage
 end
-
 
 --键山雏
 --[集厄]
@@ -605,7 +598,6 @@ function SmartAI:canJie(player)
 	return false
 end
 
-
 --[流刑]
 sgs.ai_skill_cardask["@liuxing"] = function(self,data)
 	local blacks ={}
@@ -640,7 +632,6 @@ sgs.ai_choicemade_filter.skillChoice.liuxing = function(self, player, args, data
 	end
 end
 
-
 --SP高中生早苗
 --[常识]
 --[[function SmartAI:cautionChangshi()
@@ -651,7 +642,7 @@ end
 	return false
 end]]
 sgs.ai_skill_choice.changshi= function(self, choices, data)
-	if choices:match("skillInvalid") then 
+	if choices:match("skillInvalid") then
 		return "skillInvalid"
 	end
 	if choices:match("debuff") then
@@ -669,7 +660,6 @@ sgs.ai_skill_choice.changshi= function(self, choices, data)
 end
 --[纪念]
 sgs.ai_skill_invoke.jinian = true
-
 
 --犬走椛
 --[守护]
@@ -733,7 +723,6 @@ sgs.ai_damageInflicted.shaojie =function(self, damage)
 	end
 	return damage
 end
-
 
 --秋穰子
 --[丰穰]

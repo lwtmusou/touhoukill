@@ -101,7 +101,6 @@ sgs.ai_skill_use_func.YanhuiCard = function(card, use, self)
 	end
 end
 
-
 --四季映姬·夜摩仙那度
 --[审判]
 sgs.ai_skill_playerchosen.shenpan = function(self, targets)
@@ -219,8 +218,6 @@ sgs.ai_skill_invoke.huiwu =function(self,data)
 	if not owner then return false end
 	return self:isFriend(owner)
 end
-
--- 先注释掉，这逻辑。。。。
 sgs.ai_choicemade_filter.skillInvoke.huiwu = function(self, player, args, data)
 	local card=data:toCardUse().card
 	local to=player:getTag("huiwu_owner"):toPlayer()
@@ -265,7 +262,6 @@ sgs.ai_choicemade_filter.skillInvoke.huazhong = function(self, player, args, dat
 		end
 	end
 end
-
 
 --小野塚小町
 --[冥途]
@@ -326,7 +322,6 @@ sgs.ai_skill_cardask["@weiya"] = function(self, data, pattern, target)
 	end
 	return "."
 end
-
 
 --梅蒂欣·梅兰可莉
 --[剧毒]
@@ -463,7 +458,6 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 		table.insert(retrial_targets,array)
 	end
 
-
 	local compare_func = function(a, b)
 		return a.value > b.value
 	end
@@ -516,7 +510,6 @@ end
 
 --[地震]
 sgs.ai_skill_invoke.dizhen  = true
-
 
 --[天人]
 table.insert(sgs.ai_global_flags, "tianrenslashsource")
@@ -597,7 +590,6 @@ sgs.ai_skill_invoke.tianren = function(self,data)
 		end
 		return has_friend
 	end
-
 
 	return false
 end
@@ -747,7 +739,7 @@ end
 sgs.ai_skill_use_func.ShizaiCard = function(card, use, self)
 	use.card = card
 end
-sgs.ai_use_priority.ShizaiCard = 4294967295
+sgs.ai_use_priority.ShizaiCard = 2147483647
 
 sgs.ai_skill_playerchosen.shizai = function(self, targets)
 	local enemies = {}
@@ -1105,7 +1097,6 @@ sgs.ai_skill_cardask["@jianshe-discard"] = function(self, data)
 	if not target or target:isDead() then return "." end
 	if not self:isEnemy(target) then return "." end
 
-
 	local cards = sgs.QList2Table(self.player:getCards("hes"))
 	if #cards ==0 then return "." end
 	self:sortByCardNeed(cards)
@@ -1120,37 +1111,6 @@ sgs.ai_choicemade_filter.cardResponded["@jianshe-discard"] = function(self, play
 	end
 end
 
-
---[[sgs.ai_skill_invoke.jianshe = function(self, data)
-	local target = self.room:getCurrent()
-	if not target or target:isDead() then return false end
-	local effect=false
-	local num =  target:getHandcardNum() - 1
-
-	if self:isEnemy(target) and (num > 2 or num <=0) then
-		effect=true
-	elseif self:isFriend(target) and num <= 2 and num > 0  and target:isWounded() then
-		effect=true
-	end
-	return effect
-end
-]]
-
---俭奢: 执行选项
---[[sgs.ai_skill_choice.jianshe = function(self, choices, data)
-	if self:isWeak(self.player) then
-		return "jianshe_jian"
-	end
-	local num =  self.player:getHandcardNum() - 1
-
-	if num > 2 then
-		return "jianshe_she"
-	else
-		return "jianshe_jian"
-	end
-	return choices[1]
-end]]
-
 --俭奢: 暂时无脑给牌
 sgs.ai_skill_discard.jianshe = function(self)
 	local to_discard = {}
@@ -1161,15 +1121,7 @@ sgs.ai_skill_discard.jianshe = function(self)
 	table.insert(to_discard, cards[1]:getEffectiveId())
 
 	return to_discard
-
-	--暂时没考虑不给的情况
-	--local skiller = self.player:getTag("jianshe_source"):toPlayer()
-	--local to_discard = {}
-	--if not skiller or not self:isFriend(skiller) then return to_discard end
-
 end
-
-
 
 --极厄:出牌阶段限一次，你可以令至少一名手牌数小于其已损失体力值的角色各失去1点体力。
 local ysjie_skill = {}
@@ -1210,7 +1162,6 @@ sgs.ai_skill_cardask["@yishen-discard"] = function(self, data)
 	self:sortByKeepValue(cards)
 	return "$" .. cards[1]:getEffectiveId()
 end
-
 
 --SP丧面秦心
 sgs.ai_skill_invoke.mianling = true

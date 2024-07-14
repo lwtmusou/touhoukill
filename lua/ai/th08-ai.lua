@@ -207,7 +207,6 @@ sgs.ai_cardneed.fengxiang = function(to, card, self)
 	return card:isRed()
 end
 
-
 --[凤翔 国]
 local fengxiang_hegemony_skill={}
 fengxiang_hegemony_skill.name="fengxiang_hegemony"
@@ -257,8 +256,6 @@ end
 
 --[凯风 国]
 sgs.ai_skill_invoke.kaifeng_hegemony = true
-
-
 
 --铃仙·优昙华院·因幡
 --[狂躁]
@@ -602,7 +599,6 @@ sgs.ai_skill_use["@@xingyun_hegemony"] = function(self, prompt)
 	return "."
 end
 
-
 --米斯蒂娅·萝蕾拉
 --[夜歌]
 sgs.ai_skill_use["@@yege"] = function(self, prompt)
@@ -640,7 +636,6 @@ end
 --[牢笼]
 --默认发动?
 -- Fs：只是随便找个目标而已，askForPlayerChosen就这样
-
 
 --莉格露·奈特巴格
 --[萤火]
@@ -782,7 +777,6 @@ end
 sgs.ai_skill_playerchosen.chuangshi = function(self, targets)
 	if self.player:getMark("chuangshi")>0 then return nil end
 
-
 	if #self.friends_noself>0 then
 		self:sort(self.friends_noself, "hp")
 		for _,p in pairs(self.friends_noself) do
@@ -862,7 +856,6 @@ sgs.ai_skill_use["@@chuangshi"] = function(self, prompt)
 	target=self.player:getTag("chuangshi_victim"):toPlayer()
 	--self.player:removeTag("chuangshi_victim")
 
-
 	if cardname and user then
 		self.room:setPlayerMark(self.player, "chuangshi", self.player:getMark("chuangshi")+1)
 		--self.room:setPlayerMark(user, "chuangshi_user", 0)
@@ -892,7 +885,6 @@ sgs.ai_skill_invoke.wangyue_hegemony =function(self,data)
 	end
 	return false
 end
-
 
 --SP自警队妹红
 --[护卫]
@@ -1014,4 +1006,3 @@ sgs.ai_skill_choice.mingmu = function(self, choices, data)
 	local choice_table = choices:split("+")
 	return choice_table[1]
 end
-

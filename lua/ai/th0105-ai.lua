@@ -27,7 +27,6 @@ sgs.ai_skill_invoke.meiling = function(self,data)
 	return point > 1
 end
 
-
 --冈崎梦美
 --[次元]
 sgs.ai_skill_choice.ciyuan = function(self, choices, data)
@@ -203,7 +202,6 @@ sgs.ai_card_intention.ShiquCard = function(self, card, from, tos)
 	end
 end
 
-
 --朝仓理香子
 --[求索]
 sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
@@ -222,7 +220,6 @@ sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
 		return a.num > b.num
 	end
 	table.sort(point_num, compare_func)
-
 
 	local point = 0
 	for _, t in ipairs(point_num) do
@@ -244,7 +241,6 @@ sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
 	end
 	return "."
 end
-
 
 --卡娜·安娜贝拉尔
 --[梦消]
@@ -478,7 +474,6 @@ sgs.ai_skill_cardask["@huantong"] = function(self, data)
 	return "."
 end
 
-
 sgs.ai_cardneed.huantong = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return  (not to:getWeapon() and  getCardsNum("Weapon",to,self.player)<1 and card:isKindOf("Weapon"))
@@ -488,7 +483,6 @@ end
 
 --[梦湮]
 sgs.ai_skill_invoke.mengyan = true
-
 
 --艾丽
 --[镰幕]
@@ -521,7 +515,6 @@ sgs.ai_damageCaused.huanwei = function(self, damage)
 	end
 	return damage
 end
-
 
 --神绮
 --[创世]
@@ -599,7 +592,6 @@ sgs.ai_skill_invoke.yuanfa  = function(self)
 	return f > e
 end
 
-
 --旧作爱丽丝
 --[怪绮]
 function turnUse_guaiqi(self)
@@ -628,8 +620,6 @@ function turnUse_guaiqi(self)
 		table.insert(guaiqis, "slash")
 	end
 	if #guaiqis == 0 then return nil end
-
-
 
 	local choices={}
 	for i = 1, #guaiqis do
@@ -724,7 +714,6 @@ function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
 		local card_id = modians[1]:getEffectiveId()
 		return ("slash:guaiqi[%s:%s]=%d"):format(suit, number, card_id)
 	end
-
 
 	if class_name == "Nullification" then
 		local hasNul = false
@@ -1022,8 +1011,6 @@ sgs.ai_skill_use["@@luli"] = function(self, prompt)
 		end
 	end
 
-
-
 	--默认全制衡？
 	if not ids:isEmpty() then
 
@@ -1061,7 +1048,6 @@ sgs.ai_choicemade_filter.skillChoice.xiewu = function(self, player, args, data)
 	end
 
 end
-
 
 --明罗
 --[暗流]
@@ -1109,25 +1095,7 @@ sgs.ai_skill_playerchosen.anliu = function(self, targets)
 	return nil
 end
 
-
-
 --里香
---[[sgs.ai_skill_use["@@zhanche"] = function(self)
-	-- return "@ZhancheCard=5->sgs1"
-	local t = sgs.QList2Table(self.player:getCards("hs"))
-	if #t == 0 then return "." end
-	self:sortByUseValue(t, true)
-	if self:getUseValue(t[1]) >= sgs.ai_use_value.Peach then return "." end
-	local enemies = {}
-	local enemy
-	for _,enemy in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isEnemy(enemy) and (not enemy:getEquips():isEmpty()) then table.insert(enemies, enemy) end
-	end
-	if #enemies == 0 then return "." end
-	self:sort(enemies, "threat")
-	return "@ZhancheCard=" .. tostring(t[1]:getEffectiveId()) .. "->" .. enemies[1]:objectName()
-end]]
-
 local zhanche_skill = {}
 zhanche_skill.name = "zhanche"
 table.insert(sgs.ai_skills, zhanche_skill)
@@ -1164,30 +1132,12 @@ end
 sgs.ai_use_priority.ZhancheCard = sgs.ai_use_priority.Snatch + 0.1
 sgs.ai_card_intention.ZhancheCard = 40
 
-
 sgs.ai_skill_cardask["@zhanche-robbed"] = function(self)
 	local t = sgs.QList2Table(self.player:getCards("hes"))
 	if #t == 0 then return "." end
 	self:sortByKeepValue(t, true)
 	return t[1]:getEffectiveId()
 end
-
---[[sgs.ai_skill_playerchosen.huosui = function(self, targets)
-	local _targets = sgs.QList2Table(targets)
-	self:sort(_targets)
-	for _, current in ipairs(_targets) do
-		if not self:isFriend(current) then
-			local viewAsSlash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
-			viewAsSlash:setSkillName("_huosui")
-			local use = {isDummy = true, to = sgs.SPlayerList()}
-			use.to:append(current)
-			self:useCardSlash(viewAsSlash, use)
-			viewAsSlash:deleteLater()
-			if use.card then return current end
-		end
-	end
-end
-]]
 
 sgs.ai_skill_use["@@huosui"] = function(self, prompt)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
@@ -1197,7 +1147,6 @@ sgs.ai_skill_use["@@huosui"] = function(self, prompt)
 	local target
 
 	self:useBasicCard(card, dummy_use)
-
 
 	if not dummy_use.card then return false end
 	local target_objectname = {}

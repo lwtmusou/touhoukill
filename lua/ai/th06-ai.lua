@@ -1011,7 +1011,7 @@ sgs.ai_skill_use["@@xiaoyinVS!"] = function(self, prompt)
 	if #targets > 0 then
 		return card:toString() .. "->" .. table.concat(targets, "+")
 	end
-	return "."
+	return "." -- !!!! 不能不使用啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊
 end
 
 --幼灵梦SP露米娅

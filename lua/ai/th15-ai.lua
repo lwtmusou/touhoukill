@@ -179,29 +179,6 @@ sgs.ai_skill_cardchosen.yuyi = function(self, who, flags)
 	return sgs.Sanguosha:getCard(id)
 end
 
---[[sgs.ai_skill_invoke.yuyi = function(self, data)
-	local current = self.room:getCurrent()
-	if self.player:isCurrent() then
-		local e , f = 0, 0
-		for _,p in sgs.qlist(self.room:getAllPlayers()) do
-			if not p:getShownHandcards():isEmpty() then
-				if self:isEnemy(p) then e = e+1
-				elseif self:isFriend(p) then f = f+1 end
-			end
-		end
-		return f > 0 and f >= e
-	elseif current then
-		--回合外暂不考虑太多
-		if self:isFriend(current) and current:hasSkill("santi") then
-			return true
-		end
-		if self:isEnemy(current) and current:hasSkill("qiuwen") then
-			return true
-		end
-	end
-	return false
-end]]
-
 --稀神探女
 --[舌祸]
 sgs.ai_skill_use["BasicCard+^Jink,EquipCard|.|.|shehuo"] = function(self, prompt, method)
@@ -285,7 +262,7 @@ sgs.ai_skill_playerchosen.chihou = function(self,targets)
 	for _, t in sgs.qlist(targets) do
 		if self:isEnemy(t) then table.insert(targets_list, t) end
 	end
-	
+
 	if #targets_list == 0 then return targets:first() end
 	self:sort(targets_list,"defense")
 	return targets_list[1]
@@ -360,6 +337,7 @@ end
 
 --清兰
 --[异弹]
+--[==[
 local yidan_skill = {}
 yidan_skill.name = "yidan"
 table.insert(sgs.ai_skills, yidan_skill)
@@ -405,3 +383,4 @@ sgs.ai_use_priority.YidanCard = sgs.ai_use_priority.ThunderSlash + 0.2
 --sgs.dynamic_value.damage_card.YidanCard = true
 
 --[血杵] 默认触发
+]==]

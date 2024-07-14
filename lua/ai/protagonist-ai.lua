@@ -20,8 +20,7 @@ end
 sgs.ai_skill_cardask["@fengmo"] = function(self, data)
 	if not self:invokeTouhouJudge() then return nil end
     local target = self.player:getTag("fengmo_target"):toPlayer()
-	
-	
+
 	if self:isEnemy(target)  then
 		local cards= sgs.QList2Table(self.player:getCards("hs"))
 		self:sortByUseValue(cards,true)
@@ -29,13 +28,12 @@ sgs.ai_skill_cardask["@fengmo"] = function(self, data)
 		return "$" .. cards[1]:getId()
 	end
 	return "."
-	
+
 end
 
 sgs.ai_skill_choice.fengmo = function(self, choices, data)
 	return "card"
 end
-
 
 --[同诘]
 sgs.ai_skill_invoke.tongjie_hegemony =function(self,data)
@@ -55,7 +53,6 @@ end
 sgs.ai_cardneed.tuizhi_hegemony = function(to, card, self)
 	return card:getSuit() == sgs.Card_Heart
 end
-
 
 --[博丽]
 table.insert(sgs.ai_global_flags, "bolisource")
@@ -108,14 +105,11 @@ sgs.ai_choicemade_filter.cardResponded["@boli-retrial"] = function(self, player,
 	end
 end
 
-
-
 sgs.ai_skillProperty.boli = function(self)
 	return "noKingdom"
 end
 
-
---雾雨魔理沙 
+--雾雨魔理沙
 --[魔法]
 --function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 local mofa_skill = {}
@@ -126,7 +120,6 @@ function mofa_skill.getTurnUseCard(self)
 	if self.player:hasFlag("mofa_invoked") then return nil end
 	if self.player:isKongcheng() then return nil end
 	if #self.enemies==0 then return false end
-
 
 	local cards = self.player:getCards("hs")
 	local key_names={"Duel","SavageAssault","ArcheryAttack"}
@@ -143,7 +136,6 @@ function mofa_skill.getTurnUseCard(self)
 			end
 		end
 	end
-
 
 	local temp_slash
 	for _,p in pairs (self.enemies) do
@@ -165,9 +157,6 @@ function mofa_skill.getTurnUseCard(self)
 		return nil
 	end
 
-
-
-
 	local scards={}
 	local scards_without_key={}
 	local others_without_key={}
@@ -186,8 +175,6 @@ function mofa_skill.getTurnUseCard(self)
 				table.insert(others_without_key,card)
 		end
 	end
-
-
 
 	if #scards_without_key>0 then
 		self:sortByCardNeed(scards_without_key)
@@ -216,7 +203,6 @@ sgs.ai_skill_invoke.mofa_hegemony =function(self,data)
 	return true
 end
 
-
 --[雾雨]
 local wuyuvs_skill = {}
 wuyuvs_skill.name = "wuyu_attach"
@@ -224,7 +210,6 @@ table.insert(sgs.ai_skills, wuyuvs_skill)
 wuyuvs_skill.getTurnUseCard = function(self)
 
 	if self.player:hasFlag("Forbidwuyu") then return nil end
-
 
 	local cards = self.player:getCards("hes") --"hs"
 	cards = sgs.QList2Table(cards)
@@ -272,7 +257,6 @@ sgs.ai_card_intention.WuyuCard = -40
 sgs.ai_skillProperty.wuyu = function(self)
 	return "noKingdom"
 end
-
 
 --SP无节操灵梦
 --[赛钱]
@@ -390,128 +374,9 @@ sgs.saiqian_suit_value = {
 	heart = 4.9
 }
 
-
 --SP大盗魔理沙
 --[借走]
 --推重
---[[
---find cost for jiezou
-function jiezouSpade(self,player)
-	local cards
-	if player:objectName() == self.player:objectName() then
-		cards =self.player:getCards("hes")
-	else
-		cards=player:getCards("e")
-	end
-	for _,card in sgs.qlist(cards) do
-		if card:getSuit()==sgs.Card_Spade then
-			return true
-		end
-	end
-	return false
-end
-local jiezou_skill = {}
-jiezou_skill.name = "jiezou"
-table.insert(sgs.ai_skills, jiezou_skill)
-jiezou_skill.getTurnUseCard = function(self)
-	local targets=self:getEnemies(self.player)
-	local can_use= jiezouSpade(self,self.player)
-	if not can_use then
-		for _,target in pairs(targets) do
-			can_use = jiezouSpade(self,target)
-			if can_use then
-				break
-			end
-		end
-	end
-	if can_use then
-		return sgs.Card_Parse("@JiezouCard=.")
-	end
-	return nil
-end
-sgs.ai_skill_use_func.JiezouCard = function(card, use, self)
-		local friends={}
-		local enemies_spade={}
-		local enemies ={}
-
-		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if not p:isAllNude() then
-				if self:isFriend(p) then
-					local jcards=p:getCards("j")
-					for _,card in sgs.qlist(jcards) do
-						if card:getSuit()==sgs.Card_Spade and not card:isKindOf("Lightning") then
-							table.insert(friends,p)
-						end
-					end
-				end
-				if self:isEnemy(p) then
-					if jiezouSpade(self,p) then
-						table.insert(enemies_spade,p)
-					elseif not p:isNude() then
-						table.insert(enemies,p)
-					end
-				end
-			end
-		end
-		if #friends>0 then
-			use.card = card
-			if use.to then
-				self:sort(friends,"value")
-				use.to:append(friends[1])
-				if use.to:length() >= 1 then return end
-			end
-		elseif #enemies_spade>0 then
-			use.card = card
-			if use.to then
-				self:sort(enemies_spade,"value")
-				use.to:append(enemies_spade[1])
-				if use.to:length() >= 1 then return end
-			end
-		elseif #enemies>0 and jiezouSpade(self,self.player) then
-			use.card = card
-			if use.to then
-				self:sort(enemies,"value")
-				use.to:append(enemies[1])
-				if use.to:length() >= 1 then return end
-			end
-		end
-end
-sgs.ai_skill_cardchosen.jiezou = function(self, who, flags)
-	if self:isFriend(who) then
-		local jcards=who:getCards("j")
-		for _,card in sgs.qlist(jcards) do
-			if card:getSuit()==sgs.Card_Spade and not card:isKindOf("Lightning") then
-				return card
-			end
-		end
-	else
-		local ecards=who:getCards("e")
-		for _,card in sgs.qlist(ecards) do
-			if card:getSuit()==sgs.Card_Spade then
-				return card
-			end
-		end
-		local id = self:askForCardChosen(who, "hes", "snatch", sgs.Card_MethodNone)
-		return sgs.Sanguosha:getCard(id)
-	end
-end
-sgs.ai_skill_cardask["@jiezou_spadecard"] = function(self, data)
-		local cards = sgs.QList2Table(self.player:getCards("hes"))
-		if #cards==0 then return "." end
-		self:sortByKeepValue(cards)
-		for _,card in pairs (cards) do
-			if card:getSuit()==sgs.Card_Spade then
-				return "$" .. card:getId()
-			end
-		end
-		return "."
-end
-
-
-sgs.ai_choicemade_filter.cardChosen.jiezou = sgs.ai_choicemade_filter.cardChosen.snatch
-sgs.ai_use_value.JiezouCard = 8
-sgs.ai_use_priority.JiezouCard =6
-]]
 sgs.dynamic_value.control_card.JiezouCard = true
 sgs.ai_cardneed.jiezou = function(to, card, self)
 	return card:getSuit()==sgs.Card_Spade
@@ -519,7 +384,6 @@ end
 sgs.jiezou_suit_value = {
 	spade = 4.9
 }
-
 
 --[借走 国]
 local jiezou_hegemony_skill = {}
@@ -547,7 +411,6 @@ function jiezou_hegemony_skill.getTurnUseCard(self)
 	assert(skillcard)
 	return skillcard
 end
-
 
 --[收藏]
 function keycard_shoucang(card)
@@ -582,8 +445,6 @@ sgs.ai_skill_use["@@shoucang"] = function(self, prompt)
 	return "."
 end
 
-
-
 --SP超魔理沙
 --[爆衣]
 sgs.ai_need_bear.baoyi = function(self, card,from,tos)
@@ -606,7 +467,6 @@ function SmartAI:needBaoyiEquip(card,player)
 	end
 	return false
 end
-
 
 sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 	local target_table = self:getEnemies(self.player)
@@ -658,27 +518,6 @@ sgs.ai_skill_playerchosen.baoyi = function(self, targets)
 		return target
 	end
 	return nil
-	--[[local target_table = sgs.QList2Table(targets)
-	self:sort(target_table, "hp")
-	local baoyi_target
-	local slash= sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
-	for _,target in pairs(target_table) do
-		if  self:isEnemy(target) and self:slashIsEffective(slash, target, self.player)  then
-			if not baoyi_target  then
-				baoyi_target=target
-			else
-				if self:isWeak(target) and not self:isWeak(baoyi_target) then
-					baoyi_target=target
-					break
-				end
-			end
-		end
-	end
-
-	if baoyi_target then
-		return baoyi_target
-	end
-	return nil]]
 end
 
 sgs.ai_cardneed.baoyi = function(to, card, self)
@@ -825,7 +664,6 @@ sgs.chunxi_suit_value = {
 	heart = 4.0
 }
 
-
 --神灵庙SP灵梦
 --[五欲]
 function bllmwuyu_discard(player)
@@ -849,8 +687,6 @@ function needSkipJudgePhase(self,player)
 	end
 	return false
 end
-
-
 
 sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
 	local prompt=self.player:getTag("wuyu_prompt"):toString()
@@ -996,23 +832,22 @@ sgs.bllmwuyu_suit_value = {
 }
 sgs.ai_use_priority.BllmWuyuCard =sgs.ai_use_priority.Slash +0.2
 
-
 --神灵庙SP魔理沙
 --[强欲]
 sgs.ai_skill_invoke.qiangyu = function(self, data)
 	local qiangyutime = self.player:getMark("qiangyu")
 	local willdiscardNum = qiangyutime + 2
-	
+
 	local move = data:toMoveOneTime()
 	if willdiscardNum <= move.card_ids:length() + 3 then return true end
-	
+
 	local blacks = {}
 	for _,c in sgs.qlist(self.player:getHandcards()) do
 		if c:getSuit() == sgs.Card_Spade then
 			return true
 		end
 	end
-	
+
 	return false
 end
 
@@ -1037,7 +872,6 @@ sgs.ai_skill_cardask["@qiangyu-discard"] = function(self, data)
 	end
 	return "$" .. table.concat(ids, "+")
 end
-
 
 sgs.ai_cardneed.qiangyu = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
@@ -1075,86 +909,7 @@ end
 
 --神灵庙SP早苗
 --[私欲]
---[[
-local dfgzmsiyu_skill = {}
-dfgzmsiyu_skill.name = "dfgzmsiyu"
-table.insert(sgs.ai_skills, dfgzmsiyu_skill)
-function dfgzmsiyu_skill.getTurnUseCard(self)
-	if self.player:hasUsed("DfgzmSiyuCard") then return nil end
-	local cards=self.player:getCards("hs")
-
-	local can_qishu=true
-	if #self.enemies<2 then
-		can_qishu=false
-	end
-	if not self.player:hasSkill("qishu") then
-		can_qishu=false
-	end
-	local qishu_card
-	if can_qishu then
-		for _,c in sgs.qlist(cards) do
-			if c:isKindOf("Jink") then
-				qishu_card=c
-				break
-			end
-		end
-	end
-	if can_qishu and cards:length()==2 and not qishu_card then
-		if cards:first():isKindOf("Dismantlement") or  cards:first():isKindOf("Snatch") then
-			qishu_card=cards:last()
-		elseif cards:last():isKindOf("Dismantlement") or  cards:last():isKindOf("Snatch") then
-			qishu_card=cards:first()
-		elseif cards:first():isKindOf("Slash") and sgs.Slash_IsAvailable(self.player) then
-			qishu_card=cards:last()
-		elseif cards:last():isKindOf("Slash") and sgs.Slash_IsAvailable(self.player) then
-			qishu_card=cards:first()
-		end
-	end
-	sgs.ai_use_priority.DfgzmSiyuCard = (qishu_card and can_qishu) and 8 or 0
-	if not qishu_card then
-		cards = sgs.QList2Table(cards)
-		self:sortByKeepValue(cards)
-		qishu_card=cards[1]
-	end
-	if (qishu_card) then
-		return sgs.Card_Parse("@DfgzmSiyuCard=" .. qishu_card:getEffectiveId())
-	end
-	return nil
-end
-sgs.ai_skill_use_func.DfgzmSiyuCard = function(card, use, self)
-	local target
-	self:sort(self.enemies,"handcard")
-	for var=#self.enemies, 1, -1 do
-		if self.enemies[var]:hasSkills("chunxi|xingyun") then
-			local heart=sgs.Sanguosha:getCard(card:getSubcards():first())
-			if heart:getSuit()~=sgs.Card_Heart then
-				target=self.enemies[var]
-				break
-			end
-		else
-			target=self.enemies[var]
-			break
-		end
-	end
-	if target then
-		use.card=card
-		if use.to then
-			use.to:append(target)
-			if use.to:length()>=1 then return end
-		end
-	end
-end
-sgs.ai_skill_cardchosen.dfgzmsiyu = function(self, who, flags)
-	local cards= sgs.QList2Table(who:getCards("hs"))
-	local inverse = not self:isFriend(who)
-	self:sortByKeepValue(cards, inverse)
-	return cards[1]
-end
-]]
-
-
-
-
+-- ??
 
 --神灵庙SP妖梦
 --[死欲]
@@ -1259,7 +1014,6 @@ sgs.ai_skill_discard.juhe = function(self,discard_num)
 	return to_discard
 end
 
-
 --旧作SP灵梦
 --[阴阳]
 local yinyang_skill = {}
@@ -1353,20 +1107,17 @@ sgs.lingji_suit_value = {
 	heart = 4.8
 }
 
-
-
 --旧作SP魔理沙
 --[偷师]
 sgs.ai_skill_use["@@toushi"] = function(self, prompt)
 	local cards = {}
 	for _,c in sgs.qlist(self:touhouAppendExpandPileToList(self.player, self.player:getCards("hes"))) do
-		if not c:isKindOf("TrickCard") then --or c:getSuit() == sgs.Card_Spade 
+		if not c:isKindOf("TrickCard") then --or c:getSuit() == sgs.Card_Spade
 			table.insert(cards, c)
 		end
 	end
 	if #cards == 0 then return "." end
 	self:sortByUseValue(cards, true)
-
 
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	local cardname=self.player:property("toushi_card"):toString()

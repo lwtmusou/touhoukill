@@ -117,7 +117,6 @@ sgs.ai_trick_prohibit.fahua = function(self, from, to, card)
 	return false
 end
 
-
 --封兽鵺
 --[未知]
 local weizhi_skill = {}
@@ -325,58 +324,8 @@ sgs.ai_skill_invoke.weizhuang =function(self,data)
 	return false
 end
 
-
 --寅丸星
 --老版技能已经没用
---function SmartAI:hasTrickEffective(card, to, from) ??
---[[sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
-	local use =data:toCardUse()
-	if self:touhouCardUseEffectNullify(use,self.player) then
-		return "."
-	end
-	if use.card:isNDTrick() and not self:hasTrickEffective(use.card, self.player, use.from)then
-		return "."
-	end
-	if use.card:isKindOf("Slash") and not self:slashIsEffective(use.card, self.player, use.from) then
-		return "."
-	end
-	local pattern = self:lingqiParse(self,self.player,use)
-	if pattern == 2 then
-		local cards = {}
-		for _,c in sgs.qlist(self.player:getCards("hes")) do
-			if c:isRed() then
-				table.insert(cards, c)
-			end
-		end
-		if #cards==0 then return "." end
-		self:sortByUseValue(cards, true)
-		return "$" .. cards[1]:getId()
-	end
-	return "."
-end
-sgs.ai_cardneed.zhengyi = function(to, card, self)
-	return  card:isRed()
-end
-]]
-
-sgs.ai_skill_playerchosen.baota = function(self, targets)
-	local target =self:touhouFindPlayerToDraw(false, 1)
-	if not target and #self.friends_noself>0 then
-		target= self.friends_noself[1]
-	end
-	if target then
-		return target
-	end
-	return nil
-end
-sgs.ai_playerchosen_intention.baota = -70
-sgs.ai_no_playerchosen_intention.baota =function(self, from)
-	local lord =self.room:getLord()
-	if lord  then
-		sgs.updateIntention(from, lord, 10)
-	end
-end
-
 --[净化]
 function sgs.ai_cardsview_valuable.jinghua(self, class_name, player)
 	if class_name == "Nullification" then
@@ -405,7 +354,6 @@ end
 sgs.ai_skill_invoke.jinghua = true
 --[威光]
 sgs.ai_skill_invoke.weiguang = true
-
 
 --村纱水蜜
 --[水难]
@@ -506,7 +454,6 @@ sgs.ai_cardneed.nihuo = function(to, card, self)
 	return  card:isKindOf("Slash")
 end
 
-
 --云居一轮
 --[理智]
 --SmartAI:getAoeValue(card, player)
@@ -575,18 +522,8 @@ sgs.ai_skill_invoke.yunshang_hegemony =function(self,data)
 end
 
 --娜兹玲
---旧版技能已经没用
-sgs.ai_skill_invoke.souji = true
-sgs.ai_skill_invoke.tansuo = true
-
 --[寻宝]
 sgs.ai_skill_invoke.xunbao = true
---[[sgs.ai_skill_askforag.xunbao = function(self, card_ids)
-	if #card_ids > 0 then
-		return card_ids[1]
-	end
-	return -1
-end]]
 --[灵摆]
 function sgs.ai_cardsview_valuable.lingbai(self, class_name, player)
 	if class_name == "Slash"  or  class_name == "Jink" then
@@ -777,11 +714,11 @@ sgs.ai_skill_choice.jingxia_hegemony=function(self)
 	local from=damage.from
 	local fieldcard=sgs.SPlayerList()
 	local fieldcard1=sgs.SPlayerList()
-	
+
 	if from and self:isEnemy(from) and self.player:canDiscard(from, "hes") and from:getCards("hes"):length() >= 2 then
 		return "discard"
 	end
-	
+
 	for _, p in sgs.qlist(self.room:getAllPlayers()) do
 		if self:isEnemy(p) then
 			if self.player:canDiscard(p, "e")   then
@@ -930,7 +867,6 @@ sgs.ai_playerchosen_intention.nuhuo =function(self, from, to)
 	end
 end
 
-
 --命莲
 --[善逝]
 sgs.ai_skill_invoke.shanshi = function(self, data)
@@ -1033,8 +969,6 @@ sgs.ai_skill_cardask["@shuxin"] = function(self, data)
 		cost = math.max(cost, 1)
 	end
 
-
-
 	if cost > 0 then
 		self:sortByKeepValue(blacks, true)
 		local ids = {}
@@ -1045,7 +979,6 @@ sgs.ai_skill_cardask["@shuxin"] = function(self, data)
 	end
 	return "."
 end
-
 
 --SP幽谷响子
 --[回声]

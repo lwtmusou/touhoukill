@@ -324,20 +324,6 @@ sgs.ai_choicemade_filter.skillInvoke.zaiwu = function(self, player, args)
 		end
 	end
 end
---[[
-sgs.ai_skill_invoke.mengwei = function(self,data)
-	local target = data:toPlayer()
-	if not target then return false end
-	--太复杂 先默认
-	return self:getOverflow() <= 0 and self:isFriend(target)
-end
-sgs.ai_choicemade_filter.skillInvoke.mengwei = function(self, player, args)
-	local target = player:getTag("mengwei"):toPlayer()
-	if target  and args[#args] == "yes" then
-		sgs.updateIntention(player, target, -30)
-	end
-end
-]]
 
 --年代记SP莲子
 -- 考虑神灵梦 连着为啥要亮将解开
@@ -446,18 +432,6 @@ jineng_skill.getTurnUseCard = function(self)
 
 	return nil
 end
-
--- 这是啥？
-sgs.ai_skill_use_func.HuaxiangCard=function(card,use,self)
-	local userstring=card:toString()
-	userstring=(userstring:split(":"))[3]
-	local huaxiangcard=sgs.cloneCard(userstring)
-	huaxiangcard:setSkillName("huaxiang")
-	self:useBasicCard(huaxiangcard, use)
-	if not use.card then return end
-	use.card=card
-end
-
 function sgs.ai_cardsview_valuable.jineng(self, class_name, player)
 	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_UNKNOWN) then
 		return nil

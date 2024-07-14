@@ -148,12 +148,6 @@ end
 
 --鬼人正邪
 --[逆转]
---[[sgs.ai_skill_cardask["@nizhuan-self"] = function(self, data)
-	if (sgs.ai_skill_invoke.nizhuan(self, data)) then
-		local dis = self:askForDiscard("Dummy", 1, 1, false, false)
-		return tostring(dis[1])
-	end
-end]]
 sgs.ai_skill_invoke.nizhuan =function(self,data)
 	local use = self.player:getTag("nizhuan_carduse"):toCardUse()
 	local to = use.to:first()
@@ -193,34 +187,8 @@ sgs.ai_skill_invoke.nizhuan =function(self,data)
 	end
 	return false
 end
---[[sgs.ai_choicemade_filter.skillInvoke.nizhuan = function(self, player, args)
-	local use = player:getTag("nizhuan_carduse"):toCardUse()
-	local to=use.to:first()
-	if  to and  args[#args] == "yes" then
-		sgs.updateIntention(player, to, -80)
-	end
-end]]
---[[function SmartAI:canNizhuan(player, attacker)
-	local seija = self.room:findPlayerBySkillName("nizhuan")
-	if not player:isWounded() then return false end
-	if player:getLostHp() <= attacker:getLostHp() then return false end
-	if seija and self:isFriend(seija,player) and not self:isFriend(player,attacker) and seija:canDiscard(player,"hs") then
-		return true
-	end
-	return false
-end]]
 
 --[诡诈]
---sgs.ai_skill_invoke.guizha =  true
---[[sgs.ai_skill_cardask["@guizha"] = function(self, data)
-	for _,card in sgs.qlist(self.player:getCards("hs") ) do
-		if card:isKindOf("Peach") then
-			return "$" .. card:getId()
-		end
-	end
-	return "."
-end]]
-
 sgs.ai_skill_playerchosen.guizha = function(self, targets)
 
 	local targets2 = {}
@@ -252,6 +220,7 @@ sgs.ai_skill_playerchosen.yuyin = function(self, targets)
 end
 sgs.ai_choicemade_filter.cardChosen.yuyin = sgs.ai_choicemade_filter.cardChosen.dismantlement
 
+--[无常]
 sgs.ai_skill_playerchosen.wuchang = function(self, targets)
 	local use = self.player:getTag("wuchang"):toCardUse()
 	if not use.from then return end

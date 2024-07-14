@@ -877,4 +877,3 @@ sgs.jiuchong_suit_value = {
 sgs.ai_cardneed.jiuchong = function(to, card, self)
 	return  card:getSuit()==sgs.Card_Heart
 end
-
