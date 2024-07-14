@@ -536,6 +536,7 @@ public:
         }
         use.card->setFlags("-wuchang");
 
+        benben->tag["wuchang"] = data;
         ServerPlayer *target
             = room->askForPlayerChosen(benben, selectables, objectName(), "@wuchang-addtarget:" + use.from->objectName() + "::" + use.card->objectName(), true, true);
         if (target != nullptr) {

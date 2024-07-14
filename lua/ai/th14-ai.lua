@@ -57,7 +57,6 @@ sgs.ai_choicemade_filter.skillInvoke.moyi = function(self, player, args, data)
 	end
 end
 
-
 --堀川雷鼓
 --[雷霆]
 --todo：雷霆弃牌丢出了已经装入木牛且移给他人的牌
@@ -80,7 +79,7 @@ sgs.ai_skill_use_func.LeitingCard = function(card, use, self)
 			table.insert(spades,c)
 		end
 	end
-	
+
 	cards = sgs.QList2Table(cards)
 	if #cards>0 then
 		self:sortByKeepValue(cards)
@@ -159,7 +158,7 @@ sgs.ai_skill_invoke.nizhuan =function(self,data)
 	local use = self.player:getTag("nizhuan_carduse"):toCardUse()
 	local to = use.to:first()
 	local target = data:toPlayer()
-	
+
 	local fakeDamage= sgs.DamageStruct()
 	fakeDamage.card = use.card
 	fakeDamage.damage=1
@@ -171,12 +170,12 @@ sgs.ai_skill_invoke.nizhuan =function(self,data)
 		fakeDamage.to = self.player
 		finalDamage = self:touhouDamage(fakeDamage, target,self.player)
 
-		if finalDamage.damage >= self.player:getHp() then 
-			return getCardsNum("Jink",target,self.player) > 0 
-					or  getCardsNum("Peach",target,self.player) > 0 
+		if finalDamage.damage >= self.player:getHp() then
+			return getCardsNum("Jink",target,self.player) > 0
+					or  getCardsNum("Peach",target,self.player) > 0
 					or (self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0 and self:getCardsNum("Analeptic") == 0)
 		else
-			return getCardsNum("Jink", target, self.player) > 0 
+			return getCardsNum("Jink", target, self.player) > 0
 					or self:getCardsNum("Jink") == 0
 		end
 	else
@@ -186,7 +185,7 @@ sgs.ai_skill_invoke.nizhuan =function(self,data)
 		fakeDamage.to = target
 		finalDamage = self:touhouDamage(fakeDamage, self.player, target)
 
-		if finalDamage.damage >= target:getHp() then 
+		if finalDamage.damage >= target:getHp() then
 			return self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0 and self:getCardsNum("Analeptic") == 0
 		else
 			return self:getCardsNum("Jink") == 0
@@ -234,7 +233,7 @@ sgs.ai_skill_playerchosen.guizha = function(self, targets)
 			end
 		end
 	end
-	
+
 	if #targets2 > 0 then
 		self:sort(targets2,"handcard", true)
 		return targets2[1]
@@ -252,16 +251,46 @@ sgs.ai_skill_playerchosen.yuyin = function(self, targets)
 	end
 end
 sgs.ai_choicemade_filter.cardChosen.yuyin = sgs.ai_choicemade_filter.cardChosen.dismantlement
---[无常]
-sgs.ai_skill_invoke.wuchang =function(self,data)
-	local current = self.room:getCurrent()
-	return self:isEnemy(current)
-end
-sgs.ai_choicemade_filter.skillInvoke.wuchang = function(self, player, args)
-	local current = self.room:getCurrent()
-	if current then
-		if args[#args] == "yes" then
-			sgs.updateIntention(player, current, 10)
+
+sgs.ai_skill_playerchosen.wuchang = function(self, targets)
+	local use = self.player:getTag("wuchang"):toCardUse()
+	if not use.from then return end
+	if not use.card then return end
+
+	local bad, badflag = {
+		"Slash",
+		"Duel",
+		"Snatch",
+		"Dismantlement",
+		"IronChain",
+		"BoneHealing",
+	}
+	for _, b in ipairs(bad) do
+		if use.card:isKindOf(b) then
+			badflag = true
+			break
+		end
+	end
+	if badflag then
+		local canadd = sgs.QList2Table(targets)
+		-- 添加目标原则？每个牌可能不一样
+		-- 让默认AI尝试着用一用这张牌，看看他指定了什么目标
+		local dummyuse = { to = sgs.SPlayerList(), isDummy = true }
+		self:useCardByClassName(use.card, dummyuse)
+		-- 然后看看这个目标是否是可以追加的目标之一
+		if dummyuse.card then
+			for _, target in sgs.qlist(dummyuse.to) do
+				local flag = false
+				for _, add in ipairs(canadd) do
+					if target:objectName() == add:objectName() then
+						flag = true
+						break
+					end
+				end
+				if flag then
+					return target
+				end
+			end
 		end
 	end
 end
@@ -291,7 +320,6 @@ sgs.ai_choicemade_filter.skillInvoke.juwang = function(self, player, args)
 		end
 	end
 end
-
 
 --今泉影狼
 --[狼影]
@@ -440,7 +468,6 @@ sgs.ai_use_priority.YuanfeiCard =7
 sgs.ai_card_intention.YuanfeiCard = 60
 sgs.ai_card_intention.YuanfeiNearCard = 60
 
-
 --赤蛮奇
 --[飞头]
 sgs.ai_skill_invoke.feitou = true
@@ -471,7 +498,6 @@ function sgs.ai_cardsview_valuable.feitou(self, class_name, player)
 		return ("slash:feitou[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
-
 
 --若鹭姬
 --[拾珠]
