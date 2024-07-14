@@ -77,136 +77,16 @@ function SmartAI:useCardSuperPeach(...)
 end
 sgs.ai_use_value.SuperPeach = sgs.ai_use_value.Peach - 0.2
 sgs.ai_use_priority.SuperPeach = 0.7
---[[
-function SmartAI:useCardSuperPeach(card, use)
-	if self:cautionDoujiu(self.player,card) then
-		return
-	end
-
-	local targets = {}
-	local good_targets = {}
-	for _,f in ipairs (self.friends) do
-		if f:isDebuffStatus() and (not f:isRemoved()) then
-			table.insert(targets, f)
-			if f:isWounded() then
-				table.insert(good_targets, f)
-			end
-		end
-	end
-
-	if #targets <= 0 then return end
-
-	local lord= getLord(self.player)
-	if self.player:isDebuffStatus() and self.player:isWounded() then
-		if self.player:hasArmorEffect("SilverLion") then
-			for _, card in sgs.qlist(self.player:getHandcards()) do
-				if card:isKindOf("Armor") and self:evaluateArmor(card) > 0 then
-					if use.to then use.to:append(self.player) end
-					use.card = card
-					return
-				end
-			end
-		end
-
-		local SilverLion, OtherArmor
-		for _, card in sgs.qlist(self.player:getHandcards()) do
-			if card:isKindOf("SilverLion") then
-				SilverLion = card
-			elseif card:isKindOf("Armor") and not card:isKindOf("SilverLion") and self:evaluateArmor(card) > 0 then
-				OtherArmor = true
-			end
-		end
-
-		if SilverLion and OtherArmor then
-			use.card = SilverLion
-			return
-		end
-	end
-
-	if #good_targets > 0 then
-		self:sort(good_targets, "hp")
-		for _,p in ipairs(good_targets) do
-			if not self:needToLoseHp(p, nil, nil, nil, true) then
-				use.card = card
-				if use.to then
-					use.to:append(p)
-					return
-				end
-			end
-		end
-	end
-	local mustusepeach = false
-	for _, enemy in ipairs(self.enemies) do
-		if self.player:getHandcardNum() < 3 and
-				(self:hasSkills(sgs.drawpeach_skill,enemy) or getCardsNum("Dismantlement", enemy) >= 1
-					or enemy:hasSkill("jixi") and enemy:getPile("field"):length() >0 and enemy:distanceTo(self.player) == 1
-					or enemy:hasSkill("qixi") and getKnownCard(enemy, self.player, "black", nil, "hes") >= 1
-					or getCardsNum("Snatch", enemy) >= 1 and enemy:distanceTo(self.player) == 1
-					or (enemy:hasSkill("tiaoxin") and self.player:inMyAttackRange(enemy) and self:getCardsNum("Slash") < 1 or not self.player:canSlash(enemy)))
-				then
-			mustusepeach = true
-			break
-		end
-	end
-
-	if self.player:getHp() == 1 and not (lord and self:isFriend(lord) and lord:getHp() < 2 and self:isWeak(lord)) then
-		mustusepeach = true
-	end
-	if mustusepeach then
-		self:sort(targets, "hp")
-		for _,p in ipairs(targets) do
-			if not self:needToLoseHp(p, nil, nil, nil, true) then
-				use.card = card
-				if use.to then
-					use.to:append(p)
-					return
-				end
-			end
-		end
-	end
-end
-]]
 sgs.ai_card_intention.SuperPeach = sgs.ai_card_intention.Peach
 
 sgs.weapon_range.Gun = 4
-sgs.weapon_range.Pillar = 3
-sgs.ai_skill_use["@@Pillar"] = function(self, prompt, method)
-
-	local cards = self.player:getCards("hs")
-	cards=self:touhouAppendExpandPileToList(self.player, cards)
-	local basic_cards =  {}  --sgs.QList2Table(cards)
-	for _,c in sgs.qlist(cards) do
-		if (c:isKindOf("BasicCard")) then
-			table.insert(basic_cards, c)
-		end
-	end
-	if #basic_cards == 0 then return "." end
-
-	self:sortByUseValue(basic_cards, false)
-
-	local card = sgs.cloneCard("slash", sgs.Card_SuitToBeDecided, -1)
-	card:addSubcard(basic_cards[1])
-	card:deleteLater()
-
-	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
-	card:setSkillName("_Pillar")
-
-	self:useBasicCard(card, dummy_use)
-
-	if not dummy_use.card or dummy_use.to:isEmpty() then return "." end
-	local target_objectname = {}
-	for _, p in sgs.qlist(dummy_use.to) do
-		table.insert(target_objectname, p:objectName())
-	end
-	return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
-end
 sgs.weapon_range.Hakkero = 3
 sgs.ai_skill_invoke.Hakkero = function(self, data)
 	local effect = data:toSlashEffect()
 	return  effect.to and self:isEnemy(effect.to)
 end
 
-sgs.ai_skill_invoke.Hagoromo = true
+sgs.ai_skill_invoke.Hagoromo = true -- 这啥？？？？？？？？？？？？？？？
 
 local Jade_skill = {}
 Jade_skill.name = "JadeSeal"
@@ -264,6 +144,50 @@ sgs.ai_skill_invoke.Pagoda = function(self,data)
 	end
 	return false
 end
+
+sgs.ai_skill_playerchosen.Camouflage = function(self, targets)
+	local e, f, s = {}, {}
+	-- shenbao
+	for _, t in sgs.qlist(targets) do
+		if t:getArmor():isKindOf("Camouflage") then s = t break end
+	end
+	for _, t in sgs.qlist(targets) do
+		if t:objectName() ~= s:objectName() then
+			if self:isEnemy(t) then
+				if t:getArmor():isKindOf("SilverLion") and not t:isWounded() then return t end
+				table.insert(e, t)
+			end
+			if self:isFriend(t) then
+				if t:getArmor():isKindOf("SilverLion") and t:isWounded() then return t end
+				table.insert(f, t)
+			end
+		end
+	end
+
+	if #e > 0 then
+		self:sort(e, "defense")
+		return e[1]
+	end
+	if #f > 0 then
+		self:sort(f, "defense")
+		return f[#f]
+	end
+	return s
+end
+sgs.ai_armor_value.Camouflage = function(player, self)
+	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
+		if self:isFriend(p, player) and p:isWounded() and p:getArmor() and p:getArmor():isKindOf("SilverLion") then
+			return 9
+		end
+	end
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		if p:containsTrick("ligntning") then
+			return 5
+		end
+	end
+	return 1
+end
+sgs.ai_use_priority.Camouflage = 0.86
 
 function SmartAI:useCardAwaitExhausted(card, use)
 

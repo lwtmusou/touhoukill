@@ -1796,6 +1796,7 @@ sgs.ai_use_priority.SilverLion = 1.0
 -- sgs.ai_use_priority.Vine = 0.95
 sgs.ai_use_priority.EightDiagram = 0.8
 sgs.ai_use_priority.RenwangShield = 0.85
+-- sgs.ai_use_priority.Camouflage = 0.86
 sgs.ai_use_priority.DefensiveHorse = 2.75
 
 
