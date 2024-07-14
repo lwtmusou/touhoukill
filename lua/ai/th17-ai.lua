@@ -333,7 +333,7 @@ sgs.ai_skill_discard["liaogu"] = function(self)
 end
 sgs.ai_skill_use["@@liaogu"] = function(self)
 	if not self.player:hasFlag("liaogulost") then
-		-- 先想好弃置啥 -- 这段逻辑感觉有点问题。。。？？？
+		-- 先想好弃置啥
 		repeat
 			liaogu_discard = nil
 
@@ -364,7 +364,7 @@ sgs.ai_skill_use["@@liaogu"] = function(self)
 		until true
 
 		-- 想不好了，不聊了，拜拜了您内！
-		return "."
+		if not liaogu_discard then return "." end
 	end
 
 	local liaoguCardIds = self.player:getTag("liaogu_tempmove"):toIntList()
