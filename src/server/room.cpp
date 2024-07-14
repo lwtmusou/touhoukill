@@ -4526,10 +4526,9 @@ void Room::startGame()
             QStringList generals = getTag(player->objectName()).toStringList();
             const General *general1 = Sanguosha->getGeneral(generals.first());
             Q_ASSERT(general1);
-            int max_hp = general1->getMaxHp();
             //if (Config.Enable2ndGeneral) {
             const General *general2 = Sanguosha->getGeneral(generals.last());
-            max_hp = (general1->getMaxHpHead() + general2->getMaxHpDeputy());
+            int max_hp = (general1->getMaxHpHead() + general2->getMaxHpDeputy());
             if (general1->isCompanionWith(generals.last()))
                 player->setMark("CompanionEffect", 1);
 
