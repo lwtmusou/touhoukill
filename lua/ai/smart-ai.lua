@@ -2713,6 +2713,7 @@ function SmartAI:askForChoice(skill_name, choices, data)
 		local choice_table = choices:split("+")
 		for index, achoice in ipairs(choice_table) do
 			if achoice == "cancel" then return achoice end
+			if achoice == "dismiss" then return achoice end
 		end
 		local r = math.random(1, #choice_table)
 		return choice_table[r]

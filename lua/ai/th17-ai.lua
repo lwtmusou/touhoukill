@@ -333,7 +333,7 @@ sgs.ai_skill_discard["liaogu"] = function(self)
 end
 sgs.ai_skill_use["@@liaogu"] = function(self)
 	if not self.player:hasFlag("liaogulost") then
-		-- 先想好弃置啥
+		-- 先想好弃置啥 -- 这段逻辑感觉有点问题。。。？？？
 		repeat
 			liaogu_discard = nil
 
@@ -441,111 +441,197 @@ sgs.ai_skill_use["@@liaogu"] = function(self)
 	return "."
 end
 
--- 【狱守】 其他角色的准备阶段开始时，你可以弃置一张手牌，若如此做，当其于此回合内使用第一张有点数的牌时，若点数不大于之，此牌无效，反之此牌不计入限制的使用次数。
--- 需要大量调整出牌顺序（比如对手用无效的的五谷桃园，队友先用果酒、酒和杀之类的，不过因为果酒和酒的出牌阶段选牌是耦合的，不好做。。。。。。），出牌顺序调整搁置，这里只做本体
--- 本体思路：只留桃子其余全扔，如果有未发动的零度且其他区域有牌，桃子也扔（反正可以捡回来），对队友的话，扔小于等于7的牌，对对手扔大于等于7的牌
-
-sgs.ai_skill_cardask["@yvshou-discard"] = function(self, data)
-	local current = data:toPlayer()
-
-	local sortfunc = function(a,b)
-		return a:getNumber() < b:getNumber()
+-- 血岭: 当你于出牌阶段外不以此法而失去牌后，你可以明置、横置或弃置你区域里的一张牌，然后若你各区域里不处于异常状态的牌数均不大于1，你摸两张牌。
+local xueling_S = function(player, place)
+	if place == sgs.Player_PlaceHand then
+		return (player:getHandcardNum() - player:getShownHandcards():length()) <= 1
+	elseif place == sgs.Player_PlaceEquip then
+		return (player:getEquips():length() - player:getBrokenEquips():length()) <= 1
+	elseif place == sgs.Player_PlaceDelayedTrick then
+		return (player:getJudgingAreaID():length()) <= 1
+	end
+end
+local xueling_O = function(player, place)
+	if place == sgs.Player_PlaceHand then
+		return (player:getHandcardNum() - player:getShownHandcards():length()) > 0
+	elseif place == sgs.Player_PlaceEquip then
+		return (player:getEquips():length() - player:getBrokenEquips():length()) > 0
+	elseif place == sgs.Player_PlaceDelayedTrick then
+		return (player:getJudgingAreaID():length()) > 0
+	end
+end
+local xueling_choice
+sgs.ai_skill_cardask["@xueling-select"] = function(self)
+	-- 弃置有害延时
+	local badDelayedTricks = {"Indulgence", "SupplyShortage", "Lightning"}
+	for _, dt in sgs.qlist(self.player:getJudgingArea()) do
+		for _, b in ipairs(badDelayedTricks) do
+			if dt:isKindOf(b) then
+				xueling_choice = "discard"
+				return "$" .. tostring(dt:getEffectiveId())
+			end
+		end
 	end
 
-	local cards = {}
-	for _, p in sgs.qlist(self.player:getHandcards()) do
-		local isNotPeach = --[[ (self.player:hasSkill("lingdu") and (not current:hasFlag("lingdu")) and (not (self.player:getJudgingArea():isEmpty() and self.player:getEquips():isEmpty()))) and ]] (not p:isKindOf("Peach"))
-		if isNotPeach then table.insert(cards, p) end
+	local S, O = {}
+	for _, p in ipairs({sgs.Player_PlaceHand, sgs.Player_PlaceEquip, sgs.Player_PlaceDelayedTrick}) do
+		if not xueling_S(self.player, p) then table.insert(S, p) end
+		if xueling_O(self.player, p) then table.insert(O, p) end
 	end
 
-	if #cards == 0 then return "." end
-	table.sort(cards, sortfunc)
-	if self:isEnemy(current) then
-		if cards[#cards]:getNumber() < 7 then return "." end
-		return tostring(cards[#cards]:getId())
-	elseif self:isFriend(current) then
-		if cards[1]:getNumber() > 7 then return "." end
-		return tostring(cards[1]:getId())
+	if #S == 0 then
+		-- find operable place
+		for _, p in ipairs({sgs.Player_PlaceDelayedTrick, sgs.Player_PlaceHand, sgs.Player_PlaceEquip}) do
+			local contains = false
+			for _, o in ipairs(O) do
+				if o == p then contains = true break end
+			end
+			if contains then table.insert(S, p) break end
+		end
+		if #S == 0 then return "." end
 	end
 
+	if #S == 1 then
+		if S[1] == sgs.Player_PlaceDelayedTrick then
+			for _, dt in sgs.qlist(self.player:getJudgingArea()) do
+				if dt:isKindOf("SpringBreath") then -- 赌春息希望渺茫，不如换两张牌来的实在，优先
+					xueling_choice = "discard"
+					return "$" .. tostring(dt:getEffectiveId())
+				end
+			end
+			for _, dt in sgs.qlist(self.player:getJudgingArea()) do
+				if not dt:isKindOf("SavingEnergy") then -- 未知锦囊优先。养精蓄锐见效快
+					xueling_choice = "discard"
+					return "$" .. tostring(dt:getEffectiveId())
+				end
+			end
+			for _, dt in sgs.qlist(self.player:getJudgingArea()) do
+				xueling_choice = "discard"
+				return "$" .. tostring(dt:getEffectiveId())
+			end
+		elseif S[1] == sgs.Player_PlaceHand then
+			local handcards = sgs.QList2Table(self.player:getHandcards())
+			if #handcards > 0 then
+				self:sortByKeepValue(handcards)
+				for _, c in ipairs(handcards) do
+					if not self.player:isShownHandcard(c:getEffectiveId()) then
+						xueling_choice = "showHandcard"
+						return "$" .. tostring(c:getEffectiveId())
+					end
+				end
+				xueling_choice = "discard"
+				return "$" .. tostring(handcards[1]:getEffectiveId())
+			end
+		elseif S[1] == sgs.Player_PlaceEquip then
+			if self.player:getArmor() and not self.player:isBrokenEquip(self.player:getArmor():getEffectiveId()) then
+				xueling_choice = "breakEquip"
+				return "$" .. tostring(self.player:getArmor():getEffectiveId())
+			end
+			if self.player:getDefensiveHorse() and not self.player:isBrokenEquip(self.player:getDefensiveHorse():getEffectiveId()) then
+				xueling_choice = "breakEquip"
+				return "$" .. tostring(self.player:getDefensiveHorse():getEffectiveId())
+			end
+			if self.player:getTreasure() and not self.player:isBrokenEquip(self.player:getTreasure():getEffectiveId()) then
+				xueling_choice = "breakEquip"
+				return "$" .. tostring(self.player:getTreasure():getEffectiveId())
+			end
+			if self.player:getOffensiveHorse() and not self.player:isBrokenEquip(self.player:getOffensiveHorse():getEffectiveId()) then
+				xueling_choice = "breakEquip"
+				return "$" .. tostring(self.player:getOffensiveHorse():getEffectiveId())
+			end
+			if self.player:getWeapon() and not self.player:isBrokenEquip(self.player:getWeapon():getEffectiveId()) then
+				xueling_choice = "breakEquip"
+				return "$" .. tostring(self.player:getWeapon():getEffectiveId())
+			end
+			local equips = sgs.QList2Table(self.player:getEquips())
+			if #equips > 0 then
+				self:sortByUseValue(equips) -- 这个其实很粗糙就是了
+				xueling_choice = "discard"
+				return "$" .. tostring(equips[#equips]:getEffectiveId())
+			end
+		end
+
+		-- 正常来讲走到这里就已经意味着没啥可干的了吧
+		return "."
+	end
+
+	if self.player:getArmor() and not self.player:isBrokenEquip(self.player:getArmor():getEffectiveId()) then
+		xueling_choice = "breakEquip"
+		return "$" .. tostring(self.player:getArmor():getEffectiveId())
+	end
+	if self.player:getDefensiveHorse() and not self.player:isBrokenEquip(self.player:getDefensiveHorse():getEffectiveId()) then
+		xueling_choice = "breakEquip"
+		return "$" .. tostring(self.player:getDefensiveHorse():getEffectiveId())
+	end
+	if self.player:getTreasure() and not self.player:isBrokenEquip(self.player:getTreasure():getEffectiveId()) then
+		xueling_choice = "breakEquip"
+		return "$" .. tostring(self.player:getTreasure():getEffectiveId())
+	end
+	local handcards = sgs.QList2Table(self.player:getHandcards())
+	if #handcards > 0 then
+		self:sortByKeepValue(handcards)
+		for _, c in ipairs(handcards) do
+			if not self.player:isShownHandcard(c:getEffectiveId()) then
+				xueling_choice = "showHandcard"
+				return "$" .. tostring(c:getEffectiveId())
+			end
+		end
+	end
+	if self.player:getOffensiveHorse() and not self.player:isBrokenEquip(self.player:getOffensiveHorse():getEffectiveId()) then
+		xueling_choice = "breakEquip"
+		return "$" .. tostring(self.player:getOffensiveHorse():getEffectiveId())
+	end
+	if self.player:getWeapon() and not self.player:isBrokenEquip(self.player:getWeapon():getEffectiveId()) then
+		xueling_choice = "breakEquip"
+		return "$" .. tostring(self.player:getWeapon():getEffectiveId())
+	end
+	if #handcards > 0 then
+		xueling_choice = "discard"
+		return "$" .. tostring(handcards[1]:getEffectiveId())
+	end
+	local equips = sgs.QList2Table(self.player:getEquips())
+	if #equips > 0 then
+		self:sortByUseValue(equips) -- 这个其实很粗糙就是了
+		xueling_choice = "discard"
+		return "$" .. tostring(equips[#equips]:getEffectiveId())
+	end
+	for _, dt in sgs.qlist(self.player:getJudgingArea()) do
+		if dt:isKindOf("SpringBreath") then -- 赌春息希望渺茫，不如换两张牌来的实在，优先
+			xueling_choice = "discard"
+			return "$" .. tostring(dt:getEffectiveId())
+		end
+	end
+	for _, dt in sgs.qlist(self.player:getJudgingArea()) do
+		if not dt:isKindOf("SavingEnergy") then -- 未知锦囊优先。养精蓄锐见效快
+			xueling_choice = "discard"
+			return "$" .. tostring(dt:getEffectiveId())
+		end
+	end
+	for _, dt in sgs.qlist(self.player:getJudgingArea()) do
+		xueling_choice = "discard"
+		return "$" .. tostring(dt:getEffectiveId())
+	end
+
+	-- 啊？啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊？
 	return "."
 end
-
--- 【灵渡】 当你区域里的牌于回合外置入弃牌堆后（包括牌使用或打出结算完毕后），你可以用你区域里另一张牌替换之，若以此法失去了一个区域里最后的一张牌，你摸一张牌。每回合限一次。
--- 思路：捡桃子，扔兵乐电和装备（除母牛）和手牌（除桃）
-
-local lingdu_pick = nil
-
-sgs.ai_skill_cardask["@lingdu-discard"] = function(self,data)
-	local ids = data:toIntList()
-	local cards = {}
-	for _, id in sgs.qlist(ids) do
-		table.insert(cards, sgs.Sanguosha:getCard(id))
-	end
-
-	lingdu_pick = nil
-
-	-- 桃子
-	for _, c in ipairs(cards) do
-		if c:isKindOf("Peach") then lingdu_pick = c:getId() break end
-	end
-
-	-- 其余牌，按需保留
-	if not lingdu_pick then
-		self:sortByCardNeed(cards)
-		lingdu_pick = cards[#cards]:getId()
-	end
-
-	-- 要扔的牌，优先判定区
-	local j = self.player:getJudgingArea()
-	-- 优先度：乐兵电
-	for _, c in sgs.qlist(j) do
-		if c:isKindOf("Indulgence") then return "$" .. c:getId() end
-	end
-	for _, c in sgs.qlist(j) do
-		if c:isKindOf("SupplyShortage") then return "$" .. c:getId() end
-	end
-	for _, c in sgs.qlist(j) do
-		if c:isKindOf("Lightning") then return "$" .. c:getId() end
-	end
-	-- 然后若只有一张养精蓄锐也扔。春息不扔
-	if j:length() == 1 and j:first():isKindOf("SavingEnergy") then
-		return "$" .. j:first():getId()
-	end
-
-	-- 然后是装备，除母牛不扔之外，其他全部扔，优先扔没用的Camouflage
-	local uselessCamouflage = function(room, player)
-		for _, p in sgs.qlist(room:getOtherPlayers(player)) do
-			if p:getArmor() then return true end
-		end
-		return false
-	end
-	if self.player:getArmor() and self.player:getArmor():getClassName() == "Camouflage" and uselessCamouflage(self.room, self.player) then
-		return "$" .. self.player:getArmor():getId()
-	end
-	-- 然后是优先度：-1，武器，+1，宝物（除母牛），防具
-	if self.player:getOffensiveHorse() then return "$" .. self.player:getOffensiveHorse():getId() end
-	if self.player:getWeapon() then return "$" .. self.player:getWeapon():getId() end
-	if self.player:getDefensiveHorse() then return "$" .. self.player:getDefensiveHorse():getId() end
-	if self.player:getTreasure() and (self.player:getTreasure():getClassName() ~= "WoodenOx") then return "$" .. self.player:getTreasure():getId() end
-	if self.player:getArmor() then return "$" .. self.player:getArmor():getId() end
-
-	-- 手牌（除桃）
-	local hc = self.player:getHandcards()
-	local hcs = {}
-	for _, c in sgs.qlist(hc) do
-		if not c:isKindOf("Peach") then table.insert(hcs, c) end
-	end
-
-	if #hcs == 0 then return "." end
-
-	self:sortByKeepValue(hcs)
-	return "$" .. hcs[1]:getId()
+sgs.ai_skill_choice.xueling = function(self, choices)
+	if #self.friends_noself == 0 and xueling_choice == "breakEquip" then return "discard" end
+	return xueling_choice
 end
-
-sgs.ai_skill_askforag.lingdu = function()
-	return lingdu_pick
+-- 遗翎: 当你的手牌被暗置，或装备牌被重置时，你可以将之交给一名其他角色。
+sgs.ai_skill_playerchosen.weiling = function(self, targets)
+	if #self.friends_noself == 0 then return end
+	local ids = self.player:getTag("weiling"):toIntList()
+	local card = sgs.Sanguosha:getCard(ids[1])
+	self:sort(self.friends_noself, "handcard")
+	if card:isKindOf("EquipCard") then
+		return self.friends_noself[#self.friends_noself]
+	else
+		return self.friends_noself[1]
+	end
 end
+sgs.ai_playerchosen_intention.weiling = -30
 
 -- 伪仪: 出牌阶段限一次，你可以令一名有牌的其他角色选择一项（TurnUse）：
 local weiyi_t = {}
