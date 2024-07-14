@@ -166,7 +166,6 @@ return
 	["illustrator:prismriver_11"] = "Lukesaku",
 	["origin:prismriver_11"] = "p号：60408416；个人id：5849400",
 
-
 	["xiezou"] = "协奏",
 	[":xiezou"] = "出牌阶段结束时，若你于此阶段内使用的最后的牌为【杀】或普通锦囊牌，你可以视为使用同名牌。",
 	["@xiezou"]= "此阶段内你使用的最后的牌为【%src】，你可以发动“协奏”，视为使用【%src】（有距离限制）。",
@@ -218,7 +217,6 @@ return
 	["origin:chen_3"] = "p号：7631745，个人id：41099",
 	["illustrator:chen_4"] = " するめり ",
 	["origin:chen_4"] = "p号：53632400，个人id：403156",
-
 
 	["qimen"] = "奇门",
 
@@ -327,7 +325,6 @@ return
 	["origin:yukari_sp_3"] = "p号：41579000，个人id：1218472",
 	["illustrator:yukari_sp_4"] = "thkani",
 	["origin:yukari_sp_4"] = "p号：65608311；个人id：13134696",
-
 
 	["jingjie"]= "境界",
 	[":jingjie"]= "摸牌阶段摸牌后或当你受到1点伤害后，你可以摸一张牌，然后将一张手牌置于人物牌上，称为“境界”。",

@@ -2,7 +2,7 @@
 return {
 	["03_1v2"] = "斗地主",
 	["peasants_vs_landlord"] = "斗地主",
-	
+
 	["zhubing"] = "铸兵" ,
 	[":zhubing"] = "<font color=\"blue\"><b>锁定技，</b></font>准备阶段开始时，你摸一张牌；你出牌阶段使用【杀】的次数上限+1",
 	["cadan"] = "擦弹",
