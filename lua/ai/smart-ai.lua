@@ -6315,15 +6315,7 @@ function SmartAI:touhouDamageInflicted(damage,from,to)
 			damage.damage=1
 		end
 		if to:hasArmorEffect("Camouflage") then
-			local camouflage = true
-			for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-				local armor = p:getArmor()
-				if armor and armor:objectName() ~= "Camouflage" then
-					camouflage = false
-					break
-				end
-			end
-			if camouflage then damage.damage = 0 end
+			damage.damage = damage.damage - 1
 		end
 	end
 
@@ -7190,20 +7182,22 @@ sgs.ai_skill_choice["3v3_direction"] = function(self, choices, data)
 	if self:isFriend(self.room:findPlayer(self.player:getNextAlive():objectName())) == aggressive then return "cw" else return "ccw" end
 end
 
- sgs.ai_skill_choice["askForTriggerOrder"] = function(self, choices, data)
+sgs.ai_skill_choice["askForTriggerOrder"] = function(self, choices, data)
 	local invokes = choices:split("+")
 	--skillname ： owner ： invoker ： preferedTarget  ： index
 	-- 次数类 比如盛宴 @shengyan:sgs1:sgs1
 	--铁骑类 比如雌雄剑 @DoubleSword:sgs1:sgs1:sgs2:1  和  @DoubleSword:sgs1:sgs1:sgs3:2
 	--颂威类 比如血裔 @huazhong:sgs1:sgs2  和  @huazhong:sgs1:sgs3
 	for _, invoke in ipairs(invokes) do
-		if invoke == "shanlei" then return "shanlei" end -- shanlei / bengluo同人物同时机（结束阶段开始时），shanlei可以摸牌供bengluo使用，无脑先发动
+		-- shenbao: 同时拥有光学迷彩和白银狮子的时候，先发动白银狮子防止至1点，然后再发动光学迷彩，可以0伤
+		if invoke:match("SilverLion:") then return invoke end
+		if invoke:match("shanlei:") then return invoke end -- shanlei / bengluo同人物同时机（结束阶段开始时），shanlei可以摸牌供bengluo使用，无脑先发动
 		if (invoke ~= "cancel") and  (not invoke:match("pingyi:")) then--先触发凭依以外的卖血技能后再考虑凭依
 			return invoke
 		end
 	end
 	return invokes[1]
- end
+end
 
 --开始添加ai文件
 dofile "lua/ai/debug-ai.lua"

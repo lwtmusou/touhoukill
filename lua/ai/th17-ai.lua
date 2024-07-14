@@ -149,13 +149,6 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 		end
 	end
 
-	local uselessCamouflage = function(room, player)
-		for _, p in sgs.qlist(room:getOtherPlayers(player)) do
-			if p:getArmor() then return true end
-		end
-		return false
-	end
-
 	local id
 
 	local __first = true
@@ -165,7 +158,7 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 		if self:isFriend(current) then
 			-- 队友的话
 			-- 送狮子回血
-			if (not current:getArmor()) or ((current:getArmor():getClassName() == "Camouflage") and uselessCamouflage(self.room,current)) then
+			if (not current:getArmor()) then
 				local silverlion
 				for _, p in ipairs(a) do
 					if sgs.Sanguosha:getCard(p):getClassName() == "SilverLion" then silverlion = p break end
@@ -237,7 +230,7 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 				end
 			end
 			-- 弄掉对面的防御装备，限制对面的母牛
-			if (not ((not current:getArmor()) or ((current:getArmor():getClassName() == "Camouflage") and uselessCamouflage(self.room,current)))) or current:getDefensiveHorse() or (current:getTreasure() and (current:getTreasure():getClassName() == "WoodenOx")) then
+			if current:getArmor() or current:getDefensiveHorse() or (current:getTreasure() and (current:getTreasure():getClassName() == "WoodenOx")) then
 				if #a > 0 then
 					-- 可以给的防具，除了白银狮子都能给？
 					local theArmor
