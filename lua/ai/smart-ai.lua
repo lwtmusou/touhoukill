@@ -2568,8 +2568,7 @@ function SmartAI:filterEvent(event, player, data)
 							end
 						end
 
-						if self:slashProhibitToEghitDiagram(card,from,target)
-						or self:slashProhibitToDiaopingTarget(card,from,target) then
+						if self:slashProhibitToEghitDiagram(card,from,target) then
 							has_slash_prohibit_skill = true
 						end
 						if from:canSlash(target, card, true) and self:slashIsEffective(card, target) --没有用from?

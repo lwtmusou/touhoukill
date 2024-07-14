@@ -277,8 +277,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 		if from:hasWeapon("GudingBlade") and enemy:isKongcheng() then return true end
 		if from:hasShownSkill("hanbo_hegemony") and enemy:isKongcheng() and not card:isKindOf("NatureSlash") then return true end
 	else
-		if self:slashProhibitToEghitDiagram(card,from,enemy)
-		or self:slashProhibitToDiaopingTarget(card,from,enemy) then
+		if self:slashProhibitToEghitDiagram(card,from,enemy) then
 			return true
 		end
 		if card:isKindOf("NatureSlash") and enemy:isChained()
@@ -2337,7 +2336,7 @@ function SmartAI:getValuableCard(who)
 		end
 	end
 	if offhorse then
-		if self:hasSkills("pohuai|diaoping|bushu", who) then
+		if self:hasSkills("pohuai|bushu", who) then
 			return offhorse:getEffectiveId()
 		end
 	end

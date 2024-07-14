@@ -680,98 +680,57 @@ sgs.ai_skill_playerchosen.rebing = function(self, targets)
 end
 
 --琪斯美
+sgs.ai_skill_use["@@liaoluo"] = function(self)
+	local viewAsSlash = sgs.Sanguosha:cloneCard("FireSlash", sgs.Card_SuitToBeDecided, -1)
+	viewAsSlash:setSkillName("liaoluo")
+	viewAsSlash:setShowSkill("liaoluo")
+	local use = {isDummy = true, to = sgs.SPlayerList()}
+	self:useCardFireSlash(viewAsSlash, use)
+	viewAsSlash:deleteLater()
+	if use.card then
+		-- 杀！
+		local realUse = sgs.CardUseStruct()
+		realUse.card = viewAsSlash
+		realUse.to = use.to
+		return realUse:toString()
+	end
+end
+sgs.ai_skill_invoke.youju = function(self)
+	local use = self.player:getTag("youju"):toCardUse()
+	local bad = {
+		"Duel",
+		"Snatch",
+		"Dismantlement",
+		"IronChain",
+		"BoneHealing",
+		"SavageAssault",
+		"ArcheryAttack",
+		"FireAttack",
+		"Collateral",
+		"Indulgence",
+		"SupplyShortage",
+	}
+	local good = {
+		"SavageAssault",
+		"ArcheryAttack",
+	}
+	if use.from and use.card then
+		if self:isEnemy(use.from) then
+			for _, b in ipairs(bad) do
+				if use.card:isKindOf(b) then return true end
+			end
+		end
+		if self:isFriend(use.from) and (not self:isWeak(self.player)) and (not self.player:isKongcheng()) then
+			for _, g in ipairs(good) do
+				if use.card:isKindOf(g) then return true end
+			end
+		end
+	end
+end
+
+-- 以下为国战技能AI
+sgs.ai_skill_invoke.tongju_hegemony  = true
 --[钓瓶]
-sgs.ai_skill_invoke.diaoping  =function(self,data)
-	if self.player:isKongcheng() then return false end
-	local use=self.player:getTag("diaoping_slash"):toCardUse()
-
-	if not use.from or self:isFriend(use.from) then return false end
-	local hasFriend = false
-	local hasWeakFriend = false
-	local hasSelf = false
-	for _,p in sgs.qlist(use.to) do
-		if self:isFriend(p) and not (hasFriend and  hasWeakFriend) then
-			if self:slashIsEffective(use.card, p, use.from) and not self:touhouCardUseEffectNullify(use, p) then
-				local fakeDamage=sgs.DamageStruct()
-				fakeDamage.card=use.card
-				fakeDamage.nature= self:touhouDamageNature(use.card, use.from, p)
-				fakeDamage.damage=1
-				fakeDamage.from=use.from
-				fakeDamage.to= p
-				if self:touhouNeedAvoidAttack(fakeDamage,use.from,p) then
-					hasFriend = true
-					if p:objectName() == self.player:objectName() then
-						hasSelf = true
-					elseif self:isWeak(p) then
-						hasWeakFriend = true
-					end
-				end
-			end
-		end
-	end
-
-	if  self.player:getHandcardNum()>=2 then
-		return hasFriend
-	else
-		local lastCard = self.player:getCards("hs"):first()
-		if hasWeakFriend and not hasSelf then
-			return not lastCard:isKindOf("Peach")
-		elseif hasWeakFriend and hasSelf then
-			local maxCard = self:getMaxCard(use.from)
-			local maxPoint
-			if maxCard then
-				maxPoint = maxCard:getNumber()
-			else
-				maxPoint = 0
-			end
-			if lastCard:isKindOf("Peach") then
-				maxPoint = maxPoint + use.from:getHandcardNum()/4
-			end
-			return lastCard:getNumber() > maxPoint
-		elseif not hasWeakFriend and hasSelf then
-			return not (lastCard:isKindOf("Peach") or lastCard:isKindOf("Analeptic") or lastCard:isKindOf("Jink"))
-		end
-	end
-	return false
-end
-sgs.ai_cardneed.diaoping = function(to, card, self)
-	if not self:willSkipPlayPhase(to) then
-		return  (not to:getWeapon() and  getCardsNum("Weapon",to,self.player)<1 and card:isKindOf("Weapon"))
-		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
-		or card:getNumber()>10
-	end
-end
-function SmartAI:slashProhibitToDiaopingTarget(card,from,enemy)
-	local diaopingEffect, kisume  = self:hasDiaopingEffect(from,enemy)
-	if kisume then
-		local from_card = self:getMaxCard(from)
-		local kisume_card = self:getMaxCard(kisume)
-		if not from_card then  return true end
-		local from_point = from_card:getNumber()
-		local kisume_point = 6
-		if kisume_card then
-			kisume_point = kisume_card:getNumber()
-		end
-		local handcardnum = kisume:getHandcardNum()
-		for i =1, handcardnum, 1 do
-			kisume_point = kisume_point + handcardnum/2
-		end
-		kisume_point = math.min(kisume_point,14)
-		return from_point < kisume_point
-	end
-	return false
-end
-function SmartAI:hasDiaopingEffect(from,target)
-	local kisume  = self.room:findPlayerBySkillName("diaoping")
-	if kisume and not kisume:isKongcheng()
-	and (kisume:inMyAttackRange(target)  or kisume:objectName() == target:objectName()) and not self:isEnemy(kisume, target)
-	and from:getHandcardNum()>=2 and from:faceUp() then
-		return true ,kisume
-	end
-	return false, nil
-end
-
-sgs.ai_skill_invoke.tongju  = true
 sgs.ai_skill_invoke.diaoping_hegemony  =function(self,data)
 	if self.player:isKongcheng() then return false end
     return true
