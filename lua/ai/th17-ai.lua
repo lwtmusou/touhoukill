@@ -4,7 +4,9 @@
 sgs.ai_skill_invoke.shanxing = function(self, data)
 	return self:isFriend(data:toPlayer())
 end
-
+sgs.ai_choicemade_filter.skillInvoke.shanxing = function(self, player, args, data)
+	sgs.updateIntention(data:toPlayer(), player, -20)
+end
 sgs.ai_skill_discard.shanxing = function(self)
 	local target = self.player:getTag("shanxing"):toPlayer()
 	if self:isFriend(target) and not self.player:isCurrent() then
@@ -23,9 +25,8 @@ sgs.ai_skill_discard.shanxing = function(self)
 	return {}
 end
 
--- 【灵守】结束阶段开始时，你可以观看一名角色的手牌并展示其中至多两张花色相同的牌，其须选择将这些牌重铸或当【杀】使用。
+-- 灵守: 结束阶段开始时，你可以观看一名其他角色的手牌并展示其中一张牌，令其选择将此牌和其装备区里所有同花色的牌当【杀】使用或重铸之。
 -- 思路：找个牌最多的拆个桃子啥的
-
 sgs.ai_skill_playerchosen.lingshou = function(self, targets)
 	local n = {}
 	for _, p in sgs.qlist(targets) do
@@ -41,7 +42,7 @@ sgs.ai_skill_playerchosen.lingshou = function(self, targets)
 
 	return n[mostp]
 end
-
+sgs.ai_playerchosen_intention.lingshou = 50
 sgs.ai_skill_askforag.lingshou = function(self, ids)
 	local cards = {}
 	for _, id in ipairs(ids) do
@@ -51,7 +52,6 @@ sgs.ai_skill_askforag.lingshou = function(self, ids)
 	self:sortByKeepValue(cards)
 	return cards[#cards]:getId()
 end
-
 -- 用默认的使用杀算法选择目标杀
 -- 拆白银狮子回血
 -- 如果牌 > 2张，重铸可能更赚？
@@ -95,6 +95,9 @@ end
 sgs.ai_skill_invoke.qijue = function(self,data)
 	return self:isFriend(data:toPlayer())
 end
+sgs.ai_choicemade_filter.skillInvoke.qijue = function(self, player, args, data)
+	sgs.updateIntention(data:toPlayer(), player, -60)
+end
 
 -- 【善垒】锁定技，准备阶段开始时，若你的手牌数大于你的手牌上限，你将手牌弃置至上限；结束阶段开始时，若你不是手牌数唯一最多的角色，你将手牌摸至X张（X为手牌最多的角色的手牌数+1）。
 -- None needed
@@ -102,7 +105,6 @@ end
 -- 【崩落】一名角色的结束阶段开始时，若你于此回合内不因使用而失去过手牌，你可以使用一张非锦囊牌。
 -- 照抄sqchuangshi
 -- shanlei+bengluo = 延时卖血，保守的话暂时先卖剩2血，之后再看看怎么调
-
 sgs.ai_skill_use["BasicCard+^Jink,EquipCard|.|.|sqchuangshi"] = function(self, prompt, method)
 	local cards =  self:getCards("sqchuangshi", "hs")
 	self:sortByUseValue(cards)
@@ -329,7 +331,6 @@ sgs.ai_skill_discard["liaogu"] = function(self)
 
 	-- return nil to let default AI dealing with unexpected condition
 end
-
 sgs.ai_skill_use["@@liaogu"] = function(self)
 	if not self.player:hasFlag("liaogulost") then
 		-- 先想好弃置啥
@@ -615,6 +616,9 @@ sgs.ai_skill_use["@@weiyi"] = function(self)
 		realUse.to = use.to
 		return realUse:toString()
 	end
+end
+sgs.ai_card_intention.WeiyiCard = function(self, card, from, to)
+	sgs.updateIntention(to[#to], from, 10)
 end
 
 -- 夺志: 一名角色的准备阶段开始时，若其手牌数不小于你，你可以令一名手牌数小于你的角色摸一张牌（ai_skill_playerchosen.duozhi），然后令后者于此回合内不能使用或打出【闪】。
