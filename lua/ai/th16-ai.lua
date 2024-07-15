@@ -1,8 +1,5 @@
 
 --天空璋：摩多罗
--- 崩服务器，待查，先注释掉
-
---[==[
 --[秘神]
 local mishen_skill={}
 mishen_skill.name="mishen"
@@ -15,25 +12,31 @@ mishen_skill.getTurnUseCard=function(self)
 		end
     end
 
-	self:sortByUseValue(avail,true)
-
 	if #avail == 0 then
 		if not self.player:isChained() then
 			return sgs.Card_Parse("@MishenCard=.")
 		end
 	else
+		self:sortByUseValue(avail,true)
 		return sgs.Card_Parse("@MishenCard=" .. avail[1]:getEffectiveId())
 	end
 end
 sgs.ai_skill_use_func.MishenCard = function(card, use, self)
-	local lt =sgs.cloneCard("lure_tiger")
+	local lt =sgs.Sanguosha:cloneCard("lure_tiger", sgs.Card_SuitToBeDecided, -1)
 	lt:setSkillName("mishen")
+	lt:deleteLater()
 
 	assert(lt)
-	self:useTrickCard(lt, use)
-
-	if not use.card then return end
+	local _use = {isDummy = true, to = sgs.SPlayerList()}
+	self:useTrickCard(lt, _use)
+	if not _use.card then return end
+	if _use.to:isEmpty() then return end
 	use.card=card
+	if use.to then
+		for _, to in sgs.qlist(_use.to) do
+			use.to:append(to)
+		end
+	end
 end
 
 sgs.ai_use_priority.MishenCard =  sgs.ai_use_priority.LureTiger
@@ -66,9 +69,12 @@ sgs.ai_skill_use_func.LijiCard = function(card, use, self)
 				elseif c:isKindOf("OffensiveHorse") and self:isEnemy(target)  then
 					can = true
 					break
+				-- 死循环 先注释掉
+				--[==[
 				elseif c:isKindOf("DefensiveHorse") and self:isFriend(target)  then
 					can = true
 					break
+				]==]
 				elseif c:isKindOf("Treasure") then
 					can = true
 					break
@@ -116,8 +122,11 @@ sgs.ai_skill_cardchosen.liji = function(self, who, flags)
 				return c
 			elseif c:isKindOf("OffensiveHorse") and self:isEnemy(who)  then
 				return c
+			-- 死循环 先注释掉
+			--[==[
 			elseif c:isKindOf("DefensiveHorse") and self:isFriend(who)  then
 				return c
+			]==]
 			elseif c:isKindOf("Treasure") then
 				return c
 			end
@@ -134,7 +143,6 @@ sgs.ai_skill_invoke.houguanghide =function(self,data)
 	if not user then  return false end
 	return self:isFriend(user)
 end
-]==]
 
 --天空璋：爱塔妮缇拉尔瓦
 --[鳞洒]
