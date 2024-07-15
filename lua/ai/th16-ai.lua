@@ -1,5 +1,8 @@
 
 --天空璋：摩多罗
+-- 崩服务器，待查，先注释掉
+
+--[==[
 --[秘神]
 local mishen_skill={}
 mishen_skill.name="mishen"
@@ -131,6 +134,7 @@ sgs.ai_skill_invoke.houguanghide =function(self,data)
 	if not user then  return false end
 	return self:isFriend(user)
 end
+]==]
 
 --天空璋：爱塔妮缇拉尔瓦
 --[鳞洒]
