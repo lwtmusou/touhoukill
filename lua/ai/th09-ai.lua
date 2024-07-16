@@ -843,6 +843,7 @@ sgs.ai_skill_use["@@kuaizhao-card2"] = function(self)
 	for _, className in ipairs(kuaizhao_notused) do
 		local view_as_card = sgs.Sanguosha:cloneCard(className, sgs.Card_NoSuit, 0)
 		view_as_card:setSkillName("_kuaizhao")
+		view_as_card:setCanRecast(false)
 		view_as_card:deleteLater()
 		table.insert(kuaizhao_notused_cards, view_as_card)
 	end
