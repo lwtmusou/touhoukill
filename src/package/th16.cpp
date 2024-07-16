@@ -73,12 +73,13 @@ public:
         Q_UNUSED(i);
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             bool r = false;
-			c->setFlags("liji");
+            c->setFlags("liji");
             c->setFlags("IgnoreFailed");
             c->setFlags("xunshi");
-			r = c->isAvailable(from) && !from->isProhibited(to, c) && c->targetFilter(QList<const Player *>(), to, from);
+            r = c->isAvailable(from) && !from->isProhibited(to, c) && c->targetFilter(QList<const Player *>(), to, from);
             c->setFlags("-xunshi");
             c->setFlags("-IgnoreFailed");
+            c->setFlags("-liji");
             return r;
         }
         return false;
@@ -172,7 +173,7 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
-		CardUseStruct use = data.value<CardUseStruct>();
+        CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.from->hasLordSkill(this) && use.card != nullptr) {
             foreach (auto p, use.to) {
