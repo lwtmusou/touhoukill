@@ -439,6 +439,9 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
             return to_select->isWounded();
     }
 
+	if (hasFlag("liji")  && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY ) 
+		return to_select->isWounded();
+
     if (targets.isEmpty() && to_select->isWounded()) {
         bool globalDying = false;
         QList<const Player *> players = Self->getSiblings();
@@ -478,6 +481,8 @@ bool Peach::isAvailable(const Player *player) const
                 return true;
         }
     }
+	if (hasFlag("liji"))//(getClassName() == "liji")
+		return true;
     return false;
 }
 

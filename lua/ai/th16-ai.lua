@@ -69,12 +69,9 @@ sgs.ai_skill_use_func.LijiCard = function(card, use, self)
 				elseif c:isKindOf("OffensiveHorse") and self:isEnemy(target)  then
 					can = true
 					break
-				-- 死循环 先注释掉
-				--[==[
 				elseif c:isKindOf("DefensiveHorse") and self:isFriend(target)  then
 					can = true
 					break
-				]==]
 				elseif c:isKindOf("Treasure") then
 					can = true
 					break
@@ -108,7 +105,7 @@ sgs.ai_skill_use_func.LijiCard = function(card, use, self)
 	end
 end
 
-sgs.ai_use_priority.LijiCard =  sgs.ai_use_priority.LureTiger + 0.5
+sgs.ai_use_priority.LijiCard = sgs.ai_use_priority.LureTiger + 0.5
 
 sgs.ai_skill_cardchosen.liji = function(self, who, flags)
 
@@ -122,11 +119,8 @@ sgs.ai_skill_cardchosen.liji = function(self, who, flags)
 				return c
 			elseif c:isKindOf("OffensiveHorse") and self:isEnemy(who)  then
 				return c
-			-- 死循环 先注释掉
-			--[==[
 			elseif c:isKindOf("DefensiveHorse") and self:isFriend(who)  then
 				return c
-			]==]
 			elseif c:isKindOf("Treasure") then
 				return c
 			end
