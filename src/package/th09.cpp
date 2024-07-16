@@ -1553,15 +1553,21 @@ public:
         QStringList usedList = Self->property("kuaizhao_used").toString().split("+");
 
         if (blackList.contains(to_select->getEffectiveId())) {
-            bool used = false;
-            foreach (const QString &s, usedList) {
-                if (to_select->isKindOf(s.toUtf8().constData())) {
-                    used = true;
-                    break;
+            Card *c = Sanguosha->cloneCard(to_select->getClassName());
+            DELETE_OVER_SCOPE(Card, c)
+            c->setSkillName("_" + objectName());
+            c->setCanRecast(false);
+            if (c->isAvailable(Self)) {
+                bool used = false;
+                foreach (const QString &s, usedList) {
+                    if (to_select->isKindOf(s.toUtf8().constData())) {
+                        used = true;
+                        break;
+                    }
                 }
-            }
 
-            return !used;
+                return !used;
+            }
         }
 
         return false;
@@ -1577,6 +1583,7 @@ public:
 
         Card *c = Sanguosha->cloneCard(originalCard->getClassName());
         c->setSkillName("_" + objectName());
+        c->setCanRecast(false);
         return c;
     }
 };
