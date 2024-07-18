@@ -1229,3 +1229,51 @@ sgs.ai_skill_cardask["@wuzui-discard"] = function(self, data)
 	self:sortByUseValue(t)
 	return "$" .. t[1]:getEffectiveId()
 end
+
+-- 露易兹
+-- 越界: 当仅一张牌置入你的一个区域后，你可以与一名你与其该区域里牌数之差不大于X（X为你已损失的体力值+1）的其他角色交换此区域的牌。每回合限一次。
+
+-- 爱莲
+-- 空白: 一名角色的非额外回合结束时，若你于此回合内失去过牌，你可以令一名此回合内失去牌数量唯一最多的角色获得一个额外的回合，然后若其不为你，你失去1点体力。
+sgs.ai_skill_invoke.kongbai = function(self, data)
+	local target = data:toPlayer()
+	return (self.player:getHp() > self.player:getDyingFactor()) and self:isFriend(target)
+end
+sgs.ai_choicemade_filter.skillInvoke.kongbai = function(self, player, args, data)
+	local target = data:toPlayer()
+	if args[#args] == "yes" then
+		sgs.updateIntention(player, target, -30)
+	end
+end
+-- 魔偶: 当你受到1点伤害后，你可以弃置一名角色一至两张牌，令其摸等量的牌。
+local moou_count = 0
+local moou_cardid = -1
+sgs.ai_skill_playerchosen.moou = function(self, targets)
+	moou_count = 0
+	for _, p in sgs.qlist(targets) do
+		if self:isFriend(p) then
+			if p:isWeak() and p:getArmor() and p:getArmor():isKindOf("SliverLion") then
+				moou_cardid = p:getArmor():getEffectiveId()
+				return p
+			end
+		end
+	end
+	for _, p in sgs.qlist(targets) do
+		if p:objectName() == self.player:objectName() then return self.player end
+	end
+end
+sgs.ai_skill_cardchosen.moou = function(self, who)
+	if self.player:objectName() == who:objectName() then return nil end
+	moou_count = moou_count + 1
+	if moou_count ~= 1 then
+		moou_cardid = -1
+	end
+	return {
+		getEffectiveId = function()
+			return moou_cardid
+		end
+	}
+end
+-- 萨拉
+-- 魔卫: 当与你距离为1或势力与你相同的其他角色成为另一名其他角色使用具有伤害效果的牌的唯一目标时，你可以获得前者一张手牌，将该目标转移给你，然后你可以将一张牌交给前者。
+-- 门哨: 当黑色【杀】或黑色普通锦囊牌对你结算完毕后，若你下列一个数值于此牌效果结算中未发生变化，你可以执行相应效果，若执行了两项效果，你可以弃置场上一张牌：手牌数——回复1点体力；体力值——摸一张牌。每回合限一次。

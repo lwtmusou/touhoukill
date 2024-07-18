@@ -3790,51 +3790,53 @@ public:
     {
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            ServerPlayer *ellen = qobject_cast<ServerPlayer *>(move.from);
+            ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
 
-            if ((ellen != nullptr) && ellen->isAlive() && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip)))
+            if ((from != nullptr) && from->isAlive() && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))) {
                 foreach (int id, move.card_ids) {
-                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand || move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceEquip) {
-                        room->addPlayerMark(ellen, "kongbai", 1);
-                    }
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand || move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceEquip)
+                        from->addMark(objectName(), 1);
                 }
-            //ellen->tag["kongbai"] = QVariant::fromValue(true);
+            }
         }
         if (triggerEvent == TurnStart) {
-            foreach (ServerPlayer *p, room->getAllPlayers(true)) {
-                room->setPlayerMark(p, "kongbai", 0);
-            }
+            foreach (ServerPlayer *p, room->getAllPlayers(true))
+                p->setMark(objectName(), 0);
         }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
-        QList<SkillInvokeDetail> d;
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive && change.player != nullptr && !change.player->tag.value("touhou-extra", false).toBool()) {
-                ServerPlayer *target;
                 int lose_num = 0;
                 foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                    int losemark = p->getMark("kongbai");
-
-                    if (losemark > lose_num) {
+                    if (p->getMark(objectName()) > lose_num)
                         lose_num = losemark;
-                        target = p;
-                    } else if (losemark == lose_num)
-                        target = NULL;
                 }
-                if (target != NULL && lose_num > 0) {
-                    foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                        if (p->getMark("kongbai") > 0) {
-                            d << SkillInvokeDetail(this, p, p, nullptr, false, target);
-                        }
+                ServerPlayer *target = nullptr;
+                foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                    if (p->getMark(objectName()) == lose_num) {
+                        if (target == nullptr)
+                            target = p;
+                        else
+                            return {};
                     }
+                }
+
+                if (target != nullptr && lose_num > 0) {
+                    QList<SkillInvokeDetail> d;
+                    foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                        if (p->getMark(objectName()) > 0)
+                            d << SkillInvokeDetail(this, p, p, nullptr, false, target);
+                    }
+                    return d;
                 }
             }
         }
 
-        return d;
+        return {};
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
