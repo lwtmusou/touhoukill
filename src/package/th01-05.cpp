@@ -3813,7 +3813,7 @@ public:
                 int lose_num = 0;
                 foreach (ServerPlayer *p, room->getAlivePlayers()) {
                     if (p->getMark(objectName()) > lose_num)
-                        lose_num = losemark;
+                        lose_num = p->getMark(objectName());
                 }
                 ServerPlayer *target = nullptr;
                 foreach (ServerPlayer *p, room->getAlivePlayers()) {
