@@ -212,7 +212,7 @@ void GongfengCard::use(Room *room, const CardUseStruct &card_use) const
     if (Slash::IsAvailable(source) && room->askForSkillInvoke(source, "gongfeng_attach", QVariant::fromValue(card_use), "tooTroublesome:" + kanako->objectName())) {
         room->setPlayerFlag(kanako, "SlashRecorder_gongfeng");
         kanako->tag["gongfeng_use"] = QVariant::fromValue(card_use);
-        if (!room->askForUseCard(kanako, "Slash", "@gongfeng-slash:" + source->objectName())) {
+        if (!room->askForUseCard(kanako, "slash", "@gongfeng-slash:" + source->objectName())) {
             room->setPlayerFlag(kanako, "-SlashRecorder_gongfeng");
             kanako->tag.remove("gongfeng_use");
         }
@@ -222,6 +222,32 @@ void GongfengCard::use(Room *room, const CardUseStruct &card_use) const
 bool GongfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     return targets.isEmpty() && to_select->hasLordSkill("gongfeng") && to_select != Self && !to_select->hasFlag("gongfengInvoked");
+}
+
+bool GongfengCard::targetFixed(const Player *Self) const
+{
+    int n = 0;
+    foreach (const Player *p, Self->getAliveSiblings()) {
+        if (p->hasLordSkill("gongfeng"))
+            ++n;
+    }
+
+    return n < 2;
+}
+
+void GongfengCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    CardUseStruct use = card_use;
+    if (use.to.isEmpty()) {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            if (p->hasLordSkill("gongfeng") && !p->hasFlag("gongfengInvoked")) {
+                use.to << p;
+                break;
+            }
+        }
+    }
+
+    SkillCard::onUse(room, use);
 }
 
 class GongfengVS : public OneCardViewAsSkill

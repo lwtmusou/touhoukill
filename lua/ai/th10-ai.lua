@@ -17,29 +17,29 @@ shende_skill.name = "shende"
 table.insert(sgs.ai_skills, shende_skill)
 function shende_skill.getTurnUseCard(self)
 	if self.player:getPile("shende"):length() < 2 then return nil end
-	if not self.player:isWounded() then return nil end
 	if self:hasWeiya() then return nil end
-	local need_useshende=false
-	--if self:cautionChangshi()  then
-	--	need_useshende=true
-	--end
-	if  (self:isWeak(self.player) or self:getOverflow() >0) then
-		need_useshende=true
-	end
-	if need_useshende then
-		local ids=self.player:getPile("shende")
-		ids = sgs.QList2Table(ids)
-		return sgs.Card_Parse(("peach:shende[%s:%s]=%d+%d"):format("to_be_decided", 0, ids[1], ids[2]))
-	end
-	return nil
-end
-
-sgs.ai_view_as.shende = function(card, player, card_place)
-	if player:getMark("Global_PreventPeach")>0 then return false end
-	local ids=player:getPile("shende")
-	if ids:length()<2 then return false end
+	local ids=self.player:getPile("shende")
 	ids = sgs.QList2Table(ids)
-	return ("peach:shende[%s:%s]=%d+%d"):format("to_be_decided", 0, ids[1], ids[2])
+	return sgs.Card_Parse("slash:shende[to_be_decided:-1]=" .. tostring(ids[1]) ..  "+" .. tostring(ids[2]))
+end
+sgs.ai_cardsview_valuable.shende = function(self,classname,player)
+	if self:hasWeiya() then return nil end
+	local objectNames = {
+		Peach = "peach",
+		Slash = "slash",
+	}
+	if objectNames[classname] then
+		local ids=player:getPile("shende")
+		if ids:length()<2 then return end
+		ids = sgs.QList2Table(ids)
+		return objectNames[classname] .. ":shende[to_be_decided:-1]=" .. tostring(ids[1]) ..  "+" .. tostring(ids[2])
+	end
+end
+sgs.ai_view_as.shende = function(card, player, card_place)
+	local ids=player:getPile("shende")
+	if ids:length()<2 then return end
+	ids = sgs.QList2Table(ids)
+	return "slash:shende[to_be_decided:-1]=" .. tostring(ids[1]) ..  "+" .. tostring(ids[2])
 end
 sgs.ai_cardneed.shende = function(to, card, self)
 	return  card:isKindOf("Slash")
@@ -53,19 +53,18 @@ local gongfengvs_skill = {}
 gongfengvs_skill.name = "gongfeng_attach"
 table.insert(sgs.ai_skills, gongfengvs_skill)
 function gongfengvs_skill.getTurnUseCard(self)
-		if self.player:isKongcheng() then return nil end
-		if self.player:getKingdom() ~="fsl" then return nil end
-		if self.player:hasFlag("Forbidgongfeng") then return nil end
-		local handcards = {}
-		for _,c in sgs.qlist(self.player:getCards("hs")) do
-			if c:isKindOf("Slash") then
-				table.insert(handcards, c)
-			end
+	if self.player:isKongcheng() then return nil end
+	if self.player:getKingdom() ~="fsl" then return nil end
+	local handcards = {}
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
+		if c:isKindOf("Slash") then
+			table.insert(handcards, c)
 		end
-		if #handcards  ==0 then return nil end
-		self:sortByUseValue(handcards)
+	end
+	if #handcards  ==0 then return nil end
+	self:sortByUseValue(handcards)
 
-		return sgs.Card_Parse("@GongfengCard=" .. handcards[1]:getEffectiveId())
+	return sgs.Card_Parse("@GongfengCard=" .. handcards[1]:getEffectiveId())
 end
 sgs.ai_skill_use_func.GongfengCard = function(card, use, self)
 	local targets = {}
@@ -84,6 +83,7 @@ sgs.ai_skill_use_func.GongfengCard = function(card, use, self)
 		end
 	end
 end
+sgs.ai_skill_invoke.gongfeng_attach = true
 sgs.ai_card_intention.GongfengCard = -40
 
 --洩矢诹访子
