@@ -8,7 +8,7 @@
 class Ruizhi : public TriggerSkill
 {
 public:
-    Ruizhi(const QString &name = "ruizhi");
+    explicit Ruizhi(const QString &name = "ruizhi");
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override;
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;

@@ -13,14 +13,6 @@ public:
     Q_INVOKABLE NiaoxiangSummon();
 };
 
-class QiankunHegemony : public MaxCardsSkill
-{
-public:
-    explicit QiankunHegemony(const QString &);
-
-    int getExtra(const Player *target) const override;
-};
-
 class HalfLifeCard : public SkillCard
 {
     Q_OBJECT

@@ -2806,18 +2806,48 @@ public:
 
 //********  AUTUMN   **********
 
-QiankunHegemony::QiankunHegemony(const QString &owner)
-    : MaxCardsSkill("qiankun_" + owner)
+class QiankunHegemony : public MaxCardsSkill
 {
-}
+public:
+    explicit QiankunHegemony(const QString &owner)
+        : MaxCardsSkill("qiankun_" + owner)
+    {
+    }
 
-int QiankunHegemony::getExtra(const Player *target) const
+    int getExtra(const Player *target) const override
+    {
+        if (target->hasSkill(objectName()) && target->hasShownSkill(objectName()))
+            return 1;
+        else
+            return 0;
+    }
+};
+
+class Qiankun2Hegemony : public AttackRangeSkill
 {
-    if (target->hasSkill(objectName()) && target->hasShownSkill(objectName()))
-        return 2;
-    else
-        return 0;
-}
+public:
+    Qiankun2Hegemony(const QString &owner)
+        : AttackRangeSkill("#qiankun2_" + owner)
+        , owner(owner)
+    {
+    }
+
+    QString getMainSkillName() const
+    {
+        return "qiankun_" + owner;
+    }
+
+    int getExtra(const Player *target, bool) const override
+    {
+        if (target->hasSkill(getMainSkillName()) && target->hasShownSkill(getMainSkillName()))
+            return 1;
+        else
+            return 0;
+    }
+
+private:
+    QString owner;
+};
 
 class ChuanchengHegemony : public TriggerSkill
 {
@@ -4536,14 +4566,18 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *kanako_hegemony = new General(this, "kanako_hegemony", "qun", 4);
     kanako_hegemony->addSkill("shende");
     kanako_hegemony->addSkill(new QiankunHegemony("kanako"));
+    kanako_hegemony->addSkill(new Qiankun2Hegemony("kanako"));
     kanako_hegemony->addCompanion("suwako_hegemony");
     kanako_hegemony->addCompanion("sanae_hegemony");
+    related_skills.insertMulti("qiankun_kanako", "#qiankun2_kanako");
 
     General *suwako_hegemony = new General(this, "suwako_hegemony", "qun", 3);
     suwako_hegemony->addSkill("bushu");
     suwako_hegemony->addSkill(new QiankunHegemony("suwako"));
+    suwako_hegemony->addSkill(new Qiankun2Hegemony("suwako"));
     suwako_hegemony->addSkill(new ChuanchengHegemony);
     suwako_hegemony->addCompanion("sanae_hegemony");
+    related_skills.insertMulti("qiankun_suwako", "#qiankun2_suwako");
 
     General *sanae_hegemony = new General(this, "sanae_hegemony", "qun", 4);
     sanae_hegemony->addSkill("dfgzmjiyi");
