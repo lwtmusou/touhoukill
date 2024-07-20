@@ -2364,12 +2364,12 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->isKindOf("Slash") && use.card->getSkillName() != objectName())
+            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->getTypeId() == Card::TypeTrick)
                 d << SkillInvokeDetail(this, use.from, use.from);
         } else if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             foreach (ServerPlayer *p, use.to) {
-                if (p->isAlive() && p->hasSkill(this) && use.card->isKindOf("Slash") && use.card->getSkillName() != objectName())
+                if (p->isAlive() && p->hasSkill(this) && use.card->getTypeId() == Card::TypeTrick)
                     d << SkillInvokeDetail(this, p, p);
             }
         } else if (triggerEvent == EventPhaseStart) {
@@ -4133,7 +4133,7 @@ TH0105Package::TH0105Package()
     sariel->addSkill(new Baosi);
     sariel->addSkill(new Moyan);
 
-    General *konngara = new General(this, "konngara", "pc98", 3);
+    General *konngara = new General(this, "konngara", "pc98");
     konngara->addSkill(new Zongjiu);
     konngara->addSkill(new ZongjiuTM);
     related_skills.insertMulti("zongjiu", "#zongjiu");
