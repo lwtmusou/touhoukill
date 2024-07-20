@@ -3818,6 +3818,153 @@ public:
     }
 };
 
+QimenHegemonyCard::QimenHegemonyCard()
+{
+    m_skillName = "qimen_hegemony";
+}
+
+static int qimenHegemonyMax(const Player *chen)
+{
+    int maxNum = chen->getEquips().length();
+    foreach (const Player *p, chen->getAliveSiblings()) {
+        if (p->getEquips().length() > maxNum)
+            maxNum = p->getEquips().length();
+    }
+    return maxNum;
+}
+
+bool QimenHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    //for extra targets or multiple targets like Collateral
+    int maxnum = qimenHegemonyMax(Self);
+
+    QString cardname = Self->property("qimen_hegemony_card").toString();
+    Card *new_card = Sanguosha->cloneCard(cardname);
+    DELETE_OVER_SCOPE(Card, new_card)
+    new_card->setSkillName("qimen_hegemony");
+    if (targets.isEmpty() && (new_card != nullptr) && to_select->getEquips().length() >= maxnum && !Self->isProhibited(to_select, new_card, targets))
+        return (new_card->targetFilter(targets, to_select, Self) || (new_card->isKindOf("Peach") && to_select->isWounded()));
+
+    return false;
+}
+
+bool QimenHegemonyCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    QString cardname = Self->property("qimen_hegemony_card").toString();
+    Card *new_card = Sanguosha->cloneCard(cardname);
+    DELETE_OVER_SCOPE(Card, new_card)
+    new_card->setSkillName("qimen_hegemony");
+
+    if (targets.length() < 1)
+        return false;
+    return (new_card != nullptr) && new_card->targetsFeasible(targets, Self);
+}
+
+void QimenHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    CardUseStruct new_use = card_use;
+
+    QString cardname = card_use.from->property("qimen_hegemony_card").toString();
+    Card *card = Sanguosha->cloneCard(cardname);
+    card->setSkillName("qimen_hegemony");
+    card->setShowSkill("qimen_hegemony");
+
+    new_use.card = card;
+
+    room->useCard(new_use);
+}
+
+class QimenHegemonyVS : public ZeroCardViewAsSkill
+{
+public:
+    QimenHegemonyVS()
+        : ZeroCardViewAsSkill("qimen_hegemony")
+    {
+        response_pattern = "@@qimen_hegemony";
+    }
+
+    const Card *viewAs() const override
+    {
+        return new QimenHegemonyCard;
+    }
+};
+
+class QimenHegemony : public TriggerSkill
+{
+public:
+    QimenHegemony()
+        : TriggerSkill("qimen_hegemony")
+    {
+        events = {CardFinished};
+        view_as_skill = new QimenHegemonyVS;
+    }
+
+    bool canPreshow() const override
+    {
+        return true;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
+    {
+        if (e == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            ServerPlayer *player = use.from;
+            if ((player != nullptr) && player->isAlive() && player->hasSkill(this) && (use.card != nullptr) && use.card->isBlack()
+                && ((use.card->isNDTrick() && !use.card->isKindOf("Nullification")) || (use.card->getTypeId() == Card::TypeBasic && !use.card->isKindOf("Jink")))) {
+                int maxnum = qimenHegemonyMax(player);
+                Card *c = Sanguosha->cloneCard(use.card->objectName());
+                DELETE_OVER_SCOPE(Card, c)
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->getEquips().length() >= maxnum && !player->isCardLimited(c, Card::MethodUse) && !player->isProhibited(p, c))
+                        return {SkillInvokeDetail(this, player, player)};
+                }
+            }
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *player = invoke->invoker;
+        room->setPlayerProperty(player, "qimen_hegemony_card", use.card->objectName());
+        return room->askForUseCard(player, "@@qimen_hegemony", "@qimen:" + use.card->objectName()) != nullptr;
+    }
+};
+
+class QimenHegemonyDistance : public TargetModSkill
+{
+public:
+    QimenHegemonyDistance()
+        : TargetModSkill("#qimen_hegemony-dist")
+    {
+        pattern = "BasicCard,TrickCard+^DelayedTrick";
+    }
+
+    int getDistanceLimit(const Player *, const Card *card) const override
+    {
+        if (card->getSkillName() == "qimen_hegemony")
+            return 1000;
+        return 0;
+    }
+};
+
+class QimenHegemonyProhibit : public ProhibitSkill
+{
+public:
+    QimenHegemonyProhibit()
+        : ProhibitSkill("#qimen_hegemony-prohibit")
+    {
+    }
+
+    bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &others, bool) const override
+    {
+        int maxNum = qimenHegemonyMax(to);
+        return card->getSkillName() == "qimen_hegemony" && !others.isEmpty() && to->getEquips().length() < maxNum;
+    }
+};
+
 class HanboHegemony : public TriggerSkill
 {
 public:
@@ -4713,8 +4860,13 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     alice_hegemony->addCompanion("shanghai_hegemony");
 
     General *chen_hegemony = new General(this, "chen_hegemony", "wei", 3, false);
-    chen_hegemony->addSkill("qimen");
+    chen_hegemony->addSkill(new QimenHegemony);
+    chen_hegemony->addSkill(new QimenHegemonyDistance);
+    chen_hegemony->addSkill(new QimenHegemonyProhibit);
     chen_hegemony->addSkill("dunjia");
+    related_skills.insertMulti("qimen_hegemony", "#qimen_hegemony-dist");
+    related_skills.insertMulti("qimen_hegemony", "#qimen_hegemony-prohibit");
+
     General *letty_hegemony = new General(this, "letty_hegemony", "wei", 4);
     letty_hegemony->addSkill(new HanboHegemony);
     letty_hegemony->addSkill(new DongzhiHegemony);
@@ -4780,6 +4932,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<BanyueHegemonyCard>();
     addMetaObject<KuaizhaoHegemonyCard>();
     addMetaObject<KuangzaoHegemonyCard>();
+    addMetaObject<QimenHegemonyCard>();
 
     //GameRule
     skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax

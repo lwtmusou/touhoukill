@@ -323,9 +323,15 @@ return
 	[":jianling_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>与你阵营相同的角色于其摸牌阶段多摸一张牌。",
 
 	["alice_hegemony"]="爱丽丝",
+
 	["chen_hegemony"] = "橙",
+	["qimen_hegemony"] = "奇门",
+	[":qimen_hegemony"] = "当你使用黑色基本牌或黑色普通锦囊牌结算结束后，你可以视为只对一名装备区里牌数最多的角色使用同名牌（无距离限制）。",
+	["~qimen_hegemony"] = "选择视为使用的牌的目标 -> 确定",
+	["#qimen_hegemony-dist"] = "奇门(距离)",
 
 	["letty_hegemony"]="蕾蒂",
+	["!letty_hegemony"]="蕾蒂·霍瓦特洛克",
 	["illustrator:letty_hegemony"] = "猫車",
 	["origin:letty_hegemony"] = "p号：39410238；个人ID：167342",
 	["hanbo_hegemony"] = "寒波",
@@ -334,7 +340,6 @@ return
 	["dongzhi_hegemony"] = "冬至",
 	["dongzhi"] = "冬至",
 	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以选择任意名同一阵营的有牌的角色，依次弃置这些角色各X张牌（X为其装备区里的牌数+1）。",
-	--["#DongzhiDamage"] = "%from 的 <font color=\"yellow\"><b>冬至</b></font>效果被触发，伤害由 %arg 点增加至 %arg2 点",
 	["$dongzhiAnimate"]= "skill=letty:dongzhi",
 
 	["lilywhite_hegemony"] = "莉莉霍瓦特",

@@ -464,11 +464,11 @@ sgs.ai_skill_invoke.renou = true
 
 --橙
 --[奇门]
-sgs.ai_skill_use["@@qimen"] = function(self, prompt)
+local useQimen = function(self, skillName)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
-	local cardname=self.player:property("qimen_card"):toString()
+	local cardname=self.player:property(skillName .. "_card"):toString()
 	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
-	card:setSkillName("qimen")
+	card:setSkillName(skillName)
 	card:deleteLater()
 
 	maxNum = 0
@@ -480,7 +480,7 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 
 	local f, e = {}, {}
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if p:getEquips():length() >= maxNum and not self.player:isProhibited(p, card) then --card:targetFilter(sgs.SPlayerList(), p, self.player)
+		if p:getEquips():length() >= maxNum and not self.player:isProhibited(p, card) then
 			if (self:isFriend(p)) then
 				table.insert(f, p)
 			end
@@ -520,11 +520,17 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 	end
 	if #target_objectname>0 then
 		card = sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
-		card:setSkillName("qimen")
+		card:setSkillName(skillName)
 		card:deleteLater()
 		return card:toString() .. "->" .. table.concat(target_objectname, "+")
 	end
 	return "."
+end
+sgs.ai_skill_use["@@qimen"] = function(self)
+	return useQimen(self, "qimen")
+end
+sgs.ai_skill_use["@@qimen_hegemony"] = function(self)
+	return useQimen(self, "qimen_hegemony")
 end
 
 --[遁甲]
