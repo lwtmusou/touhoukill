@@ -67,6 +67,8 @@ return {
 	["#liaoguTemp"] = "撩罟",
 	["~liaogu"] = "选择一张牌 -> 选择目标 -> “确定”",
 	["@liaogu-discard"] = "撩罟你需要弃置 一 张牌",
+	["*liaogu_temp"] = "撩罟",
+
 
 	["kutaka"] = "庭渡久侘歌" ,
 	["#kutaka"] = "地狱口岸的守护神" ,
