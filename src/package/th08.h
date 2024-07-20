@@ -3,6 +3,17 @@
 
 #include "card.h"
 #include "package.h"
+#include "skill.h"
+
+class Ruizhi : public TriggerSkill
+{
+public:
+    Ruizhi(const QString &name = "ruizhi");
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override;
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override;
+};
 
 class MiyaoCard : public SkillCard
 {

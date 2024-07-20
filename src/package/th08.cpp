@@ -132,49 +132,45 @@ public:
     }
 };
 
-class Ruizhi : public TriggerSkill
+Ruizhi::Ruizhi(const QString &name)
+    : TriggerSkill(name)
 {
-public:
-    Ruizhi()
-        : TriggerSkill("ruizhi")
-    {
-        events << PostCardEffected;
+    events << PostCardEffected;
+}
+
+QList<SkillInvokeDetail> Ruizhi::triggerable(TriggerEvent, const Room *, const QVariant &data) const
+{
+    CardEffectStruct effect = data.value<CardEffectStruct>();
+    if ((effect.from != nullptr) && effect.to->hasSkill(this) && effect.to->isWounded() && effect.to->isAlive() && effect.card->isNDTrick()) {
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
-    {
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        if ((effect.from != nullptr) && effect.to->hasSkill(this) && effect.to->isWounded() && effect.to->isAlive() && effect.card->isNDTrick()) {
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
-        }
+    return QList<SkillInvokeDetail>();
+}
 
-        return QList<SkillInvokeDetail>();
+bool Ruizhi::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+{
+    CardEffectStruct effect = data.value<CardEffectStruct>();
+    QString prompt = "invoke:" + effect.card->objectName();
+    return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+}
+
+bool Ruizhi::effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+{
+    JudgeStruct judge;
+    judge.who = invoke->invoker;
+    judge.pattern = ".|red";
+    judge.good = true;
+    judge.reason = objectName();
+    room->judge(judge);
+
+    if (judge.isGood() && !judge.ignore_judge) {
+        RecoverStruct recover;
+        recover.recover = 1;
+        room->recover(invoke->invoker, recover);
     }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        QString prompt = "invoke:" + effect.card->objectName();
-        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        JudgeStruct judge;
-        judge.who = invoke->invoker;
-        judge.pattern = ".|red";
-        judge.good = true;
-        judge.reason = objectName();
-        room->judge(judge);
-
-        if (judge.isGood() && !judge.ignore_judge) {
-            RecoverStruct recover;
-            recover.recover = 1;
-            room->recover(invoke->invoker, recover);
-        }
-        return false;
-    }
-};
+    return false;
+}
 
 MiyaoCard::MiyaoCard()
 {

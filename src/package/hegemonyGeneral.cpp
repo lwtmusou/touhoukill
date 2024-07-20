@@ -7,7 +7,7 @@
 #include "skill.h"
 #include "standard.h"
 #include "th06.h"
-//#include "th08.h"
+#include "th08.h"
 
 class GameRule_AskForGeneralShowHead : public TriggerSkill
 {
@@ -2287,48 +2287,13 @@ public:
     }
 };
 
-class YueshiHegemony : public TriggerSkill
+class YueshiHegemony : public Ruizhi
 {
 public:
     YueshiHegemony()
-        : TriggerSkill("yueshi_hegemony")
+        : Ruizhi("yueshi_hegemony")
     {
-        events << PostCardEffected;
         relate_to_place = "head";
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
-    {
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        if ((effect.from != nullptr) && effect.to->hasSkill(this) && effect.to->isWounded() && effect.to->isAlive() && effect.card->isNDTrick()) {
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
-        }
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        QString prompt = "invoke:" + effect.card->objectName();
-        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        JudgeStruct judge;
-        judge.who = invoke->invoker;
-        judge.pattern = ".|red";
-        judge.good = true;
-        judge.reason = objectName();
-        room->judge(judge);
-
-        if (judge.isGood() && !judge.ignore_judge) {
-            RecoverStruct recover;
-            recover.recover = 1;
-            room->recover(invoke->invoker, recover);
-        }
-        return false;
     }
 };
 
