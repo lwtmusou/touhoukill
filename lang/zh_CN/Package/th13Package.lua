@@ -152,6 +152,7 @@ return{
 	["duzhua"]= "毒爪",
 	[":duzhua"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以视为使用不计入使用次数限制的【杀】，使用时你须选择弃置一张红色手牌或失去1点体力。",
 	["#duzhuaTargetMod"]= "毒爪",
+	["@duzhua-discard"]= "毒爪：请选择弃置 一 张 红色 手牌并点击<font color=\"#FFA500\"><b>确定</b></font>，或否则请点击<font color=\"#7AC930\"><b>取消</b></font>以失去 1 点体力",
 	["taotie"]= "饕餮",
 	[":taotie"]= "当其他角色使用【闪】时，若你已受伤，你可以判定，若结果为黑色，你回复1点体力。",
 

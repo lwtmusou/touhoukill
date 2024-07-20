@@ -30,8 +30,8 @@ return{
 	["gongfeng_attach"]= "供奉给杀",
 	[":gongfeng_attach"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>若你属于风势力，你可以将一张【杀】交给拥有主公技“供奉”的角色，然后可以令其选择是否使用一张【杀】（计入你本回合的使用次数）。",
 	["#gongfeng-addhistory"] = "%from 受“%arg2”的影响，使用【%arg】的次数 +1。",
-	["gongfeng_attach:tooTroublesome"] = "供奉你可以令 %src 选择是否使用一张【杀】（计入你的使用次数）",
-	["@gongfeng-slash"] = "供奉你可以使用一张【杀】（计入 %src 的使用次数）。",
+	["gongfeng_attach:tooTroublesome"] = "供奉：你可以令 <font color=\"#00FF00\"><b> %src </b></font>选择是否使用一张【杀】（计入你的使用次数）",
+	["@gongfeng-slash"] = "供奉：你可以使用一张【杀】（计入 %src 的使用次数）。",
 
 --************************************************
 	--fsl002  势力：风 3血
@@ -84,7 +84,7 @@ return{
 
 	["dfgzmjiyi"] = "祭仪",
 	[":dfgzmjiyi"] = "摸牌阶段结束时，你可以弃置两张牌，若如此做，此回合结束时，你摸三张牌。",
-	["@dfgzmjiyi-discard"] = "祭仪你可以弃置 2 张牌发动【祭仪】",
+	["@dfgzmjiyi-discard"] = "祭仪你可以弃置 两 张牌发动【祭仪】",
 	["qiji"] = "奇迹",
 	[":qiji"] = "你可以将最后一张手牌当任意基本牌或普通锦囊牌使用或打出。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	["~qiji"] = "选择最后一张手牌和转化牌的目标 -> 确定",
