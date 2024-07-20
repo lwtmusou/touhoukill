@@ -789,6 +789,22 @@ end
 
 --[暗域]
 sgs.ai_skill_invoke.anyu = true
+sgs.ai_skill_choice.anyu= function(self, choices, data)
+	if self.player:faceUp() then
+		return "draw"
+	end
+
+	if self.player:containsTrick("indulgence") or self.player:containsTrick("supply_shortage") then
+		return "draw"
+	end
+
+	if self:isWeak(self.player) and self:getOverflow() <2 then
+		return "draw"
+	elseif self:getOverflow() >=2 then
+		return "turnover"
+	end
+	return "turnover"
+end
 sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 	if not card:isBlack() or not to:hasSkill("zhenye") then return false end
 
