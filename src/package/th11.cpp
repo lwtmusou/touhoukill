@@ -178,7 +178,14 @@ public:
         room->clearAG(target);
 
         room->setPlayerProperty(target, "zhushi_cardid", QString::number(id));
-        if (!room->askForUseCard(target, "@@ZhushiOtherVS", "@zhushi-othervs"))
+
+        bool used = false;
+
+        const Card *c = Sanguosha->getCard(id);
+        if (c->isAvailable(target))
+            used = room->askForUseCard(target, "@@ZhushiOtherVS", "@zhushi-othervs");
+
+        if (!used)
             room->obtainCard(target, id);
 
         return false;
