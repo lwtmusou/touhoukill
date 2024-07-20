@@ -526,7 +526,7 @@ return{
 	["zuosui:losehp"]= "流失体力",
 	["zuosui:discard"]= "弃牌",
 	["worao"] = "沃饶",
-	[":worao"] = "当你成为其他角色使用的【杀】或普通锦囊牌的目标后，你可以摸两张牌并获得1枚“信仰”标记，然后将一张手牌交给其。每回合限一次。",
+	[":worao"] = "当你成为其他角色使用的【杀】或普通锦囊牌的目标后，你可以摸两张牌并获得1枚“信仰”标记，然后将一张手牌交给其。<font color=\"green\"><b>每回合限一次。</b></font>",
 	["worao:invoke"]= "<font color=\"#00FF00\"><b> %src </b></font>使用【%dest】指定了你为目标，你可以发动“沃饶”。",
 	["woraoGive"]= "请将一张手牌交给“沃饶”对象 <font color=\"#00FF00\"><b>%src </b></font>。",
 	["@xinyang"] = "信仰",
