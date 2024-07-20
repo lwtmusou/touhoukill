@@ -857,10 +857,10 @@ sgs.ai_skill_use["@@chuangshi"] = function(self, prompt)
 	--self.player:removeTag("chuangshi_victim")
 
 	if cardname and user then
-		self.room:setPlayerMark(self.player, "chuangshi", self.player:getMark("chuangshi")+1)
+		self.player:setMark("chuangshi", self.player:getMark("chuangshi")+1)
 		--self.room:setPlayerMark(user, "chuangshi_user", 0)
 
-		self.room:setPlayerFlag(self.player, "chuangshi")
+		self.player:setFlags("chuangshi")
 		if target then
 			return "@ChuangshiCard=.:" .. cardname .. "->" .. target:objectName()
 		else

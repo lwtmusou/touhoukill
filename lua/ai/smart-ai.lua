@@ -2450,7 +2450,7 @@ function SmartAI:filterEvent(event, player, data)
 		if card:isKindOf("Snatch") or card:isKindOf("Dismantlement") then
 			for _, p in sgs.qlist(struct.to) do
 				for _, c in sgs.qlist(p:getCards("hejs")) do
-					self.room:setCardFlag(c, "-AIGlobal_SDCardChosen_"..card:objectName())
+					c:setFlags("-AIGlobal_SDCardChosen_"..card:objectName())
 				end
 			end
 		end
@@ -2459,7 +2459,7 @@ function SmartAI:filterEvent(event, player, data)
 			local cards = struct.from:getHandcards()
 			cards=self:touhouAppendExpandPileToList(struct.from,cards)
 			for _,c in sgs.qlist(cards) do
-				self.room:setCardFlag(c, "-AIGlobal_SearchForAnaleptic")
+				c:setFlags("-AIGlobal_SearchForAnaleptic")
 			end
 		end
 
@@ -3588,12 +3588,12 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 						for _, hcard in ipairs(cardtogive) do
 							if hcard:isKindOf("Weapon") and friend:distanceTo(p) <= friend:getAttackRange() + (sgs.weapon_range[hcard:getClassName()] or 0)
 									and not friend:getWeapon() and not friend:hasFlag(flag) then
-								self.room:setPlayerFlag(friend, flag)
+								friend:setFlags(flag)
 								return hcard, friend
 							end
 							if hcard:isKindOf("OffensiveHorse") and friend:distanceTo(p) <= friend:getAttackRange() + 1
 									and not friend:getOffensiveHorse() and not friend:hasFlag(flag) then
-								self.room:setPlayerFlag(friend, flag)
+								friend:setFlags(flag)
 								return hcard, friend
 							end
 						end

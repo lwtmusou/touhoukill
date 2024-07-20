@@ -280,12 +280,12 @@ public:
         if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Nullification"))
-                room->setPlayerFlag(use.from, "jinghua");
+                use.from->setFlags("jinghua");
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers())
-                    room->setPlayerFlag(p, "-jinghua");
+                    p->setFlags("-jinghua");
             }
         }
     }
@@ -1062,6 +1062,7 @@ public:
     {
         events << TargetConfirmed << EventPhaseChanging;
         view_as_skill = new LingbaiVS;
+        global = true;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const override

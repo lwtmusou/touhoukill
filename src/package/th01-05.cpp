@@ -2364,12 +2364,12 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->isKindOf("Slash") && use.card->getSkillName() != objectName())
+            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->getTypeId() == Card::TypeTrick)
                 d << SkillInvokeDetail(this, use.from, use.from);
         } else if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             foreach (ServerPlayer *p, use.to) {
-                if (p->isAlive() && p->hasSkill(this) && use.card->isKindOf("Slash") && use.card->getSkillName() != objectName())
+                if (p->isAlive() && p->hasSkill(this) && use.card->getTypeId() == Card::TypeTrick)
                     d << SkillInvokeDetail(this, p, p);
             }
         } else if (triggerEvent == EventPhaseStart) {
@@ -3294,7 +3294,7 @@ public:
     Huosui()
         : TriggerSkill("huosui")
     {
-        events << EventPhaseStart << CardsMoveOneTime << TurnStart; //<< TargetSpecified
+        events << EventPhaseStart << CardsMoveOneTime << TurnStart;
         global = true;
         view_as_skill = new HuosuiVS;
     }
@@ -3304,24 +3304,15 @@ public:
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             bool flag = (move.from != nullptr) && move.from_places.contains(Player::PlaceEquip);
-            /*if (!flag && (move.from != nullptr) && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
-                for (int i = 0; i < move.card_ids.length(); ++i) {
-                    if ((move.from_places.at(i) == Player::PlaceHand) && (Sanguosha->getCard(move.card_ids.at(i))->getTypeId() == Card::TypeEquip)) {
-                        flag = true;
-                        break;
-                    }
-                }
-            }*/
             if (flag) {
                 ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
                 if (from != nullptr)
-                    room->setPlayerFlag(from, "huosui"); // client  server?
-                //move.from->setFlags("huosui");
+                    move.from->setFlags("huosui");
             }
 
         } else if (triggerEvent == TurnStart) {
             foreach (ServerPlayer *p, room->getAlivePlayers())
-                room->setPlayerFlag(p, "-huosui");
+                p->setFlags("-huosui");
         }
     }
 
@@ -3330,7 +3321,6 @@ public:
         QList<SkillInvokeDetail> r;
 
         if (triggerEvent == EventPhaseStart) {
-            //PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             ServerPlayer *current = data.value<ServerPlayer *>();
             if ((current != nullptr) && current->isAlive() && current->getPhase() == Player::Finish) {
                 foreach (ServerPlayer *p, room->getAlivePlayers()) {
@@ -3348,13 +3338,7 @@ public:
                     }
                 }
             }
-        } /*else if (triggerEvent == TargetSpecified) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.card->getSkillName() == "huosui") {
-                foreach (ServerPlayer *p, use.to)
-                    r << SkillInvokeDetail(this, use.from, use.from, nullptr, true, p, false);
-            }
-        }*/
+        }
 
         return r;
     }
@@ -3364,40 +3348,6 @@ public:
         room->askForUseCard(invoke->invoker, "@@huosui", "@huosui-victim");
         return false;
     }
-
-    /*bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        if (triggerEvent == EventPhaseStart) {
-            QList<ServerPlayer *> ps;
-            foreach (ServerPlayer *v, room->getOtherPlayers(invoke->invoker)) {
-                if (invoke->invoker->canSlash(v, false))
-                    ps << v;
-            }
-
-            ServerPlayer *victim = room->askForPlayerChosen(invoke->invoker, ps, "huosui", "@huosui-victim", true, true);
-            if (victim != nullptr) {
-                invoke->targets << victim;
-                return true;
-            }
-        } else if (triggerEvent == TargetSpecified)
-            return true;
-
-        return false;
-    }*/
-
-    /*bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        if (triggerEvent == EventPhaseStart) {
-            Slash *s = new Slash(Card::NoSuit, 0);
-            s->setSkillName("_huosui");
-            room->useCard(CardUseStruct(s, invoke->invoker, invoke->targets.first()));
-        } else {
-            CardUseStruct use = data.value<CardUseStruct>();
-            invoke->targets.first()->addQinggangTag(use.card);
-        }
-
-        return false;
-    }*/
 };
 
 class HuosuiTM : public TargetModSkill
@@ -4183,7 +4133,7 @@ TH0105Package::TH0105Package()
     sariel->addSkill(new Baosi);
     sariel->addSkill(new Moyan);
 
-    General *konngara = new General(this, "konngara", "pc98", 3);
+    General *konngara = new General(this, "konngara", "pc98");
     konngara->addSkill(new Zongjiu);
     konngara->addSkill(new ZongjiuTM);
     related_skills.insertMulti("zongjiu", "#zongjiu");

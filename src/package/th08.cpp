@@ -1495,7 +1495,7 @@ public:
     HuweiRecord()
         : TriggerSkill("#huwei")
     {
-        events = {DamageDone, EventPhaseChanging};
+        events = {DamageDone, TurnStart};
         global = true;
     }
 
@@ -1508,12 +1508,9 @@ public:
                 l << bigHorseBrother.from->objectName();
                 bigHorseBrother.to->tag["huwei"] = QStringList(l.toList());
             }
-        } else if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::Play) {
-                foreach (ServerPlayer *p, room->getAllPlayers())
-                    p->tag.remove("huwei");
-            }
+        } else if (triggerEvent == TurnStart) {
+            foreach (ServerPlayer *p, room->getAllPlayers())
+                p->tag.remove("huwei");
         }
     }
 };

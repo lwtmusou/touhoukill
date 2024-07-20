@@ -473,7 +473,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 		if player:objectName() ~= who:objectName() and player:isChained() and self:damageIsEffective(player, nature, source) then
 			local getvalue = getChainedPlayerValue(player, 0)
 			if kills == #self:getEnemies(source) and not killlord and sgs.getDefenseSlash(player, self) < 2 then
-				if slash then self.room:setCardFlag(slash, "AIGlobal_KillOff") end
+				if slash then slash:setFlags("AIGlobal_KillOff") end
 				return true
 			end
 			if self:isFriend(player) then
