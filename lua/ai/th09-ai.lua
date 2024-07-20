@@ -188,20 +188,21 @@ function huiwu_judge(self,owner,card, invoker)
 		return 3
 	end
 	if card:isKindOf("GodSalvation") then
-		if target:isWounded() then
+		if owner:isWounded() then
 			return 2
 		else
 			return 1
 		end
 	end
 	if card:isKindOf("IronChain") then
-		if target:isChained() then
+		if owner:isChained() then
 			return 2
 		else
 			return 1
 		end
 	end
 	if   card:isKindOf("Dismantlement") or card:isKindOf("Snatch") then
+		-- todo: 不要在更新intention的时候用isfriend！
 		if self:isFriend(owner, invoker) and owner:getCards("j"):length()>0 then
 			return 2
 		end

@@ -1132,6 +1132,9 @@ public:
     virtual QString toString(bool hidden = false) const;
 
     virtual QString getEffectName() const;
+
+    QString showSkill() const;
+    void setShowSkill(const char *skill_name);
 };
 
 %extend Card {

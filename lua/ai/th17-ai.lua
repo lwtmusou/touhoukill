@@ -466,7 +466,7 @@ sgs.ai_skill_cardask["@xueling-select"] = function(self)
 		end
 	end
 
-	local S, O = {}
+	local S, O = {}, {}
 	for _, p in ipairs({sgs.Player_PlaceHand, sgs.Player_PlaceEquip, sgs.Player_PlaceDelayedTrick}) do
 		if not xueling_S(self.player, p) then table.insert(S, p) end
 		if xueling_O(self.player, p) then table.insert(O, p) end
@@ -615,7 +615,7 @@ end
 -- 遗翎: 当你的手牌被暗置，或装备牌被重置时，你可以将之交给一名其他角色。
 sgs.ai_skill_playerchosen.weiling = function(self, targets)
 	if #self.friends_noself == 0 then return end
-	local ids = self.player:getTag("weiling"):toIntList()
+	local ids = sgs.QList2Table(self.player:getTag("weiling"):toIntList())
 	local card = sgs.Sanguosha:getCard(ids[1])
 	self:sort(self.friends_noself, "handcard")
 	if card:isKindOf("EquipCard") then
