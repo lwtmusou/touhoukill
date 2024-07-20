@@ -499,7 +499,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from != nullptr && (use.card->isKindOf("Slash") || (use.card->isNDTrick() && use.card->isBlack()))) {
+        if (use.from != nullptr && (use.card->isKindOf("Slash") || (use.card->isNDTrick() && use.card->isBlack())) && !use.to.isEmpty()) {
             foreach (ServerPlayer *benben, room->findPlayersBySkillName(objectName())) {
                 if (benben->hasSkill(this) && benben->isAlive() && benben != use.from) {
                     use.card->setFlags("wuchang");
