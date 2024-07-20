@@ -2355,21 +2355,17 @@ public:
     Zongjiu()
         : TriggerSkill("zongjiu")
     {
-        events = {TargetSpecified, TargetConfirmed, EventPhaseStart};
+        events = {TargetConfirmed, EventPhaseStart};
         view_as_skill = new ZongjiuVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> d;
-        if (triggerEvent == TargetSpecified) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->isNDTrick())
-                d << SkillInvokeDetail(this, use.from, use.from);
-        } else if (triggerEvent == TargetConfirmed) {
+        if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             foreach (ServerPlayer *p, use.to) {
-                if (p->isAlive() && p->hasSkill(this) && use.card->isNDTrick())
+                if (p->isAlive() && p->hasSkill(this) && p->getMark("drank") == 0 && use.card->getTypeId() == Card::TypeTrick)
                     d << SkillInvokeDetail(this, p, p);
             }
         } else if (triggerEvent == EventPhaseStart) {
