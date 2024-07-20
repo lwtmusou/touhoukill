@@ -1285,7 +1285,7 @@ public:
     Dongjie()
         : TriggerSkill("dongjie")
     {
-        events = {TargetSpecified, EventPhaseChanging, Cancel};
+        events = {TargetSpecified, EventPhaseChanging, CardFinished};
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &) const override
@@ -1296,39 +1296,32 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
+        QList<SkillInvokeDetail> d;
         if (triggerEvent == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
-            QList<SkillInvokeDetail> d;
             if (use.from != nullptr && use.from->hasSkill(this) && use.from->isAlive() && !use.to.isEmpty() && !use.from->hasFlag(objectName())) {
                 foreach (ServerPlayer *to, use.to) {
                     if (to != use.from)
                         d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, to);
                 }
             }
-            return d;
-        } else if (triggerEvent == Cancel) {
-            const Card *c = nullptr;
-            ServerPlayer *from = nullptr;
-            ServerPlayer *to = nullptr;
-            if (data.canConvert<SlashEffectStruct>()) {
-                SlashEffectStruct e = data.value<SlashEffectStruct>();
-                c = e.slash;
-                from = e.from;
-                to = e.to;
-            } else if (data.canConvert<CardEffectStruct>()) {
-                CardEffectStruct e = data.value<CardEffectStruct>();
-                c = e.card;
-                from = e.from;
-                to = e.to;
+        } else if (triggerEvent == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (p->tag.contains("dongjie_tag")) {
+                    QVariantList dongjieTag = p->tag.value("dongjie_tag").toList();
+                    QString cardStr = dongjieTag.constLast().toString();
+                    if (use.card->toString() == cardStr) {
+                        ServerPlayer *from = dongjieTag.constFirst().value<ServerPlayer *>();
+                        d << SkillInvokeDetail(this, from, from, p, true, nullptr, false);
+                    }
+                }
             }
-
-            if (c != nullptr && c->hasFlag(objectName()))
-                return {SkillInvokeDetail(this, from, from, to, true, nullptr, false)};
         }
 
-        return {};
+        return d;
     }
 
     // default cost
@@ -1354,17 +1347,23 @@ public:
             if (!given) {
                 LogMessage l;
                 l.type = "#dongjie-notgiven";
-                l.from = invoke->invoker;
+                l.from = target;
                 l.arg = use.card->objectName();
                 l.arg2 = objectName();
                 room->sendLog(l);
 
-                use.card->setFlags(objectName());
+                QVariantList dongjieTag = {
+                    QVariant::fromValue(invoke->invoker),
+                    use.card->toString(),
+                };
+                invoke->targets.first()->tag["dongjie_tag"] = dongjieTag;
+                room->setPlayerCardLimitation(invoke->targets.first(), "use,response", "Slash,Jink", objectName(), false);
                 target->drawCards(1);
                 target->turnOver();
             }
-        } else if (triggerEvent == Cancel) {
-            return true;
+        } else if (triggerEvent == CardFinished) {
+            room->removePlayerCardLimitation(invoke->targets.first(), "use,response", "Slash,Jink$0", objectName(), true);
+            invoke->targets.first()->tag.remove("dongjie_tag");
         }
 
         return false;

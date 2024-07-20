@@ -574,7 +574,6 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                 damage = true;
         }
         if (damage)
-            //room->damage(DamageStruct(this, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
             room->damage(DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI

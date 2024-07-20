@@ -2081,47 +2081,6 @@ bool LureTiger::targetsFeasible(const QList<const Player *> &targets, const Play
         return targets.length() <= total_num;
 }
 
-/*
-void LureTiger::use(Room *room, const CardUseStruct &card_use) const
-{
-    ServerPlayer *source = card_use.from;
-    const QList<ServerPlayer *> &targets = card_use.to;
-
-    QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
-    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
-    foreach (ServerPlayer *target, targets) {
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = source;
-        effect.to = target;
-        effect.multiple = (targets.length() > 1);
-        effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
-        effect.effectValue = card_use.m_effectValue;
-
-        QVariantList players;
-        for (int i = targets.indexOf(target); i < targets.length(); i++) {
-            if (!nullified_list.contains(targets.at(i)->objectName()) && !all_nullified)
-                players.append(QVariant::fromValue(targets.at(i)));
-        }
-        //for HegNullification???
-        room->setTag("targets" + this->toString(), QVariant::fromValue(players));
-
-        room->cardEffect(effect);
-    }
-
-    room->removeTag("targets" + this->toString());
-
-    source->drawCards(1, objectName());
-
-    if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-        if (targets.size() == 1)
-            reason.m_targetId = targets.first()->objectName();
-        reason.m_extraData = QVariant::fromValue((const Card *)this);
-        room->moveCardTo(this, source, nullptr, Player::DiscardPile, reason, true);
-    }
-}*/
-
 void LureTiger::onUse(Room *room, const CardUseStruct &card_use) const
 {
     if (card_use.to.isEmpty()) {
