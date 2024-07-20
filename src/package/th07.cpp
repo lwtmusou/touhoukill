@@ -917,7 +917,7 @@ public:
         bool discard = false;
 
         if (invoke->invoker == invoke->targets.first()) {
-            discard = room->askForDiscard(invoke->invoker, objectName(), 1, 1, false, true, "zhanwang-self");
+            discard = room->askForDiscard(invoke->invoker, objectName(), 1, 1, true, true, "zhanwang-self");
         } else {
             if (invoke->invoker->canDiscard(invoke->targets.first(), "hes", objectName())) {
                 discard = invoke->targets.first()->askForSkillInvoke("zhanwang_discard", "emmm:" + invoke->invoker->objectName());

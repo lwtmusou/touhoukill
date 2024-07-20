@@ -1301,7 +1301,6 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
 
     if (dodamage) {
         room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : nullptr, effect.to, 1 + effect.effectValue.last()));
-        //room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
 }
