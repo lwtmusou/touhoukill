@@ -2426,7 +2426,7 @@ function SmartAI:filterEvent(event, player, data)
 		if card:isKindOf("Snatch") or card:isKindOf("Dismantlement") then
 			for _, p in sgs.qlist(struct.to) do
 				for _, c in sgs.qlist(p:getCards("hejs")) do
-					self.room:setCardFlag(c, "-AIGlobal_SDCardChosen_"..card:objectName())
+					c:setFlags("-AIGlobal_SDCardChosen_"..card:objectName())
 				end
 			end
 		end
@@ -3577,12 +3577,12 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 						for _, hcard in ipairs(cardtogive) do
 							if hcard:isKindOf("Weapon") and friend:distanceTo(p) <= friend:getAttackRange() + (sgs.weapon_range[hcard:getClassName()] or 0)
 									and not friend:getWeapon() and not friend:hasFlag(flag) then
-								self.room:setPlayerFlag(friend, flag)
+								friend:setFlags(flag)
 								return hcard, friend
 							end
 							if hcard:isKindOf("OffensiveHorse") and friend:distanceTo(p) <= friend:getAttackRange() + 1
 									and not friend:getOffensiveHorse() and not friend:hasFlag(flag) then
-								self.room:setPlayerFlag(friend, flag)
+								friend:setFlags(flag)
 								return hcard, friend
 							end
 						end
@@ -3693,36 +3693,22 @@ function SmartAI:askForPindian(requester, reason)
 			return self:getMaxCard(self.player):getId()
 		end
 	end
-	--self.player:gainMark("@pindian3")
-	--requestor:gainMark("@pindian3")
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local compare_func = function(a, b)
 		return a:getNumber() < b:getNumber()
 	end
 	table.sort(cards, compare_func)
-	--self.player:gainMark("@pindian3_1")
-	--requestor:gainMark("@pindian3_1")
 	local maxcard, mincard, minusecard
 	for _, card in ipairs(cards) do
-		--self.player:gainMark("@pindian_value_" .. card:objectName())
 		if self:getUseValue(card) < 6 then mincard = card break end
 	end
-	--self.room:setPlayerMark(self.player, "@pindian3_1", 0)
-	--self.room:setPlayerMark(requester, "@pindian3_1", 0)
 	for _, card in ipairs(sgs.reverse(cards)) do
-		--self.player:gainMark("@pindian_value1_" .. card:objectName())
 		if self:getUseValue(card) < 6 then maxcard = card break end
 	end
-	--self.player:gainMark("@pindian3_2")
-	--requestor:gainMark("@pindian3_2")
 	self:sortByUseValue(cards, true)
-	--self.player:gainMark("@pindian3_3")
-	--requestor:gainMark("@pindian3_3")
 	minusecard = cards[1]
 	maxcard = maxcard or minusecard
 	mincard = mincard or minusecard
-	--self.player:gainMark("@pindian4")
-	--requestor:gainMark("@pindian4")
 	local sameclass, c1 = true
 	for _, c2 in ipairs(cards) do
 		if not c1 then c1 = c2
@@ -3732,8 +3718,6 @@ function SmartAI:askForPindian(requester, reason)
 		if self:isFriend(requester) then return self:getMinCard()
 		else return self:getMaxCard() end
 	end
-	--self.player:gainMark("@pindian5")
-	--requestor:gainMark("@pindian5")
 	local callback = sgs.ai_skill_pindian[reason]
 	if type(callback) == "function" then
 		local ret = callback(minusecard, self, requester, maxcard, mincard)

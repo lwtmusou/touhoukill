@@ -604,12 +604,12 @@ public:
             if (player == nullptr)
                 return;
             else
-                room->setPlayerFlag(player, "huisu");
+                player->setFlags("huisu");
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers())
-                    room->setPlayerFlag(p, "-huisu");
+                    p->setFlags("-huisu");
             }
         }
     }

@@ -1043,7 +1043,7 @@ public:
     Tianxie()
         : TriggerSkill("tianxie")
     {
-        events << SlashHit << PostCardEffected << TrickEffect; //<< CardFinished
+        events << SlashHit << PostCardEffected << TrickEffect;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const override
