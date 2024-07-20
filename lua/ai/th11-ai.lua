@@ -475,7 +475,10 @@ function sgs.ai_cardsview_valuable.songzang(self, class_name, player)
 			if self:isFriend(target)
 			and source and not self:isFriend(source)
 			and not source:hasLordSkill("tymhwuyu") then
-				local card_str = self:willUsePeachTo(target)
+				songzang_getCardsNum = true
+				local ok, card_str = pcall(self.willUsePeachTo, self, target)
+				songzang_getCardsNum = false
+				if not ok then card_str = "." end
 				if card_str =="." then
 					need_kill=true
 				end
