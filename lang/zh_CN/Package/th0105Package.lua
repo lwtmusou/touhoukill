@@ -22,7 +22,7 @@ return {
 	[":meiling"] = "当一名角色因牌而受到伤害后，若其存活且伤害来源是其他角色，你可以获得此牌，获得后若你与前者距离大于你已损失的体力值，后者对你造成1点伤害。",
 	["meiling:distance"]= "你可以发动“魅灵”，获得【%arg】。 你与 受伤者<font color=\"#00FF00\"><b>%src </b></font> 的距离为 <font color=\"#FF8000\"><b>%dest </b></font>。",
 	["fuchou"] = "复仇",
-	[":fuchou"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>你于出牌阶段使用【杀】的次数+X（X为体力值不大于你的旧势力角色数）。",
+	[":fuchou"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>你于出牌阶段使用【杀】的次数+X（X为体力值不小于你的旧势力角色数）。",
 
 --************************************************
 	--pc98002 冈崎梦美  势力：旧 4血

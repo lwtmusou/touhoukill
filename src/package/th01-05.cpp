@@ -86,7 +86,7 @@ public:
             sib << from;
 
             foreach (const Player *s, sib) {
-                if (s->getKingdom() == "pc98" && s->getHp() <= from->getHp())
+                if (s->getKingdom() == "pc98" && s->getHp() >= from->getHp())
                     ++r;
             }
         }
