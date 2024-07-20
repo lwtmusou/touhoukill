@@ -18,8 +18,8 @@ lessThan(QT_MINOR_VERSION, 6) {
 CONFIG += c++11
 CONFIG += lua
 
-VERSION = 0.10.8
-VERSIONNUMBER = 20221211
+VERSION = 0.10.9
+VERSIONNUMBER = 20240720
 
 CONFIG += precompiled_header
 PRECOMPILED_HEADER = src/pch.h
@@ -344,7 +344,6 @@ CONFIG(audio){
         else:ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodex.so
     }
 }
-
 
 CONFIG(lua){
 
