@@ -203,21 +203,13 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
         if (effect.from->isJilei(c))
             hc.removeOne(c);
     }
-    if (hc.length() == 0) {
-        // jilei show all cards
-        room->doJileiShow(effect.from, effect.from->handCards());
+    if (hc.length() == 0)
         return;
-    }
 
     const Card *cards = room->askForCard(effect.from, ".|.|.|hand,equipped", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to));
-    /*if (!cards) {
-        //force discard!!!
-        int x = qrand() % hc.length();
-        cards = hc.value(x);
-        room->throwCard(cards, effect.from);
-    }*/
     if (cards == nullptr)
         return;
+
     if (cards->getSuit() == Card::Heart) {
         effect.to->drawCards(1);
         room->damage(DamageStruct("leiting", nullptr, effect.to, 1, DamageStruct::Thunder));
@@ -553,10 +545,10 @@ public:
         use.to << invoke->targets.first();
 
         if (!use.to.contains(invoke->invoker)) {
-            use.card->setFlags("wuchang");
+            use.card->setFlags("wuchang2");
             if (!use.to.contains(invoke->invoker) && use.card->targetFilter(convertSpList(use.to), invoke->invoker, use.from))
                 use.to << invoke->invoker;
-            use.card->setFlags("-wuchang");
+            use.card->setFlags("-wuchang2");
         }
 
         room->sortByActionOrder(use.to);
@@ -576,7 +568,15 @@ public:
 
     int getExtraTargetNum(const Player *, const Card *card) const override
     {
-        if (card->hasFlag("wuchang"))
+        if (card->hasFlag("wuchang") || card->hasFlag("wuchang2"))
+            return 1000;
+
+        return 0;
+    }
+
+    int getDistanceLimit(const Player *, const Card *card) const override
+    {
+        if (card->hasFlag("wuchang2"))
             return 1000;
 
         return 0;
