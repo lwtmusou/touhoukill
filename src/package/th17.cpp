@@ -208,7 +208,13 @@ public:
                     details << SkillInvokeDetail(this, p, death.who);
             }
         } else if (e == BuryVictim) {
-            ServerPlayer *killer = death.damage->from;
+            ServerPlayer *killer = nullptr;
+
+            if (death.useViewAsKiller)
+                killer = death.viewAsKiller;
+            else if (death.damage != nullptr)
+                killer = death.damage->from;
+
             if (killer == nullptr || killer->getKingdom() != "gxs")
                 return details;
 
