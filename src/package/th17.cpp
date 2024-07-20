@@ -1260,13 +1260,19 @@ public:
         frequency = Frequent;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
-        ServerPlayer *p = data.value<ServerPlayer *>();
-        if (p->isAlive() && p->hasSkill(this) && p->hasFlag(objectName()))
-            return {SkillInvokeDetail(this, p, p)};
+        QList<SkillInvokeDetail> d;
+        ServerPlayer *c = data.value<ServerPlayer *>();
 
-        return {};
+        if (c->isAlive() && c->getPhase() == Player::Finish) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (p->isAlive() && p->hasSkill(this) && p->hasFlag(objectName()))
+                    d << SkillInvokeDetail(this, p, p);
+            }
+        }
+
+        return d;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
