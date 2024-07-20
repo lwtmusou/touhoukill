@@ -993,6 +993,7 @@ public:
             Q_ASSERT(!victims.isEmpty());
 
             room->setPlayerFlag(slasher, "slashTargetFix");
+            room->setPlayerFlag(slasher, "slashNoDistanceLimit");
             room->setPlayerFlag(slasher, "slashDisableExtraTarget");
             if (victims.length() == 1)
                 room->setPlayerFlag(slasher, "slashTargetFixToOne");
@@ -1001,6 +1002,7 @@ public:
             const Card *slash = room->askForUseCard(slasher, "@@liaoluo", "@liaoluo", -1, Card::MethodUse, false);
             if (slash == nullptr) {
                 room->setPlayerFlag(slasher, "-slashTargetFix");
+                room->setPlayerFlag(slasher, "-slashNoDistanceLimit");
                 room->setPlayerFlag(slasher, "-slashTargetFixToOne");
                 foreach (ServerPlayer *victim, victims)
                     room->setPlayerFlag(victim, "-SlashAssignee");
