@@ -71,6 +71,16 @@ public:
     const Card *validate(CardUseStruct &card_use) const override;
 };
 
+class KuangzaoHegemonyCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE KuangzaoHegemonyCard();
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+};
+
 class XushiHegemonyCard : public SkillCard
 {
     Q_OBJECT

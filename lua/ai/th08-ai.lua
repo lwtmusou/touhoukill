@@ -390,6 +390,18 @@ sgs.ai_skill_cardask["@kuangzao-annoying"] = function(self, data)
 	return tostring(cards[1]:getId())
 end
 
+local kuangzaoheg_skill = {}
+kuangzaoheg_skill.name = "kuangzao_hegemony"
+table.insert(sgs.ai_skills, kuangzaoheg_skill)
+function kuangzaoheg_skill.getTurnUseCard(self)
+	if self.player:hasUsed("KuangzaoHegemonyCard") then return nil end
+	return sgs.Card_Parse("@KuangzaoHegemonyCard=.")
+end
+sgs.ai_skill_use_func.KuangzaoHegemonyCard = sgs.ai_skill_use_func.KuangzaoCard
+sgs.ai_use_value.KuangzaoHegemonyCard = sgs.ai_use_value.KuangzaoCard
+sgs.ai_use_priority.KuangzaoHegemonyCard = sgs.ai_use_priority.KuangzaoCard
+sgs.ai_card_intention.KuangzaoHegemonyCard = sgs.ai_card_intention.KuangzaoCard
+
 --[幻视]
 sgs.ai_skill_playerchosen.huanshi = function(self, targets)
 	local enemies={}

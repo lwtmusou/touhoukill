@@ -1936,10 +1936,50 @@ public:
     }
 };
 
+KuangzaoHegemonyCard::KuangzaoHegemonyCard()
+{
+    m_skillName = "kuangzao_hegemony";
+    show_skill = "kuangzao_hegemony";
+}
+
+bool KuangzaoHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.length() == 0 && to_select->inMyAttackRange(Self) && to_select != Self;
+}
+
+void KuangzaoHegemonyCard::onEffect(const CardEffectStruct &effect) const
+{
+    ServerPlayer *source = effect.from;
+    ServerPlayer *target = effect.to;
+    Room *room = source->getRoom();
+    QString prompt = "@kuangzaohegemony-slash:" + source->objectName();
+    const Card *card = room->askForUseSlashTo(target, source, prompt);
+    if (card == nullptr)
+        room->damage(DamageStruct("kuangzao_hegemony", nullptr, target));
+}
+
+class KuangzaoHegemony : public ZeroCardViewAsSkill
+{
+public:
+    KuangzaoHegemony()
+        : ZeroCardViewAsSkill("kuangzao_hegemony")
+    {
+    }
+
+    bool isEnabledAtPlay(const Player *player) const override
+    {
+        return !player->hasUsed("KuangzaoHegemonyCard");
+    }
+
+    const Card *viewAs() const override
+    {
+        return new KuangzaoHegemonyCard;
+    }
+};
+
 XushiHegemonyCard::XushiHegemonyCard()
 {
     will_throw = true;
-    //handling_method = Card::MethodNone;
     m_skillName = "xushi_hegemony";
 }
 
@@ -4410,7 +4450,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     mokou_hegemony->addCompanion("keine_sp_hegemony");
 
     General *reisen_hegemony = new General(this, "reisen_hegemony", "shu", 4);
-    reisen_hegemony->addSkill("kuangzao");
+    reisen_hegemony->addSkill(new KuangzaoHegemony);
     reisen_hegemony->addSkill("huanshi");
     reisen_hegemony->addCompanion("tewi_hegemony");
 
@@ -4674,6 +4714,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<DongzhiHegemonyCard>();
     addMetaObject<BanyueHegemonyCard>();
     addMetaObject<KuaizhaoHegemonyCard>();
+    addMetaObject<KuangzaoHegemonyCard>();
 
     //GameRule
     skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax

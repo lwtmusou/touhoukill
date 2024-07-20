@@ -154,6 +154,9 @@ return
 
 	["reisen_hegemony"]="铃仙",
 	["!reisen_hegemony"]="铃仙·优昙华院·因幡",
+	["kuangzao_hegemony"] = "狂躁",
+	[":kuangzao_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令一名你在其攻击范围内的角色选择一项：对你使用【杀】，或受到1点无来源的伤害。",
+	["@kuangzaohegemony-slash"] = "<font color=\"#00FF00\"><b>%src </b></font>对你发动了“狂躁”，请对其使用【杀】，否则你受到无来源的1点伤害。",
 
 	--国战改动
 	["keine_hegemony"] = "上白泽慧音",
