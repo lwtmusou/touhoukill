@@ -183,8 +183,8 @@ return{
 
 	["tianxie"] = "天邪", -- 天蝎？
 	[":tianxie"] = "当一张基本牌或普通锦囊牌对你结算结束后，若此牌未对你生效，你可以摸一张牌，否则你可以令此牌使用者弃置一张牌。",
-	["tianxie:target1"] = "你可以发动“天邪”令弃置<font color=\"#00FF00\"><b>%src </b></font>弃置一张牌",
-	["@tianxie-discard"]= "天邪%src对你发动了“天邪”令你弃置一张牌。",
+	["tianxie:target1"] = "你可以发动“天邪”令<font color=\"#00FF00\"><b> %src </b></font>弃置一张牌",
+	["@tianxie-discard"]= "天邪：%src对你发动了“天邪”，请你弃置一张牌。",
 	["tianxie:target2"] = "你可以发动“天邪”摸一张牌",
 	["duobao"] = "夺宝",
 	[":duobao"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用牌对其他角色造成伤害后，你获得场上的一张牌；当你受到其他角色使用的牌造成的伤害后，若你装备区里有牌，你将一张装备牌交给其。",
