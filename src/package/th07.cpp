@@ -1753,9 +1753,12 @@ public:
 
     const Card *viewAs(const QList<const Card *> &cards) const override
     {
-        DummyCard *d = new DummyCard;
-        d->addSubcards(cards);
-        return d;
+        if (cards.length() == 2) {
+            DummyCard *d = new DummyCard;
+            d->addSubcards(cards);
+            return d;
+        }
+        return nullptr;
     }
 };
 
