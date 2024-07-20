@@ -2773,6 +2773,37 @@ public:
     }
 };
 
+class AnyuHegemony : public TriggerSkill
+{
+public:
+    AnyuHegemony()
+        : TriggerSkill("anyu_hegemony")
+    {
+        events = {Damaged};
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+
+        if (damage.card != nullptr && damage.card->isBlack() && damage.to->hasSkill(this) && damage.to->isAlive())
+            return {SkillInvokeDetail(this, damage.to, damage.to)};
+
+        return {};
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        QString choice = room->askForChoice(invoke->invoker, objectName(), "turnover+draw", data);
+        if (choice == "turnover")
+            invoke->invoker->turnOver();
+        else
+            invoke->invoker->drawCards(1);
+
+        return false;
+    }
+};
+
 //********  AUTUMN   **********
 
 QiankunHegemony::QiankunHegemony(const QString &owner)
@@ -4483,7 +4514,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *rumia_hegemony = new General(this, "rumia_hegemony", "shu", 3);
     rumia_hegemony->addSkill(new ZhenyeHegemony);
-    rumia_hegemony->addSkill("anyu");
+    rumia_hegemony->addSkill(new AnyuHegemony);
 
     General *yuka_hegemony = new General(this, "yuka_hegemony", "shu", 4);
     yuka_hegemony->addSkill("weiya");

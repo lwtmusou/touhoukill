@@ -208,6 +208,10 @@ return
 	["zhenye_hegemony"] = "真夜",
 	[":zhenye_hegemony"] = "结束阶段开始时，你可以令一名其他角色翻面和令其摸X张牌（X为你的阵营的角色数），然后你翻面。",
 	["@zhenye-select-heg"]= "你可以令一名其他角色的人物牌翻面和令其摸X张牌（X为你的阵营的角色数），然后你的人物牌翻面。",
+	["anyu_hegemony"] = "暗域",
+	[":anyu_hegemony"] = "当你受到黑色牌造成的伤害后，你可以翻面或摸一张牌。",
+	["anyu_hegemony:turnover"] = "翻面",
+	["anyu_hegemony:draw"] = "摸牌" ,
 
 	["yuka_hegemony"]= "风见幽香",
 

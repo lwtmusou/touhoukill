@@ -811,6 +811,14 @@ sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 	if self:isFriend(from, to) then return false end
 	return not self:isWeak(to) and not to:faceUp()
 end
+sgs.ai_skill_invoke.anyu_hegemony = sgs.ai_skill_invoke.anyu
+sgs.ai_skill_choice.anyu_hegemony = sgs.ai_skill_choice.anyu
+sgs.ai_slash_prohibit.anyu_hegemony = function(self, from, to, card)
+	if not card:isBlack() or not to:hasSkill("zhenye_hegemony") then return false end
+
+	if self:isFriend(from, to) then return false end
+	return not self:isWeak(to) and not to:faceUp()
+end
 
 --小恶魔
 --[魔契]
