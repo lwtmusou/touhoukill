@@ -1481,15 +1481,21 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             }
             winner = winner_names.join("+");
         }
-
     } else {
         QStringList alive_roles = room->aliveRoles(victim);
         switch (victim->getRoleEnum()) {
         case Player::Lord: {
-            if (alive_roles.length() == 1 && alive_roles.first() == "renegade")
-                winner = room->getAlivePlayers().constFirst()->objectName();
-            else
-                winner = "rebel";
+            winner = "rebel";
+            if (alive_roles.count("renegade") == 1) {
+                if (alive_roles.count("loyalist") <= Config.RoleRenegadeWinLoyalistNum && alive_roles.count("rabel") <= Config.RoleRenegadeWinRebelNum) {
+                    foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                        if (p->getRoleEnum() == Player::Renegade) {
+                            winner = p->objectName();
+                            break;
+                        }
+                    }
+                }
+            }
             break;
         }
         case Player::Rebel:

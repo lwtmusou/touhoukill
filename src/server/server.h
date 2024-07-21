@@ -86,6 +86,7 @@ private:
     QGroupBox *createXModeBox();
 
     QGroupBox *createHegemonyBox();
+    QGroupBox *createRoleBox();
 
     QLineEdit *server_name_edit;
     QSpinBox *timeout_spinbox;
@@ -159,17 +160,18 @@ private:
     QComboBox *hegemony_half_hp_draw;
     QComboBox *hegemony_careerist_kill;
 
-private slots:
+    QGroupBox *roleBox;
+    QSpinBox *role_renegade_win_loyalist_num;
+    QSpinBox *role_renegade_win_rebel_num;
 
+private slots:
     void onOkButtonClicked();
     void onDetectButtonClicked();
     void select3v3Generals();
     void edit1v1Banlist();
-    void updateButtonEnablility(QAbstractButton *button);
-
-    void setMiniCheckBox();
 
     void checkCurrentBtnIsHegemonyMode(bool v);
+    void checkCurrentBtnIsRoleMode(bool v);
 };
 
 class ServerPlayer;

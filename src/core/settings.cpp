@@ -164,6 +164,9 @@ void Settings::init()
     HegemonyHalfHpReward = value("HegemonyHalfHpReward", "Instant").toString();
     HegemonyCareeristKillReward = value("HegemonyCareeristKillReward", "AsUsual").toString();
 
+    RoleRenegadeWinLoyalistNum = value("RoleRenegadeWinLoyalistNum", 0).toInt();
+    RoleRenegadeWinRebelNum = value("RoleRenegadeWinRebelNum", 0).toInt();
+
     EnableHotKey = value("EnableHotKey", true).toBool();
     NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
     EnableMinimizeDialog = value("EnableMinimizeDialog", false).toBool();
