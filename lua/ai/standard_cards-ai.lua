@@ -2131,10 +2131,9 @@ sgs.ai_keep_value.Duel = 3.42
 sgs.dynamic_value.damage_card.Duel = true
 
 --不考虑威压？？
---【战意】
 sgs.ai_skill_cardask["duel-slash"] = function(self, data, pattern, target)
 	if self.player:getPhase()==sgs.Player_Play then return self:getCardId("Slash") end
-	if self:hasSkills("zhanyi|chaoren") and not self:isFriend(target) then
+	if self:hasSkills("chaoren") and not self:isFriend(target) then
 		return self:getCardId("Slash")
 	end
 	if target:hasSkill("souji") and target:isAlive() and self.room:getCurrent():objectName()==target:objectName()  then
