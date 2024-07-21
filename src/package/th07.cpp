@@ -1700,7 +1700,7 @@ public:
                     d.tag["i"] = 1;
                     return {d};
                 }
-                if (p->getPhase() == Player::Start && p->getHandcardNum() > 4) {
+                if (p->getPhase() == Player::Start && p->getHp() > p->getDyingFactor()) {
                     SkillInvokeDetail d(this, p, p, nullptr, true);
                     d.tag["i"] = 2;
                     return {d};
@@ -1779,7 +1779,7 @@ public:
         if ((use.card != nullptr) && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && (use.card->isRed() || use.card->isBlack())) {
             if (use.from != nullptr && use.from->isAlive()) {
                 foreach (ServerPlayer *p, use.to) {
-                    if (p != use.from && p->hasSkill(this) && p->getHandcardNum() >= 2)
+                    if (p != use.from && p->hasSkill(this) && p->getHandcardNum() >= 2 && use.from->getHp() > p->getHp())
                         d << SkillInvokeDetail(this, p, p, use.from);
                 }
             }
