@@ -61,18 +61,6 @@ public:
     void onEffect(const CardEffectStruct &effect) const override;
 };
 
-class EzhaoCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE EzhaoCard();
-
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, const CardUseStruct &card_use) const override;
-};
-
 class MoyanCard : public SkillCard
 {
     Q_OBJECT

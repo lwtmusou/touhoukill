@@ -2202,54 +2202,6 @@ public:
     }
 };
 
-EzhaoCard::EzhaoCard()
-{
-}
-
-bool EzhaoCard::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
-{
-    return to_select != Self && to_select->isWounded();
-}
-
-void EzhaoCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    room->doLightbox("$ezhaoAnimate", 4000);
-    SkillCard::onUse(room, card_use);
-}
-
-void EzhaoCard::use(Room *room, const CardUseStruct &card_use) const
-{
-    ServerPlayer *source = card_use.from;
-    const QList<ServerPlayer *> &targets = card_use.to;
-
-    room->removePlayerMark(source, "@ezhao");
-    foreach (ServerPlayer *p, targets) {
-        room->recover(p, RecoverStruct());
-        room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() + 1);
-    }
-}
-
-class Ezhao : public ZeroCardViewAsSkill
-{
-public:
-    Ezhao()
-        : ZeroCardViewAsSkill("ezhao")
-    {
-        frequency = Limited;
-        limit_mark = "@ezhao";
-    }
-
-    const Card *viewAs() const override
-    {
-        return new EzhaoCard;
-    }
-
-    bool isEnabledAtPlay(const Player *player) const override
-    {
-        return player->getMark("@ezhao") >= 1;
-    }
-};
-
 MoyanCard::MoyanCard()
 {
 }
@@ -2271,9 +2223,8 @@ void MoyanCard::use(Room *room, const CardUseStruct &card_use) const
     const QList<ServerPlayer *> &targets = card_use.to;
 
     room->removePlayerMark(source, "@moyan");
-    foreach (ServerPlayer *p, targets) {
+    foreach (ServerPlayer *p, targets)
         room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() + 1);
-    }
 }
 
 class Moyan : public ZeroCardViewAsSkill
@@ -4174,7 +4125,6 @@ TH0105Package::TH0105Package()
     addMetaObject<SqChuangshiCard>();
     addMetaObject<ModianCard>();
     addMetaObject<BaosiCard>();
-    addMetaObject<EzhaoCard>();
     addMetaObject<MoyanCard>();
     addMetaObject<QirenCard>();
     addMetaObject<LuliCard>();
