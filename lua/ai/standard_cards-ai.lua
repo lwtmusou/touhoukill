@@ -1858,7 +1858,7 @@ function SmartAI:useCardAmazingGrace(card, use)
 	--内奸开局五谷简直坑爹 贴别是二号位还是忠
 	local value = 1
 	local suf, coeff = 0.8, 0.8
-	if self:needKongcheng() and self.player:getHandcardNum() == 1 or self.player:hasSkills("nosjizhi|jizhi") then
+	if self:needKongcheng() and self.player:getHandcardNum() == 1 then
 		suf = 0.6
 		coeff = 0.6
 	end

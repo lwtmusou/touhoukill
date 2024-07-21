@@ -176,33 +176,27 @@ sgs.ai_skillProperty = {}--两个傻傻分不清楚
 
 function setInitialTables()
 	sgs.ai_type_name = {"Skill", "Basic", "Trick", "Equip"}
-	sgs.lose_equip_skill = "mokai|yiwang" --"xiaoji|liefeng"
+	sgs.lose_equip_skill = "mokai|yiwang"
 	sgs.lose_one_equip_skill = ""
-	sgs.need_kongcheng = "micai" --"kongcheng"
-	sgs.masochism_skill = 	"baochun|jingxia|qingyu"	--"yiji|fankui|jieming|ganglie|fangzhu|hengjiang|qianhuan|jianxiong"
-	sgs.defense_skill = "lingbai"  --"qingguo|longdan|niepan|bazhen|tianxiang|leiji|beige|yicheng|qianhuan|hengjiang|kongcheng|kanpo|xiangle|liuli|qianxun|" ..
-						--"tianxiang|duanchang|tuntian|shoucheng|jianxiong|weimu"
-	sgs.wizard_skill = 	"feixiang|mingyun|fengshui"	--"guicai|guidao|tiandu"
-	sgs.usefull_skill = "yushou"  --"tiandu|qiaobian|xingshang|xiaoguo|wusheng|guanxing|qicai|jizhi|kuanggu|lianhuan|huoshou|juxiang|shushen|zhiheng|keji|" ..
-						--"duoshi|xiaoji|hongyan|haoshi|guzheng|zhijian|shuangxiong|guidao|guicai|xiongyi|mashu|lirang|yizhi|shengxi|" ..
-						--"xunxun|wangxi|yingyang|hunshang|biyue"
-	sgs.drawcard_skill =  "xijian" --"tuxi|yingzi_sunce|yingzi_zhouyu|luoyi|haoshi"
-	sgs.attack_skill =   "duzhua"  --"paoxiao|duanliang|quhu|rende|tieqi|liegong|huoji|lieren|qixi|kurou|fanjian|guose|tianyi|dimeng|duanbing|fenxun|qingnang|wushuang|" ..
-						--"lijian|luanji|mengjin|kuangfu|huoshui|qingcheng|tiaoxin|shangyi|jiang|chuanxin"
-	sgs.wizard_harm_skill = "feixiang|mingyun|fengshui"	--"guicai|guidao"
-	sgs.priority_skill = 	"saiqian|qiangyu|miyao|maihuo|jiushu|weizhi|qingting|shenshou"  --	"dimeng|haoshi|qingnang|jizhi|guzheng|qixi|jieyin|guose|duanliang|fanjian|lijian|tuxi|qiaobian|zhiheng|luoshen|rende|wansha|qingcheng|shuangren"
-	sgs.save_skill = 	"hezhou"	--"jijiu"
-	sgs.exclusive_skill = 	""	--"duanchang|buqu"
-	sgs.Active_cardneed_skill =	""	--"paoxiao|tianyi|shuangxiong|jizhi|guose|duanliang|qixi|qingnang|luoyi|" ..
-								--"jieyin|zhiheng|rende|luanji|qiaobian|lirang"
-	sgs.notActive_cardneed_skill =	""	--"kanpo|guicai|guidao|beige|xiaoguo|liuli|tianxiang|jijiu"
-	sgs.cardneed_skill =  "mofa|jiezou"  --sgs.Active_cardneed_skill .. "|" .. sgs.notActive_cardneed_skill
-	sgs.drawpeach_skill =	"zhize|chunxi|toupai"	--"tuxi|qiaobian"
-	sgs.recover_skill =	"juxian"	--"rende|kuanggu|zaiqi|jieyin|qingnang|shenzhi|buqu"
-	sgs.use_lion_skill =	"baoyi|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|hunpo|qinlue"	 --"duanliang|qixi|guidao|lijian|zhiheng|fenxun|qingcheng"
+	sgs.need_kongcheng = "micai"
+	sgs.masochism_skill = 	"baochun|jingxia|qingyu"
+	sgs.defense_skill = "lingbai"
+	sgs.wizard_skill = 	"feixiang|mingyun|fengshui"
+	sgs.usefull_skill = "yushou"
+	sgs.drawcard_skill =  "xijian"
+	sgs.attack_skill =   "duzhua"
+	sgs.wizard_harm_skill = "feixiang|mingyun|fengshui"
+	sgs.priority_skill = 	"saiqian|qiangyu|miyao|maihuo|jiushu|weizhi|qingting|shenshou"
+	sgs.save_skill = 	"hezhou"
+	sgs.exclusive_skill = 	""
+	sgs.Active_cardneed_skill =	""
+	sgs.notActive_cardneed_skill =	""
+	sgs.cardneed_skill =  "mofa|jiezou"
+	sgs.drawpeach_skill =	"zhize|chunxi|toupai"
+	sgs.recover_skill =	"juxian"
+	sgs.use_lion_skill =	"baoyi|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|hunpo|qinlue"
 	sgs.need_equip_skill = 	"baoyi|mokai|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|qinlue|zhancao|wunian|yiwang"
-							--"shensu|beige|huyuan|qingcheng|xiaoji|zhijian"
-	sgs.judge_reason =	"lingqi|pohuai|huisu"	--"bazhen|EightDiagram|supply_shortage|tuntian|qianxi|indulgence|lightning|leiji|tieqi|luoshen|ganglie"
+	sgs.judge_reason =	"lingqi|pohuai|huisu"
 	sgs.attackRange_skill = "nengwu|bushu|xiangqi|fanji|xiubu|huantong"
 	sgs.no_intention_damage = "nuhuo|pohuai|zhuonong|meiling"
 
@@ -819,46 +813,13 @@ function sgs.getDynamicPlayerStrength(player, ishuashen)
 		--]]
 	end
 	if player:hasShownSkills(sgs.lose_equip_skill) then
-		--if not player:hasEquip() and getKnownCard(player, self.player, "EquipCard", true, "h") < 2 then
-		--	current_value = current_value - 0.3
-		--end
-		--for i = 1, getKnownCard(player, self.player, "EquipCard", true, "he") - 2, 1 do
-		--	current_value = current_value + 0.15
-		--end
 		for i = 1, player:getEquips():length(), 1 do
 			current_value = current_value + 0.15
 		end
-		--[[for _, p in sgs.qlist(global_room:getOtherPlayers(player)) do
-			if p:isFriendWith(player) then
-				--if p:hasShownSkill("duoshi") then
-				--	current_value = current_value + 0.4
-				--end
-				--if p:hasShownSkill("zhijian") then
-				--	current_value = current_value + 0.3
-				--end
-			end
-		end]]
 	end
-	--[[if player:hasShownSkills("qianhuan") then
-		for _, p in sgs.qlist(global_room:getAllPlayers()) do
-			if p:isFriendWith(player) and p:hasShownSkills("jijiu|qingnang") then
-				current_value = current_value + 5
-			end
-			if p:isFriendWith(player) and not p:objectName() == player:objectName() then
-				current_value = current_value + 3
-			end
-		end
-	end]]
 	if player:getLord() and player:getLord():isAlive() and not player:getLord():getPile("flame_map"):isEmpty() then
 		current_value = current_value + 0.5 * player:getLord():getPile("flame_map"):length()
 	end
-	--[[
-	if player:hasShownSkill("jizhi") then
-		for i = 1, getKnownCard(player, self.player, "TrickCard", false, "he"), 1 do
-			current_value = current_value + 0.1
-		end
-	end
-	--]]
 	return current_value
 end
 
@@ -2911,9 +2872,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 						return null_card
 					end
 					if peach_num == 0 and not self:willSkipPlayPhase(NP) then
-						if exnihilo_num > 0 then
-							if NP:hasShownSkills("jizhi|rende|zhiheng") then return null_card end
-						else
+						if exnihilo_num <= 0 then
 							for _, enemy in ipairs(self.enemies) do
 								if snatch_num > 0 and to:distanceTo(enemy) == 1 and
 									(self:willSkipPlayPhase(enemy, true) or self:willSkipDrawPhase(enemy, true)) then
@@ -5160,7 +5119,7 @@ function SmartAI:getAoeValue(card)
 	end
 
 	if isEffective_F == 0 and isEffective_E == 0 then
-		return attacker:hasShownSkill("jizhi") and 10 or -100
+		return -100
 	elseif isEffective_E == 0 then
 		return -100
 	end
@@ -6232,8 +6191,7 @@ function SmartAI:isValuableCard(card, player)
 	if (isCard("Peach", card, player) and getCardsNum("Peach", player, self.player) <= 2)
 		or (self:isWeak(player) and isCard("Analeptic", card, player))
 		or (player:getPhase() ~= sgs.Player_Play
-			and ((isCard("Nullification", card, player) and getCardsNum("Nullification", player, self.player) < 2 and player:hasShownSkill("jizhi"))
-				or (isCard("Jink", card, player) and getCardsNum("Jink", player, self.player) < 2)))
+			and (isCard("Jink", card, player) and getCardsNum("Jink", player, self.player) < 2))
 		or (player:getPhase() == sgs.Player_Play and isCard("ExNihilo", card, player) and not player:isLocked(card)) then
 		return true
 	end
@@ -7180,9 +7138,8 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 	local canShowHead =  not self.player:hasShownGeneral() --string.find(choices, "GameRule_AskForGeneralShowHead")
 	local canShowDeputy = not self.player:hasShownGeneral2() --string.find(choices, "GameRule_AskForGeneralShowDeputy")
 
-	local firstShow = ("zaozu|jingjie"):split("|") --("luanji|qianhuan"):split("|")
-	--local bothShow = ("luanji+shuangxiong|luanji+huoshui|huoji+jizhi|luoshen+fangzhu|guanxing+jizhi"):split("|")
-	local followShow = ("yuanhu|saiqian"):split("|") --("qianhuan|duoshi|rende|cunsi|jieyin|xiongyi|shouyue|hongfa"):split("|")
+	local firstShow = ("zaozu|jingjie"):split("|")
+	local followShow = ("yuanhu|saiqian"):split("|")
 
 	local notshown, shown, allshown, f, e, eAtt = 0, 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
@@ -7319,9 +7276,8 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowDeputy = function(self, data)
 	local canShowHead =  not self.player:hasShownGeneral() --string.find(choices, "GameRule_AskForGeneralShowHead")
 	local canShowDeputy = not self.player:hasShownGeneral2() --string.find(choices, "GameRule_AskForGeneralShowDeputy")
 
-	local firstShow = ("zaozu|jingjie"):split("|") --("luanji|qianhuan"):split("|")
-	--local bothShow = ("luanji+shuangxiong|luanji+huoshui|huoji+jizhi|luoshen+fangzhu|guanxing+jizhi"):split("|")
-	local followShow = ("yuanhu|saiqian"):split("|") --("qianhuan|duoshi|rende|cunsi|jieyin|xiongyi|shouyue|hongfa"):split("|")
+	local firstShow = ("zaozu|jingjie"):split("|")
+	local followShow = ("yuanhu|saiqian"):split("|")
 
 	local notshown, shown, allshown, f, e, eAtt = 0, 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do

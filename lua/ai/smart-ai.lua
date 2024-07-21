@@ -3004,9 +3004,7 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 					return null_card
 				end
 				if peach_num == 0 and not self:willSkipPlayPhase(NP) then
-					if exnihilo_num > 0 then
-						--if NP:hasSkills("nosjizhi|jizhi|nosrende|rende|zhiheng") or NP:hasSkill("jilve") and NP:getMark("@bear") > 0 then return null_card end
-					else
+					if exnihilo_num <= 0 then
 						for _, enemy in ipairs(self.enemies) do
 							if snatch_num > 0 and to:distanceTo(enemy) == 1 and
 								(self:willSkipPlayPhase(enemy, true) or self:willSkipDrawPhase(enemy, true)) then
@@ -3029,14 +3027,6 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 
 	else
 		if from then
-			--[[if (trick:isKindOf("FireAttack") or trick:isKindOf("Duel") or trick:isKindOf("AOE")) and (self:needDeath(to)) then
-				if self:isEnemy(from) then return null_card end
-				return
-			end]]
-			--[[if trick:getSkillName() == "lijian" and trick:isKindOf("Duel") then
-				if self:isEnemy(to) and (self:isWeak(to) or null_num > 1 or self:getOverflow() or not self:isWeak()) then return null_card end
-				return
-			end]]
 			if from:objectName() == to:objectName() then
 				if self:isFriend(from) then return null_card else return end
 			end
@@ -7152,8 +7142,7 @@ function SmartAI:isValuableCard(card, player)
 	if (isCard("Peach", card, player) and getCardsNum("Peach", player, self.player) <= 2)
 		or (self:isWeak(player) and isCard("Analeptic", card, player))
 		or (player:getPhase() ~= sgs.Player_Play
-			and ((isCard("Nullification", card, player) and getCardsNum("Nullification", player, self.player) < 2 and player:hasSkills("jizhi|nosjizhi|jilve"))
-				or (isCard("Jink", card, player) and getCardsNum("Jink", player, self.player) < 2)))
+			and (isCard("Jink", card, player) and getCardsNum("Jink", player, self.player) < 2))
 		or (player:getPhase() == sgs.Player_Play and isCard("ExNihilo", card, player) and not player:isLocked(card)) then
 		return true
 	end
