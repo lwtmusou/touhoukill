@@ -282,13 +282,13 @@ function SmartAI:initialize(player)
 		local method = self[method_name]
 		if method then
 			local success, result1, result2
-			success, result1, result2 = pcall(method, self, ...)
-			if not success then
-				self.room:writeToConsole(result1)
+			success, result1, result2 = xpcall(method, function(err)
+				self.room:writeToConsole(err)
 				self.room:writeToConsole(method_name)
 				self.room:writeToConsole(debug.traceback())
 				self.room:outputEventStack()
-			else
+			end, self, ...)
+			if success then
 				return result1, result2
 			end
 		end
