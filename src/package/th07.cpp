@@ -1700,7 +1700,7 @@ public:
                     d.tag["i"] = 1;
                     return {d};
                 }
-                if (p->getPhase() == Player::Start && p->getHp() > p->getDyingFactor()) {
+                if (p->getPhase() == Player::Start && p->getHp() > p->dyingThreshold()) {
                     SkillInvokeDetail d(this, p, p, nullptr, true);
                     d.tag["i"] = 2;
                     return {d};
