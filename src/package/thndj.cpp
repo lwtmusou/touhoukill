@@ -29,8 +29,8 @@ public:
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->hasSkill(this) && change.to == Player::NotActive && change.player->getHp() == 1 && !change.player->tag.value("touhou-extra", false).toBool()
-                && !room->getTag("rexueDeathInThisRound").toBool())
+            if (change.player->hasSkill(this) && change.to == Player::NotActive && change.player->getHp() <= change.player->getDyingFactor()
+                && !change.player->tag.value("touhou-extra", false).toBool() && !room->getTag("rexueDeathInThisRound").toBool())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, nullptr, true);
         }
 
