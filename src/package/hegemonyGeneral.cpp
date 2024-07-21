@@ -4553,8 +4553,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     mamizou_hegemony->addSkill("xihua");
 
     General *futo_hegemony = new General(this, "futo_hegemony", "wu", 3);
-    futo_hegemony->addSkill("shijie");
     futo_hegemony->addSkill("fengshui");
+    futo_hegemony->addSkill("xiangdi");
+    futo_hegemony->addSkill("shijie");
     futo_hegemony->addCompanion("toziko_hegemony");
 
     General *toziko_hegemony = new General(this, "toziko_hegemony", "wu", 4);
