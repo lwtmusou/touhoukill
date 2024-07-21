@@ -7432,9 +7432,6 @@ function SmartAI:cautionRenegade(player, friend)
 	if sgs.current_mode_players["renegade"] == 0  then --or self.player:getRole() == "renegade"
 		return false
 	end
-	--if sgs.ai_role[player:objectName()] == "renegade" then
-		-- return false
-	--end
 
 	local hasFakeFriend = false
 	local role = self.player:getRole()
@@ -7608,14 +7605,9 @@ function SmartAI:touhouGetJudges(player)
 end
 
 function sgs.evaluatePlayerRole(player)
-	if not player then global_room:writeToConsole("Player is empty in role's evaluation!") return end
-	local function test_func(player)
-		if player:isLord() then return "loyalist" else return "." end
-	end
-	local res = pcall(test_func, player)
-	if not res then global_room:writeToConsole(debug.traceback()) return elseif res == "loyalist" then return "loyalist" end
-	--if sgs.isRolePredictable() then return player:getRole() end
-	return sgs.ai_role[player:objectName()]
+	-- This function shouldn't be called in hegemony mode.
+	-- Make this a stub for compatibility
+	self.room:writeToConsole(debug.traceback())
 end
 
 function SmartAI:touhouIsDamageCard(card)

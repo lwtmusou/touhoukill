@@ -145,13 +145,14 @@ sgs.ai_choicemade_filter.skillInvoke.bushu = function(self, player, args, data)
 	if from and to and from:objectName()~= to:objectName() then
 		if args[#args] == "yes" then
 				sgs.updateIntention(player, to, -50)
-				--sgs.updateIntention(player, from, 10)
-		elseif sgs.evaluatePlayerRole(to) ~= "neutral" then
-			local num = player:getHandcardNum()
-			--if  num >= 3 and not self:isFriend(from, to)  then  --不用夹带私有的判断身份信息的isFriend  isFriend只适合用于自己的出牌策略
-			--update身份时，作为参考信息的身份信息 应该是公用列表的self.role的信息
-			if num >= 3 and sgs.evaluatePlayerRole(from) ~= sgs.evaluatePlayerRole(to) then
-				sgs.updateIntention(player, to, 20)
+		elseif not sgs.GetConfig("EnableHegemony", false) then
+			if sgs.evaluatePlayerRole(to) ~= "neutral" then
+				local num = player:getHandcardNum()
+				--if  num >= 3 and not self:isFriend(from, to)  then  --不用夹带私有的判断身份信息的isFriend  isFriend只适合用于自己的出牌策略
+				--update身份时，作为参考信息的身份信息 应该是公用列表的self.role的信息
+				if num >= 3 and sgs.evaluatePlayerRole(from) ~= sgs.evaluatePlayerRole(to) then
+					sgs.updateIntention(player, to, 20)
+				end
 			end
 		end
 	end
