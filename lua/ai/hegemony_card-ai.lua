@@ -385,7 +385,7 @@ sgs.ai_choicemade_filter.skillChoice.known_both_hegemony = function(self, from, 
 		for _, to in sgs.qlist(self.room:getOtherPlayers(from)) do
 			if to:hasFlag("KnownBothTarget") then
 				to:setMark(("KnownBoth_%s_%s"):format(from:objectName(), to:objectName()), 1)
-				local names = {}
+				local names = {"", ""}
 				if from:getTag("KnownBoth_" .. to:objectName()):toString() ~= "" then
 					names = from:getTag("KnownBoth_" .. to:objectName()):toString():split("+")
 				else
@@ -400,12 +400,12 @@ sgs.ai_choicemade_filter.skillChoice.known_both_hegemony = function(self, from, 
 						table.insert(names, "anjiang")
 					end
 				end
-				local generals = self.room:getTag(to:objectName()):toList()
+				local generals = self.room:getTag(to:objectName()):toStringList()
 
 				if choice == "showhead" then
-					names[1] = generals:first()
+					names[1] = generals[1]
 				else
-					names[2] = generals:last()
+					names[2] = generals[2]
 				end
 				from:setTag("KnownBoth_" .. to:objectName(), sgs.QVariant(table.concat(names, "+")))
 				break
