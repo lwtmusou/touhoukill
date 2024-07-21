@@ -1134,8 +1134,12 @@ sgs.ai_card_intention.ZhancheCard = 40
 
 sgs.ai_skill_cardask["@zhanche-robbed"] = function(self)
 	local t = sgs.QList2Table(self.player:getCards("hes"))
-	if #t == 0 then return "." end
-	self:sortByKeepValue(t, true)
+	local e = {}
+	for _, c in ipairs(t) do
+		if c:getTypeId() == sgs.Card_TypeEquip then table.insert(e, c) end
+	end
+	if #e == 0 then return "." end
+	self:sortByKeepValue(e)
 	return t[1]:getEffectiveId()
 end
 
