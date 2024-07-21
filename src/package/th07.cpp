@@ -1700,7 +1700,7 @@ public:
                     d.tag["i"] = 1;
                     return {d};
                 }
-                if (p->getPhase() == Player::Start && p->getHandcardNum() > p->getMaxCards()) {
+                if (p->getPhase() == Player::Start && p->getHandcardNum() > 4) {
                     SkillInvokeDetail d(this, p, p, nullptr, true);
                     d.tag["i"] = 2;
                     return {d};
@@ -1748,7 +1748,7 @@ public:
         if (selected.length() == 2)
             return false;
 
-        return to_select->getColor() == c->getColor() && to_select->getTypeId() == c->getTypeId();
+        return to_select->getColor() == c->getColor();
     }
 
     const Card *viewAs(const QList<const Card *> &cards) const override

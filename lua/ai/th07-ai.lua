@@ -958,7 +958,7 @@ sgs.ai_skill_cardask["@wangwu-invoke"] = function(self, data, pattern)
 		local card = data:toCardUse().card
 		local cards = {}
 		for _, id in sgs.qlist(self.player:getHandcards()) do
-			if id:getColor() == card:getColor() and id:getTypeId() == card:getTypeId() and not id:isKindOf("Peach") then
+			if id:getColor() == card:getColor() and not id:isKindOf("Peach") then
 				table.insert(id)
 			end
 		end
