@@ -802,7 +802,7 @@ sgs.ai_skill_invoke.bianhuan_hegemony = function(self, data)
 	end
 	local effect, willEffect = self:touhouDamageEffect(damage, damage.from, damage.to)
 
-    return damage.damage > 1 or (not self:isFriend(damage.from) and effect)
+    return damage.damage > 1 or (damage.from and not self:isFriend(damage.from) and effect)
 end
 --[怒火]
 local nuhuo_skill = {}
