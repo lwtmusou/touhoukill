@@ -631,7 +631,9 @@ local weiyi_t = {}
 weiyi_t.name = "weiyi"
 table.insert(sgs.ai_skills, weiyi_t)
 weiyi_t.getTurnUseCard = function(self)
-	return sgs.Card_Parse("@WeiyiCard=.")
+	if not self.player:hasUsed("WeiyiCard") then
+		return sgs.Card_Parse("@WeiyiCard=.")
+	end
 end
 sgs.ai_skill_use_func.WeiyiCard = function(card, use, self)
 	-- 有1血的敌人处于自己和队友攻击范围内，且该队友至少有三张手牌，则技能对该队友释放，出杀目标指向该敌人；
