@@ -1487,7 +1487,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
         case Player::Lord: {
             winner = "rebel";
             if (alive_roles.count("renegade") == 1) {
-                if (alive_roles.count("loyalist") <= Config.RoleRenegadeWinLoyalistNum && alive_roles.count("rabel") <= Config.RoleRenegadeWinRebelNum) {
+                if (alive_roles.count("loyalist") <= Config.RoleRenegadeWinLoyalistNum && alive_roles.count("rebel") <= Config.RoleRenegadeWinRebelNum) {
                     foreach (ServerPlayer *p, room->getAlivePlayers()) {
                         if (p->getRoleEnum() == Player::Renegade) {
                             winner = p->objectName();
