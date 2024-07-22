@@ -30,6 +30,7 @@ void MishenCard::onUse(Room *room, const CardUseStruct &card_use) const
     if (lt->isAvailable(card_use.from) && !card_use.from->isProhibited(card_use.to.first(), lt)) {
         CardUseStruct u;
         u.card = lt;
+        u.from = card_use.from;
         u.to = card_use.to;
         room->useCard(u);
     } else
