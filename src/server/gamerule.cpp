@@ -170,8 +170,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             QList<DrawNCardsStruct> s_list;
             foreach (ServerPlayer *p, room->getPlayers()) {
                 int n = kof_mode ? p->getMaxHp() : 4;
-                if (room->getMode() == "03_1v2" && p->isLord())
-                    n++;
 
                 if (room->getMode() == "04_2v2") {
                     if (p->getSeat() == 1)
