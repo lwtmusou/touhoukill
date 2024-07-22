@@ -16,8 +16,7 @@ class SkltKexueCard : public SkillCard
 
 public:
     Q_INVOKABLE SkltKexueCard();
-
-    void use(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class SuodingCard : public SkillCard

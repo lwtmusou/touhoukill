@@ -16,32 +16,29 @@
 
 SkltKexueCard::SkltKexueCard()
 {
-    will_throw = false;
     target_fixed = true;
-    handling_method = Card::MethodUse;
     m_skillName = "skltkexue_attach";
 }
 
-void SkltKexueCard::use(Room *room, const CardUseStruct &card_use) const
+void SkltKexueCard::onEffect(const CardEffectStruct &effect) const
 {
-    ServerPlayer *source = card_use.from;
+    ServerPlayer *source = effect.from;
+    ServerPlayer *who = effect.to;
+    Room *room = source->getRoom();
 
-    ServerPlayer *who = room->getCurrentDyingPlayer();
-    if (who != nullptr && who->hasSkill("skltkexue")) {
-        room->notifySkillInvoked(who, "skltkexue");
-        room->loseHp(source);
-        if (source->isAlive()) {
-            if (isHegemonyGameMode(ServerInfo.GameMode))
-                source->drawCards(1);
-            else
-                source->drawCards(2);
-        }
-
-        RecoverStruct recover;
-        recover.recover = 1;
-        recover.who = source;
-        room->recover(who, recover);
+    room->notifySkillInvoked(who, "skltkexue");
+    room->loseHp(source);
+    if (source->isAlive()) {
+        if (isHegemonyGameMode(ServerInfo.GameMode))
+            source->drawCards(1);
+        else
+            source->drawCards(2);
     }
+
+    RecoverStruct recover;
+    recover.recover = 1;
+    recover.who = source;
+    room->recover(who, recover);
 }
 
 class SkltKexueVS : public ZeroCardViewAsSkill
@@ -62,7 +59,7 @@ public:
     {
         if (player->getHp() > player->dyingThreshold() && pattern.contains("peach") && !player->isRemoved()) {
             foreach (const Player *p, player->getAliveSiblings()) {
-                if (p->hasFlag("Global_Dying") && p->hasSkill("skltkexue", false, false))
+                if (player->property("currentdying").toString() == p->objectName() && p->hasSkill("skltkexue", false, false))
                     return true;
             }
         }
