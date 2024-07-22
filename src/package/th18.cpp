@@ -1,32 +1,41 @@
 #include "th18.h"
 #include "general.h"
+#include "skill.h"
 
 TH18Package::TH18Package()
     : Package("th18")
 {
-    General *momoyo = new General(this, "momoyo$", "hld");
-    Q_UNUSED(momoyo);
+    General *chimata = new General(this, "chimata$", "hld");
+    chimata->addSkill(new Skill("simao"));
+    chimata->addSkill(new Skill("liuneng"));
+    chimata->addSkill(new Skill("shirong$"));
 
-    General *mike = new General(this, "mike", "hld");
-    Q_UNUSED(mike);
+    General *mike = new General(this, "mike", "hld", 3);
+    mike->addSkill(new Skill("cizhao"));
+    mike->addSkill(new Skill("danran"));
 
     General *takane = new General(this, "takane", "hld");
-    Q_UNUSED(takane);
+    takane->addSkill(new Skill("yingji"));
+    takane->addSkill(new Skill("zhixiao"));
 
     General *sannyo = new General(this, "sannyo", "hld");
-    Q_UNUSED(sannyo);
+    sannyo->addSkill(new Skill("boxi"));
 
     General *misumaru = new General(this, "misumaru", "hld");
-    Q_UNUSED(misumaru);
+    misumaru->addSkill(new Skill("zhuyu"));
+    misumaru->addSkill(new Skill("shuzhu"));
 
-    General *tsukasa = new General(this, "tsukasa", "hld");
-    Q_UNUSED(tsukasa);
+    General *tsukasa = new General(this, "tsukasa", "hld", 3);
+    tsukasa->addSkill(new Skill("tiaosuo"));
+    tsukasa->addSkill(new Skill("zuanying"));
 
     General *megumu = new General(this, "megumu", "hld");
-    Q_UNUSED(megumu);
+    megumu->addSkill(new Skill("fgwlshezheng"));
+    megumu->addSkill(new Skill("miji"));
 
-    General *chimata = new General(this, "chimata", "hld");
-    Q_UNUSED(chimata);
+    General *momoyo = new General(this, "momoyo", "hld");
+    momoyo->addSkill(new Skill("juezhu"));
+    momoyo->addSkill(new Skill("zhanyi"));
 }
 
 ADD_PACKAGE(TH18)
