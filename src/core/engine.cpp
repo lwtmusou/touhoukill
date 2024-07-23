@@ -1161,8 +1161,8 @@ QList<int> Engine::getRandomCards() const
                    << "nullification";
                 if (ex.contains(card->objectName()))
                     list << card->getId();
-                else
-                    continue;
+
+                continue;
             }
 
             if (card->objectName().startsWith("known_both")) {
