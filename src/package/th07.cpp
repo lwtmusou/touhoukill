@@ -920,6 +920,7 @@ public:
             discard = room->askForDiscard(invoke->invoker, objectName(), 1, 1, true, true, "zhanwang-self");
         } else {
             if (invoke->invoker->canDiscard(invoke->targets.first(), "hes", objectName())) {
+                invoke->targets.first()->tag[objectName()] = data;
                 discard = invoke->targets.first()->askForSkillInvoke("zhanwang_discard", "emmm:" + invoke->invoker->objectName());
                 if (discard) {
                     int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName(), false, Card::MethodDiscard);
