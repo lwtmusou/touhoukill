@@ -234,9 +234,8 @@ public:
 
         playNext();
 
-        if (m_count >= 1) {
+        if (m_count >= 1)
             m_timer = startTimer(m_interval);
-        }
     }
 
     void stop()

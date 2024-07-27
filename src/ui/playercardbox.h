@@ -50,7 +50,6 @@ private:
     int getRowCount(const int &cardNumber) const;
     void updateNumbers(const int &cardNumber);
     void arrangeCards(const QList<const Card *> &cards, const QPoint &topLeft, bool enableEmptyCard = true, const QList<const Card *> &shownCards = QList<const Card *>());
-    //void arrangeGenerals(const QPoint &topLeft);
 
     const ClientPlayer *player;
     QString flags;

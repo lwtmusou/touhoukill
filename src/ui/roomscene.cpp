@@ -1145,16 +1145,36 @@ void RoomScene::updateTable()
     // ------------------------
     // region 5 = 0 + 3, region 6 = 2 + 4, region 7 = 0 + 1 + 2
 
-    static int regularSeatIndex[][9]
-        = {{1}, {5, 6}, {5, 1, 6}, {3, 1, 1, 4}, {3, 1, 1, 1, 4}, {5, 5, 1, 1, 6, 6}, {5, 5, 1, 1, 1, 6, 6}, {3, 3, 7, 7, 7, 7, 4, 4}, {3, 3, 7, 7, 7, 7, 7, 4, 4}};
-    static int hulaoSeatIndex[][3] = {{1, 1, 1}, // if self is shenlvbu
-                                      {3, 3, 1},
-                                      {3, 1, 4},
-                                      {1, 4, 4}};
+    static int regularSeatIndex[][9] = {
+        {1}, // 02
+        {5, 6}, // 03
+        {5, 1, 6}, // 04
+        {3, 1, 1, 4}, // 05
+        {3, 1, 1, 1, 4}, // 06
+        {5, 5, 1, 1, 6, 6}, // 07
+        {5, 5, 1, 1, 1, 6, 6}, // 08
+        {3, 3, 7, 7, 7, 7, 4, 4}, // 09
+        {3, 3, 7, 7, 7, 7, 7, 4, 4}, // 10
+    };
+    static int hulaoSeatIndex[][3] = {
+        {1, 1, 1}, // if self is shenlvbu
+        {3, 3, 1},
+        {3, 1, 4},
+        {1, 4, 4},
+    };
     static int kof3v3SeatIndex[][5] = {
         {3, 1, 1, 1, 4}, // lord
         {1, 1, 1, 4, 4}, // rebel (left), same with loyalist (left)
-        {3, 3, 1, 1, 1} // loyalist (right), same with rebel (right)
+        {3, 3, 1, 1, 1}, // loyalist (right), same with rebel (right)
+    };
+    static int pvlSeatIndex[][2] = {
+        {1, 1}, // lord
+        {3, 1}, // p1
+        {1, 4}, // p2
+    };
+    static int happy2v2SeatIndex[][3] = {
+        {1, 1, 4},
+        {3, 1, 1},
     };
 
     double hGap = _m_roomLayout->m_photoHDistance;
@@ -1194,7 +1214,6 @@ void RoomScene::updateTable()
     m_tablePile->adjustCards();
     card_container->setPos(m_tableCenterPos);
     pileContainer->setPos(m_tableCenterPos);
-    //pileContainer->setPos(m_tableCenterPos - QPointF(pileContainer->boundingRect().width() / 2, pileContainer->boundingRect().height() / 2));
     guanxing_box->setPos(m_tableCenterPos);
     m_chooseGeneralBox->setPos(m_tableCenterPos - QPointF(m_chooseGeneralBox->boundingRect().width() / 2, m_chooseGeneralBox->boundingRect().height() / 2));
     m_chooseOptionsBox->setPos(m_tableCenterPos - QPointF(m_chooseOptionsBox->boundingRect().width() / 2, m_chooseOptionsBox->boundingRect().height() / 2));
@@ -1213,15 +1232,20 @@ void RoomScene::updateTable()
     } else if (ServerInfo.GameMode == "06_3v3" && game_started) {
         seatToRegion = kof3v3SeatIndex[(Self->getSeat() - 1) % 3];
         pkMode = true;
+    } else if (ServerInfo.GameMode == "03_1v2" && game_started) {
+        seatToRegion = pvlSeatIndex[Self->getSeat() - 1];
+        pkMode = true;
+    } else if (ServerInfo.GameMode == "04_2v2" && game_started) {
+        seatToRegion = happy2v2SeatIndex[(Self->getSeat() - 1) % 2];
+        pkMode = true;
     } else {
         seatToRegion = regularSeatIndex[photos.length() - 1];
     }
     QList<Photo *> photosInRegion[C_NUM_REGIONS];
-    // TODO: out of bounds when regionIndex == 9
     int n = photos.length();
     for (int i = 0; i < n; i++) {
         int regionIndex = seatToRegion[i];
-        if (regionIndex == 4 || regionIndex == 6 || regionIndex == 9)
+        if (regionIndex == 4 || regionIndex == 6)
             photosInRegion[regionIndex].append(photos[i]);
         else
             photosInRegion[regionIndex].prepend(photos[i]);
@@ -1330,13 +1354,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats)
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsScene::mousePressEvent(event);
-    /*
-        _m_isMouseButtonDown = true;
-        _m_isInDragAndUseMode = false;
-        */
 
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        //m_mousePressed = true;    super drag??
         bool changed = false;
         QPoint point(event->pos().x(), event->pos().y());
         foreach (Photo *photo, photos) {
@@ -1355,57 +1374,11 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsScene::mouseReleaseEvent(event);
-    /*
-        if (_m_isInDragAndUseMode) {
-        bool accepted = false;
-        if (ok_button->isEnabled()) {
-        foreach (Photo *photo, photos) {
-        if (photo->isUnderMouse()) {
-        accepted = true;
-        break;
-        }
-        }
-
-        if (!accepted && dashboard->isAvatarUnderMouse())
-        accepted = true;
-        }
-        if (accepted)
-        ok_button->click();
-        else {
-        enableTargets(NULL);
-        dashboard->unselectAll();
-        }
-        _m_isInDragAndUseMode = false;
-        }*/
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsScene::mouseMoveEvent(event);
-    /*
-        QGraphicsObject *obj = static_cast<QGraphicsObject *>(focusItem());
-        CardItem *card_item = qobject_cast<CardItem *>(obj);
-        if (!card_item || !card_item->isUnderMouse())
-        return;
-        PlayerCardContainer *victim = NULL;
-
-        foreach (Photo *photo, photos) {
-        if (photo->isUnderMouse())
-        victim = photo;
-        }
-
-        if (dashboard->isAvatarUnderMouse())
-        victim = dashboard;
-
-        _m_isInDragAndUseMode = true;
-        if (!dashboard->isSelected()) hasUpdate = true;
-        if (victim != NULL && !victim->isSelected()) {
-        if (!_m_isInDragAndUseMode)
-        enableTargets(card_item->getCard());
-        _m_isInDragAndUseMode = true;
-        dashboard->selectCard(card_item, true);
-        victim->setSelected(true);
-        } */
 }
 
 void RoomScene::enableTargets(const Card *card)
@@ -1625,7 +1598,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         setChatBoxVisible(!chat_box_widget->isVisible());
         break;
     }
-
     case Qt::Key_S:
         dashboard->selectCard("slash");
         break;
@@ -1638,7 +1610,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_O:
         dashboard->selectCard("analeptic");
         break;
-
     case Qt::Key_E:
         dashboard->selectCard("equip");
         break;
@@ -1651,7 +1622,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_H:
         dashboard->selectCard("defensive_horse+offensive_horse");
         break;
-
     case Qt::Key_T:
         dashboard->selectCard("trick");
         break;
@@ -1679,14 +1649,12 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_B:
         dashboard->selectCard("supply_shortage");
         break;
-
     case Qt::Key_Left:
         dashboard->selectCard(".", false, control_is_down);
         break;
     case Qt::Key_Right:
         dashboard->selectCard(".", true, control_is_down);
         break; // iterate all cards
-
     case Qt::Key_Return: {
         if (ok_button->isEnabled())
             doOkButton();
@@ -1706,7 +1674,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         else if (discard_button->isEnabled())
             doDiscardButton();
     }
-
     case Qt::Key_0:
     case Qt::Key_1:
     case Qt::Key_2:
@@ -1727,7 +1694,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         selectTarget(order, control_is_down);
         break;
     }
-
     case Qt::Key_D: {
         if (Self == nullptr)
             return;
@@ -1737,13 +1703,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         }
         break;
     }
-        /*case Qt::Key_Z: {
-        if (dashboard) {
-            m_skillButtonSank = !m_skillButtonSank;
-            dashboard->updateSkillButton();
-        }
-        break;
-    }*/
     }
 }
 
@@ -1929,68 +1888,9 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
     m_chooseOptionsBox->chooseOption(options);
 }
 
-/*void RoomScene::chooseOption(const QString &skillName, const QStringList &options)
-{
-    QDialog *dialog = new QDialog;
-    QVBoxLayout *layout = new QVBoxLayout;
-    QString title = Sanguosha->translate(skillName);
-    dialog->setWindowTitle(title);
-
-    if (skillName.contains("guhuo") && !guhuo_log.isEmpty()) {
-        QLabel *guhuo_text = new QLabel(guhuo_log, dialog);
-        guhuo_text->setObjectName("guhuo_text");
-        guhuo_text->setMaximumWidth(240);
-        guhuo_text->setWordWrap(true);
-        layout->addWidget(guhuo_text);
-
-        guhuo_log = QString();
-    }
-    layout->addWidget(new QLabel(tr("Please choose:")));
-
-    foreach (QString option, options) {
-        QCommandLinkButton *button = new QCommandLinkButton;
-        QString text = QString("%1:%2").arg(skillName).arg(option);
-        QString translated = Sanguosha->translate(text);
-        if (text == translated)
-            translated = Sanguosha->translate(option);
-
-        button->setObjectName(option);
-        button->setText(translated);
-
-        QString original_tooltip = QString(":%1").arg(text);
-        QString tooltip = Sanguosha->translate(original_tooltip);
-        if (tooltip == original_tooltip) {
-            original_tooltip = QString(":%1").arg(option);
-            tooltip = Sanguosha->translate(original_tooltip);
-        }
-        if (tooltip != original_tooltip)
-            button->setToolTip(QString("<font color=#FFFF33>%1</font>").arg(tooltip));
-
-        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
-        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
-
-        layout->addWidget(button);
-    }
-
-    dialog->setObjectName(options.first());
-    connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerMakeChoice()));
-
-    dialog->setLayout(layout);
-    Sanguosha->playSystemAudioEffect("pop-up");
-    delete m_choiceDialog;
-    m_choiceDialog = dialog;
-}*/
-
 void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids,
                            bool enableEmptyCard)
 {
-    /*PlayerCardDialog *dialog = new PlayerCardDialog(player, flags, handcard_visible, method, disabled_ids);
-    dialog->setWindowTitle(Sanguosha->translate(reason));
-    connect(dialog, SIGNAL(card_id_chosen(int)), ClientInstance, SLOT(onPlayerChooseCard(int)));
-    connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseCard()));
-    delete m_choiceDialog;
-    m_choiceDialog = dialog;*/
-
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("pop-up");
@@ -5392,7 +5292,6 @@ void RoomScene::setLordBGM(QString lord)
     else
         Audio::playBGM(lord_name, true, false, true);
     Audio::setBGMVolume(Config.BGMVolume);
-
 #endif
 }
 
@@ -5463,9 +5362,9 @@ void RoomScene::anyunSelectSkill()
     if (selectAllList.contains(skillName))
         dashboard->selectAll();
 }
+
 //for client test log
 void RoomScene::addlog(QStringList log)
 {
-    //log_box->appendLog(type, player->objectName(), QStringList(), QString(), newHeroName, arg2);
     log_box->appendLog(log);
 }

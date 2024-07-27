@@ -18,7 +18,6 @@ public:
     void setFont(const QFont &font);
 
     QRectF boundingRect() const override;
-    //void setText(const QString &text);
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -27,9 +26,6 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
     void timerEvent(QTimerEvent *) override;
-
-    //QGraphicsPixmapItem *m_icon;
-    //QGraphicsPixmapItem *m_colorReversedIcon;
 
 private:
     QString label;

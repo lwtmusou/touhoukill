@@ -75,9 +75,6 @@ protected:
     // get rid of it.
     bool _m_mouseEntered;
     QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES];
-    //for trustbutton, duet to hegemony
-    //bool multi_state;
-    //bool m_isFirstState;
 
 private:
     bool _isMouseInside(const QPointF &pos) const
@@ -131,14 +128,7 @@ public:
     {
         return _m_skill;
     }
-    /*inline virtual void setEnabled(bool enabled)
-    {
-        if (!_m_canEnable && enabled)
-            return;
-        if (!_m_canDisable && !enabled)
-            return;
-        QSanButton::setEnabled(enabled);
-    }*/
+
     explicit QSanSkillButton(QGraphicsItem *parent = nullptr);
     inline const ViewAsSkill *getViewAsSkill() const
     {

@@ -304,46 +304,6 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
     }
 }
 
-/*void PlayerCardBox::arrangeGenerals(const QPoint &topLeft)
-{
-    QList<CardItem *> areaItems;
-
-    CardItem *item = new CardItem(player->getGeneralName());
-    item->setAutoBack(false);
-    item->resetTransform();
-    item->setParentItem(this);
-    item->setFlag(ItemIsMovable, false);
-    item->setEnabled(true);
-
-    connect(item, &CardItem::clicked, this, &PlayerCardBox::reply);
-    item->setAcceptedMouseButtons(Qt::LeftButton); //the source of hegemony has not set LeftButton???
-        //connect(item, SIGNAL(clicked()), this, SLOT(reply()));
-    connect(item, &CardItem::enter_hover, RoomSceneInstance->getDashboard(), &Dashboard::onCardItemHover);
-    connect(item, &CardItem::leave_hover, RoomSceneInstance->getDashboard(), &Dashboard::onCardItemLeaveHover);
-    items << item;
-    areaItems << item;
-
-    int n = 1;
-    const int rows = (n + maxCardNumberInOneRow - 1) / maxCardNumberInOneRow;
-    const int cardWidth = G_COMMON_LAYOUT.m_cardNormalWidth;
-    const int cardHeight = G_COMMON_LAYOUT.m_cardNormalHeight;
-    const int min = qMin(maxCardsInOneRow, maxCardNumberInOneRow / 2);
-    const int maxWidth = min * cardWidth + intervalBetweenCards * (min - 1);
-    for (int row = 0; row < rows; ++row) {
-        int count = qMin(maxCardNumberInOneRow, areaItems.size());
-        double step = 0;
-        if (count > 1) {
-            step = qMin((double)cardWidth + intervalBetweenCards, (double)(maxWidth - cardWidth) / qMax(count - 1, 0));
-        }
-        for (int i = 0; i < count; ++i) {
-            CardItem *item = areaItems.takeFirst();
-            const double x = topLeft.x() + step * i;
-            const double y = topLeft.y() + (cardHeight + intervalBetweenRows) * row;
-            item->setPos(x, y);
-        }
-    }
-}*/
-
 void PlayerCardBox::reply()
 {
     CardItem *item = qobject_cast<CardItem *>(sender());
