@@ -495,8 +495,10 @@ sgs.ai_skill_use["@@chunteng"] = function(self, prompt)
 		local c = sgs.Sanguosha:getCard(id)
 		table.insert(l, c)
 	end
-	self:sortByUseValue(l,true)
-	return "@ChuntengCard=".. l[1]:getId() .."->" .. self.friends_noself[1]:objectName()
+	if #l > 0 then
+		self:sortByUseValue(l,true)
+		return "@ChuntengCard=".. l[1]:getId() .."->" .. self.friends_noself[1]:objectName()
+	end
 end
 
 sgs.ai_skill_invoke.chunteng_discard = function(self,data)

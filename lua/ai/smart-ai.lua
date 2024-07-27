@@ -6697,7 +6697,10 @@ end
 function SmartAI:touhouIsSameWithLordKingdom(player)
 	player= player or self.player
 	local lord =self.room:getLord()
-	return lord:getKingdom()==player:getKingdom()
+	if lord then
+		return lord:getKingdom()==player:getKingdom()
+	end
+	return false
 end
 
 --主要用于要求出杀闪等respone时

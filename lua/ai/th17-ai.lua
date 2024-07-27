@@ -685,7 +685,7 @@ sgs.ai_skill_discard.weiyi = function(self)
 end
 sgs.ai_skill_use["@@weiyi"] = function(self)
 	local viewAsSlash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
-	viewAsSlash:addSubCard(self.player:getTag("weiyiSelected"):toInt())
+	viewAsSlash:addSubcard(self.player:getTag("weiyiSelected"):toInt())
 	viewAsSlash:setSkillName("_weiyi")
 	local use = {isDummy = true, to = sgs.SPlayerList()}
 	self:useCardSlash(viewAsSlash, use)
