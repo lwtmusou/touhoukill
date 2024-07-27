@@ -544,12 +544,22 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         use.to << invoke->targets.first();
 
+        LogMessage l;
+        l.type = "#Kuangwu";
+        l.from = invoke->invoker;
+        l.to = invoke->targets;
+        l.arg = objectName();
+        l.arg2 = use.card->objectName();
+
         if (!use.to.contains(invoke->invoker)) {
             use.card->setFlags("wuchang2");
-            if (!use.to.contains(invoke->invoker) && use.card->targetFilter(convertSpList(use.to), invoke->invoker, use.from))
+            if (!use.to.contains(invoke->invoker) && use.card->targetFilter(convertSpList(use.to), invoke->invoker, use.from)) {
                 use.to << invoke->invoker;
+                l.to << invoke->invoker;
+            }
             use.card->setFlags("-wuchang2");
         }
+        room->sendLog(l);
 
         room->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);

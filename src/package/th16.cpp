@@ -347,9 +347,14 @@ public:
             invoke->invoker->drawCards(1);
         } else {
             CardUseStruct use = data.value<CardUseStruct>();
-            QList<ServerPlayer *> logto;
-            logto << invoke->targets.first();
-            room->sendLog("#houhu", invoke->invoker, use.card->objectName(), logto, objectName());
+
+            LogMessage alog;
+            alog.type = "#QishuAdd";
+            alog.from = invoke->invoker;
+            alog.arg = use.card->objectName();
+            alog.to = invoke->targets;
+            alog.arg2 = objectName();
+            room->sendLog(alog);
 
             use.to << invoke->targets.first();
             room->sortByActionOrder(use.to);
@@ -1088,9 +1093,9 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
 
         LogMessage alog;
-        alog.type = "$Kuangwu";
+        alog.type = "#Kuangwu";
         alog.from = use.from;
-        alog.card_str = use.card->toString();
+        alog.arg2 = use.card->objectName();
         alog.to = invoke->targets;
         alog.arg = objectName();
         room->sendLog(alog);

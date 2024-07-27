@@ -1918,11 +1918,11 @@ public:
 
         if (canAdd.contains(target)) {
             LogMessage l;
-            l.type = "$Kuangwu";
+            l.type = "#Kuangwu";
             l.from = use.from;
             l.to << target;
             l.arg = "yaolitrick";
-            l.card_str = use.card->toString();
+            l.arg2 = use.card->objectName();
             room->sendLog(l);
             use.to.append(target);
         } else if (use.to.contains(target)) {
