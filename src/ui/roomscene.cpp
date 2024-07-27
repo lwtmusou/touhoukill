@@ -4302,13 +4302,12 @@ void RoomScene::onGameStart()
         log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
 
     trust_button->setEnabled(true);
+
 #ifdef AUDIO_SUPPORT
-
     setLordBGM();
-    setLordBackdrop();
-
 #endif
 
+    setLordBackdrop();
     game_started = true;
 
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
