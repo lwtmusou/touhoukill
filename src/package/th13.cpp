@@ -708,13 +708,38 @@ public:
         response_pattern = "@@xiangdi!";
     }
 
+    static bool isCardCanMoveTo(const Card *selectedCard, const Player *p2)
+    {
+        if (selectedCard->getTypeId() == Card::TypeTrick && !selectedCard->isNDTrick()) {
+            return !p2->containsTrick(selectedCard->objectName());
+        } else if (selectedCard->getTypeId() == Card::TypeEquip) {
+            const EquipCard *equip = qobject_cast<const EquipCard *>(selectedCard->getRealCard());
+            if (equip != nullptr) {
+                EquipCard::Location location = equip->location();
+                return p2->getEquip(location) == nullptr;
+            }
+        }
+
+        return false;
+    }
+    static bool isCardAvailable(const Card *card, const Player *p)
+    {
+        foreach (const Player *others, p->getAliveSiblings()) {
+            if (isCardCanMoveTo(card, others))
+                return true;
+        }
+
+        return false;
+    }
+
     bool viewFilter(const Card *to_select) const override
     {
         bool ok = false;
         int judgeCardId = Self->property((objectName() + "_judgecard").toUtf8().constData()).toString().toInt(&ok);
         if (ok) {
             const Card *c = Sanguosha->getCard(judgeCardId);
-            return (Self->hasEquip(to_select) || Self->getJudgingAreaID().contains(to_select->getId())) && c->getSuit() == to_select->getSuit();
+            if ((Self->hasEquip(to_select) || Self->getJudgingAreaID().contains(to_select->getId())) && c->getSuit() == to_select->getSuit())
+                return isCardAvailable(to_select, Self);
         }
 
         return false;
@@ -751,7 +776,7 @@ public:
             ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
             if (from != nullptr && from->isAlive() && from->hasSkill(this) && (from->getPhase() != Player::Play) && from->getMark("xiangdi_used") == 0) {
                 int reason = (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON);
-                if (reason == CardMoveReason::S_REASON_USE || reason == CardMoveReason::S_REASON_RESPONSE || reason == CardMoveReason::S_REASON_DISCARD) {
+                if (reason == CardMoveReason::S_REASON_USE || reason == CardMoveReason::S_REASON_DISCARD) {
                     for (int i = 0; i < move.card_ids.length(); ++i) {
                         const Card *c = Sanguosha->getCard(move.card_ids[i]);
                         if (c->isRed() && (move.from_places[i] == Player::PlaceHand || move.from_places[i] == Player::PlaceEquip))
@@ -781,72 +806,81 @@ public:
         } else if (triggerEvent == FinishJudge) {
             JudgeStruct *judge = data.value<JudgeStruct *>();
             invoke->invoker->tag["xiangdi_judge"] = data;
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getAllPlayers(), objectName() + "_give", "@xiangdi-giveCard");
-            target->obtainCard(judge->card);
 
             Card::Suit s = judge->card->getSuit();
-            QList<ServerPlayer *> targets;
+            QList<ServerPlayer *> targets2;
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 foreach (const Card *c, p->getCards("ej")) {
                     if (c->getSuit() == s) {
-                        targets << p;
-                        break;
+                        if (XiangdiSelfVS::isCardAvailable(c, p)) {
+                            targets2 << p;
+                            break;
+                        }
                     }
                 }
             }
 
-            if (targets.isEmpty())
-                return false;
-            ServerPlayer *movefrom = room->askForPlayerChosen(invoke->invoker, targets, objectName() + "_movefrom", "@xiangdi-movefrom:::" + Card::Suit2String(s), true);
-            if (movefrom == nullptr)
-                return false;
-            int moveId = -1;
+            QString prompt1 = "@xiangdi-giveCard";
+            if (targets2.isEmpty())
+                prompt1.append("2");
 
-            if (movefrom == invoke->invoker) {
-                room->setPlayerProperty(invoke->invoker, (objectName() + "_judgecard").toUtf8().constData(), QString::number(judge->card->getEffectiveId()));
-                const Card *c
-                    = room->askForCard(invoke->invoker, "@@xiangdi!", "@xiangdi-self:::" + Card::Suit2String(s), QVariant(), Card::MethodNone, nullptr, false, QString(), false, 0);
-                moveId = c->getEffectiveId();
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName() + "_give", prompt1, !targets2.isEmpty());
+            if (target != nullptr) {
+                target->obtainCard(judge->card);
             } else {
-                QList<int> disabled_ids;
-                foreach (const Card *c, movefrom->getCards("ej")) {
-                    if (c->getSuit() != s)
-                        disabled_ids << c->getEffectiveId();
+                ServerPlayer *movefrom = room->askForPlayerChosen(invoke->invoker, targets2, objectName() + "_movefrom", "@xiangdi-movefrom:::" + Card::Suit2String(s));
+                int moveId = -1;
+
+                if (movefrom == invoke->invoker) {
+                    room->setPlayerProperty(invoke->invoker, (objectName() + "_judgecard").toUtf8().constData(), QString::number(judge->card->getEffectiveId()));
+                    const Card *c = room->askForCard(invoke->invoker, "@@xiangdi!", "@xiangdi-self:::" + Card::Suit2String(s), QVariant(), Card::MethodNone, nullptr, false,
+                                                     QString(), false, 0);
+                    if (c != nullptr)
+                        moveId = c->getEffectiveId();
+                } else {
+                    QList<int> disabled_ids;
+                    foreach (const Card *c, movefrom->getCards("ej")) {
+                        bool flag = true;
+                        if (c->getSuit() != s)
+                            flag = false;
+                        else
+                            flag = XiangdiSelfVS::isCardAvailable(c, movefrom);
+
+                        if (!flag)
+                            disabled_ids << c->getEffectiveId();
+                    }
+                    moveId = room->askForCardChosen(invoke->invoker, movefrom, "ej", objectName(), false, Card::MethodNone, disabled_ids);
                 }
-                moveId = room->askForCardChosen(invoke->invoker, movefrom, "ej", objectName(), false, Card::MethodNone, disabled_ids);
-            }
-            if (moveId == -1)
-                return false;
-
-            const Card *selectedCard = Sanguosha->getCard(moveId);
-            Player::Place place = room->getCardPlace(moveId);
-            QString placeStr;
-            if (place == Player::PlaceDelayedTrick)
-                placeStr = "PlaceDelayedTrick";
-            else
-                placeStr = "PlaceEquip";
-
-            QList<ServerPlayer *> moveTargets;
-            foreach (ServerPlayer *p, room->getOtherPlayers(movefrom)) {
-                bool flag = false;
-                if (place == Player::PlaceDelayedTrick) {
-                    flag = !p->containsTrick(selectedCard->objectName());
-                } else if (place == Player::PlaceEquip) {
-                    const EquipCard *equip = qobject_cast<const EquipCard *>(selectedCard->getRealCard());
-                    if (equip != nullptr) {
-                        EquipCard::Location location = equip->location();
-                        flag = p->getEquip(location) == nullptr;
+                if (moveId == -1) {
+                    foreach (const Card *c, movefrom->getCards("ej")) {
+                        if (c->getSuit() == s) {
+                            if (XiangdiSelfVS::isCardAvailable(c, movefrom)) {
+                                moveId = c->getId();
+                                break;
+                            }
+                        }
                     }
                 }
 
-                if (flag)
-                    moveTargets << p;
-            }
-            if (moveTargets.isEmpty())
-                return false;
+                const Card *selectedCard = Sanguosha->getCard(moveId);
+                Player::Place place = room->getCardPlace(moveId);
+                QString placeStr;
+                if (place == Player::PlaceDelayedTrick)
+                    placeStr = "PlaceDelayedTrick";
+                else
+                    placeStr = "PlaceEquip";
 
-            ServerPlayer *moveto = room->askForPlayerChosen(invoke->invoker, moveTargets, objectName() + "_moveto", "@xiangdi-moveto:::" + placeStr);
-            room->moveCardTo(selectedCard, moveto, place, true);
+                QList<ServerPlayer *> moveTargets;
+                foreach (ServerPlayer *p, room->getOtherPlayers(movefrom)) {
+                    if (XiangdiSelfVS::isCardCanMoveTo(selectedCard, p))
+                        moveTargets << p;
+                }
+
+                Q_ASSERT(!moveTargets.isEmpty());
+
+                ServerPlayer *moveto = room->askForPlayerChosen(invoke->invoker, moveTargets, objectName() + "_moveto", "@xiangdi-moveto:::" + placeStr);
+                room->moveCardTo(selectedCard, moveto, place, true);
+            }
         }
 
         return false;
