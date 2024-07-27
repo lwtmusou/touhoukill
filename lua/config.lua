@@ -208,14 +208,15 @@ config = {
 		"lunasa|merlin|lyrica->prismriver",
 	},
 	latest_generals = {
-		-- 0.10.2
-		"kasen_sp",
-		-- 0.10.3
-		"keiki","eika","urumi","kutaka","yachie","mayumi","saki",
 		-- 0.10.5
-		"rika", "elis", "luize",
+		"elis", "luize",
 		-- 0.10.6
 		"eirin_ndj",
+		-- 0.10.9
+		"ellen", "sara", "futo", "rika", "keiki", "saki", "yorigamis", "mayumi", "eika",
+		"yuyuko_sp", "hatate", "nue_slm", "sumireko", "kaguya_god", "konngara", "yuyuko",
+		"yachie", "kisume", "benben", "ichirin", "ringo", "mokou_sp", "kutaka", "seiran",
+		"junko", "urumi",
 	}
 }
 
