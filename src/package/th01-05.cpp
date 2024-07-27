@@ -2345,23 +2345,6 @@ public:
     }
 };
 
-class ZongjiuTM : public TargetModSkill
-{
-public:
-    ZongjiuTM()
-        : TargetModSkill("#zongjiu")
-    {
-        pattern = "Slash";
-    }
-
-    int getDistanceLimit(const Player *, const Card *card) const override
-    {
-        if (card->getSkillName() == "zongjiu")
-            return 1000;
-        return 0;
-    }
-};
-
 class Xingyou : public TriggerSkill
 {
 public:
@@ -2388,6 +2371,13 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
+        LogMessage l;
+        l.type = "#TriggerSkill";
+        l.from = invoke->invoker;
+        l.arg = objectName();
+        room->sendLog(l);
+        room->notifySkillInvoked(invoke->invoker, objectName());
+
         room->setPlayerMark(invoke->invoker, "drank", 0);
         RecoverStruct r;
         r.reason = objectName();
@@ -4082,8 +4072,6 @@ TH0105Package::TH0105Package()
 
     General *konngara = new General(this, "konngara", "pc98");
     konngara->addSkill(new Zongjiu);
-    konngara->addSkill(new ZongjiuTM);
-    related_skills.insertMulti("zongjiu", "#zongjiu");
     konngara->addSkill(new Xingyou);
 
     General *yumeko = new General(this, "yumeko", "pc98", 4);
