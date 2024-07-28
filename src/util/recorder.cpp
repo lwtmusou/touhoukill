@@ -136,9 +136,8 @@ int Replayer::getDuration() const
 
 qreal Replayer::getSpeed()
 {
-    qreal speed = NAN;
     mutex.lock();
-    speed = this->speed;
+    qreal speed = this->speed;
     mutex.unlock();
     return speed;
 }
