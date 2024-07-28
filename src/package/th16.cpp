@@ -475,7 +475,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getSuit() == Card::NoSuit || !use.from || !use.from->hasSkill(this) || use.from->isDead())
+        if (!use.card->isKindOf("KnownBoth") || !use.from || !use.from->hasSkill(this) || use.from->isDead())
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -492,12 +492,6 @@ public:
         return d;
     }
 
-    //default cost
-    /*bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-	{
-		return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
-	}*/
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
@@ -505,13 +499,11 @@ public:
         DummyCard *dummy = new DummyCard;
 
         foreach (int id, target->getShownHandcards()) {
-            if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit() && use.from->canDiscard(target, id)) {
+            if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit() && use.from->canDiscard(target, id))
                 dummy->addSubcard(id);
-            }
         }
 
-        if (dummy->getSubcards().length() > 0)
-            room->throwCard(dummy, target, invoke->invoker);
+        room->throwCard(dummy, target, invoke->invoker);
         delete dummy;
 
         return false;
