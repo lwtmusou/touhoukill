@@ -3899,10 +3899,11 @@ public:
         logto.removeOne(target);
         room->sendLog("#mowei_change", use.from, use.card->objectName(), logto);
 
-        const Card *card = room->askForExchange(invoke->invoker, "mowei", 1, 1, false, "moweiReturn:" + target->objectName());
-        DELETE_OVER_SCOPE(const Card, card)
-        target->obtainCard(card, false);
-
+        const Card *card = room->askForExchange(invoke->invoker, "mowei", 1, 1, false, "moweiReturn:" + target->objectName(), true);
+        if (card != nullptr) {
+            DELETE_OVER_SCOPE(const Card, card)
+            target->obtainCard(card, false);
+        }
         return false;
     }
 };
