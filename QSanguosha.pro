@@ -276,6 +276,7 @@ win32-msvc*{
     !contains(QMAKE_HOST.arch, x86_64) {
         DEFINES += WIN32
         LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x86"
+        QMAKE_LFLAGS += "/LARGEADDRESSAWARE"
     } else {
         DEFINES += WIN64
         LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x64"
