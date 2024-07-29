@@ -1313,7 +1313,7 @@ public:
     const Card *viewAs() const override
     {
         QString name = Self->tag.value("chuangshi", QString()).toString();
-        if (name != nullptr) {
+        if (!name.isEmpty()) {
             ChuangshiCard *card = new ChuangshiCard;
             card->setUserString(name);
             return card;
@@ -1346,7 +1346,7 @@ public:
     {
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), "chuangshi", "@chuangshi_target", true, true);
         if (target != nullptr) {
-            player->showHiddenSkill("chuangshi");
+            player->showHiddenSkill("chuangshi"); // TODO: kill this
             room->setPlayerMark(target, "chuangshi_user", 1);
             room->setPlayerProperty(player, "chuangshi_user", target->objectName());
             const Card *card = room->askForUseCard(player, "@@chuangshi", "@chuangshi_prompt:" + target->objectName());

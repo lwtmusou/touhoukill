@@ -561,9 +561,38 @@ QijiDialog::QijiDialog(const QString &object, bool left, bool right)
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectCard(QAbstractButton *)));
 }
 
+// TODO: split this, maybe subclass
 void QijiDialog::popup()
 {
     Self->tag.remove(object_name);
+
+    //collect available patterns for specific skill
+    QSet<QString> validPatterns;
+    QStringList ban_list = Sanguosha->getBanPackages();
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    foreach (const Card *card, cards) {
+        if (!ban_list.contains(card->getPackage())) {
+            if (object_name == "huaxiang") {
+                if (card->isKindOf("BasicCard")) {
+                    QString name = card->objectName();
+                    if (name.contains("jink") && Self->getMaxHp() > 3)
+                        continue;
+                    if (name.contains("peach") && Self->getMaxHp() > 2)
+                        continue;
+                    validPatterns << name;
+                }
+            } else if (object_name == "hezhou") {
+                if ((!Self->isCurrent() && card->isKindOf("Peach")) || (Self->isCurrent() && card->isNDTrick() && !card->isKindOf("AOE") && !card->isKindOf("GlobalEffect")))
+                    validPatterns << card->objectName();
+            } else if (object_name == "shende") {
+                if (card->isKindOf("BasicCard"))
+                    validPatterns << card->objectName();
+            } else {
+                if (card->isNDTrick() || card->isKindOf("BasicCard"))
+                    validPatterns << card->objectName();
+            }
+        }
+    }
 
     Card::HandlingMethod method = Card::MethodUse;
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
@@ -573,59 +602,25 @@ void QijiDialog::popup()
     const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
     bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
-    //collect available patterns for specific skill
-    QStringList validPatterns;
-    QStringList ban_list = Sanguosha->getBanPackages();
-    if (object_name == "huaxiang") {
-        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        foreach (const Card *card, cards) {
-            if (card->isKindOf("BasicCard") && !ban_list.contains(card->getPackage())) {
-                QString name = card->objectName();
-                if (!validPatterns.contains(name)) {
-                    if (name.contains("jink") && Self->getMaxHp() > 3)
-                        continue;
-                    else if (name.contains("peach") && Self->getMaxHp() > 2)
-                        continue;
-                    validPatterns << name;
-                }
-            }
-        }
-    } else if (object_name == "hezhou") {
-        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        foreach (const Card *card, cards) {
-            if ((!Self->isCurrent() && card->isKindOf("Peach"))
-                || (Self->isCurrent() && card->isNDTrick() && !card->isKindOf("AOE") && !card->isKindOf("GlobalEffect")) && !ban_list.contains(card->getPackage())) {
-                QString name = card->objectName();
-                if (!validPatterns.contains(name))
-                    validPatterns << card->objectName();
-            }
-        }
-    } else if (object_name == "shende") {
-        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        foreach (const Card *card, cards) {
-            if (card->isKindOf("BasicCard") && !ban_list.contains(card->getPackage())) {
-                QString name = card->objectName();
-                if (!validPatterns.contains(name))
-                    validPatterns << name;
-            }
-        }
-    } else {
-        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
-                QString name = card->objectName();
-                if (!validPatterns.contains(name))
-                    validPatterns << card->objectName();
+    const Player *user = Self;
+    if (object_name == "chuangshi") { //check the card is Available for chuangshi target.
+        foreach (const Player *p, Self->getAliveSiblings()) {
+            if (p->getMark("chuangshi_user") > 0) {
+                user = p;
+                break;
             }
         }
     }
 
     //then match it and check "CardLimit"
-    QStringList checkedPatterns;
+    QSet<QString> checkedPatterns;
     foreach (const QString &str, validPatterns) {
         Card *card = Sanguosha->cloneCard(str);
         DELETE_OVER_SCOPE(Card, card)
-        if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
+        if (object_name == "qiji")
+            card->addSubcards(user->getHandcards());
+        if (((object_name == "chuangshi" || play) && card->isAvailable(user) || (!play && cardPattern != nullptr && cardPattern->match(user, card)))
+            && !user->isCardLimited(card, method))
             checkedPatterns << str;
     }
 
@@ -636,31 +631,18 @@ void QijiDialog::popup()
 
     QStringList availablePatterns;
     foreach (QAbstractButton *button, group->buttons()) {
-        const Card *card = map[button->objectName()];
-        const Player *user = nullptr;
-        if (object_name == "chuangshi") { //check the card is Available for chuangshi target.
-            foreach (const Player *p, Self->getAliveSiblings()) {
-                if (p->getMark("chuangshi_user") > 0) {
-                    user = p;
-                    break;
-                }
-            }
-        }
+        Card *card = Sanguosha->cloneCard(button->objectName());
+        DELETE_OVER_SCOPE(Card, card)
+        if (object_name == "qiji")
+            card->addSubcards(user->getHandcards());
 
-        if (user == nullptr)
-            user = Self;
-
-        bool available = (!play) || card->isAvailable(user);
+        bool available = true;
         if (card->isKindOf("Peach"))
             available = card->isAvailable(user);
-        if (object_name == "chuangshi" && (card->isKindOf("Jink") || card->isKindOf("Nullification")))
-            available = false;
-        if (object_name == "qiji" && (user->getMark("xiubu") != 0))
-            available = true;
 
         bool checked = checkedPatterns.contains(card->objectName());
         //check isCardLimited
-        bool enabled = available && (checked || object_name == "chuangshi");
+        bool enabled = available && checked;
         button->setEnabled(enabled);
         if (enabled)
             availablePatterns << card->objectName();
@@ -694,8 +676,7 @@ QGroupBox *QijiDialog::createLeft()
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
-        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
-            && !ban_list.contains(card->getPackage())) { // && !ServerInfo.Extensions.contains("!" + card->getPackage())
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));

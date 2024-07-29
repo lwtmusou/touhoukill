@@ -2775,12 +2775,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             }
         } else if (oldStatus == Client::AskForGuanxing || oldStatus == Client::AskForGongxin) {
             guanxing_box->clear();
-            //Do not clear AG of AmazingGrace after operating Guanxing. such case as Ruizhi and Fengshui
-            //if (!card_container->retained())
-            //    card_container->clear();
-        } //else if (oldStatus == Client::AskForChoice)
-        //    m_chooseOptionsBox->clear();
-        else if (oldStatus == Client::AskForTriggerOrder) {
+        } else if (oldStatus == Client::AskForTriggerOrder) {
             m_chooseTriggerOrderBox->clear();
         } else if (oldStatus == Client::AskForCardChosen) {
             m_playerCardBox->clear();
