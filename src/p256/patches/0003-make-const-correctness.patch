@@ -1,0 +1,39 @@
+From 037dc096f061aae0474828527f2e00bf4a671460 Mon Sep 17 00:00:00 2001
+From: Fs <Fsu0413@vip.qq.com>
+Date: Sun, 28 Jul 2024 10:57:40 +0800
+Subject: [PATCH 3/3] make const correctness
+
+---
+ p256.c | 2 +-
+ p256.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/p256.c b/p256.c
+index a5891f9..b0668af 100644
+--- a/p256.c
++++ b/p256.c
+@@ -20295,7 +20295,7 @@ const br_ec_curve_def br_secp256r1 = {
+ 	P256_G, sizeof P256_G
+ };
+ 
+-p256_ret_t p256_verify(uint8_t *msg, size_t msg_len, uint8_t *sig, const uint8_t *pk)
++p256_ret_t p256_verify(const uint8_t *msg, size_t msg_len, const uint8_t *sig, const uint8_t *pk)
+ {
+     unsigned char hash[64];
+     size_t hash_len = 32; // SHA-256
+diff --git a/p256.h b/p256.h
+index cb3b511..3a6c5dd 100644
+--- a/p256.h
++++ b/p256.h
+@@ -14,7 +14,7 @@ extern "C" {
+ #include <stdint.h>
+ #include <stddef.h>
+ 
+-p256_ret_t p256_verify(uint8_t *msg, size_t msg_len, uint8_t *sig, const uint8_t *pk);
++p256_ret_t p256_verify(const uint8_t *msg, size_t msg_len, const uint8_t *sig, const uint8_t *pk);
+ 
+ #ifdef __cplusplus
+ }
+-- 
+2.43.0.windows.1
+

@@ -257,6 +257,11 @@ INCLUDEPATH += src/server
 INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
 
+# For automatic update signature verification
+SOURCES += src/p256/p256.c
+HEADERS += src/p256/p256.h
+INCLUDEPATH += src/p256
+
 win32{
     CONFIG += skip_target_version_ext
     RC_ICONS += resource/icon/sgs.ico
