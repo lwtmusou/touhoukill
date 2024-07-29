@@ -262,7 +262,7 @@ sgs.ai_skill_use_func.XiufuCard=function(card,use,self)
 	local target = self.player:getTag("xiufu_target"):toPlayer()
 	if target then
 		use.card = card
-		use.to:append(target)
+		if use.to then use.to:append(target) end
 	end
 end
 
