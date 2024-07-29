@@ -852,7 +852,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->getPhase() == Player::Finish && (!current->faceUp() || current->isChained())) {
+        if (current->getPhase() == Player::Finish && current->isAlive() && (!current->faceUp() || current->isChained())) {
             bool invoke = false;
             foreach (ServerPlayer *p, room->getOtherPlayers(current)) {
                 if (current->inMyAttackRange(p)) {
@@ -879,19 +879,26 @@ public:
             if (current->inMyAttackRange(p))
                 targets << p;
         }
+
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@rebing:" + current->objectName(), true, true);
-        if (target != nullptr)
-            invoke->targets << target;
-        return target != nullptr;
+        if (target != nullptr) {
+            invoke->targets = {current};
+            invoke->tag["select1"] = QVariant::fromValue<ServerPlayer *>(target);
+            return true;
+        }
+
+        return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        ServerPlayer *current = data.value<ServerPlayer *>();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), current->objectName());
-        QString prompt = "@rebing-slash:" + invoke->invoker->objectName() + ":" + invoke->targets.first()->objectName();
-        if (room->askForUseSlashTo(current, invoke->targets.first(), prompt) == nullptr) {
-            if (!invoke->invoker->isNude()) {
+        ServerPlayer *current = invoke->targets.first();
+        ServerPlayer *slashTarget = invoke->tag.value("select1").value<ServerPlayer *>();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), current->objectName());
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, current->objectName(), slashTarget->objectName());
+        QString prompt = "@rebing-slash:" + invoke->invoker->objectName() + ":" + slashTarget->objectName();
+        if (room->askForUseSlashTo(current, slashTarget, prompt) == nullptr) {
+            if (!current->isNude()) {
                 int id = room->askForCardChosen(invoke->invoker, current, "hes", objectName());
                 room->obtainCard(invoke->invoker, id, false);
             }
