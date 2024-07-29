@@ -254,12 +254,16 @@ xiufu_skill.getTurnUseCard = function(self)
 	local card_id=self.player:getTag("xiufu_equipid"):toInt()
 	local target=self.player:getTag("xiufu_target"):toPlayer()
 	if target then
-		return sgs.Card_Parse("@XiufuCard=" .. tostring(card_id) .. "->" .. target:objectName())
+		return sgs.Card_Parse("@XiufuCard=" .. tostring(card_id))
 	end
 	return nil
 end
 sgs.ai_skill_use_func.XiufuCard=function(card,use,self)
-	 use.card = card
+	local target = self.player:getTag("xiufu_target"):toPlayer()
+	if target then
+		use.card = card
+		use.to:append(target)
+	end
 end
 
 sgs.ai_use_value.xiufu = 7
