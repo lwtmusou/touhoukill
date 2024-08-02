@@ -2272,7 +2272,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash") && use.from != nullptr && use.from->isAlive()) {
             foreach (ServerPlayer *p, use.to) {
-                if (use.from != p && p->hasSkill(this)) {
+                if (use.from != p && p->hasLordSkill(this)) {
                     foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
                         if (t->getKingdom() == "zhan" && use.from != t && use.from->inMyAttackRange(t))
                             d << SkillInvokeDetail(this, p, p, nullptr, true, use.from);
@@ -2291,7 +2291,6 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         use.from->tag["yishen_target"] = QVariant::fromValue(player);
         QString prompt = "@yishen-discard:" + player->objectName() + ":" + use.card->objectName();
-        //const Card *card = room->askForCard(use.from, ".|black|.|hand,equipped", prompt, data);
         const Card *card = room->askForCard(use.from, ".|.|.|hand,equipped", prompt, data);
         if (card == nullptr) {
             use.nullified_list << player->objectName();
