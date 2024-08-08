@@ -1155,6 +1155,7 @@ private:
     QString cardName;
 };
 
+// Use Tianxie record (global)
 class MiZhiungHtei : public TriggerSkill
 {
 public:
@@ -1180,7 +1181,7 @@ public:
         } else {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card != nullptr && effect.card->isKindOf("AllianceFeast") && effect.card->getSkillName() == objectName() && effect.from != nullptr
-                && !effect.card->hasFlag("MiZhiungHteiUneffected_" + effect.to->objectName()) && effect.to->getHp() > effect.from->getHp())
+                && effect.card->hasFlag("tianxieEffected_" + effect.to->objectName()) && effect.to->getHp() > effect.from->getHp())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from, effect.to, true, nullptr, false);
         }
 

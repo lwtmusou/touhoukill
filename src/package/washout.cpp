@@ -650,12 +650,10 @@ bool AllianceFeast::isCancelable(const CardEffectStruct &effect) const
 
 void AllianceFeast::onEffect(const CardEffectStruct &effect) const
 {
-    Room *room = effect.to->getRoom();
     if (effect.to->isDead())
         return;
     if (!(effect.to->isChained() || !effect.to->getShownHandcards().isEmpty() || !effect.to->getBrokenEquips().isEmpty())) {
-        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
-        room->setCardFlag(this, "MiZhiungHteiUneffected_" + effect.to->objectName()); // for skill Minghe and Zhuti
+        setFlags("-tianxieEffected_" + effect.to->objectName()); // only for skill tianxie / minghe / zhuti
     } else {
         effect.to->removeShownHandCards(effect.to->getShownHandcards(), true);
         effect.to->removeBrokenEquips(effect.to->getBrokenEquips(), true);

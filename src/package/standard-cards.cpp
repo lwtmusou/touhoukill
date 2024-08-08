@@ -414,7 +414,7 @@ void Peach::onEffect(const CardEffectStruct &effect) const
     room->setEmotion(effect.from, "peach");
 
     if (!effect.to->isWounded())
-        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
+        setFlags("-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
 
     // recover hp
     RecoverStruct recover;
@@ -1230,7 +1230,7 @@ void GodSalvation::onEffect(const CardEffectStruct &effect) const
         return;
     Room *room = effect.to->getRoom();
     if (!effect.to->isWounded())
-        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
+        setFlags("-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
     else {
         RecoverStruct recover;
         recover.card = this;
@@ -1551,7 +1551,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     if (effect.from->isDead() || effect.to->isDead())
         return;
     if (effect.to->isAllNude()) {
-        effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
+        setFlags("-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
         return;
     }
 
@@ -1611,7 +1611,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
     QString flag = using_2013 ? "hes" : "hejs";
     if (!effect.from->canDiscard(effect.to, flag)) {
-        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
+        setFlags("-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
         return;
     }
 
@@ -2167,7 +2167,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     if (!effect.to->canDiscard(effect.to, "e")) {
-        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
+        setFlags("-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
         return;
     }
 
@@ -2302,7 +2302,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
     if (effect.to->isDead())
         return;
     if (effect.to->getCards("h").isEmpty()) {
-        effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
+        setFlags("-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
         return;
     }
 

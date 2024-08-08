@@ -1047,38 +1047,47 @@ public:
     }
 };
 
+class TianxieRecord : public TriggerSkill
+{
+public:
+    TianxieRecord()
+        : TriggerSkill("#tianxie-record")
+    {
+        events = {SlashHit, TrickEffect};
+        global = true;
+    }
+
+    void record(TriggerEvent e, Room *, QVariant &data) const override
+    {
+        if (e == SlashHit) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            effect.slash->setFlags("tianxieEffected_" + effect.to->objectName());
+        } else if (e == TrickEffect) {
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            effect.card->setFlags("tianxieEffected_" + effect.to->objectName());
+        }
+    }
+};
+
 class Tianxie : public TriggerSkill
 {
 public:
     Tianxie()
         : TriggerSkill("tianxie")
     {
-        events << SlashHit << PostCardEffected << TrickEffect;
-    }
-
-    void record(TriggerEvent e, Room *room, QVariant &data) const override
-    {
-        if (e == SlashHit) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->setCardFlag(effect.slash, "tianxieEffected_" + effect.to->objectName());
-        } else if (e == TrickEffect) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            room->setCardFlag(effect.card, "tianxieEffected_" + effect.to->objectName());
-        }
+        events = {PostCardEffected};
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const override
     {
-        if (e == PostCardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->isKindOf("BasicCard") || effect.card->isNDTrick()) {
-                if (effect.to->hasSkill(this) && effect.to->isAlive()) {
-                    if (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName())) {
-                        if ((effect.from != nullptr) && effect.from->isAlive() && effect.from->canDiscard(effect.from, "hes"))
-                            return {SkillInvokeDetail(this, effect.to, effect.to, effect.from)};
-                    } else
-                        return {SkillInvokeDetail(this, effect.to, effect.to)};
-                }
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if (effect.card->isKindOf("BasicCard") || effect.card->isNDTrick()) {
+            if (effect.to->hasSkill(this) && effect.to->isAlive()) {
+                if (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName())) {
+                    if ((effect.from != nullptr) && effect.from->isAlive() && effect.from->canDiscard(effect.from, "hes"))
+                        return {SkillInvokeDetail(this, effect.to, effect.to, effect.from)};
+                } else
+                    return {SkillInvokeDetail(this, effect.to, effect.to)};
             }
         }
         return {};
@@ -1239,7 +1248,9 @@ TH14Package::TH14Package()
 
     General *seija_sp = new General(this, "seija_sp", "hzc", 3);
     seija_sp->addSkill(new Tianxie);
+    seija_sp->addSkill(new TianxieRecord);
     seija_sp->addSkill(new Duobao);
+    related_skills.insertMulti("tianxie", "#tianxie-record");
 
     addMetaObject<LeitingCard>();
     addMetaObject<YuanfeiCard>();
