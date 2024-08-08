@@ -2040,9 +2040,9 @@ void Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, CardUseS
         int peaches = threshold - dying->getHp();
         if (dying->hasSkill("banling")) {
             peaches = 0;
-            if (dying->getRenHp() <= 0)
+            if (dying->getRenHp() < threshold)
                 peaches = peaches + threshold - dying->getRenHp();
-            if (dying->getLingHp() <= 0)
+            if (dying->getLingHp() < threshold)
                 peaches = peaches + threshold - dying->getLingHp();
         }
         JsonArray arg;
