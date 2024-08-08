@@ -3820,6 +3820,9 @@ public:
             if (invoke->invoker->isDead() || !invoke->invoker->canDiscard(target, "hes"))
                 break;
 
+            if (i != 0 && !invoke->invoker->askForSkillInvoke(this, "continue:" + target->objectName() + "::" + QString::number(i + 1)))
+                break;
+
             bool visible = (target == invoke->invoker);
             card_id = room->askForCardChosen(invoke->invoker, target, "hes", objectName(), visible, Card::MethodDiscard, disable);
 
