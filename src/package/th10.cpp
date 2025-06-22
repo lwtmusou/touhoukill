@@ -79,7 +79,7 @@ public:
     const Card *viewAs(const QList<const Card *> &cards) const override
     {
         if (!Self->tag.contains("shende"))
-            return false;
+            return nullptr;
 
         if (cards.length() != 2)
             return nullptr;
