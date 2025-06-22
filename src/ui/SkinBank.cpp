@@ -365,7 +365,7 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
         if (name.endsWith("_hegemony")) {
             name = name.replace("_hegemony", "");
             /*if (size != S_GENERAL_ICON_SIZE_TINY) {
-               /*QDir dir("image/generals/full/avatar");
+               / * QDir dir("image/generals/full/avatar");
                dir.setNameFilters(QStringList(QString("%1.png").arg(generalName)));
                 QStringList tmpFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
                 if (!tmpFiles.isEmpty())

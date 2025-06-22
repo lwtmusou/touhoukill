@@ -5287,6 +5287,8 @@ void RoomScene::setLordBGM(QString lord)
     else
         Audio::playBGM(lord_name, true, false, true);
     Audio::setBGMVolume(Config.BGMVolume);
+#else
+    Q_UNUSED(lord);
 #endif
 }
 

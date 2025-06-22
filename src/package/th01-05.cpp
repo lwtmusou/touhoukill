@@ -3545,6 +3545,8 @@ public:
                 case Player::PlaceEquip:
                     fromCardNum = invoker->getEquips().length();
                     break;
+                default:
+                    break;
                 }
 
                 foreach (ServerPlayer *p, room->getOtherPlayers(invoker)) {
@@ -3558,6 +3560,8 @@ public:
                         break;
                     case Player::PlaceEquip:
                         toCardNum = p->getEquips().length();
+                        break;
+                    default:
                         break;
                     }
 
@@ -3591,6 +3595,8 @@ public:
         case Player::PlaceEquip:
             fromCardNum = invoke->invoker->getEquips().length();
             break;
+        default:
+            break;
         }
 
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
@@ -3607,6 +3613,8 @@ public:
             case Player::PlaceEquip:
                 fromCardNum = invoke->invoker->getEquips().length();
                 toCardNum = p->getEquips().length();
+                break;
+            default:
                 break;
             }
 
@@ -3651,6 +3659,8 @@ public:
                 move1.card_ids << equip->getId();
             foreach (const Card *equip, to->getEquips())
                 move2.card_ids << equip->getId();
+            break;
+        default:
             break;
         }
 

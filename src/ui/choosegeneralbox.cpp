@@ -564,6 +564,7 @@ void ChooseGeneralBox::_initializeItems()
                 //                    has_lord = true;
             }
         }
+        Q_UNUSED(party);
         GeneralCardItem *item = items.at(index);
         /*if ((party < 2 || (selected.isEmpty() && has_lord && party == 2))) {
             if (!item->isFrozen())

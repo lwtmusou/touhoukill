@@ -1634,7 +1634,7 @@ public:
 
             Card *c = Sanguosha->cloneCard(className);
             c->setSkillName(objectName());
-            CardUseStruct use(c, invoke->invoker, {current});
+            CardUseStruct use(c, invoke->invoker, current);
             room->useCard(use, false);
         }
 

@@ -1212,6 +1212,8 @@ void Engine::playAudioEffect(const QString &filename) const
         return;
 
     Audio::play(filename);
+#else
+    Q_UNUSED(filename);
 #endif
 }
 

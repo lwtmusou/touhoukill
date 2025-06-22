@@ -241,7 +241,7 @@ public:
         expand_pile = "#xiufu_temp";
     }
 
-    bool isEnabledAtPlay(const Player *player) const
+    bool isEnabledAtPlay(const Player *player) const override
     {
         return !player->hasUsed("XiufuCard") || (player->getMark("@xiufudebug") > 0);
     }

@@ -1078,7 +1078,7 @@ public:
         events = {PostCardEffected};
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if (effect.card->isKindOf("BasicCard") || effect.card->isNDTrick()) {
