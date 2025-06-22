@@ -4,7 +4,9 @@
 TARGET = QSanguosha
 QT += network widgets
 TEMPLATE = app
-CONFIG += audio
+
+!macx: CONFIG += audio
+
 win32: QT += winextras
 
 !equals(QT_MAJOR_VERSION, "5") {
@@ -300,8 +302,9 @@ winrt{
 }
 macx{
     DEFINES += MAC
-    LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
+    ## LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
     DEFINES += LUA_USE_MACOSX
+    LIBS += -L/opt/homebrew/lib/
 }
 ios{
     DEFINES += IOS
@@ -425,6 +428,7 @@ SWIGDEPENDS += $$_PRO_FILE_PWD_/swig/sanguosha.i \
 
 SWIG_bin = "swig"
 contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig.exe"
+contains(QMAKE_HOST.os, "Darwin"): contains(QMAKE_HOST.arch, "arm64"): SWIG_bin = "/opt/homebrew/bin/swig"
 
 swig.commands = "$$system_path($$SWIG_bin) -c++ -lua -cppext cpp -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}"
 swig.CONFIG = target_predeps
