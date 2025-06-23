@@ -2397,7 +2397,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
         connect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
         connect(btn, SIGNAL(skill_deactivated()), dashboard, SLOT(skillButtonDeactivated()));
         connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
-        if (btn->getViewAsSkill()->objectName() == "fsu0413fei2zhai")
+        if (btn->getViewAsSkill()->objectName() == "fsu0413fei2zhai" || btn->getViewAsSkill()->objectName() == "danran")
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
     }
 

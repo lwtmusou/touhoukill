@@ -20,7 +20,7 @@ config = {
 		"gzz",
 		"tkz",
 		"gxs",
-		-- "hld",
+		"hld",
 		-- "swy",
 		"wai",
 		"touhougod"
@@ -79,7 +79,7 @@ config = {
 		"TH15",
 		"TH16",
 		"TH17",
-		-- "TH18",
+		"TH18",
 		-- "TH19",
 		"TH99",
 		"THNDJ",
@@ -87,8 +87,7 @@ config = {
 		"HegemonyGeneral",
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
 		"Test",
-		"Playground", -- 发布前再次屏蔽掉
-
+		"Playground",
 	},
 
 	hulao_packages = {
