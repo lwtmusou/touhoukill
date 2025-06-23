@@ -212,15 +212,276 @@ public:
     }
 };
 
-#ifdef DESCRIPTION
-["takane"] = "山城高岭", ["#takane"] = "深山的经商妖怪", ["yingji"] = "营计",
-                         [":yingji"]
-    = "一名角色的出牌阶段结束时，若其于此阶段内使用的最后一张牌是普通锦囊牌并在弃牌堆里，你可以将之置于你的人物牌上称为“货”；当一名角色于其出牌阶段内使用第一张牌时，若"
-      "此牌是基本牌且你人物牌上有“货”，你可以获得此基本牌，然后其获得一张“货”。",
-                         ["zhixiao"] = "滞销", [":zhixiao"] = "<font color=\"blue\"><b>锁定技，</b></font>摸牌阶段开始时，若“货”数量大于你的体力上限，你放弃摸牌并得所有“货”。",
-                         ;
-;
-#endif
+class YingjiRecord : public TriggerSkill
+{
+public:
+    YingjiRecord(const QString &yingji)
+        : TriggerSkill("#" + yingji + "-record")
+        , b(yingji)
+    {
+        events = {EventPhaseStart, PreCardUsed, CardResponded, EventPhaseEnd, CardUsed, EventPhaseChanging};
+        global = true;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const override
+    {
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isNDTrick())
+                use.from->tag[b] = use.card->toString();
+            else
+                use.from->tag.remove(b);
+        } else if (triggerEvent == CardResponded) {
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_isUse) {
+                if (resp.m_card->isNDTrick())
+                    resp.m_from->tag[b] = resp.m_card->toString();
+                else
+                    resp.m_from->tag.remove(b);
+            }
+        } else if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() == Player::Play)
+                p->tag.remove(b);
+        }
+
+        if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
+            ServerPlayer *player = nullptr;
+            const Card *card = nullptr;
+            if (triggerEvent == CardUsed) {
+                player = data.value<CardUseStruct>().from;
+                card = data.value<CardUseStruct>().card;
+            } else {
+                CardResponseStruct response = data.value<CardResponseStruct>();
+                player = response.m_from;
+                if (response.m_isUse)
+                    card = response.m_card;
+            }
+            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr)) {
+                if (player->hasFlag(objectName() + "_first"))
+                    player->setFlags(objectName() + "_second");
+                else
+                    player->setFlags(objectName() + "_first");
+            }
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play) {
+                change.player->setFlags("-" + objectName() + "_first");
+                change.player->setFlags("-" + objectName() + "_second");
+            }
+        }
+    }
+
+private:
+    QString b;
+};
+
+class YingJiVS : public OneCardViewAsSkill
+{
+public:
+    YingJiVS(const QString &base)
+        : OneCardViewAsSkill(base)
+    {
+        expand_pile = "+goods";
+        response_pattern = "@@yingji!";
+    }
+
+    bool viewFilter(const Card *to_select) const override
+    {
+        QString name = Self->property(objectName().toUtf8().constData()).toString();
+
+        QList<const Player *> ps = Self->getAliveSiblings();
+        ps << Self;
+
+        const Player *taka = nullptr;
+
+        foreach (const Player *p, ps) {
+            if (p->objectName() == name) {
+                taka = p;
+                break;
+            }
+        }
+
+        if (taka != nullptr)
+            return taka->getPile("goods").contains(to_select->getId());
+
+        return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        return new DummyCard({originalCard->getId()});
+    }
+};
+
+class Yingji : public TriggerSkill
+{
+public:
+    Yingji()
+        : TriggerSkill("yingji")
+    {
+        events = {EventPhaseEnd, CardUsed, CardResponded};
+        view_as_skill = new YingJiVS(objectName());
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    {
+        if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
+            ServerPlayer *player = nullptr;
+            const Card *card = nullptr;
+            if (triggerEvent == CardUsed) {
+                player = data.value<CardUseStruct>().from;
+                card = data.value<CardUseStruct>().card;
+            } else {
+                CardResponseStruct response = data.value<CardResponseStruct>();
+                player = response.m_from;
+                if (response.m_isUse)
+                    card = response.m_card;
+            }
+            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr) && card->getTypeId() == Card::TypeBasic) {
+                if (player->hasFlag(objectName() + "_first") && !player->hasFlag(objectName() + "_second")) {
+                    QList<SkillInvokeDetail> d;
+                    foreach (ServerPlayer *p, room->getAllPlayers()) {
+                        if (p->hasSkill(this) && !p->getPile("goods").isEmpty())
+                            d << SkillInvokeDetail(this, p, p, player);
+                    }
+
+                    return d;
+                }
+            }
+        } else if (triggerEvent == EventPhaseEnd) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() == Player::Play && p->tag.contains(objectName())) {
+                QString cardStr = p->tag.value(objectName()).toString();
+                const Card *c = Card::Parse(cardStr);
+                QList<int> ids;
+                if (c->isVirtualCard())
+                    ids = c->getSubcards();
+                else
+                    ids << c->getId();
+
+                bool invoke = true;
+                foreach (int id, ids) {
+                    if (room->getCardPlace(id) != Player::DiscardPile) {
+                        invoke = false;
+                        break;
+                    }
+                }
+
+                if (invoke) {
+                    QList<SkillInvokeDetail> d;
+                    foreach (ServerPlayer *p, room->getAllPlayers()) {
+                        if (p->hasSkill(this)) {
+                            SkillInvokeDetail i(this, p, p);
+                            i.tag[objectName()] = QVariant::fromValue(c);
+                            d << i;
+                        }
+                    }
+
+                    return d;
+                }
+            }
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseEnd) {
+            QVariant card_v = invoke->tag.value(objectName());
+            return invoke->invoker->askForSkillInvoke(objectName(), card_v, "e:::" + card_v.value<const Card *>()->getClassName());
+        } else {
+            return invoke->invoker->askForSkillInvoke(objectName(), data, "a:" + invoke->targets.first()->objectName());
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseEnd) {
+            const Card *c = invoke->tag.value(objectName()).value<const Card *>();
+            QList<int> ids;
+            if (c->isVirtualCard())
+                ids = c->getSubcards();
+            else
+                ids << c->getId();
+            invoke->invoker->addToPile("goods", ids);
+        } else {
+            ServerPlayer *player = nullptr;
+            const Card *card = nullptr;
+            if (triggerEvent == CardUsed) {
+                player = data.value<CardUseStruct>().from;
+                card = data.value<CardUseStruct>().card;
+            } else {
+                CardResponseStruct response = data.value<CardResponseStruct>();
+                player = response.m_from;
+                if (response.m_isUse)
+                    card = response.m_card;
+            }
+
+            if (player == nullptr || card == nullptr) {
+                Q_UNREACHABLE();
+            }
+
+            invoke->invoker->obtainCard(card);
+            room->setPlayerProperty(player, objectName().toUtf8().constData(), invoke->invoker->objectName());
+            const Card *obtainedGood = room->askForCard(player, "@@yingji!", "yingji-get:" + invoke->invoker->objectName(), {}, Card::MethodNone);
+            if (obtainedGood == nullptr) {
+                QList<int> is = invoke->invoker->getPile("goods");
+                obtainedGood = Sanguosha->getCard(is[qrand() % is.length()]);
+            }
+
+            player->obtainCard(obtainedGood);
+        }
+
+        return false;
+    }
+};
+
+class Zhixiao : public TriggerSkill
+{
+public:
+    Zhixiao()
+        : TriggerSkill("zhixiao")
+    {
+        events = {EventPhaseStart};
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    {
+        ServerPlayer *p = data.value<ServerPlayer *>();
+        if (p->hasSkill(this) && p->getPile("goods").length() > p->getMaxHp())
+            return {SkillInvokeDetail(this, p, p, nullptr, true)};
+
+        return {};
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
+            LogMessage l;
+            l.type = "#TriggerSkill";
+            l.from = invoke->invoker;
+            l.arg = objectName();
+            room->sendLog(l);
+
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        DummyCard d(invoke->invoker->getPile("goods"));
+        invoke->invoker->obtainCard(&d);
+
+        return true;
+    }
+};
+
 #ifdef DESCRIPTION
 ["sannyo"] = "驹草山如", ["#sannyo"] = "栖息于高地的山女郎", ["boxi"] = "博戏",
                          [":boxi"]
@@ -284,8 +545,10 @@ TH18Package::TH18Package()
     related_skills.insertMulti("cizhao", "#cizhao-distance");
 
     General *takane = new General(this, "takane", "hld");
-    takane->addSkill(new Skill("yingji"));
-    takane->addSkill(new Skill("zhixiao"));
+    takane->addSkill(new Yingji);
+    takane->addSkill(new YingjiRecord("yingji"));
+    takane->addSkill(new Zhixiao);
+    related_skills.insertMulti("yingji", "#yingji-record");
 
     General *sannyo = new General(this, "sannyo", "hld");
     sannyo->addSkill(new Skill("boxi"));

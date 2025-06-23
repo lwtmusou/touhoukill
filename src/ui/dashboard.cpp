@@ -1288,10 +1288,11 @@ void Dashboard::expandPileCards(const QString &pile_name)
     if (_m_pile_expanded.contains(pile_name))
         return;
 
-    QString new_name = pile_name;
     QList<int> pile;
-    if (new_name.startsWith("%")) {
-        new_name = new_name.mid(1);
+    if (pile_name.startsWith("%") || pile_name.startsWith("+")) {
+        QString new_name = pile_name.mid(1);
+        if (pile_name.startsWith("+"))
+            pile += Self->getPile(new_name);
         foreach (const Player *p, Self->getAliveSiblings())
             pile += p->getPile(new_name);
     } else if (pile_name == "#xiuye_temp") {
@@ -1316,7 +1317,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
     } else if (pile_name.startsWith("*")) {
         pile = StringList2IntList(Self->property(pile_name.mid(1).toUtf8().constData()).toString().split("+"));
     } else {
-        pile = Self->getPile(new_name);
+        pile = Self->getPile(pile_name);
     }
 
     if (pile.isEmpty())
@@ -1340,14 +1341,14 @@ void Dashboard::expandPileCards(const QString &pile_name)
                 }
             }
         } else if (pile_name == "*mengxiang_temp") {
-            QString target_name = "";
+            QString target_name;
             foreach (const Player *p, Self->getAliveSiblings()) {
                 if (p->hasFlag("mengxiangtarget")) {
                     target_name = p->objectName();
                     break;
                 }
             }
-            if (target_name == "")
+            if (target_name.isEmpty())
                 target_name = Self->objectName();
             pile_string = ClientInstance->getPlayerName(target_name);
         } else if (pile_name == "*chunhua") {
@@ -1358,6 +1359,8 @@ void Dashboard::expandPileCards(const QString &pile_name)
                 pile_string = "use";
             else
                 pile_string = "%shown_card";
+        } else if ((pile_name.startsWith("%") || pile_name.startsWith("+") || pile_name.startsWith("*")) && pile_name != "%shown_card") {
+            pile_string = pile_name.mid(1);
         }
         _addHandCard(card_item, true, Sanguosha->translate(pile_string));
     }
@@ -1403,8 +1406,7 @@ void Dashboard::retractPileCards(const QString &pile_name)
     if (!_m_pile_expanded.contains(pile_name))
         return;
 
-    QString new_name = pile_name;
-    QList<int> pile = _m_pile_expanded.value(new_name);
+    QList<int> pile = _m_pile_expanded.value(pile_name);
     _m_pile_expanded.remove(pile_name);
 
     if (pile.isEmpty())
