@@ -418,8 +418,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             ServerPlayer *player = use.from;
 
-            if ((player != nullptr) && player->getPhase() == Player::Play && !player->hasFlag("xushi_first") && (use.card != nullptr)
-                && use.card->getHandlingMethod() == Card::MethodUse) {
+            if ((player != nullptr) && player->getPhase() == Player::Play && !player->hasFlag("xushi_first") && (use.card != nullptr)) {
                 bool ignore = ((use.from != nullptr) && use.from->hasSkill("tianqu", false, false) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
                                && !use.from->hasFlag("IgnoreFailed"));
 

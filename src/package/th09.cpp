@@ -1799,7 +1799,7 @@ public:
         ServerPlayer *player = nullptr;
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->getHandlingMethod() == Card::MethodUse && use.card->getSuit() == Card::Heart)
+            if (use.card->getSuit() == Card::Heart)
                 player = use.from;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct s = data.value<CardResponseStruct>();

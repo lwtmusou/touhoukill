@@ -747,7 +747,7 @@ public:
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        return new DummyCard({originalCard->getEffectiveId()});
+        return new DummyCard({originalCard->getId()});
     }
 };
 

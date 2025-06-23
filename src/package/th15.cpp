@@ -21,7 +21,7 @@ public:
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        return new DummyCard({originalCard->getEffectiveId()});
+        return new DummyCard({originalCard->getId()});
     }
 };
 
@@ -199,7 +199,7 @@ public:
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        return new DummyCard({originalCard->getEffectiveId()});
+        return new DummyCard({originalCard->getId()});
     }
 
     bool viewFilter(const Card *to_select) const override
@@ -607,7 +607,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if ((player != nullptr) && player->hasSkill(this) && player->getPhase() == Player::Play && (card != nullptr) && card->getHandlingMethod() == Card::MethodUse) {
+            if ((player != nullptr) && player->hasSkill(this) && player->getPhase() == Player::Play && (card != nullptr)) {
                 if (card->isKindOf("EquipCard") && player->getMark("santi_equip") == 0)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
 
