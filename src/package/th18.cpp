@@ -97,7 +97,7 @@ public:
 class CizhaoDistance : public DistanceSkill
 {
 public:
-    CizhaoDistance(const QString &baseSkill)
+    CizhaoDistance(const QString &baseSkill = "cizhao")
         : DistanceSkill("#" + baseSkill + "-distance")
         , b(baseSkill)
     {
@@ -263,16 +263,16 @@ public:
                     card = response.m_card;
             }
             if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr)) {
-                if (player->hasFlag(objectName() + "_first"))
-                    player->setFlags(objectName() + "_second");
+                if (player->hasFlag(b + "_first"))
+                    player->setFlags(b + "_second");
                 else
-                    player->setFlags(objectName() + "_first");
+                    player->setFlags(b + "_first");
             }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
-                change.player->setFlags("-" + objectName() + "_first");
-                change.player->setFlags("-" + objectName() + "_second");
+                change.player->setFlags("-" + b + "_first");
+                change.player->setFlags("-" + b + "_second");
             }
         }
     }
@@ -288,7 +288,7 @@ public:
         : OneCardViewAsSkill(base)
     {
         expand_pile = "+goods";
-        response_pattern = "@@yingji!";
+        response_pattern = "@@" + base + "!";
     }
 
     bool viewFilter(const Card *to_select) const override
@@ -365,7 +365,8 @@ public:
                 else
                     ids << c->getId();
 
-                bool invoke = true;
+                bool invoke = !ids.isEmpty();
+
                 foreach (int id, ids) {
                     if (room->getCardPlace(id) != Player::DiscardPile) {
                         invoke = false;
@@ -395,7 +396,7 @@ public:
     {
         if (triggerEvent == EventPhaseEnd) {
             QVariant card_v = invoke->tag.value(objectName());
-            return invoke->invoker->askForSkillInvoke(objectName(), card_v, "e:::" + card_v.value<const Card *>()->getClassName());
+            return invoke->invoker->askForSkillInvoke(objectName(), card_v, "e:::" + card_v.value<const Card *>()->objectName());
         } else {
             return invoke->invoker->askForSkillInvoke(objectName(), data, "a:" + invoke->targets.first()->objectName());
         }
@@ -457,7 +458,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         ServerPlayer *p = data.value<ServerPlayer *>();
-        if (p->hasSkill(this) && p->getPile("goods").length() > p->getMaxHp())
+        if (p->hasSkill(this) && p->getPile("goods").length() > p->getMaxHp() && p->getPhase() == Player::Draw)
             return {SkillInvokeDetail(this, p, p, nullptr, true)};
 
         return {};
@@ -498,7 +499,7 @@ bool BoxiCard::targetFilter(const QList<const Player *> &targets, const Player *
 
 void BoxiCard::onUse(Room *room, const CardUseStruct &_use) const
 {
-    CardUseStruct card_use = _use;
+    const CardUseStruct &card_use = _use;
 
     // GameRule::effect (PreCardUsed)
     {
@@ -777,15 +778,223 @@ public:
                              ;
 ;
 #endif
-#ifdef DESCRIPTION
-["tsukasa"] = "菅牧典", ["#tsukasa"] = "耳边低语的邪恶白狐", ["tiaosuo"] = "挑唆",
-                        [":tiaosuo"] = "其他角色的出牌阶段开始时，你可以将一张黑色牌交给其并横置或重置其和另一名角色，然后其于此阶段内：使用【杀】的次数+"
-                                       "1且无距离限制；使用【杀】或【决斗】不能选择与其人物牌横竖放置状态不同的角色为目标。",
-                        ["zuanying"] = "钻营",
-                        [":zuanying"] = "结束阶段开始时，你可以令一名处于连环状态的其他角色摸一张牌，然后若其手牌数大于其手牌上限，你回复1点体力或获得其两张牌。",
-                        ;
-;
-#endif
+
+TiaosuoCard::TiaosuoCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    sort_targets = false;
+}
+
+bool TiaosuoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+{
+    return targets.isEmpty() && to_select->isAlive() && to_select->getPhase() == Player::NotActive;
+}
+
+void TiaosuoCard::use(Room *room, const CardUseStruct &card_use) const
+{
+    ServerPlayer *c = room->getCurrent();
+
+    c->obtainCard(this);
+
+    for (ServerPlayer *i : {c, card_use.to.first()})
+        room->setPlayerProperty(i, "chained", !i->isChained());
+
+    room->setPlayerMark(c, "tiaosuo1", 1);
+
+    // TODO: Is a log message needed here?
+}
+
+class TiaosuoVS : public OneCardViewAsSkill
+{
+public:
+    TiaosuoVS(const QString &base)
+        : OneCardViewAsSkill(base)
+    {
+        filter_pattern = ".|black";
+        response_pattern = "@@" + base;
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        TiaosuoCard *c = new TiaosuoCard;
+        c->addSubcard(originalCard);
+        return c;
+    }
+};
+
+class TiaosuoP : public ProhibitSkill
+{
+public:
+    TiaosuoP(const QString &base = "tiaosuo")
+        : ProhibitSkill("#" + base + "-prohibit")
+    {
+    }
+
+    bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &, bool) const override
+    {
+        if (from->getMark("tiaosuo1") > 0 && (card->isKindOf("Slash") || card->isKindOf("Duel")))
+            return from->isChained() != to->isChained();
+
+        return false;
+    }
+};
+
+class TiaosuoT : public TargetModSkill
+{
+public:
+    TiaosuoT(const QString &base = "tiaosuo")
+        : TargetModSkill("#" + base + "-targetmod")
+    {
+        pattern = "Slash";
+    }
+
+    int getResidueNum(const Player *from, const Card *) const override
+    {
+        if (from->getMark("tiaosuo1") > 0)
+            return 1;
+
+        return 0;
+    }
+
+    int getDistanceLimit(const Player *from, const Card *) const override
+    {
+        if (from->getMark("tiaosuo1") > 0)
+            return 1000;
+
+        return 0;
+    }
+};
+
+class Tiaosuo : public TriggerSkill
+{
+public:
+    Tiaosuo()
+        : TriggerSkill("tiaosuo")
+    {
+        events = {EventPhaseStart, EventPhaseChanging};
+        view_as_skill = new TiaosuoVS(objectName());
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct s = data.value<PhaseChangeStruct>();
+            if (s.from == Player::Play)
+                room->setPlayerMark(s.player, "tiaosuo1", 0);
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    {
+        QList<SkillInvokeDetail> d;
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() == Player::Play) {
+                foreach (ServerPlayer *a, room->getAllPlayers()) {
+                    if (a->hasSkill(this) && a != p) {
+                        bool invoke = !a->isKongcheng();
+                        if (!invoke) {
+                            foreach (const Card *c, a->getEquips()) {
+                                if (c->isBlack()) {
+                                    invoke = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (invoke)
+                            d << SkillInvokeDetail(this, a, a, p);
+                    }
+                }
+            }
+        }
+
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        ServerPlayer *p = data.value<ServerPlayer *>();
+        return room->askForUseCard(invoke->invoker, "@@tiaosuo", "tiaosuo-ts:" + p->objectName(), -1, Card::MethodNone);
+    }
+};
+
+class Zuanying : public TriggerSkill
+{
+public:
+    Zuanying()
+        : TriggerSkill("zuanying")
+    {
+        events = {EventPhaseStart};
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    {
+        ServerPlayer *p = data.value<ServerPlayer *>();
+        if (p->isAlive() && p->getPhase() == Player::Finish && p->hasSkill(this)) {
+            foreach (ServerPlayer *i, room->getAllPlayers()) {
+                if (i != p && i->isChained())
+                    return {SkillInvokeDetail(this, p, p)};
+            }
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        QList<ServerPlayer *> ts;
+        foreach (ServerPlayer *i, room->getAllPlayers()) {
+            if (i != invoke->invoker && i->isChained())
+                ts << i;
+        }
+        if (!ts.isEmpty()) {
+            ServerPlayer *p = room->askForPlayerChosen(invoke->invoker, ts, objectName(), "zuanying-zzz", true, true);
+            if (p != nullptr) {
+                invoke->targets << p;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        invoke->targets.first()->drawCards(1, objectName());
+
+        if (invoke->targets.first()->getHandcardNum() > invoke->targets.first()->getMaxCards()) {
+            QStringList choices;
+            if (invoke->invoker->isWounded())
+                choices << "heal";
+            if (invoke->targets.first()->getCardCount() >= 2)
+                choices << "rob";
+
+            if (choices.isEmpty())
+                return false;
+
+            QString choice = choices.first();
+            if (choices.length() > 1)
+                choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), QVariant::fromValue(invoke->targets.first()));
+
+            if (choice == "heal") {
+                room->recover(invoke->invoker, {});
+            } else {
+                QList<int> selected;
+                for (int i = 0; i < 2; ++i) {
+                    int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName(), false, Card::MethodNone, selected);
+                    selected << id;
+                }
+
+                DummyCard d(selected);
+                room->obtainCard(invoke->invoker, &d, false);
+            }
+        }
+
+        return false;
+    }
+};
+
 #ifdef DESCRIPTION
 ["megumu"] = "饭纲丸龙", ["#megumu"] = "鸦天狗的首领", ["fgwlshezheng"] = "涉政",
                          [":fgwlshezheng"]
@@ -815,7 +1024,7 @@ TH18Package::TH18Package()
 
     General *mike = new General(this, "mike", "hld", 3);
     mike->addSkill(new Cizhao);
-    mike->addSkill(new CizhaoDistance("cizhao"));
+    mike->addSkill(new CizhaoDistance);
     mike->addSkill(new Danran);
     related_skills.insertMulti("cizhao", "#cizhao-distance");
 
@@ -833,8 +1042,12 @@ TH18Package::TH18Package()
     misumaru->addSkill(new Skill("shuzhu"));
 
     General *tsukasa = new General(this, "tsukasa", "hld", 3);
-    tsukasa->addSkill(new Skill("tiaosuo"));
-    tsukasa->addSkill(new Skill("zuanying"));
+    tsukasa->addSkill(new Tiaosuo);
+    tsukasa->addSkill(new TiaosuoT);
+    tsukasa->addSkill(new TiaosuoP);
+    tsukasa->addSkill(new Zuanying);
+    related_skills.insertMulti("tiaosuo", "#tiaosuo-distance");
+    related_skills.insertMulti("tiaosuo", "#tiaosuo-targetmod");
 
     General *megumu = new General(this, "megumu", "hld");
     megumu->addSkill(new Skill("fgwlshezheng"));
@@ -846,6 +1059,7 @@ TH18Package::TH18Package()
 
     addMetaObject<BoxiCard>();
     addMetaObject<BoxiUseOrObtainCard>();
+    addMetaObject<TiaosuoCard>();
 }
 
 ADD_PACKAGE(TH18)

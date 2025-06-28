@@ -31,6 +31,17 @@ public:
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
+class TiaosuoCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TiaosuoCard();
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
+};
+
 class TH18Package : public Package
 {
     Q_OBJECT
