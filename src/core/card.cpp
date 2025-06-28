@@ -1016,7 +1016,6 @@ void SkillCard::use(Room *, const CardUseStruct &card_use) const
 // ---------- Dummy card      -------------------
 
 DummyCard::DummyCard()
-    : SkillCard()
 {
     target_fixed = true;
     handling_method = Card::MethodNone;
@@ -1024,7 +1023,6 @@ DummyCard::DummyCard()
 }
 
 DummyCard::DummyCard(const QList<int> &subcards)
-    : SkillCard()
 {
     target_fixed = true;
     handling_method = Card::MethodNone;
@@ -1049,7 +1047,6 @@ QString DummyCard::toString(bool) const
 }
 
 ShowDistanceCard::ShowDistanceCard()
-    : SkillCard()
 {
     mute = true;
     target_fixed = true;
@@ -1069,7 +1066,6 @@ const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
 }
 
 ArraySummonCard::ArraySummonCard(const QString &name)
-    : SkillCard()
 {
     setObjectName(name);
     m_skillName = name;
