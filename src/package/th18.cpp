@@ -1,8 +1,13 @@
+
 #include "th18.h"
+
 #include "clientplayer.h"
 #include "engine.h"
 #include "general.h"
 #include "skill.h"
+#include "structs.h"
+
+#include <algorithm>
 
 #undef DESCRIPTION
 
@@ -421,9 +426,8 @@ public:
                     card = response.m_card;
             }
 
-            if (player == nullptr || card == nullptr) {
+            if (player == nullptr || card == nullptr)
                 Q_UNREACHABLE();
-            }
 
             invoke->invoker->obtainCard(card);
             room->setPlayerProperty(player, objectName().toUtf8().constData(), invoke->invoker->objectName());
@@ -482,17 +486,288 @@ public:
     }
 };
 
-#ifdef DESCRIPTION
-["sannyo"] = "驹草山如", ["#sannyo"] = "栖息于高地的山女郎", ["boxi"] = "博戏",
-                         [":boxi"]
-    = "<font "
-      "color=\"green\"><b>出牌阶段限一次，</b></"
-      "font>"
-      "你可以顺时或逆时针令所有有牌的角色逐个展示一张牌，然后你可以再展示一张牌。均展示后，你弃置这些展示的牌中牌数唯一最多的花色牌，令展示牌数最少（可并列）的花色牌的角"
-      "色各摸一张牌，最后你可以使用或获得一张因此次弃置而置入弃牌堆的牌。",
-                         ;
-;
-#endif
+BoxiCard::BoxiCard()
+{
+    target_fixed = false;
+}
+
+bool BoxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.isEmpty() && (Self->getNextAlive(1, false) == to_select || Self->getLastAlive(1, false) == to_select);
+}
+
+void BoxiCard::onUse(Room *room, const CardUseStruct &_use) const
+{
+    CardUseStruct card_use = _use;
+
+    // GameRule::effect (PreCardUsed)
+    {
+        if (card_use.from->hasFlag("Global_ForbidSurrender")) {
+            card_use.from->setFlags("-Global_ForbidSurrender");
+            room->doNotify(card_use.from, QSanProtocol::S_COMMAND_ENABLE_SURRENDER, QVariant(true));
+        }
+
+        card_use.from->broadcastSkillInvoke(card_use.card);
+        if (!card_use.card->getSkillName().isNull() && card_use.card->getSkillName(true) == card_use.card->getSkillName(false) && card_use.m_isOwnerUse
+            && card_use.from->hasSkill(card_use.card->getSkillName()))
+            room->notifySkillInvoked(card_use.from, card_use.card->getSkillName());
+    }
+
+    LogMessage log;
+    log.from = _use.from;
+    log.type = "#UseCard";
+    log.card_str = card_use.card->toString(!card_use.card->willThrow());
+    room->sendLog(log);
+
+    QString cl = "cw";
+    if (card_use.from->getNextAlive(1, false) == card_use.to.first())
+        cl = "ccw";
+
+    LogMessage logCl;
+    logCl.from = _use.from;
+    logCl.type = "#boxiCl";
+    log.arg = "boxi";
+    log.arg2 = cl;
+    room->sendLog(logCl);
+
+    // show general // Fs: why not use getShowSkill?
+    _use.from->showHiddenSkill(card_use.card->getSkillName(false));
+
+    use(room, card_use);
+}
+
+namespace {
+QStringList generateBoxiAiTag(const QMap<int, ServerPlayer *> &map)
+{
+    QStringList l;
+    foreach (int id, map.keys())
+        l << (map.value(id)->objectName() + ":" + QString::number(id));
+
+    return l;
+}
+} // namespace
+
+void BoxiCard::use(Room *room, const CardUseStruct &card_use) const
+{
+    bool cw = true;
+    if (card_use.from->getNextAlive(1, false) == card_use.to.first())
+        cw = false;
+
+    ServerPlayer *c = card_use.to.first();
+    QMap<int, ServerPlayer *> idMap;
+    while (c != card_use.from) {
+        // TODO: currently askForCardShow do not support show equip card. To be resolved.
+        if (!c->isKongcheng()) {
+            c->tag["boxi"] = generateBoxiAiTag(idMap);
+            const Card *shown = room->askForCardShow(c, card_use.from, "boxi");
+            c->tag.remove("boxi");
+            idMap[shown->getEffectiveId()] = c;
+        }
+
+        if (cw)
+            c = qobject_cast<ServerPlayer *>(c->getLastAlive(1, false));
+        else
+            c = qobject_cast<ServerPlayer *>(c->getNextAlive(1, false));
+
+        if (c == nullptr)
+            Q_UNREACHABLE();
+    }
+
+    if (!card_use.from->isKongcheng()) {
+        card_use.from->tag["boxi"] = generateBoxiAiTag(idMap);
+        // TODO: cancelable askForCardShow
+        const Card *shown = room->askForCardShow(card_use.from, card_use.from, "boxi");
+        card_use.from->tag.remove("boxi");
+        // idMap[card_use.from] = shown->getEffectiveId();
+        idMap[shown->getEffectiveId()] = card_use.from;
+    }
+
+    QList<int> ids = idMap.keys();
+
+    QMap<Card::Suit, int> numbers;
+    int most = 0;
+    Card::Suit uniqueMost = Card::NoSuit;
+    foreach (int id, ids) {
+        const Card *z = Sanguosha->getCard(id);
+        if (!numbers.contains(z->getSuit()))
+            numbers[z->getSuit()] = 0;
+
+        int current = ++(numbers[z->getSuit()]);
+        if (most < current) {
+            most = current;
+            uniqueMost = z->getSuit();
+        } else if (most == current) {
+            uniqueMost = Card::NoSuit;
+        } else {
+            //
+        }
+    }
+
+    int least = ids.length();
+    foreach (int number, numbers)
+        least = std::min(least, number);
+
+    QList<int> to_discard;
+
+    if (uniqueMost != Card::NoSuit) {
+        foreach (int id, ids) {
+            const Card *z = Sanguosha->getCard(id);
+            if (z->getSuit() == uniqueMost)
+                to_discard << id;
+        }
+
+        CardMoveReason r;
+        r.m_reason = CardMoveReason::S_REASON_THROW;
+        r.m_playerId = card_use.from->objectName();
+
+        LogMessage l;
+        l.type = "$DiscardCard";
+        l.from = card_use.from;
+        foreach (int id, to_discard)
+            l.to << idMap.value(id);
+        l.card_str = IntList2StringList(to_discard).join("+");
+        room->sendLog(l);
+
+        CardsMoveStruct move(to_discard, nullptr, Player::DiscardPile, r);
+        room->moveCardsAtomic({move}, true);
+    }
+
+    QList<ServerPlayer *> draws;
+    foreach (int id, ids) {
+        const Card *z = Sanguosha->getCard(id);
+        if (numbers.value(z->getSuit()) == least)
+            draws << idMap.value(id);
+    }
+
+    room->sortByActionOrder(draws);
+    room->drawCards(draws, 1, "boxi");
+
+    if (!to_discard.isEmpty()) {
+        QList<int> to_discard2;
+        foreach (int id, to_discard) {
+            if (room->getCardPlace(id) == Player::DiscardPile)
+                to_discard2 << id;
+        }
+
+        if (!to_discard2.isEmpty()) {
+            // AI: do not use BoxiUseOrObtainCard for this askForUseCard when using, instead:
+            // use setPlayerProperty to clear this property, then return real card for this CardUseStruct
+            // use BoxiUseOrObtainCard only for obtaining
+            room->setPlayerProperty(card_use.from, "boxi", IntList2StringList(to_discard2).join("+"));
+            try {
+                if (!room->askForUseCard(card_use.from, "@@boxi!", "boxi-use-or-obtain")) {
+                    // randomly get a card
+                    int r = to_discard2.at(qrand() % to_discard2.length());
+                    room->obtainCard(card_use.from, r);
+                }
+            } catch (TriggerEvent) {
+                room->setPlayerProperty(card_use.from, "boxi", QString());
+                throw;
+            }
+            room->setPlayerProperty(card_use.from, "boxi", QString());
+        }
+    }
+}
+
+BoxiUseOrObtainCard::BoxiUseOrObtainCard()
+{
+    will_throw = false;
+    m_skillName = "_boxi";
+    handling_method = Card::MethodNone;
+}
+
+bool BoxiUseOrObtainCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    const Card *oc = Sanguosha->getCard(subcards.first());
+    return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
+}
+
+bool BoxiUseOrObtainCard::targetFixed(const Player *Self) const
+{
+    const Card *oc = Sanguosha->getCard(subcards.first());
+    return oc->targetFixed(Self);
+}
+
+bool BoxiUseOrObtainCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    if (targets.isEmpty())
+        return true;
+
+    const Card *oc = Sanguosha->getCard(subcards.first());
+    return oc->targetsFeasible(targets, Self);
+}
+
+const Card *BoxiUseOrObtainCard::validate(CardUseStruct &use) const
+{
+    // AI: ensure an empty use.to here!
+
+    Room *room = use.from->getRoom();
+    const Card *card = Sanguosha->getCard(subcards.first());
+    QString method = "obtain";
+
+    if (!use.to.isEmpty())
+        method = "use";
+    else if ((card->targetFixed(use.from) || card->targetsFeasible({}, use.from)) && use.from->isOnline())
+        method = room->askForChoice(use.from, "boxi", "use+obtain");
+
+    room->setPlayerProperty(use.from, "boxi", QString());
+
+    if (method == "use")
+        return card;
+
+    return use.card;
+}
+
+void BoxiUseOrObtainCard::use(Room *room, const CardUseStruct &card_use) const
+{
+    room->obtainCard(card_use.from, card_use.card);
+}
+
+class Boxi : public ViewAsSkill
+{
+public:
+    Boxi()
+        : ViewAsSkill("boxi")
+    {
+        expand_pile = "*boxi";
+    }
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    {
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+            return false;
+        else if (Sanguosha->getCurrentCardUsePattern() == "@@boxi!")
+            return selected.isEmpty() && StringList2IntList(Self->property("boxi").toString().split("+")).contains(to_select->getId());
+
+        return false;
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const override
+    {
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            return new BoxiCard;
+        } else if (Sanguosha->getCurrentCardUsePattern() == "@@boxi!") {
+            if (cards.length() == 1) {
+                BoxiUseOrObtainCard *c = new BoxiUseOrObtainCard;
+                c->addSubcards(cards);
+                return c;
+            }
+        }
+
+        return nullptr;
+    }
+
+    bool isEnabledAtPlay(const Player *player) const override
+    {
+        return !player->hasUsed("BoxiCard");
+    }
+
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    {
+        return pattern == "@@boxi!";
+    }
+};
+
 #ifdef DESCRIPTION
 ["misumaru"] = "玉造魅须丸", ["#misumaru"] = "真正的勾玉匠人", ["zhuyu"] = "铸玉",
                              [":zhuyu"]
@@ -551,7 +826,7 @@ TH18Package::TH18Package()
     related_skills.insertMulti("yingji", "#yingji-record");
 
     General *sannyo = new General(this, "sannyo", "hld");
-    sannyo->addSkill(new Skill("boxi"));
+    sannyo->addSkill(new Boxi);
 
     General *misumaru = new General(this, "misumaru", "hld");
     misumaru->addSkill(new Skill("zhuyu"));
@@ -568,6 +843,9 @@ TH18Package::TH18Package()
     General *momoyo = new General(this, "momoyo", "hld");
     momoyo->addSkill(new Skill("juezhu"));
     momoyo->addSkill(new Skill("zhanyi"));
+
+    addMetaObject<BoxiCard>();
+    addMetaObject<BoxiUseOrObtainCard>();
 }
 
 ADD_PACKAGE(TH18)
