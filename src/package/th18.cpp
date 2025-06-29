@@ -4,10 +4,12 @@
 #include "clientplayer.h"
 #include "engine.h"
 #include "general.h"
+#include "roomthread.h"
 #include "skill.h"
 #include "structs.h"
 
 #include <algorithm>
+#include <cmath>
 
 #undef DESCRIPTION
 
@@ -209,6 +211,8 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
+        room->getThread()->delay();
+
         ExNihilo *sheng = new ExNihilo(Card::NoSuit, -1);
         sheng->setSkillName("_" + objectName());
         CardUseStruct use(sheng, invoke->invoker, invoke->invoker, false);
@@ -220,7 +224,7 @@ public:
 class YingjiRecord : public TriggerSkill
 {
 public:
-    YingjiRecord(const QString &yingji)
+    YingjiRecord(const QString &yingji = "yingji")
         : TriggerSkill("#" + yingji + "-record")
         , b(yingji)
     {
@@ -1010,16 +1014,126 @@ public:
                          ;
 ;
 #endif
-#ifdef DESCRIPTION
-["momoyo"] = "姬虫百百世", ["#momoyo"] = "漆黑的噬龙者", ["juezhu"] = "掘珠",
-                           [":juezhu"] = "<font "
-                                         "color=\"green\"><b>出牌阶段限一次，</b></"
-                                         "font>你可以选择所有手牌数不小于你的其他角色，令其各选择一项：1.令你摸一张牌；2.摸一张牌，然后你可以终止此流程并视为对其使用【决斗】。",
-                           ["zhanyi"] = "战意", [":zhanyi"] = "你可以将X张牌（X为你的体力值与手牌数之差且至少为1）当【杀】使用或打出。",
-                           ;
-;
-;
-#endif
+
+JuezhuCard::JuezhuCard()
+{
+    target_fixed = true;
+}
+
+void JuezhuCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    CardUseStruct use = card_use;
+    use.to.clear();
+
+    foreach (ServerPlayer *p, room->getOtherPlayers(card_use.from)) {
+        if (p->getHandcardNum() >= card_use.from->getHandcardNum())
+            use.to << p;
+    }
+
+    SkillCard::onUse(room, use);
+}
+
+void JuezhuCard::use(Room *room, const CardUseStruct &card_use) const
+{
+    foreach (ServerPlayer *p, card_use.to) {
+        QString draw = room->askForChoice(p, getSkillName(), "letdraw+draw", QVariant::fromValue(card_use));
+
+        if (draw == "letdraw") {
+            card_use.from->drawCards(1, getSkillName());
+        } else {
+            p->drawCards(1, getSkillName());
+            if (card_use.from->askForSkillInvoke(getSkillName(), QVariant::fromValue(p), "d:" + p->objectName())) {
+                Duel *d = new Duel(Card::NoSuit, -1);
+                d->setSkillName("_" + getSkillName());
+                CardUseStruct newUse;
+                newUse.card = d;
+                newUse.from = card_use.from;
+                newUse.to << p;
+                room->useCard(newUse);
+
+                return;
+            }
+        }
+    }
+}
+
+class Juezhu : public ZeroCardViewAsSkill
+{
+public:
+    Juezhu()
+        : ZeroCardViewAsSkill("juezhu")
+    {
+    }
+
+    bool isEnabledAtPlay(const Player *player) const override
+    {
+        return !player->hasUsed("JuezhuCard");
+    }
+
+    const Card *viewAs() const override
+    {
+        return new JuezhuCard;
+    }
+};
+
+class Zhanyi : public ViewAsSkill
+{
+public:
+    Zhanyi()
+        : ViewAsSkill("zhanyi")
+    {
+        response_or_use = true;
+    }
+
+    static int num(const Player *p)
+    {
+        int hp = p->getHp();
+        int hcnum = p->getHandcardNum();
+
+        return std::max(1, std::abs(hp - hcnum));
+    }
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *) const override
+    {
+        return selected.length() < num(Self);
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const override
+    {
+        if (cards.length() == num(Self)) {
+            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+            slash->addSubcards(cards);
+            slash->setSkillName(objectName());
+            slash->setShowSkill(objectName());
+
+            bool usable = true;
+
+            if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+                usable = slash->isAvailable(Self);
+
+            if (usable)
+                return slash;
+            else
+                delete slash;
+        }
+
+        return nullptr;
+    }
+
+    bool isEnabledAtPlay(const Player *player) const override
+    {
+        return Slash::IsAvailable(player);
+    }
+
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
+    {
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
+    }
+};
 
 TH18Package::TH18Package()
     : Package("th18")
@@ -1037,7 +1151,7 @@ TH18Package::TH18Package()
 
     General *takane = new General(this, "takane", "hld");
     takane->addSkill(new Yingji);
-    takane->addSkill(new YingjiRecord("yingji"));
+    takane->addSkill(new YingjiRecord);
     takane->addSkill(new Zhixiao);
     related_skills.insertMulti("yingji", "#yingji-record");
 
@@ -1061,12 +1175,13 @@ TH18Package::TH18Package()
     megumu->addSkill(new Skill("miji"));
 
     General *momoyo = new General(this, "momoyo", "hld");
-    momoyo->addSkill(new Skill("juezhu"));
-    momoyo->addSkill(new Skill("zhanyi"));
+    momoyo->addSkill(new Juezhu);
+    momoyo->addSkill(new Zhanyi);
 
     addMetaObject<BoxiCard>();
     addMetaObject<BoxiUseOrObtainCard>();
     addMetaObject<TiaosuoCard>();
+    addMetaObject<JuezhuCard>();
 }
 
 ADD_PACKAGE(TH18)

@@ -42,6 +42,16 @@ public:
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
+class JuezhuCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JuezhuCard();
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
+};
+
 class TH18Package : public Package
 {
     Q_OBJECT
