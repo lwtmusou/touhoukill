@@ -398,7 +398,13 @@ public:
             QVariant card_v = invoke->tag.value(objectName());
             return invoke->invoker->askForSkillInvoke(objectName(), card_v, "e:::" + card_v.value<const Card *>()->objectName());
         } else {
-            return invoke->invoker->askForSkillInvoke(objectName(), data, "a:" + invoke->targets.first()->objectName());
+            const Card *card = nullptr;
+            if (triggerEvent == CardUsed)
+                card = data.value<CardUseStruct>().card;
+            else
+                card = data.value<CardResponseStruct>().m_card;
+
+            return invoke->invoker->askForSkillInvoke(objectName(), data, "a:" + invoke->targets.first()->objectName() + "::" + card->objectName());
         }
 
         return false;
@@ -432,7 +438,7 @@ public:
 
             invoke->invoker->obtainCard(card);
             room->setPlayerProperty(player, objectName().toUtf8().constData(), invoke->invoker->objectName());
-            const Card *obtainedGood = room->askForCard(player, "@@yingji!", "yingji-get:" + invoke->invoker->objectName(), {}, Card::MethodNone);
+            const Card *obtainedGood = room->askForCard(player, "@@yingji!", "yingji-get:" + invoke->invoker->objectName(), {}, Card::MethodNone, nullptr, false, {}, false, 0);
             if (obtainedGood == nullptr) {
                 QList<int> is = invoke->invoker->getPile("goods");
                 obtainedGood = Sanguosha->getCard(is[qrand() % is.length()]);
@@ -467,14 +473,17 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
-            LogMessage l;
-            l.type = "#TriggerSkill";
-            l.from = invoke->invoker;
-            l.arg = objectName();
-            room->sendLog(l);
+            if (invoke->invoker->hasShownSkill(this)) {
+                LogMessage l;
+                l.type = "#TriggerSkill";
+                l.from = invoke->invoker;
+                l.arg = objectName();
+                room->sendLog(l);
+            }
 
             return true;
         }
+
         return false;
     }
 
@@ -514,12 +523,6 @@ void BoxiCard::onUse(Room *room, const CardUseStruct &_use) const
             room->notifySkillInvoked(card_use.from, card_use.card->getSkillName());
     }
 
-    LogMessage log;
-    log.from = _use.from;
-    log.type = "#UseCard";
-    log.card_str = card_use.card->toString(!card_use.card->willThrow());
-    room->sendLog(log);
-
     QString cl = "cw";
     if (card_use.from->getNextAlive(1, false) == card_use.to.first())
         cl = "ccw";
@@ -527,8 +530,8 @@ void BoxiCard::onUse(Room *room, const CardUseStruct &_use) const
     LogMessage logCl;
     logCl.from = _use.from;
     logCl.type = "#boxiCl";
-    log.arg = "boxi";
-    log.arg2 = cl;
+    logCl.arg = "boxi";
+    logCl.arg2 = cl;
     room->sendLog(logCl);
 
     // show general // Fs: why not use getShowSkill?
@@ -557,12 +560,13 @@ void BoxiCard::use(Room *room, const CardUseStruct &card_use) const
     ServerPlayer *c = card_use.to.first();
     QMap<int, ServerPlayer *> idMap;
     while (c != card_use.from) {
-        // TODO: currently askForCardShow do not support show equip card. To be resolved.
-        if (!c->isKongcheng()) {
+        if (!c->isNude()) {
             c->tag["boxi"] = generateBoxiAiTag(idMap);
-            const Card *shown = room->askForCardShow(c, card_use.from, "boxi");
+            const Card *shown = room->askForExchange(c, getSkillName(), 1, 1, true, "boxi-show:" + card_use.from->objectName(), false);
             c->tag.remove("boxi");
+            room->showCard(c, shown->getEffectiveId());
             idMap[shown->getEffectiveId()] = c;
+            delete shown;
         }
 
         if (cw)
@@ -574,13 +578,15 @@ void BoxiCard::use(Room *room, const CardUseStruct &card_use) const
             Q_UNREACHABLE();
     }
 
-    if (!card_use.from->isKongcheng()) {
+    if (!card_use.from->isNude()) {
         card_use.from->tag["boxi"] = generateBoxiAiTag(idMap);
-        // TODO: cancelable askForCardShow
-        const Card *shown = room->askForCardShow(card_use.from, card_use.from, "boxi");
+        const Card *shown = room->askForExchange(card_use.from, getSkillName(), 1, 1, true, "boxi-show-self", true);
         card_use.from->tag.remove("boxi");
-        // idMap[card_use.from] = shown->getEffectiveId();
-        idMap[shown->getEffectiveId()] = card_use.from;
+        if (shown != nullptr) {
+            room->showCard(card_use.from, shown->getEffectiveId());
+            idMap[shown->getEffectiveId()] = card_use.from;
+            delete shown;
+        }
     }
 
     QList<int> ids = idMap.keys();
@@ -680,7 +686,7 @@ BoxiUseOrObtainCard::BoxiUseOrObtainCard()
 bool BoxiUseOrObtainCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     const Card *oc = Sanguosha->getCard(subcards.first());
-    return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
+    return oc->isAvailable(Self) && !Self->isCardLimited(oc, Card::MethodUse) && oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
 }
 
 bool BoxiUseOrObtainCard::targetFixed(const Player *Self) const
@@ -695,7 +701,7 @@ bool BoxiUseOrObtainCard::targetsFeasible(const QList<const Player *> &targets, 
         return true;
 
     const Card *oc = Sanguosha->getCard(subcards.first());
-    return oc->targetsFeasible(targets, Self);
+    return oc->isAvailable(Self) && !Self->isCardLimited(oc, Card::MethodUse) && oc->targetsFeasible(targets, Self);
 }
 
 const Card *BoxiUseOrObtainCard::validate(CardUseStruct &use) const
@@ -708,7 +714,8 @@ const Card *BoxiUseOrObtainCard::validate(CardUseStruct &use) const
 
     if (!use.to.isEmpty())
         method = "use";
-    else if ((card->targetFixed(use.from) || card->targetsFeasible({}, use.from)) && use.from->isOnline())
+    else if (card->isAvailable(use.from) && !use.from->isCardLimited(card, Card::MethodUse) && (card->targetFixed(use.from) || card->targetsFeasible({}, use.from))
+             && use.from->isOnline())
         method = room->askForChoice(use.from, "boxi", "use+obtain");
 
     room->setPlayerProperty(use.from, "boxi", QString());
