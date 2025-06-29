@@ -1006,14 +1006,255 @@ public:
     }
 };
 
-#ifdef DESCRIPTION
-["megumu"] = "饭纲丸龙", ["#megumu"] = "鸦天狗的首领", ["fgwlshezheng"] = "涉政",
-                         [":fgwlshezheng"]
-    = "当你于出牌阶段内使用牌时，你可以将牌堆底的一张牌置入弃牌堆，若两张牌颜色：相同，你于此阶段内使用的本牌和下一张牌不计入使用次数限制；不同，你弃置一张牌。",
-                         ["miji"] = "觅机", [":miji"] = "出牌阶段开始时或当你因弃置而失去基本牌后，你可以观看牌堆底的三张牌并获得其中一张当前回合未使用过的类别牌。",
-                         ;
-;
-#endif
+class FgwlShezheng : public TriggerSkill
+{
+public:
+    FgwlShezheng()
+        : TriggerSkill("fgwlshezheng")
+    {
+        events = {PreCardUsed, CardUsed, CardResponded, EventPhaseChanging};
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    {
+        CardUseStruct use;
+        if (triggerEvent == CardUsed) {
+            use = data.value<CardUseStruct>();
+        } else if (triggerEvent == CardResponded) {
+            use = CardUseStruct();
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_isUse) {
+                use.card = resp.m_card;
+                use.from = resp.m_from;
+                use.m_addHistory = false;
+            }
+        } else {
+            use = CardUseStruct();
+        }
+
+        if (use.card != nullptr && use.from != nullptr) {
+            if (use.from->getPhase() == Player::Play && use.from->hasSkill(this)) {
+                SkillInvokeDetail d(this, use.from, use.from);
+                d.tag["originalUse"] = QVariant::fromValue(use);
+                return {d};
+            }
+        }
+
+        return {};
+    }
+
+    static QString colorStr(const Card *c)
+    {
+        if (c->isRed())
+            return "no_suit_red";
+        if (c->isBlack())
+            return "no_suit_black";
+        return "no_suit";
+    }
+
+    bool cost(TriggerEvent, Room *r, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        CardUseStruct use = invoke->tag["originalUse"].value<CardUseStruct>();
+
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(use.card), "i:::" + colorStr(use.card) + ":" + use.card->objectName())) {
+            QList<int> ids = r->getNCards(1, true, true);
+            CardMoveReason reason(CardMoveReason::S_REASON_PUT, invoke->invoker->objectName(), objectName(), {});
+            r->throwCard(Sanguosha->getCard(ids.first()), reason, nullptr);
+            invoke->tag["realId"] = ids.first();
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        CardUseStruct originalUse = invoke->tag["originalUse"].value<CardUseStruct>();
+        const Card *putCard = Sanguosha->getCard(invoke->tag["realId"].toInt());
+
+        if ((originalUse.card->isBlack() == putCard->isBlack()) && (originalUse.card->isRed() == putCard->isRed())) {
+            originalUse.from->setFlags(objectName());
+            bool reducedHistory = false;
+
+            if (triggerEvent == CardUsed) {
+                CardUseStruct realUse = data.value<CardUseStruct>();
+                if (realUse.m_addHistory) {
+                    realUse.m_addHistory = false;
+                    data = QVariant::fromValue(realUse);
+                    room->addPlayerHistory(realUse.from, realUse.card->getClassName(), -1);
+                    reducedHistory = true;
+                }
+            }
+
+            LogMessage l;
+            l.type = "#fgwlshezheng1";
+            if (!reducedHistory)
+                l.type = "#fgwlshezheng2";
+            l.from = originalUse.from;
+            l.arg = objectName();
+            l.arg2 = originalUse.card->objectName();
+            room->sendLog(l);
+        } else {
+            if (!invoke->invoker->isNude())
+                room->askForDiscard(invoke->invoker, objectName(), 1, 1, false, true);
+        }
+
+        return false;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play)
+                change.player->setFlags("-" + objectName());
+        } else if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from->hasFlag(objectName()) && use.from->getPhase() == Player::Play) {
+                use.from->setFlags("-" + objectName());
+                if (use.m_addHistory) {
+                    use.m_addHistory = false;
+                    data = QVariant::fromValue(use);
+                    room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+
+                    LogMessage l;
+                    l.type = "#yvshou";
+                    l.from = use.from;
+                    l.arg = objectName();
+                    l.arg2 = use.card->objectName();
+                    room->sendLog(l);
+                }
+            }
+        } else if (triggerEvent == CardResponded) {
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_isUse) {
+                if (resp.m_from->hasFlag(objectName()) && resp.m_from->getPhase() == Player::Play)
+                    resp.m_from->setFlags("-" + objectName());
+            }
+        }
+    }
+};
+
+class MijiRecord : public TriggerSkill
+{
+public:
+    MijiRecord(const QString &base = "miji")
+        : TriggerSkill("#" + base)
+        , b(base)
+    {
+        events = {PreCardUsed, CardResponded};
+        global = true;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const override
+    {
+        const Card *c = nullptr;
+        ServerPlayer *p = nullptr;
+
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            c = use.card;
+            p = use.from;
+        } else if (triggerEvent == CardResponded) {
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_isUse) {
+                c = resp.m_card;
+                p = resp.m_from;
+            }
+        }
+
+        if (c != nullptr && p != nullptr) {
+            int t = p->tag[b].toInt();
+            int type = static_cast<int>(c->getTypeId());
+            t = t | (1 << type);
+            p->tag[b] = t;
+        }
+    }
+
+private:
+    QString b;
+};
+
+class Miji : public TriggerSkill
+{
+public:
+    Miji()
+        : TriggerSkill("miji")
+    {
+        events = {CardsMoveOneTime, EventPhaseStart};
+        frequency = Frequent;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    {
+        ServerPlayer *invoker = nullptr;
+
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() == Player::Play && p->hasSkill(this) && p->isAlive())
+                invoker = p;
+        } else if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from != nullptr && move.from->hasSkill(this) && move.from->isAlive()
+                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
+                for (int i = 0; i < move.card_ids.length(); ++i) {
+                    if ((move.from_places[i] == Player::PlaceEquip || move.from_places[i] == Player::PlaceHand)) {
+                        const Card *c = Sanguosha->getCard(move.card_ids[i]);
+                        if (c->getTypeId() == Card::TypeBasic) {
+                            invoker = qobject_cast<ServerPlayer *>(move.from);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (invoker != nullptr)
+            return {SkillInvokeDetail(this, invoker, invoker)};
+
+        return {};
+    }
+
+    // bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        QList<int> ids = room->getNCards(3, false, true);
+        room->returnToDrawPile(ids, true);
+
+        QList<int> disabled;
+        QList<int> enabled;
+        foreach (int id, ids) {
+            const Card *c = Sanguosha->getCard(id);
+            int type = static_cast<int>(c->getTypeId());
+            int t = invoke->invoker->tag[objectName()].toInt();
+            if (t & (1 << type))
+                disabled << id;
+            else
+                enabled << id;
+        }
+
+        room->fillAG(ids, invoke->invoker, disabled);
+        int selected = -1;
+        if (!enabled.isEmpty())
+            selected = room->askForAG(invoke->invoker, enabled, false, objectName());
+
+        try {
+            if (selected != -1)
+                room->takeAG(invoke->invoker, selected, true, {invoke->invoker});
+        } catch (TriggerEvent) {
+            room->clearAG(invoke->invoker);
+            throw;
+        }
+
+        if (selected == -1)
+            room->getThread()->delay();
+
+        room->clearAG(invoke->invoker);
+
+        return false;
+    }
+};
 
 JuezhuCard::JuezhuCard()
 {
@@ -1171,8 +1412,10 @@ TH18Package::TH18Package()
     related_skills.insertMulti("tiaosuo", "#tiaosuo-targetmod");
 
     General *megumu = new General(this, "megumu", "hld");
-    megumu->addSkill(new Skill("fgwlshezheng"));
-    megumu->addSkill(new Skill("miji"));
+    megumu->addSkill(new FgwlShezheng);
+    megumu->addSkill(new Miji);
+    megumu->addSkill(new MijiRecord);
+    related_skills.insertMulti("miji", "#miji");
 
     General *momoyo = new General(this, "momoyo", "hld");
     momoyo->addSkill(new Juezhu);
