@@ -1207,7 +1207,7 @@ public:
         DELETE_OVER_SCOPE(SavageAssault, card)
         const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
-        return cardPattern != nullptr && cardPattern->match(player, card);
+        return cardPattern != nullptr && cardPattern->match(player, card) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
     const Card *viewAs(const Card *originalCard) const override
@@ -1240,7 +1240,7 @@ public:
         DELETE_OVER_SCOPE(Analeptic, card)
         const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
-        return cardPattern != nullptr && cardPattern->match(player, card) && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
+        return cardPattern != nullptr && cardPattern->match(player, card) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
     const Card *viewAs(const Card *originalCard) const override
