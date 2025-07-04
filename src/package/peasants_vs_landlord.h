@@ -4,8 +4,6 @@
 #include "card.h"
 #include "package.h"
 
-
-
 class PeasantsVSLandlordPackage : public Package
 {
     Q_OBJECT

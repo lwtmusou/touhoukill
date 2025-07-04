@@ -7,47 +7,28 @@
 #include <QAbstractButton>
 #include <QButtonGroup>
 #include <QDialog>
-#include <QGroupBox>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
 
-/*
-class ShayiCard : public SkillCard
+class YidanDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ShayiCard();
+    static YidanDialog *getInstance();
 
-    void onUse(Room *room, const CardUseStruct &card_use) const;
+public slots:
+    void popup();
+    void selectCard(QAbstractButton *button);
 
 private:
-    static bool putToPile(Room *room, ServerPlayer *mori);
-    static void cleanUp(Room *room, ServerPlayer *mori);
-};*/
+    explicit YidanDialog();
 
-class YuejianCard : public SkillCard
-{
-    Q_OBJECT
+    QAbstractButton *createButton(const QString &name);
+    QButtonGroup *group;
+    QHash<QString, const Card *> map;
 
-public:
-    Q_INVOKABLE YuejianCard();
-
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, const CardUseStruct &card_use) const override;
-};
-
-class YidanCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE YidanCard();
-
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    //virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-
-    const Card *validate(CardUseStruct &card_use) const override;
+signals:
+    void onButtonClick();
 };
 
 class TH15Package : public Package

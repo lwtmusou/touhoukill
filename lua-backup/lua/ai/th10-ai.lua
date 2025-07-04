@@ -12,35 +12,34 @@ sgs.ai_skill_discard.shende = function(self)
 	return to_discard
 end
 
-
 local shende_skill = {}
 shende_skill.name = "shende"
 table.insert(sgs.ai_skills, shende_skill)
 function shende_skill.getTurnUseCard(self)
 	if self.player:getPile("shende"):length() < 2 then return nil end
-	if not self.player:isWounded() then return nil end
 	if self:hasWeiya() then return nil end
-	local need_useshende=false
-	--if self:cautionChangshi()  then
-	--	need_useshende=true
-	--end
-	if  (self:isWeak(self.player) or self:getOverflow() >0) then
-		need_useshende=true
-	end
-	if need_useshende then
-		local ids=self.player:getPile("shende")
-		ids = sgs.QList2Table(ids)
-		return sgs.Card_Parse(("peach:shende[%s:%s]=%d+%d"):format("to_be_decided", 0, ids[1], ids[2]))
-	end
-	return nil
-end
-
-sgs.ai_view_as.shende = function(card, player, card_place)
-	if player:getMark("Global_PreventPeach")>0 then return false end
-	local ids=player:getPile("shende")
-	if ids:length()<2 then return false end
+	local ids=self.player:getPile("shende")
 	ids = sgs.QList2Table(ids)
-	return ("peach:shende[%s:%s]=%d+%d"):format("to_be_decided", 0, ids[1], ids[2])
+	return sgs.Card_Parse("slash:shende[to_be_decided:-1]=" .. tostring(ids[1]) ..  "+" .. tostring(ids[2]))
+end
+sgs.ai_cardsview_valuable.shende = function(self,classname,player)
+	if self:hasWeiya() then return nil end
+	local objectNames = {
+		Peach = "peach",
+		Slash = "slash",
+	}
+	if objectNames[classname] then
+		local ids=player:getPile("shende")
+		if ids:length()<2 then return end
+		ids = sgs.QList2Table(ids)
+		return objectNames[classname] .. ":shende[to_be_decided:-1]=" .. tostring(ids[1]) ..  "+" .. tostring(ids[2])
+	end
+end
+sgs.ai_view_as.shende = function(card, player, card_place)
+	local ids=player:getPile("shende")
+	if ids:length()<2 then return end
+	ids = sgs.QList2Table(ids)
+	return "slash:shende[to_be_decided:-1]=" .. tostring(ids[1]) ..  "+" .. tostring(ids[2])
 end
 sgs.ai_cardneed.shende = function(to, card, self)
 	return  card:isKindOf("Slash")
@@ -49,25 +48,23 @@ sgs.shende_keep_value = {
 	Slash           = 5.7
 }
 
-
 --[供奉]
 local gongfengvs_skill = {}
 gongfengvs_skill.name = "gongfeng_attach"
 table.insert(sgs.ai_skills, gongfengvs_skill)
 function gongfengvs_skill.getTurnUseCard(self)
-		if self.player:isKongcheng() then return nil end
-		if self.player:getKingdom() ~="fsl" then return nil end
-		if self.player:hasFlag("Forbidgongfeng") then return nil end
-		local handcards = {}
-		for _,c in sgs.qlist(self.player:getCards("hs")) do
-			if c:isKindOf("Slash") then
-				table.insert(handcards, c)
-			end
+	if self.player:isKongcheng() then return nil end
+	if self.player:getKingdom() ~="fsl" then return nil end
+	local handcards = {}
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
+		if c:isKindOf("Slash") then
+			table.insert(handcards, c)
 		end
-		if #handcards  ==0 then return nil end
-		self:sortByUseValue(handcards)
+	end
+	if #handcards  ==0 then return nil end
+	self:sortByUseValue(handcards)
 
-		return sgs.Card_Parse("@GongfengCard=" .. handcards[1]:getEffectiveId())
+	return sgs.Card_Parse("@GongfengCard=" .. handcards[1]:getEffectiveId())
 end
 sgs.ai_skill_use_func.GongfengCard = function(card, use, self)
 	local targets = {}
@@ -86,6 +83,7 @@ sgs.ai_skill_use_func.GongfengCard = function(card, use, self)
 		end
 	end
 end
+sgs.ai_skill_invoke.gongfeng_attach = true
 sgs.ai_card_intention.GongfengCard = -40
 
 --洩矢诹访子
@@ -134,8 +132,8 @@ sgs.ai_skill_invoke.bushu =function(self,data)
 	end
 	return false
 end
-function sgs.ai_skill_pindian.bushu(minusecard, self, requestor, maxcard)
-	if self:isFriend(requestor) then
+function sgs.ai_skill_pindian.bushu(minusecard, self, requester, maxcard)
+	if self:isFriend(requester) then
 		return self:getMinCard()
 	end
 	return self:getMaxCard()
@@ -147,13 +145,14 @@ sgs.ai_choicemade_filter.skillInvoke.bushu = function(self, player, args, data)
 	if from and to and from:objectName()~= to:objectName() then
 		if args[#args] == "yes" then
 				sgs.updateIntention(player, to, -50)
-				--sgs.updateIntention(player, from, 10)
-		elseif sgs.evaluatePlayerRole(to) ~= "neutral" then
-			local num = player:getHandcardNum()
-			--if  num >= 3 and not self:isFriend(from, to)  then  --不用夹带私有的判断身份信息的isFriend  isFriend只适合用于自己的出牌策略
-			--update身份时，作为参考信息的身份信息 应该是公用列表的self.role的信息
-			if num >= 3 and sgs.evaluatePlayerRole(from) ~= sgs.evaluatePlayerRole(to) then
-				sgs.updateIntention(player, to, 20)
+		elseif not sgs.GetConfig("EnableHegemony", false) then
+			if sgs.evaluatePlayerRole(to) ~= "neutral" then
+				local num = player:getHandcardNum()
+				--if  num >= 3 and not self:isFriend(from, to)  then  --不用夹带私有的判断身份信息的isFriend  isFriend只适合用于自己的出牌策略
+				--update身份时，作为参考信息的身份信息 应该是公用列表的self.role的信息
+				if num >= 3 and sgs.evaluatePlayerRole(from) ~= sgs.evaluatePlayerRole(to) then
+					sgs.updateIntention(player, to, 20)
+				end
 			end
 		end
 	end
@@ -205,12 +204,33 @@ sgs.ai_skill_playerchosen.chuancheng_hegmony = function(self,targets)
 	return nil
 end
 
-
 --东风谷早苗
 --[祭仪]
-sgs.ai_skill_invoke.dfgzmjiyi  =function(self,data)
-	if self.player:isKongcheng() then return false end
-	return true
+sgs.ai_skill_cardask["@dfgzmjiyi-discard"] = function(self)
+	local ids = {}
+
+	local cards = sgs.QList2Table(self.player:getCards("hs"))
+	if #cards > 0 then
+		if self.player:isSkipped(sgs.Player_Play) then
+			self:sortByKeepValue(cards)
+		else
+			self:sortByUseValue(cards)
+		end
+		table.insert(ids, cards[#cards]:getId())
+	end
+	if self.player:getArmor() and self.player:getArmor():isKindOf("SilverLion") and self.player:isWounded() then
+		table.insert(ids, self.player:getArmor():getId())
+	elseif #cards > 1 then
+		table.insert(ids, cards[#cards - 1]:getId())
+	end
+
+	if #ids == 2 then
+		local idstrings = {}
+		for _, id in ipairs(ids) do
+			table.insert(idstrings, tostring(id))
+		end
+		return "$" .. table.concat(idstrings, "+")
+	end
 end
 
 --[奇迹]
@@ -233,12 +253,12 @@ qiji_skill.getTurnUseCard = function(self)
 
 	local qiji = "peach|super_peach|savage_assault|archery_attack|ex_nihilo|god_salvation|dismantlement"
 	local qijis = qiji:split("|")
-	if self.room:getMode():find("hegemony") then 
+	if self.room:getMode():find("hegemony") then
 		table.removeOne(qijis, "super_peach")
 	end
 	for i = 1, #qijis do
-		local forbiden = qijis[i]
-		forbid = sgs.cloneCard(forbiden, card:getSuit(),card:getNumber())
+		local forbidden = qijis[i]
+		forbid = sgs.cloneCard(forbidden, card:getSuit(),card:getNumber())
 		if self.player:isCardLimited(forbid, sgs.Card_MethodUse, true) or not forbid:isAvailable(self.player) then
 		else
 			table.insert(choices,qijis[i])
@@ -311,8 +331,7 @@ function sgs.ai_cardsview_valuable.qiji(self, class_name, player)
             end
         end
     end
-	
-	
+
 	local acard
 	for _,c in sgs.qlist(player:getCards("hs"))do
 				acard=c
@@ -465,8 +484,6 @@ sgs.ai_need_damaged.fengshen = function(self, attacker, player)
 	return false
 end
 
-
-
 --河城荷取
 --[心伤]
 local xinshang_skill = {}
@@ -519,7 +536,6 @@ sgs.ai_damageInflicted.micai =function(self, damage)
 	end
 	return damage
 end
-
 
 --键山雏
 --[集厄]
@@ -583,7 +599,6 @@ function SmartAI:canJie(player)
 	return false
 end
 
-
 --[流刑]
 sgs.ai_skill_cardask["@liuxing"] = function(self,data)
 	local blacks ={}
@@ -618,7 +633,6 @@ sgs.ai_choicemade_filter.skillChoice.liuxing = function(self, player, args, data
 	end
 end
 
-
 --SP高中生早苗
 --[常识]
 --[[function SmartAI:cautionChangshi()
@@ -629,7 +643,7 @@ end
 	return false
 end]]
 sgs.ai_skill_choice.changshi= function(self, choices, data)
-	if choices:match("skillInvalid") then 
+	if choices:match("skillInvalid") then
 		return "skillInvalid"
 	end
 	if choices:match("debuff") then
@@ -647,7 +661,6 @@ sgs.ai_skill_choice.changshi= function(self, choices, data)
 end
 --[纪念]
 sgs.ai_skill_invoke.jinian = true
-
 
 --犬走椛
 --[守护]
@@ -711,7 +724,6 @@ sgs.ai_damageInflicted.shaojie =function(self, damage)
 	end
 	return damage
 end
-
 
 --秋穰子
 --[丰穰]
@@ -977,3 +989,4 @@ sgs.ai_skill_discard.buju = function(self,discard_num, min_num)
 
 	return to_discard
 end
+sgs.ai_skill_invoke.buju = true

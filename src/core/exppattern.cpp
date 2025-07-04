@@ -20,7 +20,7 @@ bool ExpPattern::match(const Player *player, const Card *card) const
 }
 
 // '|' means 'and', '#' means 'or'.
-// the expression splited by '#' has 3 parts,
+// the expression split by '#' has 3 parts,
 // 1st part means the card name, and ',' means more than one options.
 // 2nd patt means the card suit, and ',' means more than one options.
 // 3rd part means the card number, and ',' means more than one options,
@@ -35,7 +35,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
 
     bool checkpoint = false;
     QStringList card_types = factors.at(0).split(QLatin1Char(','));
-    foreach (QString or_name, card_types) {
+    foreach (const QString &or_name, card_types) {
         checkpoint = false;
         foreach (QString name, or_name.split(QLatin1Char('+'))) {
             if (name == QStringLiteral(".")) {
@@ -94,7 +94,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
     QStringList card_numbers = factors.at(2).split(QLatin1Char(','));
     int cdn = static_cast<int>(card->number());
 
-    foreach (QString number, card_numbers) {
+    foreach (const QString &number, card_numbers) {
         if (number == QStringLiteral(".")) {
             checkpoint = true;
             break;
@@ -134,7 +134,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
     if ((player == nullptr) || place == QStringLiteral("."))
         checkpoint = true;
     if (!checkpoint) {
-        bool findOneShow = false; //only for check palce "show"
+        bool findOneShow = false; //only for check place "show"
         bool needCheckShow = place.split(QStringLiteral(",")).contains(QStringLiteral("show")); //only for check place "show"
 
         IdSet ids;
@@ -145,7 +145,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
 
         if (ids.isEmpty()) {
             // TODO: Consider decoupling ExpPattern since "sqchuangshi" or "shehuo" is rather a tag than place
-            if (place == QStringLiteral("sqchuangshi") || place == QStringLiteral("shehuo"))
+            if (place == QStringLiteral("sqchuangshi"))
                 checkpoint = true;
         } else {
             foreach (int id, ids) {
@@ -180,11 +180,12 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
                                 break;
                             }
                         }
-                    } else if (p == QStringLiteral("sqchuangshi") || p == QStringLiteral("shehuo")) {
+                    } else if (p == QStringLiteral("sqchuangshi")) {
                         if ((card->effectiveId() >= 0 && !player->hasEquip(card)))
                             checkpoint = true;
-                    } else if (p == QStringLiteral("benwo") && (card->isVirtualCard() || !player->handCards().contains(player->roomObject()->card(card->id())))) {
-                        return false;
+                    } else if (p == QStringLiteral("benwo")) {
+                        if (!card->isVirtualCard())
+                            checkpoint = true;
                     } else if (!player->pile(p).isEmpty() && player->pile(p).contains(id)) {
                         checkpoint = true;
                     }

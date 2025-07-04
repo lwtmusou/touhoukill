@@ -82,7 +82,6 @@ public:
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
@@ -95,6 +94,17 @@ public:
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;
+};
+
+class ZhengtiCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ZhengtiCard();
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class TH13Package : public Package

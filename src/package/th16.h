@@ -137,16 +137,6 @@ class ChuntengCard : public SkillCard
 public:
     Q_INVOKABLE ChuntengCard();
 
-    void use(Room *room, const CardUseStruct &card_use) const override;
-};
-
-class Chunteng2Card : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Chunteng2Card();
-
     void onEffect(const CardEffectStruct &effect) const override;
 };
 

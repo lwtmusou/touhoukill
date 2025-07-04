@@ -13,14 +13,6 @@ public:
     Q_INVOKABLE NiaoxiangSummon();
 };
 
-class QiankunHegemony : public MaxCardsSkill
-{
-public:
-    explicit QiankunHegemony(const QString &);
-
-    int getExtra(const Player *target) const override;
-};
-
 class HalfLifeCard : public SkillCard
 {
     Q_OBJECT
@@ -71,6 +63,16 @@ public:
     const Card *validate(CardUseStruct &card_use) const override;
 };
 
+class KuangzaoHegemonyCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE KuangzaoHegemonyCard();
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+};
+
 class XushiHegemonyCard : public SkillCard
 {
     Q_OBJECT
@@ -112,6 +114,18 @@ public:
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
+class QimenHegemonyCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE QimenHegemonyCard();
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+};
+
 class DongzhiHegemonyCard : public SkillCard
 {
     Q_OBJECT
@@ -133,11 +147,9 @@ public:
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
-// taken from LijianCard
 class KuaizhaoHegemonyCard : public SkillCard
 {
     Q_OBJECT
@@ -147,7 +159,6 @@ public:
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 

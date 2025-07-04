@@ -308,6 +308,7 @@ struct QSGS_CORE_EXPORT CardAskedStruct
     QString pattern;
     QString prompt;
     QSanguosha::HandlingMethod method;
+    QVariant originalData;
 };
 
 #ifndef SWIG
@@ -426,6 +427,7 @@ bool Danshou::stopBreakingCallback(const ProcessBreakStruct *self)
     // In that trigger data should be a Player
     // Its phase must be PhaseNotActive in order for the turn to be end
     // But this also matches
+    Death = 50,
 
     if (self->currentFunctionName == QStringLiteral("trigger")) {
         Player *p = nullptr;

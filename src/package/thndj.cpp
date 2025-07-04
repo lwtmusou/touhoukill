@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "maneuvering.h"
+#include "settings.h"
 #include "skill.h"
 #include "standard.h"
 
@@ -28,8 +29,8 @@ public:
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->hasSkill(this) && change.to == Player::NotActive && change.player->getHp() == 1 && !change.player->tag.value("touhou-extra", false).toBool()
-                && !room->getTag("rexueDeathInThisRound").toBool())
+            if (change.player->hasSkill(this) && change.to == Player::NotActive && change.player->getHp() <= change.player->dyingThreshold()
+                && !change.player->tag.value("touhou-extra", false).toBool() && !room->getTag("rexueDeathInThisRound").toBool())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, nullptr, true);
         }
 
@@ -172,7 +173,7 @@ public:
         death.useViewAsKiller = true;
         data = QVariant::fromValue(death);
 
-        room->touhouLogmessage("#TriggerSkill", invoke->owner, "tymhwuyu");
+        room->sendLog("#TriggerSkill", invoke->owner, "tymhwuyu");
         room->notifySkillInvoked(invoke->owner, objectName());
         return false;
     }
@@ -293,12 +294,12 @@ public:
             invoke->invoker->tag["huanyue_damage"] = data;
             return invoke->invoker->askForSkillInvoke(this, prompt);
         } else {
-            QString prompt = QString("@huanyue:%1:%2").arg(damage.to->objectName()).arg(damage.card->objectName());
+            QString prompt = QString("@huanyue:%1:%2").arg(damage.to->objectName(), damage.card->objectName());
             room->setPlayerProperty(invoke->invoker, "huanyue", damage.card->getType());
             const Card *c = room->askForCard(invoke->invoker, "@@huanyue-card2", prompt, data, Card::MethodNone, nullptr, false, "huanyue", false, 2);
             if (c != nullptr) {
                 room->notifySkillInvoked(invoke->invoker, objectName());
-                room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+                room->sendLog("#InvokeSkill", invoke->invoker, objectName());
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), nullptr, objectName(), QString());
                 room->throwCard(c, reason, nullptr);
@@ -331,7 +332,7 @@ public:
         } else {
             QList<ServerPlayer *> logto;
             logto << damage.to;
-            room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
+            room->sendLog("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
             damage.damage = damage.damage + 1;
             data = QVariant::fromValue(damage);
         }
@@ -573,8 +574,8 @@ void HunpoCard::use(Room *room, const CardUseStruct &card_use) const
     ServerPlayer *source = card_use.from;
 
     room->setPlayerProperty(source, "maxhp", source->getMaxHp() + 1);
-    room->touhouLogmessage("#GainMaxHp", source, QString::number(1));
-    room->touhouLogmessage("#GetHp", source, QString::number(source->getHp()), QList<ServerPlayer *>(), QString::number(source->getMaxHp()));
+    room->sendLog("#GainMaxHp", source, QString::number(1));
+    room->sendLog("#GetHp", source, QString::number(source->getHp()), QList<ServerPlayer *>(), QString::number(source->getMaxHp()));
 }
 
 class Hunpo : public OneCardViewAsSkill
@@ -616,7 +617,7 @@ public:
             return d;
 
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p != damage.from && (p->inMyAttackRange(damage.to) || p == damage.to))
+            if (p != damage.from && (p->inMyAttackRange(damage.to) || p == damage.to) && !p->isRemoved())
                 d << SkillInvokeDetail(this, p, p, nullptr, false, damage.from);
         }
         return d;
@@ -780,7 +781,7 @@ public:
             data = QVariant::fromValue(use);
             target->drawCards(1);
 
-            room->touhouLogmessage("#liexi_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << target);
+            room->sendLog("#liexi_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << target);
         } else {
             use.nullified_list << "_ALL_TARGETS";
             data = QVariant::fromValue(use);
@@ -895,7 +896,7 @@ public:
                 data = QVariant::fromValue(use);
                 invoke->targets.first()->drawCards(1);
 
-                room->touhouLogmessage("#mengwei_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << invoke->targets.first());
+                room->sendLog("#mengwei_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << invoke->targets.first());
             }
         } else if (e == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -1071,7 +1072,7 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        //clear histroy
+        //clear history
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.m_isLastHandcard && use.m_addHistory && use.from->getMark("xiubu") > 0) {
@@ -1094,7 +1095,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr) && card->getHandlingMethod() == Card::MethodUse) {
+            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr)) {
                 if (player->hasFlag("xiubu_first"))
                     player->setFlags("xiubu_second");
                 else
@@ -1124,7 +1125,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr) && card->getHandlingMethod() == Card::MethodUse) {
+            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr)) {
                 if (player->hasFlag("xiubu_first") && !player->hasFlag("xiubu_second")) {
                     QList<SkillInvokeDetail> d;
                     foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -1188,7 +1189,7 @@ public:
         if (subcards.length() != 1 || player->getHandcardNum() != 1)
             return false;
 
-        return subcards.contains(player->getHandcards().first()->getEffectiveId());
+        return subcards.contains(player->getHandcards().constFirst()->getEffectiveId());
     }
 
     int getDistanceLimit(const Player *from, const Card *card) const override
@@ -1447,27 +1448,26 @@ public:
     }
 };
 
-class Youle : public TriggerSkill
+class YouleRecord : public TriggerSkill
 {
 public:
-    Youle()
-        : TriggerSkill("youle")
+    YouleRecord()
+        : TriggerSkill("#youle-record")
     {
-        events << EventPhaseChanging << Damage << Damaged;
+        events = {DamageDone, EventPhaseChanging};
+        global = true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        if (triggerEvent == Damage) {
+        if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
             if ((damage.from != nullptr) && damage.from->isAlive()) {
                 if (!damage.from->hasFlag("youle"))
                     damage.from->setFlags("youle");
+                if (!damage.from->hasFlag("youle2"))
+                    damage.from->setFlags("youle2");
             }
-        }
-
-        else if (triggerEvent == Damaged) {
-            DamageStruct damage = data.value<DamageStruct>();
             if (damage.to->isAlive()) {
                 if (!damage.to->hasFlag("youle"))
                     damage.to->setFlags("youle");
@@ -1478,23 +1478,45 @@ public:
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("youle"))
                         p->setFlags("-youle");
+                    if (p->hasFlag("youle2"))
+                        p->setFlags("-youle2");
                 }
             }
         }
     }
+};
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+class Youle : public TriggerSkill
+{
+public:
+    Youle()
+        : TriggerSkill("youle")
     {
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive && !change.player->tag.value("touhou-extra", false).toBool()) {
-                QList<SkillInvokeDetail> d;
-                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                    if (p->hasFlag("youle"))
-                        d << SkillInvokeDetail(this, p, p);
-                }
-                return d;
+        events << EventPhaseChanging;
+    }
+
+    QList<ServerPlayer *> findTargets(const Room *room, ServerPlayer *source) const
+    {
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            if (!p->isAllNude() && !p->hasFlag("youle2") && (p->isKongcheng() || source->canDiscard(p, "hs")) && (p->getEquips().isEmpty() || source->canDiscard(p, "e"))
+                && (p->getJudgingArea().isEmpty() || source->canDiscard(p, "j")))
+                targets << p;
+        }
+
+        return targets;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::NotActive && !change.player->tag.value("touhou-extra", false).toBool()) {
+            QList<SkillInvokeDetail> d;
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (p->hasFlag("youle") && p->isAlive() && !findTargets(room, p).isEmpty())
+                    d << SkillInvokeDetail(this, p, p);
             }
+            return d;
         }
 
         return QList<SkillInvokeDetail>();
@@ -1502,42 +1524,53 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            int num = 0;
-            if (invoke->invoker->canDiscard(p, "hs"))
-                num++;
-            if (invoke->invoker->canDiscard(p, "j"))
-                num++;
-            if (invoke->invoker->canDiscard(p, "e"))
-                num++;
-
-            if (num > 1)
-                targets << p;
-        }
-        if (targets.isEmpty())
-            return false;
+        QList<ServerPlayer *> targets = findTargets(room, invoke->invoker);
 
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "youle", "@youle", true, true);
         if (target != nullptr) {
-            DummyCard *dummy = new DummyCard;
-            QString flag = "hsej";
-            for (int i = 0; i < 2; i += 1) {
-                int card_id = room->askForCardChosen(invoke->invoker, target, flag, objectName(), false, Card::MethodDiscard);
-                if (room->getCardPlace(card_id) == Player::PlaceHand)
-                    flag.remove("hs");
-                if (room->getCardPlace(card_id) == Player::PlaceEquip)
-                    flag.remove("e");
-                if (room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
-                    flag.remove("j");
+            DummyCard d;
 
-                dummy->addSubcard(card_id);
+            bool h = false;
+            bool e = false;
+            bool j = false;
+
+            if (!target->isKongcheng())
+                h = true;
+            if (!target->getEquips().isEmpty())
+                e = true;
+            if (!target->getJudgingArea().isEmpty())
+                j = true;
+
+            int aidelay = Config.AIDelay;
+            Config.AIDelay = 0;
+            while (h || e || j) {
+                QString flag;
+                if (h)
+                    flag.append("hs");
+                if (e)
+                    flag.append("e");
+                if (j)
+                    flag.append("j");
 
                 if (target->getCards(flag).length() <= 0)
                     break;
+
+                int card_id = room->askForCardChosen(invoke->invoker, target, flag, objectName(), false, Card::MethodDiscard);
+                if (room->getCardPlace(card_id) == Player::PlaceHand)
+                    h = false;
+                if (room->getCardPlace(card_id) == Player::PlaceEquip)
+                    e = false;
+                if (room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
+                    j = false;
+
+                d.addSubcard(card_id);
             }
-            room->throwCard(dummy, target, invoke->invoker);
-            delete dummy;
+            Config.AIDelay = aidelay;
+
+            if (d.subcardsLength() == 1 && target != invoke->invoker)
+                invoke->tag["youle-punish"] = true;
+
+            room->throwCard(&d, target, invoke->invoker);
 
             invoke->targets << target;
             return true;
@@ -1559,6 +1592,10 @@ public:
 
             room->sendLog(log);
         }
+
+        if (invoke->tag.contains("youle-punish") && invoke->tag["youle-punish"].toBool())
+            room->loseHp(invoke->invoker);
+
         return false;
     }
 };
@@ -1606,95 +1643,66 @@ public:
     Yaoli()
         : TriggerSkill("yaoli")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << EventPhaseEnd;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << EventPhaseChanging;
         // show_type = "static";
         view_as_skill = new YaoliVS("yaoli", false);
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &) const override
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
     {
-        if (e == EventPhaseEnd)
-            return;
-
-        static QString attachName = "yaoliattach";
-        QList<ServerPlayer *> sklts;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->hasSkill(this, true) && p->hasShownSkill(this))
-                sklts << p;
-        }
-
-        if (sklts.length() > 0) {
+        if (e != EventPhaseChanging) {
+            static QString attachName = "yaoli_attach";
+            QList<ServerPlayer *> sklts;
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill(this)) {
-                    if (p->hasSkill(attachName))
+                if (p->hasSkill(this, true) && p->hasShownSkill(this))
+                    sklts << p;
+            }
+
+            if (sklts.length() > 1) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (!p->hasSkill(attachName, true))
+                        room->attachSkillToPlayer(p, attachName);
+                }
+            } else if (sklts.length() == 1) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(this, true) && p->hasSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
-                } else if (!p->hasSkill(attachName))
-                    room->attachSkillToPlayer(p, attachName);
+                    else if (!p->hasSkill(this, true) && !p->hasSkill(attachName, true))
+                        room->attachSkillToPlayer(p, attachName);
+                }
+            } else { // the case that sklts is empty
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(attachName, true))
+                        room->detachSkillFromPlayer(p, attachName, true);
+                }
             }
-        } else { // the case that sklts is empty
-            foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill(attachName, true))
-                    room->detachSkillFromPlayer(p, attachName, true);
-            }
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
-    {
-        QList<SkillInvokeDetail> r;
-
-        if (triggerEvent != EventPhaseEnd)
-            return r;
-
-        ServerPlayer *p = data.value<ServerPlayer *>();
-        if (p->getPhase() == Player::Play && p->hasFlag("yaolieffected")) {
-            // Tag "yaolieffect0" is for no actual effect
-            for (int i = 0; i <= 3; ++i) {
-                QString tagName = "yaolieffect" + QString::number(i);
-                if (p->tag.contains(tagName)) {
-                    QVariantList owners = p->tag[tagName].toList();
-                    foreach (const QVariant &_owner, owners) {
-                        ServerPlayer *owner = _owner.value<ServerPlayer *>();
-                        SkillInvokeDetail d(this, owner, p, nullptr, true, nullptr, false);
-                        d.tag["yaolieffect"] = i;
-                        r << d;
+        } else {
+            PhaseChangeStruct s = data.value<PhaseChangeStruct>();
+            ServerPlayer *p = s.player;
+            if (s.from == Player::Play && p->hasFlag("yaolieffected")) {
+                // Tag "yaolieffect0" is for no actual effect
+                for (int i = 0; i <= 3; ++i) {
+                    QString tagName = "yaolieffect" + QString::number(i);
+                    if (p->tag.contains(tagName)) {
+                        if (i != 0) {
+                            LogMessage l;
+                            l.type = "#yaolifinish";
+                            l.from = p;
+                            l.arg = el.at(i);
+                            room->sendLog(l);
+                        }
+                        QStringList owners = p->tag[tagName].toStringList();
+                        foreach (const QString &ownerV, owners) {
+                            ServerPlayer *owner = room->findPlayerByObjectName(ownerV, true);
+                            room->setPlayerFlag(owner, "-yaoliselected");
+                        }
+                        p->setFlags("-" + tagName);
+                        p->setMark(tagName, 0);
+                        p->tag.remove(tagName);
                     }
                 }
             }
         }
-
-        return r;
-    }
-
-    bool effect(TriggerEvent, Room *r, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        ServerPlayer *p = data.value<ServerPlayer *>();
-        int i = invoke->tag["yaolieffect"].toInt();
-
-        if (i != 0) {
-            LogMessage l;
-            l.type = "#yaolifinish";
-            l.from = p;
-            l.arg = el.at(i);
-            r->sendLog(l);
-        }
-
-        QString tagName = "yaolieffect" + QString::number(i);
-        QVariantList owners = p->tag[tagName].toList();
-        QVariantList ownersNew;
-        foreach (const QVariant &_owner, owners) {
-            if (_owner.value<ServerPlayer *>() != invoke->owner)
-                ownersNew << _owner;
-        }
-        if (ownersNew.isEmpty())
-            p->tag.remove(tagName);
-        else
-            p->tag[tagName] = ownersNew;
-
-        r->setPlayerFlag(invoke->owner, "-yaoliselected");
-        p->setFlags("-" + tagName);
-
-        return false;
     }
 };
 
@@ -1703,7 +1711,7 @@ QStringList Yaoli::el {"", "BasicCard", "ndtrick", "yaoliothercard"};
 YaoliCard::YaoliCard()
 {
     will_throw = true;
-    m_skillName = "yaoli";
+    m_skillName = "yaoli_attach";
 }
 
 bool YaoliCard::targetFixed(const Player *Self) const
@@ -1714,7 +1722,7 @@ bool YaoliCard::targetFixed(const Player *Self) const
     sib << Self;
 
     foreach (const Player *p, sib) {
-        if (p->hasSkill("yaoli") && !p->hasFlag("yaoliselected")) {
+        if (p->hasSkill("yaoli")) {
             if (flag)
                 return false;
             flag = true;
@@ -1747,15 +1755,16 @@ void YaoliCard::onUse(Room *room, const CardUseStruct &_use) const
 void YaoliCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.from->getRoom();
+    QVariant data = QVariant::fromValue(effect);
     room->setPlayerFlag(effect.to, "yaoliselected");
     effect.from->setFlags("yaolieffected");
 
     int yaoliTagTypeId = 0;
 
-    if (effect.to->askForSkillInvoke("yaoli-draw", QVariant::fromValue(effect), "hahahahahaha:" + effect.from->objectName())) {
+    if (effect.to->askForSkillInvoke("yaoli-draw", data, "hahahahahaha:" + effect.from->objectName())) {
         effect.to->drawCards(1, "yaoli");
         if (effect.to->canDiscard(effect.to, "hes")) {
-            const Card *discard = room->askForCard(effect.to, "..!", "@yaoli-discard", QVariant::fromValue<const Card *>(this));
+            const Card *discard = room->askForCard(effect.to, "..!", "@yaoli-discard", data);
             if (discard == nullptr) {
                 QList<const Card *> allcards = effect.to->getCards("hes");
                 QList<const Card *> cards;
@@ -1792,11 +1801,14 @@ void YaoliCard::onEffect(const CardEffectStruct &effect) const
 
     QString tagName = "yaolieffect" + QString::number(yaoliTagTypeId);
 
-    QVariantList yaoliTagList;
+    QStringList yaoliTagList;
     if (effect.from->tag.contains(tagName))
-        yaoliTagList = effect.from->tag.value(tagName).toList();
+        yaoliTagList = effect.from->tag.value(tagName).toStringList();
 
-    effect.from->tag[tagName] = (yaoliTagList << QVariant::fromValue(effect.to));
+    // DO NOT CALL player:getTag("yaolieffect*") in AI! It will create tag and confuse the skill judgement
+    effect.from->tag[tagName] = (yaoliTagList << effect.to->objectName());
+    // Instead use the following mark
+    effect.from->setMark(tagName, 1);
 
     // reset counter!!!
     effect.from->setFlags("-" + tagName);
@@ -1806,9 +1818,9 @@ class YaoliBasic : public TriggerSkill
 {
 public:
     YaoliBasic()
-        : TriggerSkill("yaolibasic")
+        : TriggerSkill("#yaolibasic")
     {
-        events << CardUsed;
+        events << TargetSpecifying;
         global = true;
     }
 
@@ -1847,9 +1859,9 @@ class YaoliTrick : public TriggerSkill
 {
 public:
     YaoliTrick()
-        : TriggerSkill("yaolitrick")
+        : TriggerSkill("#yaolitrick")
     {
-        events << CardUsed;
+        events << TargetSpecifying;
         global = true;
     }
 
@@ -1898,17 +1910,19 @@ public:
             return false;
         }
 
+        // do not confuse it with "yaolieffect2"
+        use.from->tag["yaolitrick"] = data;
         ServerPlayer *target = room->askForPlayerChosen(use.from, canAdd + use.to, "yaolitrick", "@yaolitrick:::" + use.card->objectName(), false, true);
         if (target == nullptr)
-            target = (canAdd + use.to).first();
+            target = (canAdd + use.to).constFirst();
 
         if (canAdd.contains(target)) {
             LogMessage l;
-            l.type = "$Kuangwu";
+            l.type = "#Kuangwu";
             l.from = use.from;
             l.to << target;
             l.arg = "yaolitrick";
-            l.card_str = use.card->toString();
+            l.arg2 = use.card->objectName();
             room->sendLog(l);
             use.to.append(target);
         } else if (use.to.contains(target)) {
@@ -1946,13 +1960,31 @@ public:
     }
 };
 
+class YaoliTrickAiHelper : public TargetModSkill
+{
+public:
+    YaoliTrickAiHelper()
+        : TargetModSkill("#yaoli-aihelper")
+    {
+        pattern = ".";
+    }
+
+    int getExtraTargetNum(const Player *, const Card *card) const override
+    {
+        if (card->hasFlag("yaoli_Fsu0413AiHelperDoNotRemoveThisSkillIsToComplicatedOhMyGod"))
+            return 1;
+
+        return 0;
+    }
+};
+
 class YaoliEquip : public TriggerSkill
 {
 public:
     YaoliEquip()
-        : TriggerSkill("yaoliequip")
+        : TriggerSkill("#yaoliequip")
     {
-        events << CardUsed;
+        events << TargetSpecifying;
         global = true;
     }
 
@@ -2052,16 +2084,26 @@ THNDJPackage::THNDJPackage()
 
     General *tenshi_ndj = new General(this, "tenshi_ndj", "zhan", 4);
     tenshi_ndj->addSkill(new Youle);
+    tenshi_ndj->addSkill(new YouleRecord);
+    related_skills.insertMulti("youle", "#youle-record");
 
     General *eirin = new General(this, "eirin_ndj", "yyc");
     eirin->addSkill(new Yaoli);
     eirin->addSkill(new YaoliTrickDistance);
+    eirin->addSkill(new YaoliTrickAiHelper);
+    eirin->addSkill(new YaoliBasic);
+    eirin->addSkill(new YaoliTrick);
+    eirin->addSkill(new YaoliEquip);
     related_skills.insertMulti("yaoli", "#yaoli-dist");
+    related_skills.insertMulti("yaoli", "#yaoli-aihelper");
+    related_skills.insertMulti("yaoli", "#yaolibasic");
+    related_skills.insertMulti("yaoli", "#yaoliequip");
+    related_skills.insertMulti("yaoli", "#yaolitrick");
 
     addMetaObject<HunpoCard>();
     addMetaObject<YaoliCard>();
 
-    skills << new YaoliVS("yaoliattach", true) << new YaoliBasic << new YaoliEquip << new YaoliTrick;
+    skills << new YaoliVS("yaoli_attach", true);
 }
 
 ADD_PACKAGE(THNDJ)

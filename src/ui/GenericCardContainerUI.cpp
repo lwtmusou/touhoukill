@@ -241,7 +241,7 @@ void PlayerCardContainer::updateAvatar()
                                  G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK), kingdom), _getAvatarParent());
             }
             //@todo
-            //we want this mask to start at zero piont of logbox width,
+            //we want this mask to start at zero point of logbox width,
             //and keep the height to equal with the diff between middleFrame and rightFrame
             if (ClientInstance->serverInfo()->isMultiGeneralEnabled())
                 _paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardPrimaryKingdomMaskArea,
@@ -441,17 +441,19 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
                 qWarning("PlayerCardContainer::updatePile: button == NULL");
         }
 
-        QString text = Sanguosha->translate(pile_name);
+        if (button != nullptr) {
+            QString text = Sanguosha->translate(pile_name);
         if (!pile.empty())
             text.append(QStringLiteral("(%1)").arg(pile.size()));
-        button->setText(text);
+            button->setText(text);
 
-        disconnect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
-        connect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
+            disconnect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
+            connect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
 
         if (pile_name != QStringLiteral("huashencard")) {
-            disconnect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
-            connect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
+                disconnect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
+                connect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
+            }
         }
     }
     //set treasure pile at first

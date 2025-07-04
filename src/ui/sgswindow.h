@@ -1,5 +1,5 @@
-#ifndef _WINDOW_H
-#define _WINDOW_H
+#ifndef SGSWINDOW_H_
+#define SGSWINDOW_H_
 
 #include "button.h"
 

@@ -54,20 +54,12 @@ endif()
 # set(QT_NO_CREATE_VERSIONLESS_FUNCTIONS 1)
 # set(QT_NO_CREATE_VERSIONLESS_TARGETS 1)
 
-set(QSANGUOSHA_QT5_COMPONENTS Core Widgets Network LinguistTools)
-if (WIN32)
-    set(QSANGUOSHA_QT5_COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} WinExtras)
-endif()
 set(QSANGUOSHA_QT6_COMPONENTS Core Widgets Network LinguistTools)
 
 find_package(Qt6 COMPONENTS ${QSANGUOSHA_QT6_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt6.
-find_package(Qt5 COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt5.
 
-#find_package(Qt6 COMPONENTS ${QSANGUOSHA_QT6_COMPONENTS}  ) # Locate the position of Qt6.
-#find_package(Qt5 COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS}  ) # Locate the position of Qt5.
-
-if (NOT (Qt5_FOUND OR Qt6_FOUND))
-    message(FATAL_ERROR "at least one of Qt 5 and Qt 6 is needed")
+if (NOT Qt6_FOUND)
+    message(FATAL_ERROR "Qt 6 is needed")
 endif()
 
 if ( NOT ( DEFINED CACHE{QSANGUOSHA_AUDIO_SUPPORT} ) )
@@ -76,13 +68,13 @@ endif()
 option(QSANGUOSHA_AUDIO_SUPPORT "Build QSanguosha with Audio support")
 
 if (QSANGUOSHA_AUDIO_SUPPORT STREQUAL "CHECK")
-    if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
+    if (Qt6Multimedia_FOUND)
         set(QSANGUOSHA_AUDIO_SUPPORT "ON")
     else()
         set(QSANGUOSHA_AUDIO_SUPPORT "OFF")
     endif()
 else()
-    if ( (QSANGUOSHA_AUDIO_SUPPORT) AND ( NOT (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND) ) )
+    if ( (QSANGUOSHA_AUDIO_SUPPORT) AND ( NOT Qt6Multimedia_FOUND ) )
         message(FATAL_ERROR "Audio support can't be enabled due to Qt multimedia not found")
     endif()
 endif()

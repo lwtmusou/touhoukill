@@ -67,6 +67,9 @@ public:
     QString HegemonyHalfHpReward;
     QString HegemonyCareeristKillReward;
 
+    int RoleRenegadeWinRebelNum;
+    int RoleRenegadeWinLoyalistNum;
+
     // client side
     QString HostAddress;
     QString UserName;

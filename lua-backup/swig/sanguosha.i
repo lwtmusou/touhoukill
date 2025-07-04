@@ -629,6 +629,8 @@ struct CardUseStruct
     void parse(const char *str, Room *room);
     bool tryParse(const QVariant &, Room *room);
 
+    QString toString() const;
+
     const Card *card;
     ServerPlayer *from;
     QList<ServerPlayer *> to;
@@ -1203,6 +1205,9 @@ public:
     virtual QString toString(bool hidden = false) const;
 
     virtual QString getEffectName() const;
+
+    QString showSkill() const;
+    void setShowSkill(const char *skill_name);
 };
 
 % extend Card {EquipCard * toEquipCard() {return qobject_cast<EquipCard *>($self);
@@ -1506,6 +1511,7 @@ public:
     void judge(JudgeStruct &judge_struct);
     void sendJudgeResult(const JudgeStruct *judge);
     QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
+    void returnToDrawPile(const QList<int> &cards, bool bottom = false);
     ServerPlayer *getLord(const char *kingdom = "wei", bool include_death = false) const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, const char *skillName = "");
     int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), const char *skill_name = "gongxin");
@@ -1635,7 +1641,7 @@ public:
     const Card *askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt, bool distance_limit = true, bool disable_extra = false,
                                  bool addHistory = false);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
-    const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
+    const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requester, const char *reason);
     int askForRende(ServerPlayer *liubei, QList<int> &cards, const char *skill_name = NULL, bool visible = false, bool optional = true, int max_num = -1,
                     QList<ServerPlayer *> players = QList<ServerPlayer *>(), CardMoveReason reason = CardMoveReason(), const char *prompt = NULL, bool notify_skill = false);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards, const char *skill_name = NULL, bool is_preview = false, bool visible = false, bool optional = true, int max_num = -1,

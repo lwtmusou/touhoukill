@@ -3,6 +3,17 @@
 
 #include "card.h"
 #include "package.h"
+#include "skill.h"
+
+class Ruizhi : public TriggerSkill
+{
+public:
+    explicit Ruizhi(const QString &name = "ruizhi");
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override;
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override;
+};
 
 class MiyaoCard : public SkillCard
 {
@@ -22,8 +33,7 @@ class KuangzaoCard : public SkillCard
 public:
     Q_INVOKABLE KuangzaoCard();
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class BuxianCard : public SkillCard
@@ -35,7 +45,6 @@ public:
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
@@ -82,20 +91,9 @@ class ChuangshiCard : public SkillCard
 public:
     Q_INVOKABLE ChuangshiCard();
 
-    //virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;
-};
-
-class HuweiCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE HuweiCard();
-
-    const Card *validate(CardUseStruct &card_use) const override;
 };
 
 class JinxiCard : public SkillCard

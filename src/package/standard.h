@@ -199,6 +199,7 @@ class ExNihilo : public SingleTargetTrick
 public:
     Q_INVOKABLE ExNihilo(Card::Suit suit, int number);
 
+    bool targetFixed(const Player *Self) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
     bool isAvailable(const Player *player) const override;
@@ -219,7 +220,7 @@ class DelayedTrick : public TrickCard
     Q_OBJECT
 
 public:
-    DelayedTrick(Suit suit, int number, bool movable = false, bool returnable = false);
+    DelayedTrick(Suit suit, int number, bool movable = false);
     void onNullified(ServerPlayer *target) const override;
 
     void onUse(Room *room, const CardUseStruct &card_use) const override;
@@ -234,7 +235,6 @@ protected:
 
 private:
     bool movable;
-    bool returnable;
 };
 
 class Indulgence : public DelayedTrick
@@ -456,7 +456,9 @@ public:
     QString getSubtype() const override;
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, const CardUseStruct &card_use) const override;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+    //void use(Room *room, const CardUseStruct &card_use) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
 };
 
@@ -467,11 +469,8 @@ class Drowning : public AOE
 public:
     Q_INVOKABLE Drowning(Card::Suit suit, int number);
 
-    //virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     bool isCancelable(const CardEffectStruct &effect) const override;
     void onEffect(const CardEffectStruct &effect) const override;
-    // virtual bool isAvailable(const Player *player) const;
-    //virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
 class KnownBoth : public TrickCard

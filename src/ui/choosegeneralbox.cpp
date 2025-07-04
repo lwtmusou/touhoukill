@@ -532,6 +532,7 @@ void ChooseGeneralBox::_initializeItems()
                 party++;
             }
         }
+        Q_UNUSED(party);
         GeneralCardItem *item = items.at(index);
 
         // all enable

@@ -606,7 +606,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             log_box->appendLog(type, player->objectName(), QStringList(), QString(), newHeroName, arg2);
         }
 
-        //change bgm and backgroud
+        //change bgm and background
         if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr) && player->isLord()) {
             ClientInstance->lord_name = newHeroName;
             setLordBGM(newHeroName);
@@ -857,7 +857,9 @@ ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard)
     connect(uniform, &QSanButton::clicked, replayer, &Replayer::uniform);
     connect(slow_down, &QSanButton::clicked, replayer, &Replayer::slowDown);
     connect(speed_up, &QSanButton::clicked, replayer, &Replayer::speedUp);
+#if 0 // why do not compile?
     connect(replayer, &Replayer::elasped, this, &ReplayerControlBar::setTime);
+#endif
     connect(replayer, &Replayer::speed_changed, this, &ReplayerControlBar::setSpeed);
 
     speed = replayer->getSpeed();
@@ -1125,16 +1127,36 @@ void RoomScene::updateTable()
     // ------------------------
     // region 5 = 0 + 3, region 6 = 2 + 4, region 7 = 0 + 1 + 2
 
-    static int regularSeatIndex[][9]
-        = {{1}, {5, 6}, {5, 1, 6}, {3, 1, 1, 4}, {3, 1, 1, 1, 4}, {5, 5, 1, 1, 6, 6}, {5, 5, 1, 1, 1, 6, 6}, {3, 3, 7, 7, 7, 7, 4, 4}, {3, 3, 7, 7, 7, 7, 7, 4, 4}};
-    static int hulaoSeatIndex[][3] = {{1, 1, 1}, // if self is shenlvbu
-                                      {3, 3, 1},
-                                      {3, 1, 4},
-                                      {1, 4, 4}};
+    static int regularSeatIndex[][9] = {
+        {1}, // 02
+        {5, 6}, // 03
+        {5, 1, 6}, // 04
+        {3, 1, 1, 4}, // 05
+        {3, 1, 1, 1, 4}, // 06
+        {5, 5, 1, 1, 6, 6}, // 07
+        {5, 5, 1, 1, 1, 6, 6}, // 08
+        {3, 3, 7, 7, 7, 7, 4, 4}, // 09
+        {3, 3, 7, 7, 7, 7, 7, 4, 4}, // 10
+    };
+    static int hulaoSeatIndex[][3] = {
+        {1, 1, 1}, // if self is shenlvbu
+        {3, 3, 1},
+        {3, 1, 4},
+        {1, 4, 4},
+    };
     static int kof3v3SeatIndex[][5] = {
         {3, 1, 1, 1, 4}, // lord
         {1, 1, 1, 4, 4}, // rebel (left), same with loyalist (left)
-        {3, 3, 1, 1, 1} // loyalist (right), same with rebel (right)
+        {3, 3, 1, 1, 1}, // loyalist (right), same with rebel (right)
+    };
+    static int pvlSeatIndex[][2] = {
+        {1, 1}, // lord
+        {3, 1}, // p1
+        {1, 4}, // p2
+    };
+    static int happy2v2SeatIndex[][3] = {
+        {1, 1, 4},
+        {3, 1, 1},
     };
 
     double hGap = _m_roomLayout->m_photoHDistance;
@@ -1192,13 +1214,18 @@ void RoomScene::updateTable()
     } else if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_3v3") && game_started) {
         seatToRegion = kof3v3SeatIndex[(Self->seat() - 1) % 3];
         pkMode = true;
+    } else if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("03_1v2") && game_started) {
+        seatToRegion = pvlSeatIndex[Self->seat() - 1];
+        pkMode = true;
+    } else if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("04_2v2") && game_started) {
+        seatToRegion = happy2v2SeatIndex[(Self->seat() - 1) % 2];
+        pkMode = true;
     }
     QList<Photo *> photosInRegion[C_NUM_REGIONS];
-    // TODO: out of bounds when regionIndex == 9
     int n = photos.length();
     for (int i = 0; i < n; i++) {
         int regionIndex = seatToRegion[i];
-        if (regionIndex == 4 || regionIndex == 6 || regionIndex == 9)
+        if (regionIndex == 4 || regionIndex == 6)
             photosInRegion[regionIndex].append(photos[i]);
         else
             photosInRegion[regionIndex].prepend(photos[i]);
@@ -1302,7 +1329,7 @@ void RoomScene::arrangeSeats(const QList<const Player *> &seats)
         setChatBoxVisible(false);
 }
 
-// @todo: The following 3 fuctions are for drag & use feature. Currently they are very buggy and
+// @todo: The following 3 functions are for drag & use feature. Currently they are very buggy and
 // cause a lot of major problems. We should look into this later.
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -1550,7 +1577,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_O:
         dashboard->selectCard(QStringLiteral("analeptic"));
         break;
-
     case Qt::Key_E:
         dashboard->selectCard(QStringLiteral("equip"));
         break;
@@ -1563,7 +1589,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_H:
         dashboard->selectCard(QStringLiteral("defensive_horse+offensive_horse"));
         break;
-
     case Qt::Key_T:
         dashboard->selectCard(QStringLiteral("trick"));
         break;
@@ -1591,7 +1616,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_B:
         dashboard->selectCard(QStringLiteral("supply_shortage"));
         break;
-
     case Qt::Key_Left:
         dashboard->selectCard(QStringLiteral("."), false, control_is_down);
         break;
@@ -1618,7 +1642,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         else if (discard_button->isEnabled())
             doDiscardButton();
     }
-
     case Qt::Key_0:
     case Qt::Key_1:
     case Qt::Key_2:
@@ -1639,7 +1662,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         selectTarget(order, control_is_down);
         break;
     }
-
     case Qt::Key_D: {
         if (Self == nullptr)
             return;
@@ -2194,110 +2216,110 @@ void RoomScene::keepGetCardLog(const LegacyCardsMoveStruct &move)
         && move.from_place != QSanguosha::PlaceDrawPile) {
         foreach (QString flag, move.to->flagList())
             if (flag.endsWith(QStringLiteral("_InTempMoving")))
-                return;
-    }
 
-    // private pile
-    if (move.to_place == QSanguosha::PlaceSpecial && !move.to_pile_name.isNull() && !move.to_pile_name.startsWith(QLatin1Char('#'))) {
-        QList<int> open_ids = move.card_ids;
-        open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
-        int hidden_num = move.card_ids.length() - open_ids.length();
-        if (hidden_num == move.card_ids.length())
-            log_box->appendLog(QStringLiteral("#RemoveFromGame"), QString(), QStringList(), QString(), move.to_pile_name, QString::number(hidden_num));
-        else if (hidden_num == 0)
-            log_box->appendLog(QStringLiteral("$AddToPile"), QString(), QStringList(), IntList2StringList(open_ids).join(QStringLiteral("+")), move.to_pile_name);
-        else
-            log_box->appendLog(QStringLiteral("$RemoveNCardsFromGame"), QString(), QStringList(), IntList2StringList(open_ids).join(QStringLiteral("+")), move.to_pile_name,
-                               QString::number(hidden_num));
-    }
-    if (move.from_place == QSanguosha::PlaceSpecial && (move.to != nullptr) && move.reason.m_reason == QSanguosha::MoveReasonExchangeFromPile) {
-        bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
-        if (!hidden)
-            log_box->appendLog(QStringLiteral("$GotCardFromPile"), move.to->objectName(), QStringList(), IntList2StringList(move.card_ids).join(QStringLiteral("+")),
-                               move.from_pile_name);
-        else
-            log_box->appendLog(QStringLiteral("#GotNCardFromPile"), move.to->objectName(), QStringList(), QString(), move.from_pile_name, QString::number(move.card_ids.length()));
-    }
-    //DrawNCards
-    if (move.from_place == QSanguosha::PlaceDrawPile && move.to_place == QSanguosha::PlaceHand) {
-        QString to_general = move.to->objectName();
-        bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
-        if (!hidden)
-            log_box->appendLog(QStringLiteral("$DrawCards"), to_general, QStringList(), IntList2StringList(move.card_ids).join(QStringLiteral("+")),
-                               QString::number(move.card_ids.length()));
-        else
-            log_box->appendLog(QStringLiteral("#DrawNCards"), to_general, QStringList(), QString(), QString::number(move.card_ids.length()));
-    }
-    if ((move.from_place == QSanguosha::PlaceTable || move.from_place == QSanguosha::PlaceJudge) && move.to_place == QSanguosha::PlaceHand
-        && move.reason.m_reason != QSanguosha::MoveReasonPreview) {
-        QString to_general = move.to->objectName();
-        QList<int> ids = move.card_ids;
-        ids.removeAll(Card::S_UNKNOWN_CARD_ID);
-        if (!ids.isEmpty()) {
-            QString card_str = IntList2StringList(ids).join(QStringLiteral("+"));
-            log_box->appendLog(QStringLiteral("$GotCardBack"), to_general, QStringList(), card_str);
-        }
-    }
-    if (move.from_place == QSanguosha::PlaceDiscardPile && move.to_place == QSanguosha::PlaceHand) {
-        QString to_general = move.to->objectName();
-        QString card_str = IntList2StringList(move.card_ids).join(QStringLiteral("+"));
-        log_box->appendLog(QStringLiteral("$RecycleCard"), to_general, QStringList(), card_str);
-    }
-    if ((move.from != nullptr) && move.from_place != QSanguosha::PlaceHand && move.from_place != QSanguosha::PlaceJudge && move.to_place != QSanguosha::PlaceDelayedTrick
-        && move.to_place != QSanguosha::PlaceJudge && (move.to != nullptr) && move.from != move.to) {
-        QString from_general = move.from->objectName();
-        QStringList tos;
-        tos << move.to->objectName();
-        QList<int> open_ids = move.card_ids;
-        open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
-        int hidden_num = move.card_ids.length() - open_ids.length();
-        if (hidden_num == move.card_ids.length())
-            log_box->appendLog(QStringLiteral("#MoveNCards"), from_general, tos, QString(), QString::number(hidden_num));
-        else if (hidden_num == 0)
-            log_box->appendLog(QStringLiteral("$MoveCard"), from_general, tos, IntList2StringList(open_ids).join(QStringLiteral("+")));
-        else
-            log_box->appendLog(QStringLiteral("$MoveNCards"), from_general, tos, IntList2StringList(open_ids).join(QStringLiteral("+")), QString::number(hidden_num));
-    }
-    if (move.from_place == QSanguosha::PlaceHand && move.to_place == QSanguosha::PlaceHand) {
-        QString from_general = move.from->objectName();
-        QStringList tos;
-        tos << move.to->objectName();
-        QList<int> open_ids = move.card_ids;
-        open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
-        int hidden_num = move.card_ids.length() - open_ids.length();
-
-        if (hidden_num == move.card_ids.length())
-            log_box->appendLog(QStringLiteral("#MoveNCards"), from_general, tos, QString(), QString::number(hidden_num));
-        else if (hidden_num == 0)
-            log_box->appendLog(QStringLiteral("$MoveCard"), from_general, tos, IntList2StringList(open_ids).join(QStringLiteral("+")));
-        else
-            log_box->appendLog(QStringLiteral("$MoveNCards"), from_general, tos, IntList2StringList(open_ids).join(QStringLiteral("+")), QString::number(hidden_num));
-    }
-    if ((move.from != nullptr) && (move.to != nullptr)) {
-        // both src and dest are player
-        QString type;
-        if (move.to_place == QSanguosha::PlaceDelayedTrick) {
-            if (move.from_place == QSanguosha::PlaceDelayedTrick && move.from != move.to)
-                type = QStringLiteral("$LightningMove");
+                // private pile
+                if (move.to_place == QSanguosha::PlaceSpecial && !move.to_pile_name.isNull() && !move.to_pile_name.startsWith(QLatin1Char('#'))) {
+                    QList<int> open_ids = move.card_ids;
+                    open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
+                    int hidden_num = move.card_ids.length() - open_ids.length();
+                    if (hidden_num == move.card_ids.length())
+                        log_box->appendLog(QStringLiteral("#RemoveFromGame"), QString(), QStringList(), QString(), move.to_pile_name, QString::number(hidden_num));
+                    else if (hidden_num == 0)
+                        log_box->appendLog(QStringLiteral("$AddToPile"), QString(), QStringList(), IntList2StringList(open_ids).join(QStringLiteral("+")), move.to_pile_name);
+                    else
+                        log_box->appendLog(QStringLiteral("$RemoveNCardsFromGame"), QString(), QStringList(), IntList2StringList(open_ids).join(QStringLiteral("+")),
+                                           move.to_pile_name, QString::number(hidden_num));
+                }
+        if (move.from_place == QSanguosha::PlaceSpecial && (move.to != nullptr) && move.reason.m_reason == QSanguosha::MoveReasonExchangeFromPile) {
+            bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
+            if (!hidden)
+                log_box->appendLog(QStringLiteral("$GotCardFromPile"), move.to->objectName(), QStringList(), IntList2StringList(move.card_ids).join(QStringLiteral("+")),
+                                   move.from_pile_name);
             else
-                type = QStringLiteral("$PasteCard");
+                log_box->appendLog(QStringLiteral("#GotNCardFromPile"), move.to->objectName(), QStringList(), QString(), move.from_pile_name,
+                                   QString::number(move.card_ids.length()));
         }
-        if (!type.isNull()) {
+        //DrawNCards
+        if (move.from_place == QSanguosha::PlaceDrawPile && move.to_place == QSanguosha::PlaceHand) {
+            QString to_general = move.to->objectName();
+            bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
+            if (!hidden)
+                log_box->appendLog(QStringLiteral("$DrawCards"), to_general, QStringList(), IntList2StringList(move.card_ids).join(QStringLiteral("+")),
+                                   QString::number(move.card_ids.length()));
+            else
+                log_box->appendLog(QStringLiteral("#DrawNCards"), to_general, QStringList(), QString(), QString::number(move.card_ids.length()));
+        }
+        if ((move.from_place == QSanguosha::PlaceTable || move.from_place == QSanguosha::PlaceJudge) && move.to_place == QSanguosha::PlaceHand
+            && move.reason.m_reason != QSanguosha::MoveReasonPreview) {
+            QString to_general = move.to->objectName();
+            QList<int> ids = move.card_ids;
+            ids.removeAll(Card::S_UNKNOWN_CARD_ID);
+            if (!ids.isEmpty()) {
+                QString card_str = IntList2StringList(ids).join(QStringLiteral("+"));
+                log_box->appendLog(QStringLiteral("$GotCardBack"), to_general, QStringList(), card_str);
+            }
+        }
+        if (move.from_place == QSanguosha::PlaceDiscardPile && move.to_place == QSanguosha::PlaceHand) {
+            QString to_general = move.to->objectName();
+            QString card_str = IntList2StringList(move.card_ids).join(QStringLiteral("+"));
+            log_box->appendLog(QStringLiteral("$RecycleCard"), to_general, QStringList(), card_str);
+        }
+        if ((move.from != nullptr) && move.from_place != QSanguosha::PlaceHand && move.from_place != QSanguosha::PlaceJudge && move.to_place != QSanguosha::PlaceDelayedTrick
+            && move.to_place != QSanguosha::PlaceJudge && (move.to != nullptr) && move.from != move.to) {
             QString from_general = move.from->objectName();
             QStringList tos;
             tos << move.to->objectName();
-            log_box->appendLog(type, from_general, tos, QString::number(move.card_ids.first()));
+            QList<int> open_ids = move.card_ids;
+            open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
+            int hidden_num = move.card_ids.length() - open_ids.length();
+            if (hidden_num == move.card_ids.length())
+                log_box->appendLog(QStringLiteral("#MoveNCards"), from_general, tos, QString(), QString::number(hidden_num));
+            else if (hidden_num == 0)
+                log_box->appendLog(QStringLiteral("$MoveCard"), from_general, tos, IntList2StringList(open_ids).join(QStringLiteral("+")));
+            else
+                log_box->appendLog(QStringLiteral("$MoveNCards"), from_general, tos, IntList2StringList(open_ids).join(QStringLiteral("+")), QString::number(hidden_num));
         }
-    }
-    if ((move.from != nullptr) && (move.to != nullptr) && move.from_place == QSanguosha::PlaceEquip && move.to_place == QSanguosha::PlaceEquip) {
-        QString type = QStringLiteral("$Install");
-        QString to_general = move.to->objectName();
-        foreach (int card_id, move.card_ids)
-            log_box->appendLog(type, to_general, QStringList(), QString::number(card_id));
-    }
-    if (move.reason.m_reason == QSanguosha::MoveReasonTurnover) {
-        QString type = (move.reason.m_skillName == QStringLiteral("xunbao")) ? QStringLiteral("$TurnOverBottom") : QStringLiteral("$TurnOver");
-        log_box->appendLog(type, move.reason.m_playerId, QStringList(), IntList2StringList(move.card_ids).join(QStringLiteral("+")));
+        if (move.from_place == QSanguosha::PlaceHand && move.to_place == QSanguosha::PlaceHand) {
+            QString from_general = move.from->objectName();
+            QStringList tos;
+            tos << move.to->objectName();
+            QList<int> open_ids = move.card_ids;
+            open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
+            int hidden_num = move.card_ids.length() - open_ids.length();
+
+            if (hidden_num == move.card_ids.length())
+                log_box->appendLog(QStringLiteral("#MoveNCards"), from_general, tos, QString(), QString::number(hidden_num));
+            else if (hidden_num == 0)
+                log_box->appendLog(QStringLiteral("$MoveCard"), from_general, tos, IntList2StringList(open_ids).join(QStringLiteral("+")));
+            else
+                log_box->appendLog(QStringLiteral("$MoveNCards"), from_general, tos, IntList2StringList(open_ids).join(QStringLiteral("+")), QString::number(hidden_num));
+        }
+        if ((move.from != nullptr) && (move.to != nullptr)) {
+            // both src and dest are player
+            QString type;
+            if (move.to_place == QSanguosha::PlaceDelayedTrick) {
+                if (move.from_place == QSanguosha::PlaceDelayedTrick && move.from != move.to)
+                    type = QStringLiteral("$LightningMove");
+                else
+                    type = QStringLiteral("$PasteCard");
+            }
+            if (!type.isNull()) {
+                QString from_general = move.from->objectName();
+                QStringList tos;
+                tos << move.to->objectName();
+                log_box->appendLog(type, from_general, tos, QString::number(move.card_ids.first()));
+            }
+        }
+        if ((move.from != nullptr) && (move.to != nullptr) && move.from_place == QSanguosha::PlaceEquip && move.to_place == QSanguosha::PlaceEquip) {
+            QString type = QStringLiteral("$Install");
+            QString to_general = move.to->objectName();
+            foreach (int card_id, move.card_ids)
+                log_box->appendLog(type, to_general, QStringList(), QString::number(card_id));
+        }
+        if (move.reason.m_reason == QSanguosha::MoveReasonTurnover) {
+            QString type = (move.reason.m_skillName == QStringLiteral("xunbao")) ? QStringLiteral("$TurnOverBottom") : QStringLiteral("$TurnOver");
+            log_box->appendLog(type, move.reason.m_playerId, QStringList(), IntList2StringList(move.card_ids).join(QStringLiteral("+")));
+        }
     }
 }
 
@@ -2344,7 +2366,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
 
         const ViewAsSkillSelection *selection = btn->getViewAsSkill()->selections(Self);
         if (selection != nullptr && !selection->next.isEmpty() && (m_replayControl == nullptr)) {
-            connect(btn, (void(QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
+            connect(btn, (void (QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
                 // QMenu *menu = new QMenu(this);
                 setCurrentViewAsSkillSelectionChain(QStringList());
                 QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->name());
@@ -2738,7 +2760,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             }
         } else if (oldStatus == Client::AskForGuanxing || oldStatus == Client::AskForGongxin) {
             guanxing_box->clear();
-            //Do not clear AG of AmazingGrace after operating Guanxing. such case as Ruizhi and Fengshui
+        } else if (oldStatus == Client::AskForTriggerOrder) {
         } else if (oldStatus == Client::AskForTriggerOrder) {
             m_chooseTriggerOrderBox->clear();
         } else if (oldStatus == Client::AskForCardChosen) {
@@ -2782,8 +2804,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 QSanguosha::CardUseReason reason = QSanguosha::CardUseReasonResponse;
                 if (newStatus == Client::RespondingUse)
                     reason = QSanguosha::CardUseReasonResponseUse;
-                if (!Self->hasFlag(skill_name))
-                    Self->setFlag(skill_name);
+                QString tempUseFlag = QStringLiteral("RoomScene_") + skill_name + QStringLiteral("TempUse");
+                Self->setFlag(skill_name);
+                Self->setFlag(tempUseFlag);
                 bool available = skill->isAvailable(Self, reason, pattern);
                 Self->setFlag(QStringLiteral("-") + skill_name);
                 if (!available) {
@@ -2805,6 +2828,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     dashboard->selectOnlyCard();
                 else if (skill->name() == QStringLiteral("LingshouOtherVS"))
                     dashboard->selectLingshou();
+                else if (skill->name() == QStringLiteral("weiyi"))
+                    dashboard->selectWeiyi();
             }
         } else {
             if (pattern.endsWith(QStringLiteral("!")))
@@ -3864,11 +3889,17 @@ void RoomScene::attachSkill(const QString &skill_name, bool from_left)
 
 void RoomScene::detachSkill(const QString &skill_name, bool head)
 {
-    QSanSkillButton *btn = dashboard->removeSkillButton(skill_name, head);
-    if (btn == nullptr)
-        return; //be care LordSkill
-    m_skillButtons.removeAll(btn);
-    btn->deleteLater();
+    // for all the skills has a ViewAsSkill Effect { Client::setMark(const Json::Value &) }
+    // this is a DIRTY HACK!!! for we should prevent the ViewAsSkill button been removed temporily by duanchang
+    if (Self != NULL && Self->mark(QStringLiteral("ViewAsSkill_") + skill_name + QStringLiteral("Effect")) > 0) {
+        Self->addMark(QStringLiteral("ViewAsSkill_") + skill_name + QStringLiteral("Lost"), 1);
+    } else {
+        QSanSkillButton *btn = dashboard->removeSkillButton(skill_name, head);
+        if (btn == nullptr)
+            return; //be care LordSkill
+        m_skillButtons.removeAll(btn);
+        btn->deleteLater();
+    }
 }
 
 void RoomScene::viewDistance()
@@ -4109,10 +4140,11 @@ void RoomScene::onGameStart()
 
     trust_button->setEnabled(true);
 
+#ifdef AUDIO_SUPPORT
     setLordBGM();
+#endif
 
     setLordBackdrop();
-
     game_started = true;
 
     if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
@@ -5179,7 +5211,7 @@ void RoomScene::setLordBGM(const QString &lord)
         return;
     Audio::stopBGM();
     bool changeBGM = Config.value(QStringLiteral("UseLordBGM"), true).toBool();
-    //intialize default path
+    //initialize default path
     bgm_path = Config.value(QStringLiteral("BackgroundMusic"), QStringLiteral("audio/title/main.ogg")).toString();
     QString lord_name = (lord.isNull()) ? ClientInstance->lord_name : lord;
     if (lord_name.isNull())
@@ -5211,12 +5243,13 @@ void RoomScene::setLordBGM(const QString &lord)
     else
         Audio::playBGM(Audio::getBgmFileNames(lord_name, false));
     Audio::setBGMVolume(Config.BGMVolume);
+    Q_UNUSED(lord);
 }
 
 void RoomScene::setLordBackdrop(const QString &lord)
 {
     bool changeBackdrop = Config.value(QStringLiteral("UseLordBackdrop"), true).toBool();
-    //intialize default path
+    //initialize default path
     image_path = Config.TableBgImage;
     QString lord_name = (lord.isNull()) ? ClientInstance->lord_name : lord;
     if (lord_name.isNull())

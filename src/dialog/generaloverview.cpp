@@ -606,7 +606,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     if (!cv_text.startsWith(QStringLiteral("cv:")))
         ui->cvLineEdit->setText(cv_text);
     else
-        ui->cvLineEdit->setText(tr("Temporily None"));
+        ui->cvLineEdit->setText(tr("Temporarily None"));
 
     if (!general->name().endsWith(QStringLiteral("hegemony"))) {
         ui->companionLineEdit->hide();

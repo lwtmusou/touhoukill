@@ -39,7 +39,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     animations = new EffectAnimation();
     pending_card = nullptr;
 
-    leftHiddenMark = nullptr; //?? intialization?
+    leftHiddenMark = nullptr; //?? initialization?
     rightHiddenMark = nullptr;
     _m_pile_expanded = QMap<QString, QList<int>>();
     for (int i = 0; i < 5; i++) {
@@ -620,7 +620,6 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, bool head)
 
     if (_m_skillDock->getSkillButtonByName(skillName) != nullptr && head)
         return nullptr;
-
     if (_m_rightSkillDock->getSkillButtonByName(skillName) != nullptr && !head)
         return nullptr;
 
@@ -1174,9 +1173,9 @@ void Dashboard::enableCards()
         expandPileCards(pile);
     expandSpecialCard();
 
-    foreach (CardItem *card_item, m_handCards) {
+    foreach (CardItem *card_item, m_handCards)
         card_item->setEnabled(card_item->getCard()->face()->isAvailable(Self, card_item->getCard()));
-    }
+
     m_mutexEnableCards.unlock();
 }
 
@@ -1201,7 +1200,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
         if ((resp_skill != nullptr) && (resp_skill->getRequest() == QSanguosha::MethodResponse || resp_skill->getRequest() == QSanguosha::MethodUse))
             expand = true;
     }
-    //deal askForCard at first, then use the card automaticly
+
     if (Self->hasFlag(QStringLiteral("Global_expandpileFailed")))
         expand = true;
 
@@ -1282,10 +1281,9 @@ void Dashboard::expandPileCards(const QString &pile_name)
     if (_m_pile_expanded.contains(pile_name))
         return;
 
-    QString new_name = pile_name;
     IdSet pile;
-    if (new_name.startsWith(QStringLiteral("%"))) {
-        new_name = new_name.mid(1);
+    if (pile_name.startsWith(QStringLiteral("%"))) {
+        QString new_name = pile_name.mid(1);
         foreach (const Player *p, ClientInstance->players(false)) {
             if (p != Self)
                 pile.unite(p->pile(new_name));
@@ -1298,8 +1296,10 @@ void Dashboard::expandPileCards(const QString &pile_name)
         }
     } else if (pile_name == QStringLiteral("#judging_area")) {
         pile = List2Set(Self->judgingAreaIds());
+    } else if (pile_name.startsWith(QStringLiteral("*"))) {
+        pile = List2Set(StringList2IntList(Self->property(pile_name.mid(1).toUtf8().constData()).toString().split(QStringLiteral("+"))));
     } else {
-        pile = Self->pile(new_name);
+        pile = Self->pile(pile_name);
     }
 
     if (pile.isEmpty())
@@ -1338,6 +1338,17 @@ void Dashboard::expandPileCards(const QString &pile_name)
             if (target_name.isNull())
                 target_name = Self->objectName();
             pile_string = ClientInstance->getPlayerName(target_name);
+        } else if (pile_name == QStringLiteral("*chunhua")) {
+            bool isUse = false;
+            if (card_items.indexOf(card_item) == 0)
+                isUse = Self->property("chunhua_firstCardIsUsing").toString() == QStringLiteral("1");
+            if (isUse)
+                pile_string = QStringLiteral("use");
+            else
+                pile_string = QStringLiteral("%shown_card");
+        } else if ((pile_name.startsWith(QStringLiteral("%")) || pile_name.startsWith(QStringLiteral("+")) || pile_name.startsWith(QStringLiteral("*")))
+                   && pile_name != QStringLiteral("%shown_card")) {
+            pile_string = pile_name.mid(1);
         }
         _addHandCard(card_item, true, Sanguosha->translate(pile_string));
     }
@@ -1382,8 +1393,7 @@ void Dashboard::retractPileCards(const QString &pile_name)
     if (!_m_pile_expanded.contains(pile_name))
         return;
 
-    const QString &new_name = pile_name;
-    QList<int> pile = _m_pile_expanded.value(new_name);
+    QList<int> pile = _m_pile_expanded.value(pile_name);
     _m_pile_expanded.remove(pile_name);
 
     if (pile.isEmpty())
@@ -1449,11 +1459,55 @@ void Dashboard::selectLingshou()
 
     if (view_as_skill != nullptr) {
         unselectAll();
-        QList<int> selectedIds = StringList2IntList(Self->property("lingshouSelected").toString().split(QStringLiteral("+")));
+        bool ok = false;
+        int selectedId = Self->property("lingshouSelected").toString().toInt(&ok);
+        if (!ok)
+            return;
+
+        CardItem *handcardItem = nullptr;
         foreach (CardItem *card_item, m_handCards) {
-            if (selectedIds.contains(card_item->getId())) {
+            if (selectedId == card_item->getId()) {
                 selectCard(card_item, true);
                 pendings << card_item;
+                handcardItem = card_item;
+                break;
+            }
+        }
+        if (handcardItem != nullptr) {
+            for (CardItem *card_item : _m_equipCards) {
+                if (card_item != nullptr) {
+                    if (handcardItem->getCard()->suit() == card_item->getCard()->suit()) {
+                        // selectCard(card_item, true);
+                        card_item->mark();
+                    }
+                }
+            }
+        }
+        updatePending();
+    }
+    adjustCards(true);
+}
+
+void Dashboard::selectWeiyi()
+{
+    foreach (const QString &pile, Self->pileNames()) {
+        if (pile.startsWith(QStringLiteral("&")) || pile == QStringLiteral("wooden_ox"))
+            retractPileCards(pile);
+    }
+    retractSpecialCard();
+
+    if (view_as_skill != nullptr) {
+        unselectAll();
+        bool ok = false;
+        int selectedId = Self->property("weiyiSelected").toString().toInt(&ok);
+        if (!ok)
+            return;
+
+        foreach (CardItem *card_item, m_handCards) {
+            if (selectedId == card_item->getId()) {
+                selectCard(card_item, true);
+                pendings << card_item;
+                break;
             }
         }
         updatePending();

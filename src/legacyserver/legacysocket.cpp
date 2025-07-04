@@ -160,7 +160,7 @@ void LegacyClientSocket::raiseError(QAbstractSocket::SocketError socket_error)
     case QAbstractSocket::NetworkError:
         return; // this error is ignored ...
     default:
-        reason = tr("Unknow error");
+        reason = tr("Unknown error");
         break;
     }
 

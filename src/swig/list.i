@@ -64,7 +64,6 @@ public:
     bool hasNext() const;
     T next();
     T peekNext() const;
-    bool hasPrevious() const;
     T previous();
     T peekPrevious() const;
 };
@@ -106,7 +105,6 @@ public:
     bool hasNext() const;
     T next();
     T peekNext() const;
-    bool hasPrevious() const;
     T previous();
     T peekPrevious() const;
 };
@@ -136,7 +134,6 @@ public:
     bool hasNext() const;
     T next();
     T peekNext() const;
-    bool hasPrevious() const;
 };
 
 %newobject ::create_qlist_iterator;

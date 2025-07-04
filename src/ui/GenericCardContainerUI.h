@@ -293,7 +293,7 @@ protected:
     // now, logic
     Player *m_player;
 
-    // The following stuffs for mulitple votes required for yeyan
+    // The following stuffs for multiple votes required for yeyan
     int _m_votesGot, _m_maxVotes;
     QGraphicsPixmapItem *_m_votesItem;
 

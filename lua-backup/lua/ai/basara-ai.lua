@@ -270,4 +270,3 @@ if sgs.GetConfig("EnableHegemony", false) then
 								.. " E" .. (sgs.ai_explicit[name] or "nil"))
 	end
 end
-

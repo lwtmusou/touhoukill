@@ -8,8 +8,8 @@ sgs.ai_skill_playerchosen.sidie = function(self, targets)
 	return nil
 end
 
---[华胥]
-sgs.ai_skill_invoke.huaxu = function(self, data)
+--[役灵]
+sgs.ai_skill_invoke.yiling = function(self, data)
 	local current = self.room:getCurrent()
 	if self:isFriend(current) then
 		for _,p in sgs.qlist(self.room:getOtherPlayers(current)) do
@@ -20,7 +20,7 @@ sgs.ai_skill_invoke.huaxu = function(self, data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.huaxu = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.yiling = function(self, player, promptlist)
 	local current = self.room:getCurrent()
 	if promptlist[#promptlist] == "yes" then
 		sgs.updateIntention(player, current, -60)
@@ -52,7 +52,6 @@ sgs.ai_choicemade_filter.skillInvoke.moran = function(self, player, promptlist, 
 	end
 end
 
-
 --八云紫
 --[神隐]
 sgs.ai_skill_invoke.shenyin = function(self, data)
@@ -62,7 +61,7 @@ sgs.ai_skill_invoke.shenyin = function(self, data)
 	else
 		return target:objectName() == self.player:objectName()
 	end
-	return  false  
+	return  false
 end
 --[隙间]
 sgs.ai_skill_use["@@xijian"] = function(self, prompt)
@@ -137,7 +136,7 @@ sgs.ai_skill_use["@@shihui_hegemonyVS"] = function(self, prompt, method)
 			table.insert(ecards, c)
 		end
 	end
-	
+
 	if #ecards == 0 then return "." end
 
 	self:sortByUseValue(ecards, false)
@@ -194,7 +193,6 @@ sgs.ai_skill_use["@@shihuiVS"] = function(self, prompt, method)
 end
 --sgs.ai_card_intention.ShihuiCard = -50
 
-
 --[幻葬]
 sgs.ai_skill_invoke.huanzang = function(self, data)
 	local target = data:toDying().who
@@ -223,8 +221,7 @@ end]]
 sgs.ai_skill_choice.huanzang=function(self, choices, data)
 	local who = data:toDying().who
 	local choice_table = choices:split("+")
-    
-	
+
 	if self:isFriend(who) then
 		if choices:match("e") then return "e" end
 		if choices:match("hs") then
@@ -239,27 +236,16 @@ sgs.ai_skill_choice.huanzang=function(self, choices, data)
 	return choice_table[1]
 end
 
-
 --魂魄妖梦
 --[斩妄]
 sgs.ai_skill_invoke.zhanwang = function(self)
 	local damage = self.player:getTag("zhanwang"):toDamage()
-	if self:isEnemy(damage.to) then
-		return not damage.to:hasSkills(sgs.lose_equip_skill)
-	end
-	return false
+	return self:isEnemy(damage.to)
 end
-sgs.ai_skill_cardask["@zhanwang-discard"] = function(self, data)
-	local damage =data:toDamage()
+sgs.ai_skill_invoke.zhanwang_discard = function(self)
+	local damage = self.player:getTag("zhanwang"):toDamage()
 	damage.damage = damage.damage + 1
-	--local diascard = self.player:hasSkills(sgs.lose_equip_skill)
-	local effective = self:touhouNeedAvoidAttack(damage, damage.from, damage.to)
-	if not effective then return "." end
-	local ecards = self.player:getCards("e")
-	ecards = sgs.QList2Table(ecards)
-	self:sortByKeepValue(ecards, true)
-
-	return "$" .. ecards[1]:getId()
+	return self:touhouNeedAvoidAttack(damage, damage.from, damage.to)
 end
 sgs.ai_choicemade_filter.skillInvoke.zhanwang = function(self, player, args)
 	local damage = player:getTag("zhanwang"):toDamage()
@@ -378,7 +364,6 @@ sgs.ai_cardneed.hezou_hegemony = function(to, card, self)
 	return not card:isKindOf("BasicCard")
 end
 
-
 --[梅露兰·普莉兹姆利巴]
 --[激奏]
 sgs.ai_skill_invoke.jizou_hegemony = function(self, data)
@@ -450,7 +435,6 @@ sgs.ai_skill_playerchosen.zhanzhen = function(self, targets)
 		table.insert(available_friends, friend)
 	end
 
-
 	local card, friend = self:getCardNeedPlayer(cards)
 	if card and friend and table.contains(available_friends, friend) then return friend  end
 
@@ -478,14 +462,13 @@ end
 sgs.ai_skill_invoke.renou = true
 --具体如何选人偶牌 尚没有策略。。。
 
-
 --橙
 --[奇门]
-sgs.ai_skill_use["@@qimen"] = function(self, prompt)
+local useQimen = function(self, skillName)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
-	local cardname=self.player:property("qimen_card"):toString()
+	local cardname=self.player:property(skillName .. "_card"):toString()
 	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
-	card:setSkillName("qimen")
+	card:setSkillName(skillName)
 	card:deleteLater()
 
 	maxNum = 0
@@ -497,7 +480,7 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 
 	local f, e = {}, {}
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if p:getEquips():length() >= maxNum and not self.player:isProhibited(p, card) then --card:targetFilter(sgs.SPlayerList(), p, self.player)
+		if p:getEquips():length() >= maxNum and not self.player:isProhibited(p, card) then
 			if (self:isFriend(p)) then
 				table.insert(f, p)
 			end
@@ -537,11 +520,17 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 	end
 	if #target_objectname>0 then
 		card = sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
-		card:setSkillName("qimen")
+		card:setSkillName(skillName)
 		card:deleteLater()
 		return card:toString() .. "->" .. table.concat(target_objectname, "+")
 	end
 	return "."
+end
+sgs.ai_skill_use["@@qimen"] = function(self)
+	return useQimen(self, "qimen")
+end
+sgs.ai_skill_use["@@qimen_hegemony"] = function(self)
+	return useQimen(self, "qimen_hegemony")
 end
 
 --[遁甲]
@@ -549,7 +538,7 @@ sgs.ai_skill_invoke.dunjia = function(self, data)
 	local to = data:toPlayer()
 	local num1 = self.player:getEquips():length()
 	local num2 = to:getEquips():length()
-	
+
 	if self:isEnemy(to) and num2 > num1 then
 		 return true
 	end
@@ -620,24 +609,24 @@ end
 
 sgs.ai_skill_use_func.DongzhiHegemonyCard = function(card, use, self)
 	local self_role = self.player:getRole()
-	
+
 	--[[local players = { wei = , shu = 1, wu = 1, qun = 1}
-	
+
 	table.removeOne(players, self_role)
-	
+
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if p:hasShownOneGeneral() or self.room:getTag(p:objectName() + "_RoleConfirmed"):toBool() then
 			role = p:getRole()
 			if players[role] then
-				players[role] = players[role] + 1 
+				players[role] = players[role] + 1
 			end
 		end
 	end]]
-	
+
 	local kingdoms = { "wei", "shu", "wu", "qun"}
 	table.removeOne(kingdoms, self_role)
 	table.insert(kingdoms, "careerist")
-	
+
 	--[[local cmp = function(a, b)
 		return players[a] > players[b]
 	end
@@ -653,7 +642,7 @@ sgs.ai_skill_use_func.DongzhiHegemonyCard = function(card, use, self)
 			break
 		end
 	end
-	
+
 	if target_role ~= "" then
 		use.card = card
 		if use.to then
@@ -665,11 +654,10 @@ sgs.ai_skill_use_func.DongzhiHegemonyCard = function(card, use, self)
 					end
 				end
 			end
-			return  --指定全部的时候 
+			return  --指定全部的时候
 		end
 	end
 end
-
 
 sgs.ai_use_value.DongzhiHegemonyCard = 9
 sgs.ai_use_priority.DongzhiHegemonyCard = 8
@@ -685,7 +673,6 @@ sgs.ai_skill_playerchosen.baochun = function(self, targets)
 	return nil
 end
 sgs.ai_playerchosen_intention.baochun = -80
-
 
 sgs.ai_need_damaged.baochun = function(self, attacker, player)
 	local x= player:getLostHp()+1
@@ -704,19 +691,19 @@ sgs.ai_skill_invoke.baochun_hegemony =  function(self, data)
 	if  damage.to and damage.to:objectName() == self.player:objectName() then
 		return true
 	end
-	return false	
+	return false
 end
 
 --[春痕 国]
-sgs.ai_skill_use["@@chunhen_hegemony"] = function(self, prompt)	
-	
+sgs.ai_skill_use["@@chunhen_hegemony"] = function(self, prompt)
+
 	local tmp = self.player:getTag("chunhen_cards"):toIntList()
 	local cards = {}
 	for _, card_id in sgs.qlist(tmp) do
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
 	end
 	if #cards == 0 then return "." end
-	
+
 	local card, friend = self:getCardNeedPlayer(cards, self.friends_noself)--麻痹 死人不马上更新self.friends_noself
 	if card and friend and friend:isAlive() then return "@ChunhenHegemonyCard=" .. card:getEffectiveId() .. "->" .. friend:objectName() end
 	if #self.friends_noself == 0 then return "." end
@@ -728,7 +715,6 @@ sgs.ai_skill_use["@@chunhen_hegemony"] = function(self, prompt)
 	end
 	return "."
 end
-
 
 --上海人形
 --[战操]
@@ -747,7 +733,6 @@ sgs.ai_skill_cardask["@zhancao-discard"] = function(self, data)
 		fakeDamage.to= target
 		if not self:touhouNeedAvoidAttack(fakeDamage, use.from,target) then  return "."  end
 	end
-
 
 	local cards =self.player:getCards("hes")
 	cards=sgs.QList2Table(cards)
@@ -864,7 +849,6 @@ sgs.ai_skill_discard.jingjie = function(self)
 	return to_discard
 end
 
-
 --[死生]
 sgs.ai_skill_cardask["@sisheng-invoke"] = function(self)
 	local who = self.room:getCurrentDyingPlayer()
@@ -960,143 +944,29 @@ sgs.ai_choicemade_filter.cardResponded["@jingdong-target"] = function(self, play
 	end
 end
 
-
 --SP千年幽幽子
 --[幽曲]
-sgs.ai_skill_invoke.youqu =  true
-sgs.ai_skill_choice.youqu=function(self)
-	local yukari=self.player:getRoom():findPlayerBySkillName("xijian")
-	if yukari then
-		if self:isFriend(yukari) then
-			return "siling3"
-		else
-			return "siling1"
-		end
-	end
-	local peach_num = self:getCardsNum("Peach")
-	if not self.player:isWounded() and peach_num>0  then
-		return "siling3"
-	end
-	if self.player:isLord() and sgs.current_mode_players["rebel"]==0 then
-		return "siling1"
-	end
-	local enemy_num =0
-	if self.player:isLord() or self.player:getRole() == "loyalist" then
-		enemy_num = sgs.current_mode_players["rebel"]
-	elseif self.player:getRole() == "rebel" then
-		enemy_num = sgs.current_mode_players["loyalist"]
-	else
-		enemy_num = #self.enemies
-	end
-	local cards=self.player:getPile("siling")
-	local good_count = 1
-	for i=1, 3, 1 do
-		if cards:length()+i >= enemy_num then
-			good_count = i
-			break
-		end
-	end
-	if good_count == 1 then
-		return "siling1"
-	elseif good_count == 2 then
-		return "siling2"
-	elseif good_count == 3 then
-		return "siling3"
-	end
-	return "siling1"
-end
 sgs.ai_choicemade_filter.skillChoice.youqu = function(self, player, args)
 	sgs.siling_lack[player:objectName()]["Red"] = 0
 	sgs.siling_lack[player:objectName()]["Black"] = 0
 end
 --[亡舞]
-sgs.ai_skill_cardask["@wangwu-invoke"] = function(self, data, pattern, target)
+sgs.ai_skill_cardask["@wangwu-invoke"] = function(self, data, pattern)
 	local target = data:toCardUse().from
 	if not target then return "." end
 	if self:isEnemy(target) then
 		local card = data:toCardUse().card
 		local cards = {}
-		for _, id in sgs.qlist(self.player:getPile("siling")) do
-			local silingcard = sgs.Sanguosha:getCard(id)
-			if (silingcard:sameColorWith(card)) then
-				table.insert(cards, silingcard)
+		for _, id in sgs.qlist(self.player:getHandcards()) do
+			if id:getColor() == card:getColor() and not id:isKindOf("Peach") then
+				table.insert(id)
 			end
 		end
-		if #cards == 0 then return "." end
-		self:sortByCardNeed(cards)
-		return "$" .. cards[1]:getId()
+		if #cards <2 then return "." end
+		self:sortByKeepValue(cards)
+		return "$" .. cards[1]:getId() .. "+" .. cards[2]:getId()
 	end
 	return "."
-end
-sgs.ai_choicemade_filter.cardResponded["@wangwu-invoke"] = function(self, player, args)
-		if args[#args] == "_nil_"  and who then
-			sgs.updateIntention(player, who, -70)
-		end
-
-	local use = player:getTag("wangwu_use"):toCardUse()
-	if use.card and (use.card:isRed() or  use.card:isBlack()) then
-		local str
-		if use.card:isRed() then
-			str = "Red"
-		end
-		if use.card:isBlack() then
-			str = "Black"
-		end
-		if use.from and self:isEnemy(use.from, player) then
-			if args[#args] == "_nil_" then
-				sgs.siling_lack[player:objectName()][str] = 1
-			end
-		end
-	end
-end
-sgs.ai_slash_prohibit.wangwu = function(self, from, to, card)
-	if self:isFriend(from,to) then
-		return false
-	end
-	if to:getPile("siling"):length()==0 then return false end
-	if card:isRed() then
-		if sgs.siling_lack[to:objectName()]["Red"] > 0 then
-			return false
-		end
-	elseif card:isBlack() then
-		if sgs.siling_lack[to:objectName()]["Black"] > 0 then
-			return false
-		end
-	else
-		return false
-	end
-	local fakeDamage=sgs.DamageStruct()
-	fakeDamage.nature= sgs.DamageStruct_Normal
-	fakeDamage.damage=1
-	fakeDamage.from=to
-	fakeDamage.to=from
-	local damageEffect = self:touhouNeedAvoidAttack(fakeDamage,to,from)
-	return damageEffect
-end
-sgs.ai_trick_prohibit.wangwu = function(self, from, to, card)
-	if self:isFriend(from,to) then
-		return false
-	end
-	if to:getPile("siling"):length()==0 then return false end
-	if card:isRed() then
-		if sgs.siling_lack[to:objectName()]["Red"] > 0 then
-			return false
-		end
-	elseif card:isBlack() then
-		if sgs.siling_lack[to:objectName()]["Black"] > 0 then
-			return false
-		end
-	else
-		return false
-	end
-
-	local fakeDamage=sgs.DamageStruct()
-	fakeDamage.nature= sgs.DamageStruct_Normal
-	fakeDamage.damage=1
-	fakeDamage.from=to
-	fakeDamage.to=from
-	local damageEffect = self:touhouNeedAvoidAttack(fakeDamage,to,from)
-	return damageEffect
 end
 
 --九尾妖狐SP蓝
@@ -1209,7 +1079,7 @@ end
 function turnUse_huayin(self)
 	if self.player:getMark("Global_PreventPeach")>0  or self.player:hasFlag("Global_huayinFailed") then return nil end
 	if self:canHuayin(self.player) then
-		return "@HuayinCard=." 
+		return "@HuayinCard=."
 	end
 	return nil
 end

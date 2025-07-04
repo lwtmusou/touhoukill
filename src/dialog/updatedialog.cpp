@@ -62,7 +62,7 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     }
 
     changelogBtn = new QPushButton(tr("Show Changelog"));
-    connect(changelogBtn, &QPushButton::clicked, [this]() -> void {
+    connect(changelogBtn, &QPushButton::clicked, this, [this]() -> void {
         QDesktopServices::openUrl(QUrl(m_baseChangeLog));
     });
 

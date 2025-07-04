@@ -189,9 +189,8 @@ void QSanButton::_onMouseClick(bool inside)
         }
         update();
 
-        if (inside) {
+        if (inside)
             emit clicked();
-        }
 
     } else {
         if (_m_style == S_STYLE_PUSH)

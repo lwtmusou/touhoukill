@@ -222,57 +222,6 @@ bool BefriendAttacking::isAvailable(const Player *player) const
     return player->hasShownOneGeneral() && TrickCard::isAvailable(player);
 }
 
-/*QStringList BefriendAttacking::checkTargetModSkillShow(const CardUseStruct &use) const
-{
-    if (use.card == NULL)
-        return QStringList();
-
-    if (use.to.length() >= 2) {
-        const ServerPlayer *from = use.from;
-        QList<const Skill *> skills = from->getSkillList(false, false);
-        QList<const TargetModSkill *> tarmods;
-
-        foreach(const Skill *skill, skills) {
-            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")) {
-                const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
-                tarmods << tarmod;
-            }
-        }
-
-        if (tarmods.isEmpty())
-            return QStringList();
-
-        int n = use.to.length() - 1;
-        QList<const TargetModSkill *> tarmods_copy = tarmods;
-
-        foreach(const TargetModSkill *tarmod, tarmods_copy) {
-            if (tarmod->getExtraTargetNum(from, use.card) == 0) {
-                tarmods.removeOne(tarmod);
-                continue;
-            }
-
-            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
-            if (from->hasShownSkill(main_skill)) {
-                tarmods.removeOne(tarmod);
-                n -= tarmod->getExtraTargetNum(from, use.card);
-            }
-        }
-
-        if (tarmods.isEmpty() || n <= 0)
-            return QStringList();
-
-        tarmods_copy = tarmods;
-
-        QStringList shows;
-        foreach(const TargetModSkill *tarmod, tarmods_copy) {
-            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
-            shows << main_skill->objectName();
-        }
-        return shows;
-    }
-    return QStringList();
-}*/
-
 AwaitExhaustedHegemony::AwaitExhaustedHegemony(Card::Suit suit, int number)
     : TrickCard(suit, number)
 {

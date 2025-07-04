@@ -207,7 +207,6 @@ sgs.ai_cardneed.fengxiang = function(to, card, self)
 	return card:isRed()
 end
 
-
 --[凤翔 国]
 local fengxiang_hegemony_skill={}
 fengxiang_hegemony_skill.name="fengxiang_hegemony"
@@ -257,8 +256,6 @@ end
 
 --[凯风 国]
 sgs.ai_skill_invoke.kaifeng_hegemony = true
-
-
 
 --铃仙·优昙华院·因幡
 --[狂躁]
@@ -349,6 +346,61 @@ end
 sgs.ai_use_value.KuangzaoCard = 8
 sgs.ai_use_priority.KuangzaoCard = 0
 sgs.ai_card_intention.KuangzaoCard = 50
+sgs.ai_skill_cardask["@kuangzao-annoying"] = function(self, data)
+	local cards = sgs.QList2Table(self.player:getCards("hes"))
+
+	local effect = data:toCardEffect()
+	local from = effect.from
+	self.player:setFlags("slashTargetFix")
+	self.player:setFlags("slashNoDistanceLimit")
+	self.player:setFlags("slashTargetFixToOne")
+	effect.from:setFlags("SlashAssignee")
+	local slashUse = sgs.ai_skill_use.slash(self, "dummy")
+	effect.from:setFlags("-SlashAssignee")
+	self.player:setFlags("-slashTargetFixToOne")
+	self.player:setFlags("-slashNoDistanceLimit")
+	self.player:setFlags("-slashTargetFix")
+	local slash
+	if slashUse ~= "." then
+		local slashStr = string.split(slashUse, "->")
+		slash = sgs.Card_Parse(slashStr)
+	end
+
+	if self.player:getArmor() and self.player:getArmor():isKindOf("SliverLion") and self.player:isWounded() and not slash then
+		return tostring(self.player:getArmor():getId())
+	end
+
+	self:sortByKeepValue(cards)
+	for _, c in ipairs(cards) do
+		if not slash then
+			return tostring(c:getId())
+		end
+		if not slash:isVirtualCard() then
+			if c:getId() ~= slash:getId() then
+				return tostring(c:getId())
+			end
+		else
+			for _, id in slash:getSubcards() do
+				if c:getId() ~= id then
+					return tostring(c:getId())
+				end
+			end
+		end
+	end
+	return tostring(cards[1]:getId())
+end
+
+local kuangzaoheg_skill = {}
+kuangzaoheg_skill.name = "kuangzao_hegemony"
+table.insert(sgs.ai_skills, kuangzaoheg_skill)
+function kuangzaoheg_skill.getTurnUseCard(self)
+	if self.player:hasUsed("KuangzaoHegemonyCard") then return nil end
+	return sgs.Card_Parse("@KuangzaoHegemonyCard=.")
+end
+sgs.ai_skill_use_func.KuangzaoHegemonyCard = sgs.ai_skill_use_func.KuangzaoCard
+sgs.ai_use_value.KuangzaoHegemonyCard = sgs.ai_use_value.KuangzaoCard
+sgs.ai_use_priority.KuangzaoHegemonyCard = sgs.ai_use_priority.KuangzaoCard
+sgs.ai_card_intention.KuangzaoHegemonyCard = sgs.ai_card_intention.KuangzaoCard
 
 --[幻视]
 sgs.ai_skill_playerchosen.huanshi = function(self, targets)
@@ -405,13 +457,13 @@ end
 
 --只指定一个？
 sgs.ai_skill_playerchosen.xushi = function(self, targets)
-	local use=self.player:getTag("xushi_use"):toCardUse()    
-    for _,p in sgs.qlist(targets) do 
+	local use=self.player:getTag("xushi_use"):toCardUse()
+    for _,p in sgs.qlist(targets) do
         	if self:isEnemy(p) == self:isEnemy(use.to:first()) then
 			return p
         end
 	end
-	
+
 	return targets:first()
 end
 sgs.ai_skill_invoke.shishi =function(self,data)
@@ -559,7 +611,6 @@ sgs.ai_skill_use["@@xingyun_hegemony"] = function(self, prompt)
 	return "."
 end
 
-
 --米斯蒂娅·萝蕾拉
 --[夜歌]
 sgs.ai_skill_use["@@yege"] = function(self, prompt)
@@ -567,7 +618,7 @@ sgs.ai_skill_use["@@yege"] = function(self, prompt)
 	if self:isEnemy(current) then
 		local cards = self.player:getHandcards()
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
-		
+
 	    if self.room:getMode():find("hegemony") then
 		    local diamonds = {}
 			for _,c in sgs.qlist(cards) do
@@ -576,8 +627,8 @@ sgs.ai_skill_use["@@yege"] = function(self, prompt)
 				end
 			end
 			self:sortByUseValue(diamonds)
-			if #diamonds > 0 then 
-				return "@YegeCard=".. diamonds[1]:getId() .."->" .. current:objectName() 
+			if #diamonds > 0 then
+				return "@YegeCard=".. diamonds[1]:getId() .."->" .. current:objectName()
 			end
 		end
 		cards = sgs.QList2Table(cards)
@@ -597,7 +648,6 @@ end
 --[牢笼]
 --默认发动?
 -- Fs：只是随便找个目标而已，askForPlayerChosen就这样
-
 
 --莉格露·奈特巴格
 --[萤火]
@@ -739,7 +789,6 @@ end
 sgs.ai_skill_playerchosen.chuangshi = function(self, targets)
 	if self.player:getMark("chuangshi")>0 then return nil end
 
-
 	if #self.friends_noself>0 then
 		self:sort(self.friends_noself, "hp")
 		for _,p in pairs(self.friends_noself) do
@@ -819,12 +868,11 @@ sgs.ai_skill_use["@@chuangshi"] = function(self, prompt)
 	target=self.player:getTag("chuangshi_victim"):toPlayer()
 	--self.player:removeTag("chuangshi_victim")
 
-
 	if cardname and user then
-		self.room:setPlayerMark(self.player, "chuangshi", self.player:getMark("chuangshi")+1)
+		self.player:setMark("chuangshi", self.player:getMark("chuangshi")+1)
 		--self.room:setPlayerMark(user, "chuangshi_user", 0)
-		
-		self.room:setPlayerFlag(self.player, "chuangshi")
+
+		self.player:setFlags("chuangshi")
 		if target then
 			return "@ChuangshiCard=.:" .. cardname .. "->" .. target:objectName()
 		else
@@ -849,7 +897,6 @@ sgs.ai_skill_invoke.wangyue_hegemony =function(self,data)
 	end
 	return false
 end
-
 
 --SP自警队妹红
 --[护卫]
@@ -971,4 +1018,3 @@ sgs.ai_skill_choice.mingmu = function(self, choices, data)
 	local choice_table = choices:split("+")
 	return choice_table[1]
 end
-

@@ -894,7 +894,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QJsonValue &layout)
         _m_commonLayout.m_hpFont[i].tryParse(magatamaFont[i]);
     }
 
-    //for graphic boxs, especially for new trigger order box
+    // for graphic boxes, especially for new trigger order box
     tryParse(config[QStringLiteral("graphicsBoxBgColor")], _m_commonLayout.graphicsBoxBackgroundColor);
     tryParse(config[QStringLiteral("graphicsBoxBorderColor")], _m_commonLayout.graphicsBoxBorderColor);
     _m_commonLayout.graphicsBoxTitleFont.tryParse(config[QStringLiteral("graphicsBoxTitleFont")]);

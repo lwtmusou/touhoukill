@@ -81,8 +81,6 @@ bool Analeptic::IsAvailable(const Player *player, const Card *analeptic)
 #define THIS_ANALEPTIC (analeptic == NULL ? newanaleptic : analeptic)
     if (player->isCardLimited(THIS_ANALEPTIC, Card::MethodUse) || player->isProhibited(player, THIS_ANALEPTIC))
         return false;
-
-    //return player->usedTimes("Analeptic") <= Sanguosha->correctCardTarget(TargetModSkill::Residue, player, THIS_ANALEPTIC);
     return player->getAnalepticCount() <= Sanguosha->correctCardTarget(TargetModSkill::Residue, player, THIS_ANALEPTIC);
 #undef THIS_ANALEPTIC
 }
@@ -167,7 +165,7 @@ public:
             }
 
             // When TargetSpecified, no need to check canSlash()
-            //remain the information of origianl card
+            //remain the information of original card
             fire_slash->setSkillName(use.card->getSkillName());
             QStringList flags = use.card->getFlags();
             foreach (const QString &flag, flags)
@@ -541,7 +539,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     while (suits.length() < 4) {
         suits << QString();
     }
-    QString prompt = QString("@fire-attack:%1:%2:%3:%4").arg(suits[0]).arg(suits[1]).arg(suits[2]).arg(suits[3]);
+    QString prompt = QString("@fire-attack:%1:%2:%3:%4").arg(suits[0], suits[1], suits[2], suits[3]);
     if (effect.from->isAlive()) {
         bool damage = false;
         if (effect.from->hasSkill("fengxiang")) {
@@ -576,7 +574,6 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                 damage = true;
         }
         if (damage)
-            //room->damage(DamageStruct(this, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
             room->damage(DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI

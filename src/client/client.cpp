@@ -1124,7 +1124,8 @@ void Client::askForCardOrUseCard(const QJsonValue &cardUsage)
     if ((match = rx.match(temp_pattern)).hasMatch()) {
         QString skill_name = match.capturedTexts().at(1);
         QString text = prompt_doc->toHtml();
-        text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(getSkillNotice(skill_name, index)));
+        if (index != 0)
+            text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(getSkillNotice(skill_name, index)));
         prompt_doc->setHtml(text);
     }
 
@@ -1778,6 +1779,20 @@ void Client::setMark(const QJsonValue &mark_var)
 
     Player *player = findPlayerByObjectName(who);
     player->setMark(mark, value);
+
+    // for all the skills has a ViewAsSkill Effect { RoomScene::detachSkill(const QString &) }
+    // this is a DIRTY HACK!!! for we should prevent the ViewAsSkill button been removed temporily by duanchang
+    if (mark.startsWith(QStringLiteral("ViewAsSkill_")) && mark.endsWith(QStringLiteral("Effect")) && player == Self && value == 0) {
+        QString skill_name = mark.mid(12);
+        skill_name.chop(6);
+
+        QString lost_mark = QStringLiteral("ViewAsSkill_") + skill_name + QStringLiteral("Lost");
+
+        if (!Self->hasValidSkill(skill_name, true) && Self->mark(lost_mark) > 0) {
+            Self->setMark(lost_mark, 0);
+            emit skill_detached(skill_name);
+        }
+    }
 }
 
 void Client::onPlayerChooseSuit()
@@ -1904,11 +1919,11 @@ void Client::askForSinglePeach(const QJsonValue &arg)
     setStatus(RespondingUse);
 }
 
-void Client::askForCardShow(const QJsonValue &requestor)
+void Client::askForCardShow(const QJsonValue &requester)
 {
-    if (!QSgsJsonUtils::isString(requestor))
+    if (!QSgsJsonUtils::isString(requester))
         return;
-    QString name = Sanguosha->translate(requestor.toString());
+    QString name = Sanguosha->translate(requester.toString());
     prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
     setCurrentCardUsePattern(QStringLiteral("."));
@@ -1997,7 +2012,7 @@ void Client::askForGuanxing(const QJsonValue &arg)
     QList<int> card_ids;
     QSgsJsonUtils::tryParse(deck, card_ids);
 
-    emit guanxing(card_ids, single_side);
+    emit guanxing(card_ids, single_side, highlight_skill_name);
     setStatus(AskForGuanxing);
 }
 
@@ -2060,8 +2075,8 @@ void Client::askForPindian(const QJsonValue &ask_str)
     if (from == Self->objectName())
         prompt_doc->setHtml(tr("Please play a card for pindian"));
     else {
-        QString requestor = getPlayerName(from);
-        prompt_doc->setHtml(tr("%1 ask for you to play a card to pindian").arg(requestor));
+        QString requester = getPlayerName(from);
+        prompt_doc->setHtml(tr("%1 ask for you to play a card to pindian").arg(requester));
     }
     setCurrentCardUsePattern(QStringLiteral("."));
     setStatus(AskForShowOrPindian);

@@ -147,11 +147,19 @@ selectFirst = function(player, candidates) -- string
 	    local idx = math.random(1, #candidates)
 		return candidates[idx]
 	end
-	
 
 	local values = {}
 	local role = player:getRole()
 	local lord = player:getRoom():getLord()
+
+	if role == sgs.Player_Lord then
+		for i, candidiate in ipairs(candidates) do
+			if candidate == "suwako_god" then
+				table.remove(candidates,i)
+				break
+			end
+		end
+	end
 
 	local seat_place
 	if player:getSeat() - 1 <= 2 then
@@ -232,7 +240,7 @@ selectFirst = function(player, candidates) -- string
 	return max_general
 end
 
---todo: lwtmusou  to bulid a table
+--todo: lwtmusou  to build a table
 --return weight of relation
 weightRelation =  function(relation, role)
 	if relation == "anti" then
@@ -244,7 +252,7 @@ weightRelation =  function(relation, role)
 	end
 	return 1.0
 end
---todo: lwtmusou  to bulid a new method
+--todo: lwtmusou  to build a new method
 --decide relation between nodes of skill property
 relationOfSkillProperty =  function(node1, node2, player1, player2, propertyType)
 	for _, str1 in pairs(node1) do
@@ -296,7 +304,7 @@ weightSkillProperty =  function(player, lord, general)
 				for k, effect2 in pairs(l_pro["effect"]) do
 					local relation  =  relationOfSkillProperty(effect1, effect2, player, lord, "effect")
 					local weight =  weightRelation(relation, player:getRole())
-					if weight ~= 1.0 then-- if find specail relationship, check whether two effect nodes in same condition(target, trigger)
+					if weight ~= 1.0 then-- if find special relationship, check whether two effect nodes in same condition(target, trigger)
 						local target1 = pro["target"][i] or pro["target"][1]
 						local target2 = l_pro["target"][k] or l_pro["target"][1]
 						local relation1  =  relationOfSkillProperty(target1, target2, player, lord, "target")
@@ -443,11 +451,11 @@ arrange1v1 = function(player) -- stringlist
 end
 
 selectPair = function(player, candidates) -- string
-	--暂时性的测试用国战选将ai    
+	--暂时性的测试用国战选将ai
     local real_pairs = {}
 	for _, a in ipairs(candidates) do
 		for _, b in ipairs(candidates) do
-		    if a ~= b then 
+		    if a ~= b then
 				local general1 = sgs.Sanguosha:getGeneral(a)
 				local general2 = sgs.Sanguosha:getGeneral(b)
 				local can =  (general1:getKingdom() == general2:getKingdom()) or (general1:getKingdom() == "zhu") or (general2:getKingdom() == "zhu")

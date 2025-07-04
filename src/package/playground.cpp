@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "skill.h"
-#include "testCard.h"
+#include "washout.h"
 
 #include <QAbstractButton>
 #include <QApplication>
@@ -32,7 +32,7 @@ public:
 
                 player->tag.remove("fsu0413gepi");
 
-                foreach (QString skill_name, gepi_list) {
+                foreach (const QString &skill_name, gepi_list) {
                     room->setPlayerSkillInvalidity(player, skill_name, false);
                     if (player->hasSkill(skill_name)) {
                         LogMessage log;
@@ -797,7 +797,7 @@ public:
             QStringList conflictingSkills = {"huanwei"};
             foreach (const QString &conflict, conflictingSkills) {
                 if (invoke->targets.first()->hasSkill(conflict, true, true)) {
-                    room->touhouLogmessage("#bmmaoji-conflictingskill", invoke->targets.first(), conflict);
+                    room->sendLog("#bmmaoji-conflictingskill", invoke->targets.first(), conflict);
                     skills << (QStringLiteral("-") + conflict);
                 }
             }
@@ -815,7 +815,7 @@ public:
             // Ignoring the force hit case at this time...
 
             for (int i = 2; i > 0; i--) {
-                QString prompt = QString("@bmmaoji-slash%1:%2::%3").arg(i == eff.jink_num ? "-start" : QString()).arg(eff.from->objectName()).arg(i);
+                QString prompt = QString("@bmmaoji-slash%1:%2::%3").arg((i == eff.jink_num ? "-start" : QString()), eff.from->objectName(), QString::number(i));
                 const Card *slash = room->askForCard(eff.to, "slash", prompt, data, Card::MethodResponse, eff.from);
                 if (slash == NULL)
                     return true;
