@@ -1494,9 +1494,9 @@ public:
         if (triggerEvent == DamageDone) {
             DamageStruct bigHorseBrother = data.value<DamageStruct>();
             if (bigHorseBrother.from != nullptr && bigHorseBrother.card != nullptr && bigHorseBrother.card->isKindOf("Slash")) {
-                QSet<QString> l = bigHorseBrother.to->tag.value("huwei", QStringList()).toStringList().toSet();
+                QSet<QString> l = List2Set(bigHorseBrother.to->tag.value("huwei", QStringList()).toStringList());
                 l << bigHorseBrother.from->objectName();
-                bigHorseBrother.to->tag["huwei"] = QStringList(l.toList());
+                bigHorseBrother.to->tag["huwei"] = QStringList(l.values());
             }
         } else if (triggerEvent == TurnStart) {
             foreach (ServerPlayer *p, room->getAllPlayers())
@@ -1918,7 +1918,7 @@ TH08Package::TH08Package()
     tewi->addSkill(new Buxian);
     tewi->addSkill(new BuxianEffect);
     tewi->addSkill(new Xingyun);
-    related_skills.insertMulti("buxian", "#buxian");
+    related_skills.insert("buxian", "#buxian");
 
     General *mystia = new General(this, "mystia", "yyc", 3);
     mystia->addSkill(new Yege);
@@ -1928,7 +1928,7 @@ TH08Package::TH08Package()
     wriggle->addSkill(new Yinghuo);
     wriggle->addSkill(new YinghuoClear);
     wriggle->addSkill(new Chongqun);
-    related_skills.insertMulti("yinghuo", "#yinghuo");
+    related_skills.insert("yinghuo", "#yinghuo");
 
     General *keine_sp = new General(this, "keine_sp", "yyc", 3);
     keine_sp->addSkill(new Chuangshi);
@@ -1937,7 +1937,7 @@ TH08Package::TH08Package()
     General *mokou_sp = new General(this, "mokou_sp", "yyc", 4);
     mokou_sp->addSkill(new Huwei);
     mokou_sp->addSkill(new HuweiRecord);
-    related_skills.insertMulti("huwei", "#huwei");
+    related_skills.insert("huwei", "#huwei");
     mokou_sp->addSkill(new Jinxi);
 
     General *mystia_sp = new General(this, "mystia_sp", "yyc", 3);

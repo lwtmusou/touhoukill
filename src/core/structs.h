@@ -792,6 +792,11 @@ Q_DECLARE_METATYPE(PhaseSkippingStruct)
 Q_DECLARE_METATYPE(DrawNCardsStruct)
 Q_DECLARE_METATYPE(QList<SkillInvalidStruct>)
 Q_DECLARE_METATYPE(const Card *)
+
+#if QT_VERSION_MAJOR >= 6
+Q_DECLARE_OPAQUE_POINTER(ServerPlayer *)
+#endif
+
 Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)
 Q_DECLARE_METATYPE(PindianStruct *)

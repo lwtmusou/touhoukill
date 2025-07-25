@@ -452,7 +452,7 @@ public:
                 delayedtricks << id;
         }
 
-        int obtainId = delayedtricks.at(qrand() % delayedtricks.length());
+        int obtainId = delayedtricks.at(qsgsRand() % delayedtricks.length());
         st.player->obtainCard(Sanguosha->getCard(obtainId));
 
         return false;
@@ -1372,7 +1372,7 @@ PlaygroundPackage::PlaygroundPackage()
     dovefs->addSkill(new Fsu0413Gainian);
     dovefs->addSkill(new Fsu0413GainianDis);
     dovefs->addSkill(new Fsu0413Lese);
-    related_skills.insertMulti("fsu0413gainian", "#fsu0413gainian-dis");
+    related_skills.insert("fsu0413gainian", "#fsu0413gainian-dis");
 
     General *otaku = new General(this, "otaku", "touhougod", 5, true);
     otaku->addSkill(new Fsu0413Fei2Zhai);
@@ -1386,12 +1386,12 @@ PlaygroundPackage::PlaygroundPackage()
     benmao->addSkill(new BmMaoji);
     benmao->addSkill(new BmMaojiTrigger);
     benmao->addSkill(new BmBenti);
-    related_skills.insertMulti("bmmaoji", "#bmmaoji");
+    related_skills.insert("bmmaoji", "#bmmaoji");
 
     General *god9 = new General(this, "god9", "touhougod", 9);
     god9->addSkill(new FtmSuanshu);
     god9->addSkill(new FtmSuanshuTrigger);
-    related_skills.insertMulti("ftmsuanshu", "#ftmsuanshu");
+    related_skills.insert("ftmsuanshu", "#ftmsuanshu");
 
     General *fsb = new General(this, "flyingskybright", "touhougod", 4, true);
     fsb->addSkill(new FtmFeitian);
@@ -1402,7 +1402,7 @@ PlaygroundPackage::PlaygroundPackage()
     tailormokou->addSkill(new TailorChenglu);
     tailormokou->addSkill(new TailorMinxin);
     tailormokou->addSkill(new TailorMiezui);
-    related_skills.insertMulti("tailorfuzhong", "#tailorfuzhong-effect");
+    related_skills.insert("tailorfuzhong", "#tailorfuzhong-effect");
 }
 
 ADD_PACKAGE(Playground)

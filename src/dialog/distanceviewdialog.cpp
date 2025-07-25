@@ -3,11 +3,12 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "roomscene.h"
+#include "ui_legacy/SkinBank.h"
 
 #include <QComboBox>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QLineEdit>
 
 class DistanceViewDialogUI
 {
@@ -57,6 +58,22 @@ private:
     Q_DISABLE_COPY(DistanceViewDialogUI)
 };
 
+namespace {
+void FillPlayerNames(QComboBox *ComboBox, bool add_none)
+{
+    if (add_none)
+        ComboBox->addItem(DistanceViewDialog::tr("None"), ".");
+    ComboBox->setIconSize(G_COMMON_LAYOUT.m_tinyAvatarSize);
+    foreach (const ClientPlayer *player, ClientInstance->getPlayers()) {
+        QString general_name = Sanguosha->translate(player->getGeneralName());
+        if (player->getGeneral() == nullptr)
+            continue;
+        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(player->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
+        ComboBox->addItem(QIcon(pixmap), QString("%1 [%2]").arg(general_name).arg(player->screenName()), player->objectName());
+    }
+}
+} // namespace
+
 DistanceViewDialog::DistanceViewDialog(QWidget *parent)
     : QDialog(parent)
 {
@@ -66,8 +83,8 @@ DistanceViewDialog::DistanceViewDialog(QWidget *parent)
 
     ui = new DistanceViewDialogUI;
 
-    RoomScene::FillPlayerNames(ui->from, false);
-    RoomScene::FillPlayerNames(ui->to, false);
+    FillPlayerNames(ui->from, false);
+    FillPlayerNames(ui->to, false);
 
     connect(ui->from, SIGNAL(currentIndexChanged(int)), this, SLOT(showDistance()));
     connect(ui->to, SIGNAL(currentIndexChanged(int)), this, SLOT(showDistance()));

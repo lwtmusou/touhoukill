@@ -1455,7 +1455,7 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
         }
 
         if (hc.length() > 0) {
-            int x = qrand() % hc.length();
+            int x = qsgsRand() % hc.length();
             const Card *c = hc.value(x);
             card = c;
             room->throwCard(c, effect.to);
@@ -1720,7 +1720,7 @@ TH12Package::TH12Package()
     ichirin->addSkill(new Rudao);
     ichirin->addSkill(new Huicui);
     ichirin->addSkill(new HuicuiRecord);
-    related_skills.insertMulti("huicui", "#huicui");
+    related_skills.insert("huicui", "#huicui");
 
     General *nazrin = new General(this, "nazrin", "xlc", 3);
     nazrin->addSkill(new Xunbao);
@@ -1742,7 +1742,7 @@ TH12Package::TH12Package()
     kyouko_sp->addSkill(new Huisheng);
     kyouko_sp->addSkill(new HuishengTargetMod);
     kyouko_sp->addSkill(new Yexiang);
-    related_skills.insertMulti("huisheng", "#huisheng_effect");
+    related_skills.insert("huisheng", "#huisheng_effect");
 
     addMetaObject<PuduCard>();
     addMetaObject<WeizhiCard>();

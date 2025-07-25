@@ -1,10 +1,11 @@
 #include "choosegeneraldialog.h"
-#include "SkinBank.h"
 #include "client.h"
 #include "engine.h"
 #include "general.h"
 #include "protocol.h"
 #include "settings.h"
+
+#include "ui_legacy/SkinBank.h"
 
 #include <QCheckBox>
 #include <QGridLayout>
@@ -214,16 +215,6 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     setLayout(dialog_layout);
 }
 
-void ChooseGeneralDialog::done(int result)
-{
-    if (m_freeChooseDialog != nullptr) {
-        m_freeChooseDialog->reject();
-        delete m_freeChooseDialog;
-        m_freeChooseDialog = nullptr;
-    }
-    QDialog::done(result);
-}
-
 void ChooseGeneralDialog::freeChoose()
 {
     QDialog *dialog = new FreeChooseDialog(this);
@@ -303,6 +294,11 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
 
     if (!pair_choose)
         group->buttons().first()->click();
+}
+
+FreeChooseDialog::~FreeChooseDialog()
+{
+    qDebug() << "~FreeChooseDialog";
 }
 
 void FreeChooseDialog::chooseGeneral()

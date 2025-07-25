@@ -565,7 +565,7 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.player->hasSkill(this) && change.player->isAlive() && change.to == Player::NotActive) {
             QVariant extraTag = room->getTag("touhou-extra");
-            bool nowExtraTurn = extraTag.canConvert(QVariant::Bool) && extraTag.toBool();
+            bool nowExtraTurn = extraTag.metaType().id() == QMetaType::Bool && extraTag.toBool();
             bool extraTurnExist = room->getThread()->hasExtraTurn();
 
             if (!nowExtraTurn && !extraTurnExist) {
@@ -2385,7 +2385,7 @@ public:
         room->clearAG(invoke->invoker);
         if (id == -1) {
             if (!enabledIds.isEmpty())
-                id = enabledIds.at(qrand() % enabledIds.length());
+                id = enabledIds.at(qsgsRand() % enabledIds.length());
             else
                 return false;
         }
@@ -2532,7 +2532,7 @@ TH99Package::TH99Package()
     General *renko = new General(this, "renko", "wai", 4);
     renko->addSkill(new Shitu);
     renko->addSkill(new ShituRecord);
-    related_skills.insertMulti("shitu", "#shitu");
+    related_skills.insert("shitu", "#shitu");
 
     General *merry = new General(this, "merry", "wai", 4);
     merry->addSkill("jingjie");
@@ -2546,7 +2546,7 @@ TH99Package::TH99Package()
     General *yorihime = new General(this, "yorihime", "wai", 4);
     yorihime->addSkill(new Pingyi);
     yorihime->addSkill(new PingyiHandler);
-    related_skills.insertMulti("pingyi", "#pingyi_handle");
+    related_skills.insert("pingyi", "#pingyi_handle");
 
     General *sunny = new General(this, "sunny", "wai", 3);
     sunny->addSkill(new Zheshe);
@@ -2568,7 +2568,7 @@ TH99Package::TH99Package()
     kosuzu->addSkill(new Pandu);
     kosuzu->addSkill(new Bihuo);
     kosuzu->addSkill(new BihuoReturn);
-    related_skills.insertMulti("bihuo", "#bihuo");
+    related_skills.insert("bihuo", "#bihuo");
 
     General *cirno = new General(this, "cirno_sp", "wai", 3);
     cirno->addSkill(new Xunshi);
@@ -2587,7 +2587,7 @@ TH99Package::TH99Package()
     kasensp->addSkill(new ZhuozhiP);
     kasensp->addSkill(new Wanshen);
     kasensp->addRelateSkill("xieli");
-    related_skills.insertMulti("zhuozhi", "#zhuozhi-prohibit");
+    related_skills.insert("zhuozhi", "#zhuozhi-prohibit");
 
     General *miyoi = new General(this, "miyoi", "wai", 4, false, true, true);
     Q_UNUSED(miyoi);

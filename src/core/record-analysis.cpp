@@ -6,6 +6,7 @@
 
 #include <QFile>
 #include <QMessageBox>
+#include <QRegularExpression>
 
 using namespace QSanProtocol;
 
@@ -52,13 +53,14 @@ void RecAnalysis::initialize(const QString &dir)
             const QVariant &body = packet.getMessageBody();
             if (JsonUtils::isString(body)) {
                 QString l = body.toString();
-                QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w-]*):([RCFSTBHAMN123a-r]*)(\\s+)?");
-                if (!rx.exactMatch(l))
+                QRegularExpression rx(QRegularExpression::anchoredPattern("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w-]*):([RCFSTBHAMN123a-r]*)(\\s+)?"));
+                QRegularExpressionMatch m = rx.match(l);
+                if (!m.hasMatch())
                     continue;
 
-                QStringList texts = rx.capturedTexts();
+                QStringList texts = m.capturedTexts();
                 m_recordGameMode = texts.at(2);
-                m_recordPlayers = texts.at(2).split("_").first().remove(QRegExp("[^0-9]")).toInt();
+                m_recordPlayers = texts.at(2).split("_").first().remove(QRegularExpression("[^0-9]")).toInt();
                 QStringList ban_packages = texts.at(5).split("+");
                 foreach (const Package *package, Sanguosha->getPackages()) {
                     if (!ban_packages.contains(package->objectName()))

@@ -98,7 +98,7 @@ void Skill::playAudioEffect(int index) const
 {
     if (!sources.isEmpty()) {
         if (index == -1)
-            index = qrand() % sources.length();
+            index = qsgsRand() % sources.length();
         else
             index--;
 

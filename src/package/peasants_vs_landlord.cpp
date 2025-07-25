@@ -144,7 +144,7 @@ PeasantsVSLandlordPackage::PeasantsVSLandlordPackage()
     : Package("peasants_vs_landlord")
 {
     skills << new Zhubing << new ZhubingTargetMod << new Cadan << new Jili;
-    related_skills.insertMulti("zhubing", "#zhubing_mod");
+    related_skills.insert("zhubing", "#zhubing_mod");
 }
 
 ADD_PACKAGE(PeasantsVSLandlord)

@@ -7,13 +7,11 @@
 #include "connectiondialog.h"
 #include "generaloverview.h"
 #include "lua.hpp"
-#include "pixmapanimation.h"
 #include "record-analysis.h"
 #include "recorder.h"
-#include "roomscene.h"
 #include "server.h"
-#include "sgswindow.h"
-#include "startscene.h"
+#include "serverdialog.h"
+#include "settings.h"
 #include "ui_mainwindow.h"
 #include "updatedialog.h"
 
@@ -39,10 +37,13 @@
 #include <QNetworkReply>
 #include <QProcess>
 #include <QProgressBar>
+#include <QResizeEvent>
 #include <QSettings>
 #include <QSpinBox>
+#include <QStandardPaths>
 #include <QStatusBar>
 #include <QSystemTrayIcon>
+#include <QTextEdit>
 #include <QTime>
 #include <QToolButton>
 #include <QVariant>
@@ -53,51 +54,12 @@
 #include <QWinTaskbarProgress>
 #endif
 
-class FitView : public QGraphicsView
-{
-public:
-    explicit FitView(QGraphicsScene *scene)
-        : QGraphicsView(scene)
-    {
-        setSceneRect(Config.Rect);
-        setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
-    }
-
-    void resizeEvent(QResizeEvent *event) override
-    {
-        QGraphicsView::resizeEvent(event);
-        MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
-        if (scene()->inherits("RoomScene")) {
-            RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
-            room_scene->setSceneRect(newSceneRect);
-            room_scene->adjustItems();
-            setSceneRect(room_scene->sceneRect());
-            if (newSceneRect != room_scene->sceneRect())
-                fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
-            else
-                resetTransform();
-            main_window->setBackgroundBrush(false);
-            return;
-        } else if (scene()->inherits("StartScene")) {
-            StartScene *start_scene = qobject_cast<StartScene *>(scene());
-            QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2, event->size().width(), event->size().height());
-            start_scene->setSceneRect(newSceneRect);
-            setSceneRect(start_scene->sceneRect());
-            if (newSceneRect != start_scene->sceneRect())
-                fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
-        }
-        if (main_window != nullptr)
-            main_window->setBackgroundBrush(true);
-    }
-};
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    scene = nullptr;
+    // scene = nullptr;
 
     setWindowTitle(tr("TouhouSatsu") + "    " + Sanguosha->getVersionName() + "    " + Sanguosha->getVersionNumber());
 
@@ -115,7 +77,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     update_dialog = new UpdateDialog(this);
 
-    StartScene *start_scene = new StartScene;
     //play title BGM
 #ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic) {
@@ -125,19 +86,19 @@ MainWindow::MainWindow(QWidget *parent)
         Audio::setBGMVolume(Config.BGMVolume);
     }
 #endif
-    QList<QAction *> actions;
-    actions << ui->actionStart_Game << ui->actionStart_Server << ui->actionPC_Console_Start << ui->actionReplay << ui->actionGeneral_Overview << ui->actionCard_Overview
-            << ui->actionConfigure << ui->actionAbout_Us;
+    // QList<QAction *> actions;
+    // actions << ui->actionStart_Game << ui->actionStart_Server << ui->actionPC_Console_Start << ui->actionReplay << ui->actionGeneral_Overview << ui->actionCard_Overview
+    //         << ui->actionConfigure << ui->actionAbout_Us;
 
-    foreach (QAction *action, actions)
-        start_scene->addButton(action);
-    view = new FitView(scene);
+    // foreach (QAction *action, actions)
+    //     start_scene->addButton(action);
+    // view = new QWidget;
 
-    setCentralWidget(view);
+    // setCentralWidget(view);
     restoreFromConfig();
 
-    BackLoader::preload();
-    gotoScene(start_scene);
+    // BackLoader::preload();
+    // gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
@@ -186,27 +147,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::gotoScene(QGraphicsScene *scene)
-{
-    if (this->scene != nullptr)
-        this->scene->deleteLater();
-    this->scene = scene;
-    view->setScene(scene);
-    /* @todo: Need a better way to replace the magic number '4' */
-    //QResizeEvent e(QSize(view->size().width() - 4, view->size().height() - 4), view->size());
-    QResizeEvent e(QSize(view->size().width(), view->size().height()), view->size());
-    view->resizeEvent(&e);
-    //play BGM
-#ifdef AUDIO_SUPPORT
-    if (Config.EnableBgMusic && !Audio::isBackgroundMusicPlaying()) {
-        Audio::stopBGM();
-        Audio::playBGM("audio/title/main.ogg", true, true);
-        Audio::setBGMVolume(Config.BGMVolume);
-    }
-#endif
-    changeBackground();
-}
-
 void MainWindow::on_actionExit_triggered()
 {
     QMessageBox::StandardButton result = QMessageBox::question(this, tr("TouhouSatsu"), tr("Are you sure to exit?"), QMessageBox::Ok | QMessageBox::Cancel);
@@ -234,12 +174,12 @@ void MainWindow::on_actionStart_Server_triggered()
     ui->actionStart_Game->disconnect();
     connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
 
-    StartScene *start_scene = qobject_cast<StartScene *>(scene);
-    if (start_scene != nullptr) {
-        start_scene->switchToServer(server);
-        if (Config.value("EnableMinimizeDialog", false).toBool())
-            on_actionMinimize_to_system_tray_triggered();
-    }
+    // StartScene *start_scene = qobject_cast<StartScene *>(scene);
+    // if (start_scene != nullptr) {
+    //     start_scene->switchToServer(server);
+    //     if (Config.value("EnableMinimizeDialog", false).toBool())
+    //         on_actionMinimize_to_system_tray_triggered();
+    // }
 }
 
 void MainWindow::checkVersion(const QString &server_version, const QString &server_mod)
@@ -320,15 +260,15 @@ void MainWindow::networkError(const QString &error_msg)
 
 void BackLoader::preload()
 {
-    QStringList emotions = G_ROOM_SKIN.getAnimationFileNames();
+    // QStringList emotions = G_ROOM_SKIN.getAnimationFileNames();
 
-    foreach (QString emotion, emotions) {
-        int n = PixmapAnimation::GetFrameCount(emotion);
-        for (int i = 0; i < n; i++) {
-            QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(QString::number(i));
-            G_ROOM_SKIN.getPixmapFromFileName(filename);
-        }
-    }
+    // foreach (QString emotion, emotions) {
+    //     int n = PixmapAnimation::GetFrameCount(emotion);
+    //     for (int i = 0; i < n; i++) {
+    //         QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(QString::number(i));
+    //         G_ROOM_SKIN.getPixmapFromFileName(filename);
+    //     }
+    // }
 }
 
 void MainWindow::enterRoom()
@@ -345,41 +285,41 @@ void MainWindow::enterRoom()
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
-    RoomScene *room_scene = new RoomScene(this);
-    ui->actionView_Discarded->setEnabled(true);
-    ui->actionView_distance->setEnabled(true);
-    ui->actionServerInformation->setEnabled(true);
-    ui->actionSurrender->setEnabled(true);
-    ui->actionNever_nullify_my_trick->setEnabled(true);
-    ui->actionSaveRecord->setEnabled(true);
+    // RoomScene *room_scene = new RoomScene(this);
+    // ui->actionView_Discarded->setEnabled(true);
+    // ui->actionView_distance->setEnabled(true);
+    // ui->actionServerInformation->setEnabled(true);
+    // ui->actionSurrender->setEnabled(true);
+    // ui->actionNever_nullify_my_trick->setEnabled(true);
+    // ui->actionSaveRecord->setEnabled(true);
 
-    connect(ClientInstance, SIGNAL(surrender_enabled(bool)), ui->actionSurrender, SLOT(setEnabled(bool)));
+    // connect(ClientInstance, SIGNAL(surrender_enabled(bool)), ui->actionSurrender, SLOT(setEnabled(bool)));
 
-    connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(toggleDiscards()));
-    connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
-    connect(ui->actionServerInformation, SIGNAL(triggered()), room_scene, SLOT(showServerInformation()));
-    connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
-    connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
+    // connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(toggleDiscards()));
+    // connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
+    // connect(ui->actionServerInformation, SIGNAL(triggered()), room_scene, SLOT(showServerInformation()));
+    // connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
+    // connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
 
-    if (ServerInfo.EnableCheat) {
-        ui->menuCheat->setEnabled(true);
+    // if (ServerInfo.EnableCheat) {
+    //     ui->menuCheat->setEnabled(true);
 
-        connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
-        connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
-        connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
-        connect(ui->actionExecute_script_at_server_side, SIGNAL(triggered()), room_scene, SLOT(doScript()));
-    } else {
-        ui->menuCheat->setEnabled(false);
-        ui->actionDeath_note->disconnect();
-        ui->actionDamage_maker->disconnect();
-        ui->actionRevive_wand->disconnect();
-        ui->actionExecute_script_at_server_side->disconnect();
-    }
+    //     connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
+    //     connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
+    //     connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
+    //     connect(ui->actionExecute_script_at_server_side, SIGNAL(triggered()), room_scene, SLOT(doScript()));
+    // } else {
+    //     ui->menuCheat->setEnabled(false);
+    //     ui->actionDeath_note->disconnect();
+    //     ui->actionDamage_maker->disconnect();
+    //     ui->actionRevive_wand->disconnect();
+    //     ui->actionExecute_script_at_server_side->disconnect();
+    // }
 
-    connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
-    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
+    // connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
+    // connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
 
-    gotoScene(room_scene);
+    // gotoScene(room_scene);
 }
 
 void MainWindow::gotoStartScene()
@@ -397,23 +337,23 @@ void MainWindow::gotoStartScene()
     if (!servers.isEmpty())
         servers.first()->deleteLater();
 
-    StartScene *start_scene = new StartScene;
+    // StartScene *start_scene = new StartScene;
 
     QList<QAction *> actions;
     actions << ui->actionStart_Game << ui->actionStart_Server << ui->actionPC_Console_Start << ui->actionReplay << ui->actionGeneral_Overview << ui->actionCard_Overview
             << ui->actionConfigure << ui->actionAbout_Us;
 
-    foreach (QAction *action, actions)
-        start_scene->addButton(action);
+    // foreach (QAction *action, actions)
+    //     start_scene->addButton(action);
 
-    setCentralWidget(view);
+    // setCentralWidget(view);
 
     ui->menuCheat->setEnabled(false);
     ui->actionDeath_note->disconnect();
     ui->actionDamage_maker->disconnect();
     ui->actionRevive_wand->disconnect();
     ui->actionExecute_script_at_server_side->disconnect();
-    gotoScene(start_scene);
+    // gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
@@ -507,15 +447,15 @@ void MainWindow::on_actionAbout_triggered()
     QString forum_url = "http://qsanguosha.org";
     content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
 
-    Window *window = new Window(tr("About QSanguosha"), QSize(420, 465));
-    scene->addItem(window);
-    window->setZValue(32766);
+    // Window *window = new Window(tr("About QSanguosha"), QSize(420, 465));
+    // scene->addItem(window);
+    // window->setZValue(32766);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift(scene->inherits("RoomScene") ? scene->width() : 0, scene->inherits("RoomScene") ? scene->height() : 0);
+    // window->addContent(content);
+    // window->addCloseButton(tr("OK"));
+    // window->shift(scene->inherits("RoomScene") ? scene->width() : 0, scene->inherits("RoomScene") ? scene->height() : 0);
 
-    window->appear();
+    // window->appear();
 }
 
 void MainWindow::on_actionAbout_Us_triggered()
@@ -526,38 +466,40 @@ void MainWindow::on_actionAbout_Us_triggered()
 
 void MainWindow::setBackgroundBrush(bool centerAsOrigin)
 {
-    if (scene != nullptr) {
-        QPixmap pixmap(Config.BackgroundImage);
-        QBrush brush(pixmap);
-        qreal sx = (qreal)width() / qreal(pixmap.width());
-        qreal sy = (qreal)height() / qreal(pixmap.height());
+    (void)centerAsOrigin;
 
-        QTransform transform;
-        if (centerAsOrigin)
-            transform.translate(-(qreal)width() / 2, -(qreal)height() / 2);
-        transform.scale(sx, sy);
-        brush.setTransform(transform);
-        scene->setBackgroundBrush(brush);
-    }
+    // if (scene != nullptr) {
+    //     QPixmap pixmap(Config.BackgroundImage);
+    //     QBrush brush(pixmap);
+    //     qreal sx = (qreal)width() / qreal(pixmap.width());
+    //     qreal sy = (qreal)height() / qreal(pixmap.height());
+
+    //     QTransform transform;
+    //     if (centerAsOrigin)
+    //         transform.translate(-(qreal)width() / 2, -(qreal)height() / 2);
+    //     transform.scale(sx, sy);
+    //     brush.setTransform(transform);
+    //     scene->setBackgroundBrush(brush);
+    // }
 }
 
 void MainWindow::changeBackground()
 {
-    bool centerAsOrigin = scene != nullptr && !scene->inherits("RoomScene");
-    setBackgroundBrush(centerAsOrigin);
+    // bool centerAsOrigin = scene != nullptr && !scene->inherits("RoomScene");
+    // setBackgroundBrush(centerAsOrigin);
 
-    if (scene->inherits("StartScene")) {
-        StartScene *start_scene = qobject_cast<StartScene *>(scene);
-        start_scene->setServerLogBackground();
-    }
+    // if (scene->inherits("StartScene")) {
+    //     StartScene *start_scene = qobject_cast<StartScene *>(scene);
+    //     start_scene->setServerLogBackground();
+    // }
 }
 
 void MainWindow::changeTableBg()
 {
-    if (!scene->inherits("RoomScene"))
-        return;
+    // if (!scene->inherits("RoomScene"))
+    //     return;
 
-    RoomSceneInstance->changeTableBg();
+    // RoomSceneInstance->changeTableBg();
 }
 
 void MainWindow::on_actionFullscreen_triggered()
@@ -652,15 +594,15 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     content = QString("<table border='1'>%1</table").arg(content);
 
-    Window *window = new Window(tr("Role assign table"), QSize(240, 450));
-    scene->addItem(window);
+    // Window *window = new Window(tr("Role assign table"), QSize(240, 450));
+    // scene->addItem(window);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
-    window->setZValue(32766);
+    // window->addContent(content);
+    // window->addCloseButton(tr("OK"));
+    // window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+    // window->setZValue(32766);
 
-    window->appear();
+    // window->appear();
 }
 
 BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
@@ -707,15 +649,15 @@ void MainWindow::on_actionBroadcast_triggered()
 
 void MainWindow::on_actionAcknowledgement_triggered()
 {
-    Window *window = new Window(QString(), QSize(1000, 677), "image/system/acknowledgement.png");
-    scene->addItem(window);
+    // Window *window = new Window(QString(), QSize(1000, 677), "image/system/acknowledgement.png");
+    // scene->addItem(window);
 
-    Button *button = window->addCloseButton(tr("OK"));
-    button->moveBy(-85, -35);
-    window->setZValue(32766);
-    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+    // Button *button = window->addCloseButton(tr("OK"));
+    // button->moveBy(-85, -35);
+    // window->setZValue(32766);
+    // window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
 
-    window->appear();
+    // window->appear();
 }
 
 void MainWindow::on_actionPC_Console_Start_triggered()
@@ -896,15 +838,15 @@ void MainWindow::on_actionAbout_fmod_triggered()
     content.append(tr("Current version %1 <br/>").arg(Audio::getVersion()));
 #endif
 
-    Window *window = new Window(tr("About fmod"), QSize(500, 260));
-    scene->addItem(window);
+    // Window *window = new Window(tr("About fmod"), QSize(500, 260));
+    // scene->addItem(window);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->setZValue(32766);
-    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+    // window->addContent(content);
+    // window->addCloseButton(tr("OK"));
+    // window->setZValue(32766);
+    // window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
 
-    window->appear();
+    // window->appear();
 }
 
 void MainWindow::on_actionAbout_Lua_triggered()
@@ -918,15 +860,15 @@ void MainWindow::on_actionAbout_Lua_triggered()
     content.append(tr("Current version %1 <br/>").arg(LUA_RELEASE));
     content.append(LUA_COPYRIGHT);
 
-    Window *window = new Window(tr("About Lua"), QSize(500, 585));
-    scene->addItem(window);
+    // Window *window = new Window(tr("About Lua"), QSize(500, 585));
+    // scene->addItem(window);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->setZValue(32766);
-    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+    // window->addContent(content);
+    // window->addCloseButton(tr("OK"));
+    // window->setZValue(32766);
+    // window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
 
-    window->appear();
+    // window->appear();
 }
 
 void MainWindow::on_actionAbout_GPLv3_triggered()
@@ -938,15 +880,15 @@ void MainWindow::on_actionAbout_GPLv3_triggered()
     QString address = "http://gplv3.fsf.org";
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
-    Window *window = new Window(tr("About GPLv3"), QSize(500, 225));
-    scene->addItem(window);
+    // Window *window = new Window(tr("About GPLv3"), QSize(500, 225));
+    // scene->addItem(window);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->setZValue(32766);
-    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+    // window->addContent(content);
+    // window->addCloseButton(tr("OK"));
+    // window->setZValue(32766);
+    // window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
 
-    window->appear();
+    // window->appear();
 }
 
 // ATTENTION!!!! this slot is for "Download/update contents" menu item

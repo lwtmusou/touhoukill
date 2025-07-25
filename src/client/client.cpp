@@ -1,5 +1,4 @@
 #include "client.h"
-#include "SkinBank.h"
 #include "choosegeneraldialog.h"
 #include "engine.h"
 #include "nativesocket.h"
@@ -13,6 +12,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <QTextCursor>
 #include <QTextDocument>
 #include <QTimer>
@@ -184,7 +184,7 @@ Client::~Client()
 
 void Client::updateCard(const QVariant &val)
 {
-    if (JsonUtils::isNumber(val.type())) {
+    if (JsonUtils::isNumber(val)) {
         // reset card
         int cardId = val.toInt();
         Card *card = _m_roomState.getCard(cardId);
@@ -995,9 +995,9 @@ Replayer *Client::getReplayer() const
 
 QString Client::getPlayerName(const QString &str)
 {
-    QRegExp rx("sgs\\d+");
+    QRegularExpression rx(QRegularExpression::anchoredPattern("sgs\\d+"));
     QString general_name;
-    if (rx.exactMatch(str)) {
+    if (QRegularExpressionMatch m = rx.match(str); m.hasMatch()) {
         ClientPlayer *player = getPlayer(str);
         general_name = player->getGeneralName();
         general_name = Sanguosha->translate(general_name);
@@ -1059,12 +1059,6 @@ QString Client::setPromptList(const QStringList &texts)
     return prompt;
 }
 
-void Client::commandFormatWarning(const QString &str, const QRegExp &rx, const char *command)
-{
-    QString text = tr("The argument (%1) of command %2 does not conform the format %3").arg(str).arg(command).arg(rx.pattern());
-    QMessageBox::warning(nullptr, tr("Command format warning"), text);
-}
-
 QString Client::_processCardPattern(const QString &pattern)
 {
     const QChar c = pattern.at(pattern.length() - 1);
@@ -1094,9 +1088,9 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
     m_isDiscardActionRefusable = !card_pattern.endsWith("!");
 
     QString temp_pattern = _processCardPattern(card_pattern);
-    QRegExp rx("^@@?(\\w+)(-card)?$");
-    if (rx.exactMatch(temp_pattern)) {
-        QString skill_name = rx.capturedTexts().at(1);
+    QRegularExpression rx(QRegularExpression::anchoredPattern("^@@?(\\w+)(-card)?$"));
+    if (QRegularExpressionMatch m = rx.match(temp_pattern); m.hasMatch()) {
+        QString skill_name = m.capturedTexts().at(1);
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill != nullptr) {
             QString text = prompt_doc->toHtml();
@@ -1370,9 +1364,9 @@ QString Client::getReplayPath() const
 
 void Client::setLines(const QString &filename)
 {
-    QRegExp rx(".+/(\\w+\\d?).ogg");
-    if (rx.exactMatch(filename)) {
-        QString skill_name = rx.capturedTexts().at(1);
+    QRegularExpression rx(QRegularExpression::anchoredPattern(".+/(\\w+\\d?).ogg"));
+    if (QRegularExpressionMatch m = rx.match(filename); m.hasMatch()) {
+        QString skill_name = m.capturedTexts().at(1);
 
         QChar last_char = skill_name[skill_name.length() - 1];
         if (last_char.isDigit())
@@ -1541,7 +1535,7 @@ void Client::gameOver(const QVariant &arg)
         return;
     }
 
-    QSet<QString> winners = winner.split("+").toSet();
+    QSet<QString> winners = List2Set(winner.split("+"));
     foreach (const ClientPlayer *player, players) {
         QString role = player->getRole();
         bool win = winners.contains(player->objectName()) || winners.contains(role);
@@ -2396,7 +2390,7 @@ void Client::onPlayerChooseOrder()
     if (button != nullptr) {
         order = button->objectName();
     } else {
-        if (qrand() % 2 == 0)
+        if (qsgsRand() % 2 == 0)
             order = "warm";
         else
             order = "cool";

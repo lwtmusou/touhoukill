@@ -126,7 +126,7 @@ public:
 
     void setPlayerNames(const QStringList &names)
     {
-        set = names.toSet();
+        set = List2Set(names);
     }
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const override
@@ -210,7 +210,7 @@ public:
 
     void setPlayerNames(const QStringList &names)
     {
-        set = names.toSet();
+        set = List2Set(names);
     }
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const override

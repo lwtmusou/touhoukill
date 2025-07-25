@@ -31,13 +31,14 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
 
 bool ServerInfoStruct::parse(const QString &str)
 {
-    QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)");
-    if (!rx.exactMatch(str)) {
+    QRegularExpression rx(QRegularExpression::anchoredPattern("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)"));
+    QRegularExpressionMatch match = rx.match(str);
+    if (!match.hasMatch()) {
         qWarning("%s", qPrintable("Setup string error!"));
         return false;
     }
 
-    QStringList texts = rx.capturedTexts();
+    QStringList texts = match.capturedTexts();
     if (texts.isEmpty()) {
         DuringGame = false;
     } else {

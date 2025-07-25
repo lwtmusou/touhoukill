@@ -128,7 +128,6 @@
 #include <QRadioButton>
 #include <QRect>
 #include <QRectF>
-#include <QRegExp>
 #include <QRegion>
 #include <QScrollBar>
 #include <QSemaphore>
@@ -154,7 +153,6 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTextBrowser>
-#include <QTextCodec>
 #include <QTextCursor>
 #include <QTextDocument>
 #include <QTextEdit>

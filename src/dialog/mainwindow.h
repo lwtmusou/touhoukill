@@ -10,8 +10,6 @@ namespace Ui {
 class MainWindow;
 }
 
-class FitView;
-class QGraphicsScene;
 class QSystemTrayIcon;
 class Server;
 class QTextEdit;
@@ -59,8 +57,6 @@ protected:
     void closeEvent(QCloseEvent *) override;
 
 private:
-    FitView *view;
-    QGraphicsScene *scene;
     Ui::MainWindow *ui;
     ConnectionDialog *connection_dialog;
     ConfigDialog *config_dialog;
@@ -98,7 +94,6 @@ private slots:
     void checkVersion(const QString &server_version, const QString &server_mod);
     void networkError(const QString &error_msg);
     void enterRoom();
-    void gotoScene(QGraphicsScene *scene);
     void gotoStartScene();
     void startGameInAnotherInstance();
     void changeBackground();

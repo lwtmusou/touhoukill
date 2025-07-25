@@ -1,10 +1,11 @@
 #include "generaloverview.h"
-#include "SkinBank.h"
 #include "client.h"
 #include "clientstruct.h"
 #include "engine.h"
 #include "settings.h"
 #include "ui_generaloverview.h"
+
+#include "ui_legacy/SkinBank.h"
 
 #include <QClipboard>
 #include <QCommandLinkButton>
@@ -345,7 +346,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         nickname_item->setTextAlignment(Qt::AlignCenter);
 
         if (Sanguosha->isGeneralHidden(general_name)) {
-            nickname_item->setBackgroundColor(Qt::gray);
+            nickname_item->setBackground(Qt::gray);
             nickname_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
         }
 
@@ -358,7 +359,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         }
 
         if (Sanguosha->isGeneralHidden(general_name)) {
-            name_item->setBackgroundColor(Qt::gray);
+            name_item->setBackground(Qt::gray);
             name_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
         }
 
@@ -375,19 +376,19 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         package_item->setTextAlignment(Qt::AlignCenter);
 
         if (Config.value("LuaPackages", QString()).toString().split("+").contains(general->getPackage())) {
-            //package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
+            //package_item->setBackground(QColor(0x66, 0xCC, 0xFF));
             package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
         }
         //add color for touhou kingdoms and packages.
         QColor kingdomColor = Sanguosha->getKingdomColor(general->getKingdom());
-        package_item->setBackgroundColor(kingdomColor);
-        kingdom_item->setBackgroundColor(kingdomColor);
+        package_item->setBackground(kingdomColor);
+        kingdom_item->setBackground(kingdomColor);
         if ((11 * kingdomColor.blue() + 30 * kingdomColor.red() + 59 * kingdomColor.green()) / 100 <= 0x7f) {
             QBrush b = package_item->foreground();
-            b.setColor(Qt::white);
+            b.setColor(qRgb(255, 255, 255));
             package_item->setForeground(b);
             QBrush b2 = kingdom_item->foreground();
-            b2.setColor(Qt::white);
+            b.setColor(qRgb(255, 255, 255));
             kingdom_item->setForeground(b2);
         }
 
@@ -501,10 +502,11 @@ void GeneralOverview::addLines(const Skill *skill)
         button->setEnabled(false);
         button_layout->addWidget(button);
     } else {
-        QRegExp rx(".+/(\\w+\\d?).ogg");
+        QRegularExpression rx(QRegularExpression::anchoredPattern(".+/(\\w+\\d?).ogg"));
         for (int i = 0; i < sources.length(); i++) {
             QString source = sources[i];
-            if (!rx.exactMatch(source))
+            QRegularExpressionMatch m = rx.match(source);
+            if (!m.hasMatch())
                 continue;
 
             QString button_text = skill_name;
@@ -515,7 +517,7 @@ void GeneralOverview::addLines(const Skill *skill)
             button->setObjectName(source);
             button_layout->addWidget(button);
 
-            QString filename = rx.capturedTexts().at(1);
+            QString filename = m.capturedTexts().at(1);
             QString skill_line = Sanguosha->translate("$" + filename);
             button->setDescription(skill_line);
 
@@ -692,22 +694,22 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
             QString v_nickname = nickname;
             v_nickname.replace("?", ".");
             v_nickname.replace("*", ".*");
-            QRegExp rx(v_nickname);
+            QRegularExpression rx(QRegularExpression::anchoredPattern(v_nickname));
 
             QString g_nickname = Sanguosha->translate("#" + general_name);
             if (g_nickname.startsWith("#"))
                 g_nickname = Sanguosha->translate("#" + general_name.split("_").first());
-            if (!rx.exactMatch(g_nickname))
+            if (!rx.match(g_nickname).hasMatch())
                 continue;
         }
         if (!name.isEmpty()) {
             QString v_name = name;
             v_name.replace("?", ".");
             v_name.replace("*", ".*");
-            QRegExp rx(v_name);
+            QRegularExpression rx(QRegularExpression::anchoredPattern(v_name));
 
             QString g_name = Sanguosha->translate(general_name);
-            if (!rx.exactMatch(g_name))
+            if (!rx.match(g_name).hasMatch())
                 continue;
         }
         if (!genders.isEmpty()) {

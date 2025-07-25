@@ -2198,7 +2198,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
                     equips.removeOne(c);
             }
             if (!equips.isEmpty()) {
-                int x = qrand() % equips.length();
+                int x = qsgsRand() % equips.length();
                 card = equips.value(x);
             }
         }
@@ -2398,7 +2398,7 @@ public:
             }
         } else {
             QVariant knownBothTag = room->getTag("KnownBothUsed");
-            if (knownBothTag.canConvert(QVariant::Bool) && knownBothTag.toBool() && (room->getCurrent() != nullptr)) {
+            if (knownBothTag.metaType().id() == QMetaType::Bool && knownBothTag.toBool() && (room->getCurrent() != nullptr)) {
                 foreach (ServerPlayer *p, room->getOtherPlayers(room->getCurrent())) {
                     if (p->getMark("KnownBoth_Limit") == 0) {
                         room->setPlayerCardLimitation(p, "use", ".|.|.|show", "known_both", true);

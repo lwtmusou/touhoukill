@@ -2084,7 +2084,7 @@ void YinyangCard::onEffect(const CardEffectStruct &effect) const
     card1 = room->askForCard(effect.to, ".|.|.|hand!", "@yinyang_discard");
     if (card1 == nullptr) {
         // force discard!!!
-        int x = qrand() % hc1.length();
+        int x = qsgsRand() % hc1.length();
         card1 = hc1.value(x);
         room->throwCard(card1, effect.to);
     }
@@ -2111,7 +2111,7 @@ void YinyangCard::onEffect(const CardEffectStruct &effect) const
     if (card2 == nullptr) {
         // force discard!!!
         if (hc2.length() > 0) {
-            int x = qrand() % hc2.length();
+            int x = qsgsRand() % hc2.length();
             card2 = hc2.value(x);
             room->throwCard(card2, effect.from);
         }
@@ -2446,7 +2446,7 @@ bool BodongCard::targetFilter(const QList<const Player *> &targets, const Player
 
 bool BodongCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
-    if (targets.toSet().size() > 3 || targets.toSet().size() == 0)
+    if (List2Set(targets).size() > 3 || List2Set(targets).size() == 0)
         return false;
     QHash<const Player *, int> map;
 
@@ -2574,10 +2574,10 @@ ProtagonistPackage::ProtagonistPackage()
     General *marisa_sp = new General(this, "marisa_sp", "zhu", 3);
     marisa_sp->addSkill(new Jiezou);
     marisa_sp->addSkill(new JiezouNdl);
-    related_skills.insertMulti("jiezou", "#jiezou-ndl");
+    related_skills.insert("jiezou", "#jiezou-ndl");
     marisa_sp->addSkill(new Shoucang);
     marisa_sp->addSkill(new ShoucangMax);
-    related_skills.insertMulti("shoucang", "#shoucang");
+    related_skills.insert("shoucang", "#shoucang");
 
     General *marisa_sp2 = new General(this, "marisa_sp2", "zhu", 4);
     marisa_sp2->addSkill(new Baoyi);
@@ -2594,12 +2594,12 @@ ProtagonistPackage::ProtagonistPackage()
     reimu_slm->addSkill(new BllmMingyu);
     reimu_slm->addSkill(new BllmShuiyu);
     reimu_slm->addSkill(new BllmShuiyuMax);
-    related_skills.insertMulti("bllmwuyu", "#bllmcaiyu");
-    related_skills.insertMulti("bllmwuyu", "#bllmseyu");
-    related_skills.insertMulti("bllmwuyu", "#bllmseyu_clear");
-    related_skills.insertMulti("bllmwuyu", "#bllmmingyu");
-    related_skills.insertMulti("bllmwuyu", "#bllmshuiyu");
-    related_skills.insertMulti("bllmwuyu", "#bllmshuiyu2");
+    related_skills.insert("bllmwuyu", "#bllmcaiyu");
+    related_skills.insert("bllmwuyu", "#bllmseyu");
+    related_skills.insert("bllmwuyu", "#bllmseyu_clear");
+    related_skills.insert("bllmwuyu", "#bllmmingyu");
+    related_skills.insert("bllmwuyu", "#bllmshuiyu");
+    related_skills.insert("bllmwuyu", "#bllmshuiyu2");
 
     General *marisa_slm = new General(this, "marisa_slm", "zhu", 3);
     marisa_slm->addSkill(new Qiangyu);
@@ -2609,7 +2609,7 @@ ProtagonistPackage::ProtagonistPackage()
     sanae_slm->addSkill(new DfgzmSiyu);
     sanae_slm->addSkill(new Qishu);
     sanae_slm->addSkill(new QishuTargetMod);
-    related_skills.insertMulti("qishu", "#qishu-mod");
+    related_skills.insert("qishu", "#qishu-mod");
 
     General *youmu_slm = new General(this, "youmu_slm", "zhu", 2);
     youmu_slm->addSkill(new HpymSiyu);

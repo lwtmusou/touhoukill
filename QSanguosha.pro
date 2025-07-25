@@ -2,22 +2,12 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network widgets
+QT += network widgets quick quickwidgets
 TEMPLATE = app
 
 !macx: CONFIG += audio
 
-win32: QT += winextras
-
-!equals(QT_MAJOR_VERSION, "5") {
-    error("QSanguosha requires Qt 5 after 5.6.")
-}
-
-lessThan(QT_MINOR_VERSION, 6) {
-    error("QSanguosha requires Qt 5 after 5.6.")
-}
-
-CONFIG += c++11
+CONFIG += c++17
 CONFIG += lua
 
 VERSION = 0.10.11
@@ -89,50 +79,18 @@ SOURCES += \
     src/server/roomthread.cpp \
     src/server/server.cpp \
     src/server/serverplayer.cpp \
-    src/ui/bubblechatbox.cpp \
-    src/ui/button.cpp \
-    src/ui/cardcontainer.cpp \
-    src/ui/carditem.cpp \
-    src/ui/chatwidget.cpp \
-    src/ui/clientlogbox.cpp \
-    src/ui/dashboard.cpp \
-    src/ui/GenericCardContainerUI.cpp \
-    src/ui/graphicspixmaphoveritem.cpp \
-    src/ui/heroskincontainer.cpp \
-    src/ui/indicatoritem.cpp \
-    src/ui/magatamasItem.cpp \
-    src/ui/photo.cpp \
-    src/ui/pixmapanimation.cpp \
-    src/ui/choosegeneralbox.cpp \
-    src/ui/qsanbutton.cpp \
-    src/ui/QSanSelectableItem.cpp \
-    src/ui/rolecombobox.cpp \
-    src/ui/roomscene.cpp \
-    src/ui/sanfreetypefont.cpp \
-    src/ui/sanshadowtextfont.cpp \
-    src/ui/sansimpletextfont.cpp \
-    src/ui/sanuiutils.cpp \
-    src/ui/SkinBank.cpp \
-    src/ui/sgswindow.cpp \
-    src/ui/skinitem.cpp \
-    src/ui/sprite.cpp \
-    src/ui/startscene.cpp \
-    src/ui/TablePile.cpp \
-    src/ui/TimedProgressBar.cpp \
-    src/ui/uiUtils.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
     src/main.cpp \
-    src/ui/choosetriggerorderbox.cpp \
-    src/ui/graphicsbox.cpp \
-    src/ui/lightboxanimation.cpp \
-    src/ui/chooseoptionsbox.cpp \
-    src/ui/playercardbox.cpp \
     src/package/hegemonyCard.cpp \
     src/package/playground.cpp \
-    src/ui/hegemonyrolecombobox.cpp \
-    src/package/peasants_vs_landlord.cpp
+    src/package/peasants_vs_landlord.cpp \
+    src/dialog/TimedProgressBar.cpp \
+    src/dialog/serverdialog.cpp \
+    src/dialog/uilegacy/SkinBank.cpp \
+    src/dialog/uilegacy/qsanbutton.cpp \
+    src/dialog/uilegacy/uiUtils.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -199,51 +157,19 @@ HEADERS += \
     src/server/roomthread.h \
     src/server/server.h \
     src/server/serverplayer.h \
-    src/ui/bubblechatbox.h \
-    src/ui/button.h \
-    src/ui/cardcontainer.h \
-    src/ui/carditem.h \
-    src/ui/chatwidget.h \
-    src/ui/clientlogbox.h \
-    src/ui/dashboard.h \
-    src/ui/GenericCardContainerUI.h \
-    src/ui/graphicspixmaphoveritem.h \
-    src/ui/choosegeneralbox.h \
-    src/ui/heroskincontainer.h \
-    src/ui/indicatoritem.h \
-    src/ui/magatamasItem.h \
-    src/ui/photo.h \
-    src/ui/pixmapanimation.h \
-    src/ui/qsanbutton.h \
-    src/ui/QSanSelectableItem.h \
-    src/ui/rolecombobox.h \
-    src/ui/roomscene.h \
-    src/ui/sanfreetypefont.h \
-    src/ui/sanshadowtextfont.h \
-    src/ui/sansimpletextfont.h \
-    src/ui/sanuiutils.h \
-    src/ui/SkinBank.h \
-    src/ui/sgswindow.h \
-    src/ui/skinitem.h \
-    src/ui/sprite.h \
-    src/ui/startscene.h \
-    src/ui/TablePile.h \
-    src/ui/TimedProgressBar.h \
-    src/ui/uiUtils.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
     src/util/socket.h \
-    src/ui/choosetriggerorderbox.h \
-    src/ui/graphicsbox.h \
-    src/ui/lightboxanimation.h \
-    src/ui/hegemonyrolecombobox.h \
-    src/ui/chooseoptionsbox.h \
-    src/ui/playercardbox.h \
     src/package/hegemonyCard.h \
     src/package/playground.h \
     src/pch.h \
-    src/package/peasants_vs_landlord.h
+    src/package/peasants_vs_landlord.h \
+    src/dialog/TimedProgressBar.h \
+    src/dialog/serverdialog.h \
+    src/dialog/uilegacy/SkinBank.h \
+    src/dialog/uilegacy/qsanbutton.h \
+    src/dialog/uilegacy/uiUtils.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
@@ -258,7 +184,6 @@ INCLUDEPATH += src/dialog
 INCLUDEPATH += src/package
 INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
-INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
 
 win32{
@@ -273,7 +198,6 @@ macx{
 
 DEFINES += "QSGS_VERSION=\\\"$$VERSION\\\""
 DEFINES += "QSGS_VERSIONNUMBER=\\\"$$VERSIONNUMBER\\\""
-DEFINES += QT_NO_DEPRECATED_WARNINGS
 
 LIBS += -L.
 win32-msvc*{
@@ -307,7 +231,6 @@ macx{
     DEFINES += MAC
     ## LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
     DEFINES += LUA_USE_MACOSX
-    LIBS += -L/opt/homebrew/lib/
 }
 ios{
     DEFINES += IOS
@@ -449,12 +372,6 @@ QMAKE_EXTRA_COMPILERS += swig
 }
 
 TRANSLATIONS += builds/sanguosha.ts
-
-CONFIG(debug, debug|release): LIBS += -lfreetype_D
-else:LIBS += -lfreetype
-
-INCLUDEPATH += $$_PRO_FILE_PWD_/include/freetype
-DEPENDPATH += $$_PRO_FILE_PWD_/include/freetype
 
 #ANDROID_PACKAGE_SOURCE_DIR = $$_PRO_FILE_PWD_/resource/android
 

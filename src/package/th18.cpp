@@ -438,8 +438,8 @@ public:
                             prop << cn;
                     }
 
-                    if (prop1.toSet() != prop.toSet()) {
-                        prop1 = prop.toSet().toList();
+                    if (List2Set(prop1) != List2Set(prop)) {
+                        prop1 = List2Set(prop).values();
                         p->tag[LiunengSetProperty] = prop1;
                         room->setPlayerProperty(p, objectName().toUtf8().constData(), prop1.join("+"));
                     }
@@ -867,7 +867,7 @@ public:
             const Card *obtainedGood = room->askForCard(player, "@@yingji!", "yingji-get:" + invoke->invoker->objectName(), {}, Card::MethodNone, nullptr, false, {}, false, 0);
             if (obtainedGood == nullptr) {
                 QList<int> is = invoke->invoker->getPile("goods");
-                obtainedGood = Sanguosha->getCard(is[qrand() % is.length()]);
+                obtainedGood = Sanguosha->getCard(is[qsgsRand() % is.length()]);
             }
 
             player->obtainCard(obtainedGood);
@@ -1073,7 +1073,7 @@ void BoxiCard::use(Room *room, const CardUseStruct &card_use) const
             try {
                 if (!room->askForUseCard(card_use.from, "@@boxi!", "boxi-use-or-obtain")) {
                     // randomly get a card
-                    int r = to_discard2.at(qrand() % to_discard2.length());
+                    int r = to_discard2.at(qsgsRand() % to_discard2.length());
                     room->obtainCard(card_use.from, r);
                 }
             } catch (TriggerEvent) {
@@ -2288,13 +2288,13 @@ TH18Package::TH18Package()
     mike->addSkill(new Cizhao);
     mike->addSkill(new CizhaoDistance);
     mike->addSkill(new Danran);
-    related_skills.insertMulti("cizhao", "#cizhao-distance");
+    related_skills.insert("cizhao", "#cizhao-distance");
 
     General *takane = new General(this, "takane", "hld");
     takane->addSkill(new Yingji);
     takane->addSkill(new YingjiRecord);
     takane->addSkill(new Zhixiao);
-    related_skills.insertMulti("yingji", "#yingji-record");
+    related_skills.insert("yingji", "#yingji-record");
 
     General *sannyo = new General(this, "sannyo", "hld");
     sannyo->addSkill(new Boxi);
@@ -2308,14 +2308,14 @@ TH18Package::TH18Package()
     tsukasa->addSkill(new TiaosuoT);
     tsukasa->addSkill(new TiaosuoP);
     tsukasa->addSkill(new Zuanying);
-    related_skills.insertMulti("tiaosuo", "#tiaosuo-distance");
-    related_skills.insertMulti("tiaosuo", "#tiaosuo-targetmod");
+    related_skills.insert("tiaosuo", "#tiaosuo-distance");
+    related_skills.insert("tiaosuo", "#tiaosuo-targetmod");
 
     General *megumu = new General(this, "megumu", "hld");
     megumu->addSkill(new FgwlShezheng);
     megumu->addSkill(new Miji);
     megumu->addSkill(new MijiRecord);
-    related_skills.insertMulti("miji", "#miji");
+    related_skills.insert("miji", "#miji");
 
     General *momoyo = new General(this, "momoyo", "hld");
     momoyo->addSkill(new Juezhu);

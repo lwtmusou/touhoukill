@@ -6,7 +6,9 @@
 #include "settings.h"
 #include "standard.h"
 #include "structs.h"
+
 #include <QFile>
+#include <QRegularExpression>
 
 const int Card::S_UNKNOWN_CARD_ID = -1;
 
@@ -444,8 +446,8 @@ const Card *Card::Parse(const QString &str)
 
     if (str.startsWith(QChar('@'))) {
         // skill card
-        QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
-        QRegExp ex_pattern("@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?");
+        QRegularExpression pattern(QRegularExpression::anchoredPattern("@(\\w+)=([^:]+)(:.+)?"));
+        QRegularExpression ex_pattern(QRegularExpression::anchoredPattern("@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?"));
 
         QStringList texts;
         QString card_name, card_suit, card_number;
@@ -453,13 +455,13 @@ const Card *Card::Parse(const QString &str)
         QString subcard_str;
         QString user_string;
 
-        if (pattern.exactMatch(str)) {
-            texts = pattern.capturedTexts();
+        if (QRegularExpressionMatch m = pattern.match(str); m.hasMatch()) {
+            texts = m.capturedTexts();
             card_name = texts.at(1);
             subcard_str = texts.at(2);
             user_string = texts.at(3);
-        } else if (ex_pattern.exactMatch(str)) {
-            texts = ex_pattern.capturedTexts();
+        } else if (QRegularExpressionMatch m = ex_pattern.match(str); m.hasMatch()) {
+            texts = m.capturedTexts();
             card_name = texts.at(1);
             card_suit = texts.at(2);
             card_number = texts.at(3);
@@ -522,11 +524,12 @@ const Card *Card::Parse(const QString &str)
         new_card->deleteLater();
         return new_card;
     } else if (str.contains(QChar('='))) {
-        QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
-        if (!pattern.exactMatch(str))
+        QRegularExpression pattern(QRegularExpression::anchoredPattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)"));
+        QRegularExpressionMatch m = pattern.match(str);
+        if (!m.hasMatch())
             return nullptr;
 
-        QStringList texts = pattern.capturedTexts();
+        QStringList texts = m.capturedTexts();
         QString card_name = texts.at(1);
         QString m_skillName = texts.at(2);
         QString suit_string = texts.at(3);

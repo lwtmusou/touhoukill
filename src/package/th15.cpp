@@ -493,7 +493,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             QVariant extraTag = room->getTag("touhou-extra");
-            bool nowExtraTurn = extraTag.canConvert(QVariant::Bool) && extraTag.toBool();
+            bool nowExtraTurn = extraTag.metaType().id() == QMetaType::Bool && extraTag.toBool();
 
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (!nowExtraTurn && player->hasSkill(this) && player->getPhase() == Player::RoundStart)
@@ -1618,27 +1618,27 @@ TH15Package::TH15Package()
     junko->addSkill(new ChunhuaNullified);
     junko->addSkill(new ChunhuaCardEffect);
     junko->addSkill(new Shayi);
-    related_skills.insertMulti("chunhua", "#chunhua");
-    related_skills.insertMulti("chunhua", "#chunhua-cardeffect");
+    related_skills.insert("chunhua", "#chunhua");
+    related_skills.insert("chunhua", "#chunhua-cardeffect");
 
     General *hecatia = new General(this, "hecatia", "gzz", 4);
     hecatia->addSkill(new Santi);
     hecatia->addSkill(new SantiEffect);
-    related_skills.insertMulti("santi", "#santi");
+    related_skills.insert("santi", "#santi");
 
     General *clownpiece = new General(this, "clownpiece", "gzz", 3);
     clownpiece->addSkill(new Yuyi);
     clownpiece->addSkill(new Skill("kuangluan"));
     clownpiece->addSkill(new Kuangluan1);
     clownpiece->addSkill(new Kuangluan2);
-    related_skills.insertMulti("kuangluan", "#kuangluan1");
-    related_skills.insertMulti("kuangluan", "#kuangluan2");
+    related_skills.insert("kuangluan", "#kuangluan1");
+    related_skills.insert("kuangluan", "#kuangluan2");
 
     General *sagume = new General(this, "sagume", "gzz", 4);
     sagume->addSkill(new Shehuo);
     sagume->addSkill(new ShehuoEffect);
     sagume->addSkill(new Shenyan);
-    related_skills.insertMulti("shehuo", "#shehuo");
+    related_skills.insert("shehuo", "#shehuo");
 
     General *doremy = new General(this, "doremy", "gzz", 3);
     doremy->addSkill(new Bumeng);
@@ -1651,8 +1651,8 @@ TH15Package::TH15Package()
     seiran->addSkill(new Yidan);
     seiran->addSkill(new YidanTargetMod);
     seiran->addSkill(new YidanProhibit);
-    related_skills.insertMulti("yidan", "#yidanmod");
-    related_skills.insertMulti("yidan", "#yidanprohibit");
+    related_skills.insert("yidan", "#yidanmod");
+    related_skills.insert("yidan", "#yidanprohibit");
 
     skills << new ShehuoProhibit << new ShehuoTargetMod << new YidanOtherVS;
 }

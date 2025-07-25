@@ -1,7 +1,6 @@
 #ifndef _CLIENT_STRUCT_H
 #define _CLIENT_STRUCT_H
 
-#include "QSanSelectableItem.h"
 #include "player.h"
 #include "protocol.h"
 

@@ -31,9 +31,6 @@ class ChooseGeneralDialog : public QDialog
 public:
     explicit ChooseGeneralDialog(const QStringList &general_names, QWidget *parent, bool view_only = false, const QString &title = QString());
 
-public slots:
-    void done(int) override;
-
 protected:
     QDialog *m_freeChooseDialog;
 
@@ -50,6 +47,7 @@ class FreeChooseDialog : public QDialog
 
 public:
     explicit FreeChooseDialog(QWidget *parent, bool pair_choose = false);
+    ~FreeChooseDialog();
 
 private:
     QButtonGroup *group;

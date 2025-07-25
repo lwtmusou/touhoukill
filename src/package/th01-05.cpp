@@ -673,7 +673,7 @@ public:
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
         if (current->getPhase() == Player::Finish && current->hasSkill(this)) {
             QVariant tag = room->getTag("qiusuoDamageOrDeath");
-            bool can = tag.canConvert(QVariant::Bool) && tag.toBool();
+            bool can = (tag.metaType().id() == QMetaType::Bool) && tag.toBool();
             if (can)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
         }
@@ -924,7 +924,7 @@ public:
             const Card *card = room->askForCard(to, ".!", prompt, data, Card::MethodDiscard);
             if (card == nullptr) {
                 // force discard!!!
-                int x = qrand() % hc.length();
+                int x = qsgsRand() % hc.length();
                 const Card *c = hc.value(x);
                 card = c;
                 room->throwCard(c, to);
@@ -1760,7 +1760,7 @@ void ModianCard::use(Room *room, const CardUseStruct &card_use) const
         if (c == nullptr) {
             QList<int> modians = alice->getPile("modian");
 
-            int x = qrand() % modians.length();
+            int x = qsgsRand() % modians.length();
             int id = modians.value(x);
             c = Sanguosha->getCard(id);
         }
@@ -2892,14 +2892,14 @@ public:
         if (card1 == nullptr) {
             // force !!!
             QList<const Card *> hc1 = invoke->invoker->getHandcards();
-            int x = qrand() % hc1.length();
+            int x = qsgsRand() % hc1.length();
             card1 = hc1.value(x);
         }
         const Card *card2 = room->askForCard(invoke->owner, ".|.|.|hand,equipped!", "@chenjue:" + current->objectName(), data, Card::MethodNone);
         if (card2 == nullptr) {
             // force !!!
             QList<const Card *> hc2 = invoke->owner->getHandcards();
-            int y = qrand() % hc2.length();
+            int y = qsgsRand() % hc2.length();
             card2 = hc2.value(y);
         }
 
@@ -4057,8 +4057,8 @@ TH0105Package::TH0105Package()
     elly->addSkill(new LianmuTargetMod);
     elly->addSkill(new HuanweiEffect);
     elly->addSkill(new Huanwei);
-    related_skills.insertMulti("lianmu", "#lianmu_mod");
-    related_skills.insertMulti("huanwei", "#huanwei");
+    related_skills.insert("lianmu", "#lianmu_mod");
+    related_skills.insert("huanwei", "#huanwei");
 
     General *shinki = new General(this, "shinki$", "pc98", 4);
     shinki->addSkill(new SqChuangshi);
@@ -4093,8 +4093,8 @@ TH0105Package::TH0105Package()
     rika->addSkill(new ZhancheD);
     rika->addSkill(new Huosui);
     rika->addSkill(new HuosuiTM);
-    related_skills.insertMulti("zhanche", "#zhanche-distance");
-    related_skills.insertMulti("huosui", "#huosui-dist");
+    related_skills.insert("zhanche", "#zhanche-distance");
+    related_skills.insert("huosui", "#huosui-dist");
 
     General *elis = new General(this, "elis", "pc98", 3);
     elis->addSkill(new Yihuan);

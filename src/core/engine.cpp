@@ -15,6 +15,7 @@
 #include <QFile>
 #include <QGlobalStatic>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <QStringList>
 #include <QTextStream>
 #include <QVersionNumber>
@@ -169,7 +170,7 @@ void Engine::addPackage(Package *package)
         return;
 
     package->setParent(this);
-    patterns.unite(package->getPatterns());
+    patterns.insert(package->getPatterns());
     related_skills.unite(package->getRelatedSkills());
 
     QList<Card *> all_cards = package->findChildren<Card *>();
@@ -260,7 +261,7 @@ QStringList Engine::getBanPackages() const
             }
             return ban;
         } else {
-            QStringList ban = ban_package.toList();
+            QStringList ban = ban_package.values();
             if (!ban.contains("hegemonyGeneral"))
                 ban << "hegemonyGeneral";
             if (!ban.contains("hegemony_card"))
@@ -757,10 +758,10 @@ int Engine::getPlayerCount(const QString &mode) const
     }
 
     if (modes.contains(mode)) {
-        QRegExp rx("(\\d+)");
-        int index = rx.indexIn(mode);
-        if (index != -1)
-            return rx.capturedTexts().constFirst().toInt();
+        QRegularExpression rx("(\\d+)");
+        QRegularExpressionMatch m = rx.match(mode);
+        if (m.hasMatch())
+            return m.capturedTexts().constFirst().toInt();
     }
 
     return -1;
@@ -791,7 +792,7 @@ QString Engine::getRoles(const QString &mode) const
               << "G"
               << "Q"; //wei shu wu qun
         for (int i = 0; i < num; ++i) {
-            int role_idx = qrand() % roles.length();
+            int role_idx = qsgsRand() % roles.length();
             role = role + roles[role_idx];
         }
         return role;
@@ -931,7 +932,7 @@ QStringList Engine::getRandomLords() const
     if (lord_num != -1 && lord_num < lords.length()) {
         int to_remove = lords.length() - lord_num;
         for (int i = 0; i < to_remove; i++) {
-            lords.removeAt(qrand() % lords.length());
+            lords.removeAt(qsgsRand() % lords.length());
         }
     }
 
@@ -965,7 +966,7 @@ QStringList Engine::getRandomLords() const
         extra = 1;
 
     bool assign_latest_general = Config.value("AssignLatestGeneral", true).toBool();
-    QStringList latest = getLatestGenerals(lords.toSet());
+    QStringList latest = getLatestGenerals(List2Set(lords));
     if (assign_latest_general && !latest.isEmpty()) {
         lords << latest.first();
         if (nonlord_list.contains(latest.first()))
@@ -1053,24 +1054,24 @@ void Engine::banRandomGods() const
 QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const
 {
     QStringList all_generals = getLimitedGeneralNames();
-    QSet<QString> general_set = all_generals.toSet();
+    QSet<QString> general_set = List2Set(all_generals);
 
     Q_ASSERT(all_generals.count() >= count);
 
     if (isNormalGameMode(ServerInfo.GameMode))
-        general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/Roles", "").toStringList()));
     else if (ServerInfo.GameMode == "03_1v2")
-        general_set.subtract(Config.value("Banlist/03_1v2", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/03_1v2", "").toStringList()));
     else if (ServerInfo.GameMode == "04_2v2")
-        general_set.subtract(Config.value("Banlist/04_2v2", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/04_2v2", "").toStringList()));
     else if (ServerInfo.GameMode == "04_1v3")
-        general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/HulaoPass", "").toStringList()));
     else if (ServerInfo.GameMode == "06_XMode")
-        general_set.subtract(Config.value("Banlist/XMode", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/XMode", "").toStringList()));
     else if (isHegemonyGameMode(ServerInfo.GameMode))
-        general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/Hegemony", "").toStringList()));
 
-    all_generals = general_set.subtract(ban_set).toList();
+    all_generals = general_set.subtract(ban_set).values();
 
     // shuffle them
     qShuffle(all_generals);
@@ -1100,17 +1101,17 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
 QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
 {
-    QSet<QString> general_set = LatestGeneralList.toSet();
+    QSet<QString> general_set = List2Set(LatestGeneralList);
     if (isNormalGameMode(ServerInfo.GameMode))
-        general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/Roles", "").toStringList()));
     else if (ServerInfo.GameMode == "04_1v3")
-        general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/HulaoPass", "").toStringList()));
     else if (ServerInfo.GameMode == "06_XMode")
-        general_set.subtract(Config.value("Banlist/XMode", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/XMode", "").toStringList()));
     else if (isHegemonyGameMode(ServerInfo.GameMode))
-        general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
+        general_set.subtract(List2Set(Config.value("Banlist/Hegemony", "").toStringList()));
 
-    QStringList latest_generals = general_set.subtract(ban_set).toList();
+    QStringList latest_generals = general_set.subtract(ban_set).values();
     if (!latest_generals.isEmpty())
         qShuffle(latest_generals);
     return latest_generals;
@@ -1195,7 +1196,7 @@ QList<int> Engine::getRandomCards() const
 
 QString Engine::getRandomGeneralName() const
 {
-    return generals.keys().at(qrand() % generals.size());
+    return generals.keys().at(qsgsRand() % generals.size());
 }
 
 void Engine::playSystemAudioEffect(const QString &name) const

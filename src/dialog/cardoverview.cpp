@@ -1,10 +1,11 @@
 #include "cardoverview.h"
-#include "SkinBank.h"
 #include "client.h"
 #include "clientstruct.h"
 #include "engine.h"
 #include "settings.h"
 #include "ui_cardoverview.h"
+
+#include "ui_legacy/SkinBank.h"
 
 #include <QFile>
 #include <QMessageBox>
@@ -113,7 +114,7 @@ void CardOverview::addCard(int i, const Card *card)
 
     QTableWidgetItem *package_item = new QTableWidgetItem(package);
     if (Config.value("LuaPackages", QString()).toString().split("+").contains(card->getPackage())) {
-        package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
+        package_item->setBackground(QColor(0x66, 0xCC, 0xFF));
         package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
     }
     ui->tableWidget->setItem(i, 5, package_item);

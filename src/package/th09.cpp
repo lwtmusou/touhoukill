@@ -1926,7 +1926,7 @@ public:
                 }
             }
 
-            QSet<QString> previousDistance1 = sumireko->tag["Chongshen_distance1"].toStringList().toSet();
+            QSet<QString> previousDistance1 = List2Set(sumireko->tag["Chongshen_distance1"].toStringList());
             QSet<QString> added = distance1 - previousDistance1;
             QSet<QString> removed = previousDistance1 - distance1;
 
@@ -1942,7 +1942,7 @@ public:
                 room->setFixedDistance(sumireko, p, 1);
             }
 
-            QStringList distance1List = distance1.toList();
+            QStringList distance1List = distance1.values();
             sumireko->tag["Chongshen_distance1"] = distance1List;
         }
     }
@@ -2856,14 +2856,14 @@ QList<int> YucanCard::do_yucan(Room *room, ServerPlayer *eat) const
             QList<int> idP = idm.values(p);
             int id = room->askForCardChosen(eat, p, "hs", getSkillName(), false, Card::MethodNone, idP);
             room->showCard(p, id);
-            idm.insertMulti(p, id);
+            idm.insert(p, id);
             ids << id;
         } else if (!selfasked) {
             int n = ps.count(eat);
             const Card *c = room->askForExchange(eat, objectName(), n, n, false, getSkillName() + "-showself:::" + QString::number(n));
             foreach (int id, c->getSubcards()) {
                 room->showCard(eat, id);
-                idm.insertMulti(eat, id);
+                idm.insert(eat, id);
                 ids << id;
             }
             delete c;
@@ -2974,7 +2974,7 @@ YucanSelectCard::YucanSelectCard()
 
 bool YucanSelectCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
-    if (targets.toSet().size() > 3 || targets.toSet().size() == 0)
+    if (List2Set(targets).size() > 3 || List2Set(targets).size() == 0)
         return false;
     QHash<const Player *, int> map;
 
@@ -3369,7 +3369,7 @@ TH09Package::TH09Package()
     yuka->addSkill(new Weiya);
     yuka->addSkill(new Fanhua);
     yuka->addSkill(new FanhuaLimit);
-    related_skills.insertMulti("fanhua", "#fanhua-mod");
+    related_skills.insert("fanhua", "#fanhua-mod");
 
     General *medicine = new General(this, "medicine", "zhan", 3);
     medicine->addSkill(new Judu);
@@ -3395,7 +3395,7 @@ TH09Package::TH09Package()
     General *kokoro = new General(this, "kokoro$", "zhan", 4);
     kokoro->addSkill(new Nengwu);
     kokoro->addSkill(new Nengwu2);
-    related_skills.insertMulti("nengwu", "#nengwu2");
+    related_skills.insert("nengwu", "#nengwu2");
     kokoro->addSkill(new Xiwang);
 
     General *sumireko = new General(this, "sumireko$", "zhan", 4);
@@ -3420,7 +3420,7 @@ TH09Package::TH09Package()
     yuma->addSkill(new Yucan);
     yuma->addSkill(new Huiran);
     yuma->addSkill(new HuiranRecord);
-    related_skills.insertMulti("huiran", "#huiran-record");
+    related_skills.insert("huiran", "#huiran-record");
 
     addMetaObject<ToupaiCard>();
     addMetaObject<TianrenCard>();

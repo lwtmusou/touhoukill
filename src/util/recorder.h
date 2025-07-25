@@ -3,13 +3,13 @@
 
 #include "protocol.h"
 
+#include <QElapsedTimer>
 #include <QImage>
 #include <QMap>
 #include <QMutex>
 #include <QObject>
 #include <QSemaphore>
 #include <QThread>
-#include <QTime>
 
 class Recorder : public QObject
 {
@@ -29,7 +29,7 @@ public slots:
     void record(const char *line);
 
 private:
-    QTime watch;
+    QElapsedTimer watch;
     QByteArray data;
 };
 

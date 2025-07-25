@@ -343,12 +343,12 @@ void Player::setAlive(bool alive)
 
 QString Player::getFlags() const
 {
-    return QStringList(flags.toList()).join("|");
+    return QStringList(flags.values()).join("|");
 }
 
 QStringList Player::getFlagList() const
 {
-    return QStringList(flags.toList());
+    return QStringList(flags.values());
 }
 
 void Player::setFlags(const QString &flag)
@@ -1532,7 +1532,7 @@ QSet<const TriggerSkill *> Player::getTriggerSkills() const
 {
     QSet<const TriggerSkill *> skillList;
 
-    foreach (const QString &skill_name, skills.keys() + skills2.keys() + acquired_skills.toList() + acquired_skills2.toList()) {
+    foreach (const QString &skill_name, skills.keys() + skills2.keys() + acquired_skills.values() + acquired_skills2.values()) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
         if ((skill != nullptr) && !hasEquipSkill(skill->objectName()))
             skillList << skill;
@@ -1543,14 +1543,14 @@ QSet<const TriggerSkill *> Player::getTriggerSkills() const
 
 QSet<const Skill *> Player::getSkills(bool include_equip, bool visible_only) const
 {
-    return getSkillList(include_equip, visible_only).toSet();
+    return List2Set(getSkillList(include_equip, visible_only));
 }
 
 QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only) const
 {
     QList<const Skill *> skillList;
 
-    foreach (const QString &skill_name, skills.keys() + skills2.keys() + acquired_skills.toList() + acquired_skills2.toList()) {
+    foreach (const QString &skill_name, skills.keys() + skills2.keys() + acquired_skills.values() + acquired_skills2.values()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if ((skill != nullptr) && (include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
             skillList << skill;
@@ -1561,7 +1561,7 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
 
 QSet<const Skill *> Player::getVisibleSkills(bool include_equip) const
 {
-    return getVisibleSkillList(include_equip).toSet();
+    return List2Set(getVisibleSkillList(include_equip));
 }
 
 QList<const Skill *> Player::getVisibleSkillList(bool include_equip) const
@@ -2089,7 +2089,7 @@ QList<const Skill *> Player::getHeadSkillList(bool visible_only, bool include_ac
     QList<const Skill *> skillList;
     QList<QString> skillslist;
     if (include_acquired)
-        skillslist = skills.keys() + acquired_skills.toList(); //skills_originalOrder + acquired_skills.toList();
+        skillslist = skills.keys() + acquired_skills.values(); //skills_originalOrder + acquired_skills.toList();
     else
         skillslist = skills.keys(); // skills_originalOrder;
     foreach (const QString &skill_name, skillslist) {
@@ -2114,7 +2114,7 @@ QList<const Skill *> Player::getDeputySkillList(bool visible_only, bool include_
     QList<const Skill *> skillList;
     QList<QString> skillslist;
     if (include_acquired)
-        skillslist = skills2.keys() + acquired_skills2.toList(); // skills2_originalOrder + acquired_skills2.toList();
+        skillslist = skills2.keys() + acquired_skills2.values(); // skills2_originalOrder + acquired_skills2.toList();
     else
         skillslist = skills2.keys(); //skills2_originalOrder; //
     foreach (const QString &skill_name, skillslist) {

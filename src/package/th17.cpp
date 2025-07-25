@@ -1409,14 +1409,14 @@ TH17Package::TH17Package()
     saki->addSkill(new JinjiT);
     saki->addSkill(new Tianxing);
     saki->addSkill(new SlashNoDistanceLimitSkill("tianxing"));
-    related_skills.insertMulti("jinji", "#jinji-t");
-    related_skills.insertMulti("tianxing", "#tianxing-slash-ndl");
+    related_skills.insert("jinji", "#jinji-t");
+    related_skills.insert("tianxing", "#tianxing-slash-ndl");
 
     General *mayumi = new General(this, "mayumi", "gxs");
     mayumi->addSkill(new Junzhen);
     mayumi->addSkill(new Ciou);
     mayumi->addSkill(new CiouRecord);
-    related_skills.insertMulti("ciou", "#ciou");
+    related_skills.insert("ciou", "#ciou");
 
     General *yachie = new General(this, "yachie", "gxs");
     yachie->addSkill(new Weiyi);

@@ -4,8 +4,8 @@
 #include "engine.h"
 #include "general.h"
 #include "player.h"
-#include "roomscene.h"
 #include "settings.h"
+
 #include <QHBoxLayout>
 #include <QList>
 #include <QMessageBox>
@@ -204,8 +204,10 @@ void RoleAssignDialog::moveDown()
     list->setCurrentItem(item);
 }
 
+#if 0
 void RoomScene::startAssign()
 {
     RoleAssignDialog *dialog = new RoleAssignDialog(main_window);
     dialog->exec();
 }
+#endif

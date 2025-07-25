@@ -1,8 +1,9 @@
 #include "connectiondialog.h"
-#include "SkinBank.h"
 #include "detector.h"
 #include "engine.h"
 #include "settings.h"
+
+#include "ui_legacy/SkinBank.h"
 
 #include <QAction>
 #include <QApplication>
@@ -23,6 +24,7 @@
 #include <QRadioButton>
 #include <QTimer>
 #include <QUrl>
+#include <QVariant>
 #include <QWidget>
 
 AvatarModel::AvatarModel(const QList<const General *> &list)
@@ -112,7 +114,7 @@ void ConnectionDialog::accept()
             // The "observe" modifier is .....
 
             QString p = url.path();
-            QStringList ps = p.split('/', QString::SkipEmptyParts);
+            QStringList ps = p.split('/', Qt::SkipEmptyParts);
             if (ps.length() != 2) {
                 QMessageBox::warning(this, tr("Warning"), tr("This pattern is not supported, please recheck your input."));
                 return;

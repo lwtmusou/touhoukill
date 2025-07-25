@@ -317,7 +317,7 @@ public:
                 const Card *c = room->askForCard(invoke->invoker, "@@huanyue-card1!", "@huanyue-keep", QVariant(), Card::MethodNone, nullptr, false, "huanyue", false, 1);
                 int keep = -1;
                 if (c == nullptr)
-                    keep = ids.at(qrand() % ids.length());
+                    keep = ids.at(qsgsRand() % ids.length());
                 else
                     keep = c->getEffectiveId();
 
@@ -1766,7 +1766,7 @@ void YaoliCard::onEffect(const CardEffectStruct &effect) const
                         cards << c;
                 }
 
-                discard = cards.at(qrand() % cards.length());
+                discard = cards.at(qsgsRand() % cards.length());
                 room->throwCard(discard, effect.to);
             }
 
@@ -2031,7 +2031,7 @@ THNDJPackage::THNDJPackage()
     merry_ndj->addSkill(new Liexi);
     merry_ndj->addSkill(new LiexiTargetMod);
     merry_ndj->addSkill(new Mengwei);
-    related_skills.insertMulti("liexi", "#liexi");
+    related_skills.insert("liexi", "#liexi");
 
     General *renko_ndj = new General(this, "renko_ndj", "wai", 4);
     renko_ndj->addSkill(new Liangzi);
@@ -2039,25 +2039,25 @@ THNDJPackage::THNDJPackage()
     renko_ndj->addSkill(new LiangziDistance);
     renko_ndj->addSkill(new Kexue);
     renko_ndj->addSkill(new KexueEffect);
-    related_skills.insertMulti("liangzi", "#liangzi-record");
-    related_skills.insertMulti("liangzi", "#liangzi-dis");
-    related_skills.insertMulti("kexue", "#kexue-effect");
+    related_skills.insert("liangzi", "#liangzi-record");
+    related_skills.insert("liangzi", "#liangzi-dis");
+    related_skills.insert("kexue", "#kexue-effect");
 
     General *sanae_ndj = new General(this, "sanae_ndj", "fsl", 4);
     sanae_ndj->addSkill(new Xiubu);
     sanae_ndj->addSkill(new XiubuTargetMod);
-    related_skills.insertMulti("xiubu", "#xiubu-mod");
+    related_skills.insert("xiubu", "#xiubu-mod");
 
     General *aya_ndj = new General(this, "aya_ndj", "fsl", 3);
     aya_ndj->addSkill(new Jineng);
     aya_ndj->addSkill(new JinengTargetMod);
     aya_ndj->addSkill(new Kuaibao);
-    related_skills.insertMulti("jineng", "#jinengmod");
+    related_skills.insert("jineng", "#jinengmod");
 
     General *tenshi_ndj = new General(this, "tenshi_ndj", "zhan", 4);
     tenshi_ndj->addSkill(new Youle);
     tenshi_ndj->addSkill(new YouleRecord);
-    related_skills.insertMulti("youle", "#youle-record");
+    related_skills.insert("youle", "#youle-record");
 
     General *eirin = new General(this, "eirin_ndj", "yyc");
     eirin->addSkill(new Yaoli);
@@ -2066,11 +2066,11 @@ THNDJPackage::THNDJPackage()
     eirin->addSkill(new YaoliTrick);
     eirin->addSkill(new YaoliBasic);
     eirin->addSkill(new YaoliEquip);
-    related_skills.insertMulti("yaoli", "#yaoli-dist");
-    related_skills.insertMulti("yaoli", "#yaoli-aihelper");
-    related_skills.insertMulti("yaoli", "#yaolibasic");
-    related_skills.insertMulti("yaoli", "#yaoliequip");
-    related_skills.insertMulti("yaoli", "#yaolitrick");
+    related_skills.insert("yaoli", "#yaoli-dist");
+    related_skills.insert("yaoli", "#yaoli-aihelper");
+    related_skills.insert("yaoli", "#yaolibasic");
+    related_skills.insert("yaoli", "#yaoliequip");
+    related_skills.insert("yaoli", "#yaolitrick");
 
     addMetaObject<HunpoCard>();
     addMetaObject<YaoliCard>();

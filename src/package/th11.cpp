@@ -1285,7 +1285,7 @@ TH11Package::TH11Package()
     General *kisume = new General(this, "kisume", "dld", 3);
     kisume->addSkill(new Liaoluo);
     kisume->addSkill(new LiaoluoRecord);
-    related_skills.insertMulti("liaoluo", "#liaoluo");
+    related_skills.insert("liaoluo", "#liaoluo");
     kisume->addSkill(new Youju);
 
     General *suika_sp = new General(this, "suika_sp", "dld", 3);
@@ -1293,7 +1293,7 @@ TH11Package::TH11Package()
     suika_sp->addSkill(new CuijiEffect);
     suika_sp->addSkill(new Baigui);
     suika_sp->addSkill(new Jiuchong);
-    related_skills.insertMulti("cuiji", "#cuiji");
+    related_skills.insert("cuiji", "#cuiji");
 
     skills << new ZhushiOtherVS;
 

@@ -18,14 +18,14 @@ int main(int argc, char *argv[])
         new QApplication(argc, argv);
         QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
 
-#ifdef Q_OS_OSX
+#ifdef Q_OS_MACOS
         if (QStyleFactory::keys().contains("Fusion", Qt::CaseInsensitive))
             qApp->setStyle(QStyleFactory::create("Fusion"));
 #endif
     }
 
 #ifdef QT_NO_DEBUG
-    QDir::setCurrent(qApp->applicationDirPath());
+    // QDir::setCurrent(qApp->applicationDirPath());
 #endif
 
 #ifdef Q_OS_LINUX
@@ -36,9 +36,6 @@ int main(int argc, char *argv[])
         QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
     }
 #endif
-
-    // initialize random seed for later use
-    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
 
     QTranslator qt_translator, translator;
     qt_translator.load("qt_zh_CN.qm");

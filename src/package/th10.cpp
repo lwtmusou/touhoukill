@@ -1912,7 +1912,7 @@ TH10Package::TH10Package()
     kanako->addSkill(new Qiankun);
     kanako->addSkill(new Qiankun2);
     kanako->addSkill(new Gongfeng);
-    related_skills.insertMulti("qiankun", "#qiankun2");
+    related_skills.insert("qiankun", "#qiankun2");
 
     General *suwako = new General(this, "suwako", "fsl", 3);
     suwako->addSkill(new Bushu);
@@ -1927,13 +1927,13 @@ TH10Package::TH10Package()
     aya->addSkill(new Fengshen);
     aya->addSkill(new Fengsu);
     aya->addSkill(new FengsuDistance);
-    related_skills.insertMulti("fengsu", "#fengsu-distance");
+    related_skills.insert("fengsu", "#fengsu-distance");
 
     General *nitori = new General(this, "nitori", "fsl", 3);
     nitori->addSkill(new Xinshang);
     nitori->addSkill(new XinshangTargetMod);
     nitori->addSkill(new Micai);
-    related_skills.insertMulti("xinshang", "#xinshang_effect");
+    related_skills.insert("xinshang", "#xinshang_effect");
 
     General *hina = new General(this, "hina", "fsl", 3);
     hina->addSkill(new Jie);
@@ -1943,7 +1943,7 @@ TH10Package::TH10Package()
     sanae_sp->addSkill(new Changshi);
     sanae_sp->addSkill(new Jinian);
     sanae_sp->addSkill(new JinianClear);
-    related_skills.insertMulti("jinian", "#jinian_clear");
+    related_skills.insert("jinian", "#jinian_clear");
 
     General *momizi = new General(this, "momizi", "fsl", 4);
     momizi->addSkill(new Shouhu);

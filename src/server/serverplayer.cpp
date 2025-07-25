@@ -80,7 +80,7 @@ int ServerPlayer::getRandomHandCardId() const
 
 const Card *ServerPlayer::getRandomHandCard() const
 {
-    int index = qrand() % handcards.length();
+    int index = qsgsRand() % handcards.length();
     return handcards.at(index);
 }
 
@@ -1190,7 +1190,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
     if (isHegemonyGameMode(room->getMode())) {
         QVariant RoleConfirmedTag = room->getTag(this->objectName() + "_RoleConfirmed");
-        bool roleConfirmed = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
+        bool roleConfirmed = RoleConfirmedTag.metaType().id() == QMetaType::Bool && RoleConfirmedTag.toBool();
         if (player == this || hasShownOneGeneral() || roleConfirmed) {
             room->notifyProperty(player, this, "kingdom");
             room->notifyProperty(player, this, "role");
@@ -1884,7 +1884,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     QSet<QString> shows = showExtraTarget | showDistanceLimit | showResidueNum | showTargetFix | showTargetProhibit;
     shows = shows - disShowExtraTarget - disShowResidueNum;
 
-    return shows.toList();
+    return shows.values();
 }
 
 void ServerPlayer::copyFrom(ServerPlayer *sp)
@@ -1931,7 +1931,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
     QVariant RoleConfirmedTag = room->getTag(this->objectName() + "_RoleConfirmed");
 
-    bool roleConfirmed = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
+    bool roleConfirmed = RoleConfirmedTag.metaType().id() == QMetaType::Bool && RoleConfirmedTag.toBool();
     bool notify_role = !roleConfirmed; //&& (!hasShownGeneral() && !hasShownGeneral2());
 
     room->tryPause();
@@ -2045,7 +2045,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 //    break;
                 //}
                 QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + "_RoleConfirmed");
-                bool roleConfirmed1 = RoleConfirmedTag1.canConvert(QVariant::Bool) && RoleConfirmedTag1.toBool();
+                bool roleConfirmed1 = RoleConfirmedTag1.metaType().id() == QMetaType::Bool && RoleConfirmedTag1.toBool();
                 if (roleConfirmed1 && p->getRole() != "careerist")
                     ++i;
             }
@@ -2057,7 +2057,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
             if ((i + 1) > (room->getPlayers().length() / 2)) { // set hidden careerist
                 foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
                     QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + "_RoleConfirmed");
-                    bool roleConfirmed1 = RoleConfirmedTag1.canConvert(QVariant::Bool) && RoleConfirmedTag1.toBool();
+                    bool roleConfirmed1 = RoleConfirmedTag1.metaType().id() == QMetaType::Bool && RoleConfirmedTag1.toBool();
                     if (p->isAlive() && !roleConfirmed1 && role == p->getRole()) {
                         p->setRole("careerist");
                         room->notifyProperty(p, p, "role", "careerist");

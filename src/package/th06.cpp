@@ -467,7 +467,7 @@ bool SuodingCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 bool SuodingCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
-    if (targets.toSet().size() > 3 || targets.toSet().size() == 0)
+    if (List2Set(targets).size() > 3 || List2Set(targets).size() == 0)
         return false;
     QHash<const Player *, int> map;
 
@@ -2303,7 +2303,7 @@ TH06Package::TH06Package()
     flandre->addSkill(new Yuxue);
     flandre->addSkill(new YuxueSlashNdl);
     flandre->addSkill(new Shengyan);
-    related_skills.insertMulti("yuxue", "#yuxue-slash-ndl");
+    related_skills.insert("yuxue", "#yuxue-slash-ndl");
 
     General *sakuya = new General(this, "sakuya", "hmx", 4);
     sakuya->addSkill(new Suoding);
@@ -2341,7 +2341,7 @@ TH06Package::TH06Package()
     satsuki->addSkill(new Xiaoyin);
     satsuki->addSkill(new XiaoyinProhibit);
     satsuki->addSkill(new Fenghua);
-    related_skills.insertMulti("xiaoyin", "#xiaoyin");
+    related_skills.insert("xiaoyin", "#xiaoyin");
 
     General *rumia_sp = new General(this, "rumia_sp", "hmx", 4);
     rumia_sp->addSkill(new Shixue);

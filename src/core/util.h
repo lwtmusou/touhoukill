@@ -10,14 +10,27 @@ class QVariant;
 #include <QVariant>
 
 #include "compiler-specific.h"
+
 #include <algorithm>
+#include <random>
+
+int qsgsRand();
+
+template<typename T> QSet<T> List2Set(const QList<T> &t)
+{
+#if QT_VERSION_MAJOR >= 6
+    return QSet<T>(t.constBegin(), t.constEnd());
+#else
+    return t.toSet();
+#endif
+}
 
 template<typename T> void qShuffle(QList<T> &list)
 {
     int n = list.length();
     for (int i = 0; i < n; i++) {
-        int r = qrand() % (n - i) + i;
-        list.swap(i, r);
+        int r = qsgsRand() % (n - i) + i;
+        list.swapItemsAt(i, r);
     }
 }
 

@@ -1296,7 +1296,7 @@ TH14Package::TH14Package()
     benben->addSkill(new Yuyin);
     benben->addSkill(new Wuchang);
     benben->addSkill(new WuchangTM);
-    related_skills.insertMulti("wuchang", "#wuchang");
+    related_skills.insert("wuchang", "#wuchang");
 
     General *yatsuhashi = new General(this, "yatsuhashi", "hzc", 3);
     yatsuhashi->addSkill(new Canxiang);
@@ -1309,7 +1309,7 @@ TH14Package::TH14Package()
     General *sekibanki = new General(this, "sekibanki", "hzc", 4);
     sekibanki->addSkill(new Feitou);
     sekibanki->addSkill(new FeitouTargetMod);
-    related_skills.insertMulti("feitou", "#feitoumod");
+    related_skills.insert("feitou", "#feitoumod");
 
     General *wakasagihime = new General(this, "wakasagihime", "hzc", 3);
     wakasagihime->addSkill(new Shizhu);
@@ -1319,7 +1319,7 @@ TH14Package::TH14Package()
     seija_sp->addSkill(new Tianxie);
     seija_sp->addSkill(new TianxieRecord);
     seija_sp->addSkill(new Duobao);
-    related_skills.insertMulti("tianxie", "#tianxie-record");
+    related_skills.insert("tianxie", "#tianxie-record");
 
     addMetaObject<YuanfeiCard>();
     addMetaObject<LiangeCard>();
