@@ -473,17 +473,26 @@ public:
             QList<ServerPlayer *> yukari;
 
             foreach (ServerPlayer *e, room->getAllPlayers()) {
-                if ((e == p || e->hasFlag(objectName())) || e->hasSkill(this))
+                if ((e == p || e->hasFlag(objectName())) && e->hasSkill(this))
                     yukari << e;
             }
+
+            bool invoke = false;
 
             foreach (ServerPlayer *t1, room->getAlivePlayers()) {
                 foreach (ServerPlayer *t2, room->getOtherPlayers(t1)) {
                     if (isXijianPairs(t1, t2)) {
-                        foreach (ServerPlayer *y, yukari)
-                            d << SkillInvokeDetail(this, y, y);
+                        invoke = true;
+                        break;
                     }
                 }
+                if (invoke)
+                    break;
+            }
+
+            if (invoke) {
+                foreach (ServerPlayer *y, yukari)
+                    d << SkillInvokeDetail(this, y, y);
             }
         }
 

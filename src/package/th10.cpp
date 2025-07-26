@@ -1243,13 +1243,14 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if ((player != nullptr) && player->getPhase() == Player::NotActive)
+            if ((player != nullptr) && player->getPhase() == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("changshiInvoked") > 0) {
                         room->setPlayerMark(p, "changshiInvoked", 0);
                         room->setPlayerSkillInvalidity(p, nullptr, false);
                     }
                 }
+            }
         }
     }
 

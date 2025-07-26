@@ -108,7 +108,7 @@ return {
 
 	["tailorfuzhong"] = "覆踵",
 	[":tailorfuzhong"] = "<font color=\"#808080\"><b>永久技，</b></font>你不进入濒死状态；你死亡时，你可以选择一个非永久技的技能，令你的人物牌失去之，若如此做，你于死亡后以游戏开始时的状态重新加入游戏。",
-	["tailorchenglu"] = "澄路"
+	["tailorchenglu"] = "澄路",
 	[":tailorchenglu"] = "<font color=\"#808080\"><b>永久技，</b></font><font color=\"purple\"><b>觉醒技</b></font>，你首次重新加入游戏时，若你没有【泯心】，你令你的人物牌获得【护卫】并令你的人物牌失去【覆踵】；否则你令你的人物牌获得【凯风】。",
 	["$tailorchengluAnimate"] = "skill=tailormokou:tailorchenglu",
 	["tailorminxin"] = "泯心",

@@ -226,7 +226,7 @@ class YuyanCard : public SkillCard
     Q_OBJECT
 
 public:
-    YuyanCard();
+    Q_INVOKABLE YuyanCard();
 
     void onEffect(const CardEffectStruct &effect) const override;
 };
