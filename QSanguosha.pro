@@ -186,6 +186,12 @@ INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
 INCLUDEPATH += src/util
 
+OTHER_FILES += \
+    qml/StartScene.qml \
+    qml/QSanButton.qml \
+    qml/main.qml \
+    qml/RootItem.qml
+
 win32{
     CONFIG += skip_target_version_ext
     RC_ICONS += resource/icon/sgs.ico

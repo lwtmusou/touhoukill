@@ -68,7 +68,7 @@ private:
 public slots:
     void startConnection();
 
-private slots:
+public slots:
     void on_actionAbout_GPLv3_triggered();
     void on_actionAbout_Lua_triggered();
     void on_actionAbout_fmod_triggered();
@@ -90,6 +90,8 @@ private slots:
     void on_actionGeneral_Overview_triggered();
     void on_actionStart_Server_triggered();
     void on_actionExit_triggered();
+    void on_actionStart_Game_triggered();
+    void on_actionConfigure_triggered();
 
     void checkVersion(const QString &server_version, const QString &server_mod);
     void networkError(const QString &error_msg);

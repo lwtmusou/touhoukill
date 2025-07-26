@@ -37,6 +37,8 @@
 #include <QNetworkReply>
 #include <QProcess>
 #include <QProgressBar>
+#include <QQmlContext>
+#include <QQuickWidget>
 #include <QResizeEvent>
 #include <QSettings>
 #include <QSpinBox>
@@ -64,11 +66,9 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("TouhouSatsu") + "    " + Sanguosha->getVersionName() + "    " + Sanguosha->getVersionNumber());
 
     connection_dialog = new ConnectionDialog(this);
-    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
 
     config_dialog = new ConfigDialog(this);
-    connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
     connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
     connect(config_dialog, SIGNAL(tableBg_changed()), this, SLOT(changeTableBg()));
 
@@ -107,6 +107,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (Config.EnableAutoUpdate)
         update_dialog->checkForUpdate();
+
+    QQuickWidget *qw = new QQuickWidget(QStringLiteral("qml/main.qml"), this);
+    qw->setResizeMode(QQuickWidget::SizeViewToRootObject);
+    qw->rootContext()->setContextProperty(QStringLiteral("MainWindowInstance"), this);
+    qw->rootContext()->setContextProperty(QStringLiteral("Sanguosha"), Sanguosha);
+    qw->rootContext()->setContextProperty(QStringLiteral("Config"), &Config);
+
+    setCentralWidget(qw);
 }
 
 void MainWindow::restoreFromConfig()
@@ -155,6 +163,18 @@ void MainWindow::on_actionExit_triggered()
         systray = nullptr;
         close();
     }
+}
+
+void MainWindow::on_actionStart_Game_triggered()
+{
+    connection_dialog->exec();
+}
+
+void MainWindow::on_actionConfigure_triggered()
+{
+    config_dialog->show();
+    config_dialog->activateWindow();
+    config_dialog->raise();
 }
 
 void MainWindow::on_actionStart_Server_triggered()
@@ -380,6 +400,8 @@ void MainWindow::on_actionGeneral_Overview_triggered()
     GeneralOverview *overview = GeneralOverview::getInstance(this);
     overview->fillGenerals(Sanguosha->findChildren<const General *>());
     overview->show();
+    overview->activateWindow();
+    overview->raise();
 }
 
 void MainWindow::on_actionCard_Overview_triggered()
@@ -387,6 +409,8 @@ void MainWindow::on_actionCard_Overview_triggered()
     CardOverview *overview = CardOverview::getInstance(this);
     overview->loadFromAll();
     overview->show();
+    overview->activateWindow();
+    overview->raise();
 }
 
 void MainWindow::on_actionEnable_Hotkey_toggled(bool checked)
@@ -462,6 +486,8 @@ void MainWindow::on_actionAbout_Us_triggered()
 {
     AboutUsDialog *dialog = new AboutUsDialog(this);
     dialog->show();
+    dialog->activateWindow();
+    dialog->raise();
 }
 
 void MainWindow::setBackgroundBrush(bool centerAsOrigin)

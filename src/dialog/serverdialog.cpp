@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "settings.h"
 
-#include "ui_legacy/SkinBank.h"
+#include "uilegacy/SkinBank.h"
 
 #include <QAction>
 #include <QApplication>
@@ -34,6 +34,8 @@ static QLayout *HLay(QWidget *left, QWidget *right)
 ServerDialog::ServerDialog(QWidget *parent)
     : QDialog(parent)
 {
+    setWindowModality(Qt::WindowModal);
+
     setWindowTitle(tr("Start server"));
 
     QTabWidget *tab_widget = new QTabWidget;

@@ -5,7 +5,7 @@
 #include "settings.h"
 #include "ui_generaloverview.h"
 
-#include "ui_legacy/SkinBank.h"
+#include "uilegacy/SkinBank.h"
 
 #include <QClipboard>
 #include <QCommandLinkButton>

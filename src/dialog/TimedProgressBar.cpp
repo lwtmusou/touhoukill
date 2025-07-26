@@ -1,7 +1,7 @@
 #include "TimedProgressBar.h"
 #include "clientstruct.h"
 
-#include "ui_legacy/SkinBank.h"
+#include "uilegacy/SkinBank.h"
 
 #include <QPainter>
 

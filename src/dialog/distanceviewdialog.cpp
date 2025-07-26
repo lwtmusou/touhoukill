@@ -3,7 +3,7 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "ui_legacy/SkinBank.h"
+#include "uilegacy/SkinBank.h"
 
 #include <QComboBox>
 #include <QFormLayout>

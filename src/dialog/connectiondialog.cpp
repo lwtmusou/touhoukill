@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "settings.h"
 
-#include "ui_legacy/SkinBank.h"
+#include "uilegacy/SkinBank.h"
 
 #include <QAction>
 #include <QApplication>
@@ -175,6 +175,8 @@ void ConnectionDialog::accept()
 ConnectionDialog::ConnectionDialog(QWidget *parent)
     : QDialog(parent)
 {
+    setWindowModality(Qt::WindowModal);
+
     setWindowTitle(tr("Connection setup"));
 
     QGroupBox *gb = new QGroupBox(tr("Connection setup"));

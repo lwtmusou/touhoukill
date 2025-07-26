@@ -5,7 +5,7 @@
 #include "settings.h"
 #include "ui_cardoverview.h"
 
-#include "ui_legacy/SkinBank.h"
+#include "uilegacy/SkinBank.h"
 
 #include <QFile>
 #include <QMessageBox>
