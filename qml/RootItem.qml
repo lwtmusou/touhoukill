@@ -1,22 +1,33 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 import QtQuick 6.5
 
-Image {
+import rocks.touhousatsu 1.0
+
+Item {
     id: rootItem
 
     anchors.fill: parent
-
-    // source: "../assets/1.jpg"
 
     StartScene {
         id: startScene
         anchors.fill: parent
     }
 
-    Item {
+    RoomScene {
         id: roomScene
+
         anchors.fill: parent
         visible: false
+    }
+
+    Connections {
+        target: MainWindowInstance
+        function onQml_switchToRoomScene() {
+            startScene.visible = false;
+            roomScene.visible = true;
+        }
+        function onQml_switchToStartScene() {
+            roomScene.visible = false;
+            startScene.visible = true;
+        }
     }
 }

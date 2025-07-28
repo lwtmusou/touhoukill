@@ -1,4 +1,4 @@
-import QtQuick 2.6
+import QtQuick 6.5
 
 Image {
     id: qSanButton
@@ -10,8 +10,10 @@ Image {
     property string text
     property font font
 
-    signal clicked()
-    signal doubleClicked()
+    font.family: ButtonFontFace
+
+    signal clicked
+    signal doubleClicked
 
     onClicked: {
         if (checkable)
@@ -60,9 +62,9 @@ Image {
 
     onEnabledChanged: {
         if (!enabled)
-            state = "disabled"
+            state = "disabled";
         else
-            state = "exited"
+            state = "exited";
     }
 
     Rectangle {
@@ -73,6 +75,7 @@ Image {
     }
 
     Text {
+        textFormat: Text.PlainText
         anchors.fill: parent
         fontSizeMode: Text.Fit
         horizontalAlignment: Text.AlignHCenter
@@ -88,52 +91,52 @@ Image {
 
         onClicked: {
             if (parent.enabled) {
-                parent.clicked()
+                parent.clicked();
                 if (!parent.checkable || !parent.checked)
-                    parent.state = "entered"
+                    parent.state = "entered";
                 else
-                    parent.state = "downEntered"
+                    parent.state = "downEntered";
             }
         }
 
         onDoubleClicked: {
             if (parent.enabled) {
-                parent.doubleClicked()
+                parent.doubleClicked();
             }
         }
 
         onEntered: {
             if (parent.enabled) {
                 if (!parent.checkable || !parent.checked)
-                    parent.state = "entered"
+                    parent.state = "entered";
                 else
-                    parent.state = "downEntered"
+                    parent.state = "downEntered";
             }
         }
 
         onExited: {
             if (parent.enabled) {
                 if (!parent.checkable || !parent.checked)
-                    parent.state = "exited"
+                    parent.state = "exited";
                 else
-                    parent.state = "downExited"
+                    parent.state = "downExited";
             }
         }
 
         onPressed: {
             if (parent.enabled) {
-                parent.state = "downEntered"
+                parent.state = "downEntered";
             } else {
-                mouse.accepted = false
+                mouse.accepted = false;
             }
         }
 
-        onReleased:  {
+        onReleased: {
             if (parent.enabled) {
                 if (!parent.checkable || !parent.checked)
-                    parent.state = "entered"
+                    parent.state = "entered";
                 else
-                    parent.state = "downEntered"
+                    parent.state = "downEntered";
             }
         }
     }

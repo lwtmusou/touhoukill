@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QDateTime>
+#include <QDir>
 #include <QFile>
 #include <QFontDatabase>
 #include <QGlobalStatic>
@@ -68,7 +69,7 @@ Settings::Settings()
 void Settings::init()
 {
     if (!qApp->arguments().contains("-server")) {
-        QString font_path = value("DefaultFontPath", "font/simli.ttf").toString();
+        QString font_path = value("DefaultFontPath", QDir::currentPath() + "/font/simli.ttf").toString();
         int font_id = QFontDatabase::addApplicationFont(font_path);
         if (font_id != -1) {
             QString font_family = QFontDatabase::applicationFontFamilies(font_id).constFirst();
@@ -190,9 +191,9 @@ void Settings::init()
     int index = qsgsRand() % length + 1;
     QString bgFilename = QString("%1%2%3").arg("backdrop/hall/gensoukyou_").arg(index).arg(".jpg");
 
-    BackgroundImage = bgFilename; // value("BackgroundImage", bgFilename).toString();
-    TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
-    UseLordBackdrop = value("UseLordBackdrop", true).toBool();
+    BackgroundImage = bgFilename;
+    TableBgImage = "backdrop/default.jpg";
+    UseLordBackdrop = true;
 
     EnableAutoSaveRecord = value("EnableAutoSaveRecord", false).toBool();
     NetworkOnly = value("NetworkOnly", false).toBool();

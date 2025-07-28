@@ -90,7 +90,9 @@ SOURCES += \
     src/dialog/serverdialog.cpp \
     src/dialog/uilegacy/SkinBank.cpp \
     src/dialog/uilegacy/qsanbutton.cpp \
-    src/dialog/uilegacy/uiUtils.cpp
+    src/dialog/uilegacy/uiUtils.cpp \
+    src/qmlui/qmlui.cpp \
+    src/qmlui/roomscene.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -169,7 +171,8 @@ HEADERS += \
     src/dialog/serverdialog.h \
     src/dialog/uilegacy/SkinBank.h \
     src/dialog/uilegacy/qsanbutton.h \
-    src/dialog/uilegacy/uiUtils.h
+    src/dialog/uilegacy/uiUtils.h \
+    src/qmlui/roomscene.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
@@ -185,12 +188,19 @@ INCLUDEPATH += src/package
 INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
 INCLUDEPATH += src/util
+INCLUDEPATH += src/qmlui
 
 OTHER_FILES += \
-    qml/StartScene.qml \
-    qml/QSanButton.qml \
+    qml/CardFace.qml \
+    qml/CardItem.qml \
+    qml/Dashboard.qml \
     qml/main.qml \
-    qml/RootItem.qml
+    qml/Photo.qml \
+    qml/PlayerCardContainer.qml \
+    qml/QSanButton.qml \
+    qml/RoomScene.qml \
+    qml/RootItem.qml \
+    qml/StartScene.qml
 
 win32{
     CONFIG += skip_target_version_ext

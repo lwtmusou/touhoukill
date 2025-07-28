@@ -81,8 +81,7 @@ public:
         DiscardPile,
         DrawPile,
         PlaceTable,
-        PlaceUnknown,
-        PlaceWuGu
+        PlaceUnknown
     };
     enum Role
     {

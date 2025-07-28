@@ -22,6 +22,7 @@
 #include <QDesktopServices>
 #include <QDialogButtonBox>
 #include <QFileDialog>
+#include <QFontDatabase>
 #include <QFormLayout>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
@@ -34,10 +35,12 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QNetworkAccessManager>
+#include <QNetworkInterface>
 #include <QNetworkReply>
 #include <QProcess>
 #include <QProgressBar>
 #include <QQmlContext>
+#include <QQuickItem>
 #include <QQuickWidget>
 #include <QResizeEvent>
 #include <QSettings>
@@ -45,6 +48,7 @@
 #include <QStandardPaths>
 #include <QStatusBar>
 #include <QSystemTrayIcon>
+#include <QTextBrowser>
 #include <QTextEdit>
 #include <QTime>
 #include <QToolButton>
@@ -69,8 +73,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
 
     config_dialog = new ConfigDialog(this);
-    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
-    connect(config_dialog, SIGNAL(tableBg_changed()), this, SLOT(changeTableBg()));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
@@ -86,19 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
         Audio::setBGMVolume(Config.BGMVolume);
     }
 #endif
-    // QList<QAction *> actions;
-    // actions << ui->actionStart_Game << ui->actionStart_Server << ui->actionPC_Console_Start << ui->actionReplay << ui->actionGeneral_Overview << ui->actionCard_Overview
-    //         << ui->actionConfigure << ui->actionAbout_Us;
-
-    // foreach (QAction *action, actions)
-    //     start_scene->addButton(action);
-    // view = new QWidget;
-
-    // setCentralWidget(view);
     restoreFromConfig();
-
-    // BackLoader::preload();
-    // gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
@@ -108,11 +98,20 @@ MainWindow::MainWindow(QWidget *parent)
     if (Config.EnableAutoUpdate)
         update_dialog->checkForUpdate();
 
-    QQuickWidget *qw = new QQuickWidget(QStringLiteral("qml/main.qml"), this);
+    QQuickWidget *qw = new QQuickWidget(this);
+
+    int id = QFontDatabase::addApplicationFont(QDir::currentPath() + "/font/budingti.ttf");
+    QString fontFace = QApplication::font().family();
+
+    if (id != -1)
+        fontFace = QFontDatabase::applicationFontFamilies(id).constFirst();
+
     qw->setResizeMode(QQuickWidget::SizeViewToRootObject);
+    qw->rootContext()->setContextProperty(QStringLiteral("ButtonFontFace"), fontFace);
     qw->rootContext()->setContextProperty(QStringLiteral("MainWindowInstance"), this);
     qw->rootContext()->setContextProperty(QStringLiteral("Sanguosha"), Sanguosha);
     qw->rootContext()->setContextProperty(QStringLiteral("Config"), &Config);
+    qw->setSource(QStringLiteral("qml/main.qml"));
 
     setCentralWidget(qw);
 }
@@ -194,12 +193,11 @@ void MainWindow::on_actionStart_Server_triggered()
     ui->actionStart_Game->disconnect();
     connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
 
-    // StartScene *start_scene = qobject_cast<StartScene *>(scene);
-    // if (start_scene != nullptr) {
-    //     start_scene->switchToServer(server);
-    //     if (Config.value("EnableMinimizeDialog", false).toBool())
-    //         on_actionMinimize_to_system_tray_triggered();
-    // }
+#ifdef AUDIO_SUPPORT
+    Audio::quit();
+#endif
+
+    emit qml_switchToServerScene(server);
 }
 
 void MainWindow::checkVersion(const QString &server_version, const QString &server_mod)
@@ -278,19 +276,6 @@ void MainWindow::networkError(const QString &error_msg)
         QMessageBox::warning(this, tr("Network error"), error_msg);
 }
 
-void BackLoader::preload()
-{
-    // QStringList emotions = G_ROOM_SKIN.getAnimationFileNames();
-
-    // foreach (QString emotion, emotions) {
-    //     int n = PixmapAnimation::GetFrameCount(emotion);
-    //     for (int i = 0; i < n; i++) {
-    //         QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(QString::number(i));
-    //         G_ROOM_SKIN.getPixmapFromFileName(filename);
-    //     }
-    // }
-}
-
 void MainWindow::enterRoom()
 {
     if (QUrl(Config.HostAddress).path().length() == 0) {
@@ -306,12 +291,12 @@ void MainWindow::enterRoom()
     ui->actionStart_Server->setEnabled(false);
 
     // RoomScene *room_scene = new RoomScene(this);
-    // ui->actionView_Discarded->setEnabled(true);
-    // ui->actionView_distance->setEnabled(true);
-    // ui->actionServerInformation->setEnabled(true);
-    // ui->actionSurrender->setEnabled(true);
-    // ui->actionNever_nullify_my_trick->setEnabled(true);
-    // ui->actionSaveRecord->setEnabled(true);
+    ui->actionView_Discarded->setEnabled(true);
+    ui->actionView_distance->setEnabled(true);
+    ui->actionServerInformation->setEnabled(true);
+    ui->actionSurrender->setEnabled(true);
+    ui->actionNever_nullify_my_trick->setEnabled(true);
+    ui->actionSaveRecord->setEnabled(true);
 
     // connect(ClientInstance, SIGNAL(surrender_enabled(bool)), ui->actionSurrender, SLOT(setEnabled(bool)));
 
@@ -321,25 +306,27 @@ void MainWindow::enterRoom()
     // connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
     // connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
 
-    // if (ServerInfo.EnableCheat) {
-    //     ui->menuCheat->setEnabled(true);
+    if (ServerInfo.EnableCheat) {
+        ui->menuCheat->setEnabled(true);
 
-    //     connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
-    //     connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
-    //     connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
-    //     connect(ui->actionExecute_script_at_server_side, SIGNAL(triggered()), room_scene, SLOT(doScript()));
-    // } else {
-    //     ui->menuCheat->setEnabled(false);
-    //     ui->actionDeath_note->disconnect();
-    //     ui->actionDamage_maker->disconnect();
-    //     ui->actionRevive_wand->disconnect();
-    //     ui->actionExecute_script_at_server_side->disconnect();
-    // }
+        // connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
+        // connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
+        // connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
+        // connect(ui->actionExecute_script_at_server_side, SIGNAL(triggered()), room_scene, SLOT(doScript()));
+    } else {
+        ui->menuCheat->setEnabled(false);
+        ui->actionDeath_note->disconnect();
+        ui->actionDamage_maker->disconnect();
+        ui->actionRevive_wand->disconnect();
+        ui->actionExecute_script_at_server_side->disconnect();
+    }
 
     // connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
     // connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
 
     // gotoScene(room_scene);
+
+    emit qml_switchToRoomScene();
 }
 
 void MainWindow::gotoStartScene()
@@ -357,23 +344,11 @@ void MainWindow::gotoStartScene()
     if (!servers.isEmpty())
         servers.first()->deleteLater();
 
-    // StartScene *start_scene = new StartScene;
-
-    QList<QAction *> actions;
-    actions << ui->actionStart_Game << ui->actionStart_Server << ui->actionPC_Console_Start << ui->actionReplay << ui->actionGeneral_Overview << ui->actionCard_Overview
-            << ui->actionConfigure << ui->actionAbout_Us;
-
-    // foreach (QAction *action, actions)
-    //     start_scene->addButton(action);
-
-    // setCentralWidget(view);
-
     ui->menuCheat->setEnabled(false);
     ui->actionDeath_note->disconnect();
     ui->actionDamage_maker->disconnect();
     ui->actionRevive_wand->disconnect();
     ui->actionExecute_script_at_server_side->disconnect();
-    // gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
@@ -388,6 +363,8 @@ void MainWindow::gotoStartScene()
         delete ClientInstance;
         ClientInstance = nullptr;
     }
+
+    emit qml_switchToStartScene();
 }
 
 void MainWindow::startGameInAnotherInstance()
@@ -488,44 +465,6 @@ void MainWindow::on_actionAbout_Us_triggered()
     dialog->show();
     dialog->activateWindow();
     dialog->raise();
-}
-
-void MainWindow::setBackgroundBrush(bool centerAsOrigin)
-{
-    (void)centerAsOrigin;
-
-    // if (scene != nullptr) {
-    //     QPixmap pixmap(Config.BackgroundImage);
-    //     QBrush brush(pixmap);
-    //     qreal sx = (qreal)width() / qreal(pixmap.width());
-    //     qreal sy = (qreal)height() / qreal(pixmap.height());
-
-    //     QTransform transform;
-    //     if (centerAsOrigin)
-    //         transform.translate(-(qreal)width() / 2, -(qreal)height() / 2);
-    //     transform.scale(sx, sy);
-    //     brush.setTransform(transform);
-    //     scene->setBackgroundBrush(brush);
-    // }
-}
-
-void MainWindow::changeBackground()
-{
-    // bool centerAsOrigin = scene != nullptr && !scene->inherits("RoomScene");
-    // setBackgroundBrush(centerAsOrigin);
-
-    // if (scene->inherits("StartScene")) {
-    //     StartScene *start_scene = qobject_cast<StartScene *>(scene);
-    //     start_scene->setServerLogBackground();
-    // }
-}
-
-void MainWindow::changeTableBg()
-{
-    // if (!scene->inherits("RoomScene"))
-    //     return;
-
-    // RoomSceneInstance->changeTableBg();
 }
 
 void MainWindow::on_actionFullscreen_triggered()
@@ -675,15 +614,19 @@ void MainWindow::on_actionBroadcast_triggered()
 
 void MainWindow::on_actionAcknowledgement_triggered()
 {
-    // Window *window = new Window(QString(), QSize(1000, 677), "image/system/acknowledgement.png");
-    // scene->addItem(window);
+    QDialog *d = new QDialog;
+    d->setAttribute(Qt::WA_DeleteOnClose);
 
-    // Button *button = window->addCloseButton(tr("OK"));
-    // button->moveBy(-85, -35);
-    // window->setZValue(32766);
-    // window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+    QLabel *l = new QLabel;
+    l->setPixmap(QPixmap("image/system/acknowledgement.png"));
 
-    // window->appear();
+    QHBoxLayout *hl = new QHBoxLayout;
+    hl->addWidget(l);
+    d->setLayout(hl);
+
+    d->show();
+    d->activateWindow();
+    d->raise();
 }
 
 void MainWindow::on_actionPC_Console_Start_triggered()
@@ -864,15 +807,19 @@ void MainWindow::on_actionAbout_fmod_triggered()
     content.append(tr("Current version %1 <br/>").arg(Audio::getVersion()));
 #endif
 
-    // Window *window = new Window(tr("About fmod"), QSize(500, 260));
-    // scene->addItem(window);
+    QDialog *d = new QDialog;
+    d->setAttribute(Qt::WA_DeleteOnClose);
 
-    // window->addContent(content);
-    // window->addCloseButton(tr("OK"));
-    // window->setZValue(32766);
-    // window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+    QTextBrowser *td = new QTextBrowser;
+    td->setHtml(content);
 
-    // window->appear();
+    QHBoxLayout *hl = new QHBoxLayout;
+    hl->addWidget(td);
+    d->setLayout(hl);
+
+    d->show();
+    d->activateWindow();
+    d->raise();
 }
 
 void MainWindow::on_actionAbout_Lua_triggered()
@@ -886,15 +833,19 @@ void MainWindow::on_actionAbout_Lua_triggered()
     content.append(tr("Current version %1 <br/>").arg(LUA_RELEASE));
     content.append(LUA_COPYRIGHT);
 
-    // Window *window = new Window(tr("About Lua"), QSize(500, 585));
-    // scene->addItem(window);
+    QDialog *d = new QDialog;
+    d->setAttribute(Qt::WA_DeleteOnClose);
 
-    // window->addContent(content);
-    // window->addCloseButton(tr("OK"));
-    // window->setZValue(32766);
-    // window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+    QTextBrowser *td = new QTextBrowser;
+    td->setHtml(content);
 
-    // window->appear();
+    QHBoxLayout *hl = new QHBoxLayout;
+    hl->addWidget(td);
+    d->setLayout(hl);
+
+    d->show();
+    d->activateWindow();
+    d->raise();
 }
 
 void MainWindow::on_actionAbout_GPLv3_triggered()
@@ -906,15 +857,19 @@ void MainWindow::on_actionAbout_GPLv3_triggered()
     QString address = "http://gplv3.fsf.org";
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
-    // Window *window = new Window(tr("About GPLv3"), QSize(500, 225));
-    // scene->addItem(window);
+    QDialog *d = new QDialog;
+    d->setAttribute(Qt::WA_DeleteOnClose);
 
-    // window->addContent(content);
-    // window->addCloseButton(tr("OK"));
-    // window->setZValue(32766);
-    // window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+    QTextBrowser *td = new QTextBrowser;
+    td->setHtml(content);
 
-    // window->appear();
+    QHBoxLayout *hl = new QHBoxLayout;
+    hl->addWidget(td);
+    d->setLayout(hl);
+
+    d->show();
+    d->activateWindow();
+    d->raise();
 }
 
 // ATTENTION!!!! this slot is for "Download/update contents" menu item
@@ -939,4 +894,75 @@ void MainWindow::on_actionDownload_Hero_Skin_and_BGM_triggered()
             update_dialog->exec();
         }
     }
+}
+
+void MainWindow::configureServerText(QObject *_server, QQuickItem *serverText)
+{
+    Server *server = qobject_cast<Server *>(_server);
+    if (server == nullptr)
+        return;
+
+    connect(server, SIGNAL(server_message(QString)), serverText, SLOT(append(QString)));
+
+    QStringList server_log;
+
+    QStringList items;
+    QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
+    foreach (QHostAddress address, addresses) {
+        quint32 ipv4 = address.toIPv4Address();
+        if (ipv4 != 0U)
+            items << address.toString();
+    }
+
+    items.sort();
+
+    foreach (QString item, items) {
+        if (item.startsWith("192.168.") || item.startsWith("10."))
+            server_log << (tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
+        else if (item == "127.0.0.1")
+            server_log << (tr("Your loopback address %1, this address is available only for your host").arg(item));
+        else if (item.startsWith("5."))
+            server_log << (tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
+        else if (!item.startsWith("169.254."))
+            server_log << (tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
+    }
+
+    server_log << (tr("Binding port number is %1").arg(Config.ServerPort));
+    server_log << (tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
+    server_log << (tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
+    server_log << (Config.OperationNoLimit ? tr("There is no time limit") : tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
+    server_log << (Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
+    if (Config.EnableCheat)
+        server_log << (Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
+
+    if (Config.Enable2ndGeneral) {
+        QString scheme_str;
+        switch (Config.MaxHpScheme) {
+        case 0:
+            scheme_str = QString(tr("Sum - %1")).arg(Config.Scheme0Subtraction);
+            break;
+        case 1:
+            scheme_str = tr("Minimum");
+            break;
+        case 2:
+            scheme_str = tr("Maximum");
+            break;
+        case 3:
+            scheme_str = tr("Average");
+            break;
+        }
+        if (!isHegemonyGameMode(Config.GameMode))
+            server_log << (tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
+    } else
+        server_log << (tr("Seconardary general is disabled"));
+
+    server_log << (Config.EnableSame ? tr("Same Mode is enabled") : tr("Same Mode is disabled"));
+
+    if (Config.EnableAI) {
+        server_log << (tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
+    } else
+        server_log << (tr("This server is AI disabled"));
+
+    QString serverLogStr = server_log.join("\n");
+    serverText->setProperty("text", serverLogStr);
 }

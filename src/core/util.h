@@ -14,7 +14,7 @@ class QVariant;
 #include <algorithm>
 #include <random>
 
-int qsgsRand();
+unsigned int qsgsRand();
 
 template<typename T> QSet<T> List2Set(const QList<T> &t)
 {

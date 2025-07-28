@@ -16,14 +16,6 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->setupUi(this);
 
     // tab 1
-    QString bg_path = Config.value("BackgroundImage").toString();
-    if (!bg_path.startsWith(":"))
-        ui->bgPathLineEdit->setText(bg_path);
-
-    QString tableBg_path = Config.value("TableBgImage").toString();
-    if (!tableBg_path.startsWith(":"))
-        ui->tableBgPathLineEdit->setText(tableBg_path);
-
     ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic", "audio/title/main.ogg").toString());
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
@@ -36,7 +28,6 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->UseLordBGMBox->setChecked(Config.UseLordBGM);
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
     ui->noEquipAnimCheckBox->setChecked(Config.value("NoEquipAnim", false).toBool());
-    ui->UseLordBackdropBox->setChecked(Config.UseLordBackdrop);
 
     ui->bgmVolumeSlider->setValue(100 * Config.BGMVolume);
     ui->effectVolumeSlider->setValue(100 * Config.EffectVolume);
@@ -95,61 +86,6 @@ ConfigDialog::~ConfigDialog()
     delete ui;
 }
 
-void ConfigDialog::on_browseBgButton_clicked()
-{
-    QString filename = QFileDialog::getOpenFileName(this, tr("Select a background image"), "backdrop/", tr("Images (*.png *.bmp *.jpg)"));
-
-    if (!filename.isEmpty()) {
-        ui->bgPathLineEdit->setText(filename);
-
-        Config.BackgroundImage = filename;
-        Config.setValue("BackgroundImage", filename);
-
-        emit bg_changed();
-    }
-}
-
-void ConfigDialog::on_resetBgButton_clicked()
-{
-    ui->bgPathLineEdit->clear();
-
-    int length = 8;
-    int index = qsgsRand() % length + 1;
-    QString filename = QString("%1%2%3").arg("backdrop/new-version").arg(index).arg(".jpg");
-
-    Config.BackgroundImage = filename;
-    Config.setValue("BackgroundImage", filename);
-
-    emit bg_changed();
-
-    Config.remove("BackgroundImage");
-}
-
-void ConfigDialog::on_browseTableBgButton_clicked()
-{
-    QString filename = QFileDialog::getOpenFileName(this, tr("Select a tableBg image"), "backdrop/", tr("Images (*.png *.bmp *.jpg)"));
-
-    if (!filename.isEmpty()) {
-        ui->tableBgPathLineEdit->setText(filename);
-
-        Config.TableBgImage = filename;
-        Config.setValue("TableBgImage", filename);
-
-        emit tableBg_changed();
-    }
-}
-
-void ConfigDialog::on_resetTableBgButton_clicked()
-{
-    ui->tableBgPathLineEdit->clear();
-
-    QString filename = "backdrop/default.jpg";
-    Config.TableBgImage = filename;
-    Config.setValue("TableBgImage", filename);
-
-    emit tableBg_changed();
-}
-
 void ConfigDialog::on_browseRecordPathButton_clicked()
 {
     QString path = QFileDialog::getExistingDirectory(this, tr("Select a Record Paths"), "records/");
@@ -197,10 +133,6 @@ void ConfigDialog::saveConfig()
     enabled = ui->UseLordBGMBox->isChecked();
     Config.UseLordBGM = enabled;
     Config.setValue("UseLordBGM", enabled);
-
-    enabled = ui->UseLordBackdropBox->isChecked();
-    Config.UseLordBackdrop = enabled;
-    Config.setValue("UseLordBackdrop", enabled);
 
     Config.setValue("NoIndicator", ui->noIndicatorCheckBox->isChecked());
     Config.setValue("NoEquipAnim", ui->noEquipAnimCheckBox->isChecked());

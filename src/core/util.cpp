@@ -148,7 +148,8 @@ struct qsrand_wrapper
 }
 #endif
 
-int qsgsRand()
+unsigned int
+    qsgsRand()
 {
 #if QT_VERSION_MAJOR >= 6
     static thread_local std::mt19937 engine {std::random_device()()};
@@ -156,6 +157,6 @@ int qsgsRand()
 #else
     static qsrand_wrapper wrapper;
     (void)wrapper;
-    return qrand();
+    return (unsigned int)qrand();
 #endif
 }

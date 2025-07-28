@@ -13,6 +13,9 @@ class Settings : public QSettings
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString BackgroundImage MEMBER BackgroundImage)
+    Q_PROPERTY(QString TableBgImage MEMBER TableBgImage)
+
 public:
     explicit Settings();
     void init();

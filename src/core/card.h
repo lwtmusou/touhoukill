@@ -30,10 +30,6 @@ class Card : public QObject
     Q_PROPERTY(Color color READ getColor)
     Q_PROPERTY(bool can_recast READ canRecast WRITE setCanRecast)
 
-    Q_ENUMS(Suit)
-    Q_ENUMS(CardType)
-    Q_ENUMS(HandlingMethod)
-
 public:
     // enumeration type
     enum Suit
@@ -47,12 +43,16 @@ public:
         NoSuit,
         SuitToBeDecided = -1
     };
+    Q_ENUM(Suit)
+
     enum Color
     {
         Red,
         Black,
         Colorless
     };
+    Q_ENUM(Color)
+
     enum HandlingMethod
     {
         MethodNone,
@@ -62,6 +62,7 @@ public:
         MethodRecast,
         MethodPindian
     };
+    Q_ENUM(HandlingMethod)
 
     static const Suit AllSuits[4];
 
@@ -73,6 +74,7 @@ public:
         TypeTrick,
         TypeEquip
     };
+    Q_ENUM(CardType)
 
     // constructor
     Card(Suit suit, int number, bool target_fixed = false);

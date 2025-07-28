@@ -19,6 +19,7 @@ class RoomItem;
 class QProgressBar;
 class QLabel;
 class QWinTaskbarButton;
+class QQuickItem;
 class UpdateDialog;
 class ConnectionDialog;
 class ConfigDialog;
@@ -38,12 +39,6 @@ private:
     QTextEdit *text_edit;
 };
 
-class BackLoader
-{
-public:
-    static void preload();
-};
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -51,7 +46,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
-    void setBackgroundBrush(bool center_as_origin);
 
 protected:
     void closeEvent(QCloseEvent *) override;
@@ -98,11 +92,16 @@ public slots:
     void enterRoom();
     void gotoStartScene();
     void startGameInAnotherInstance();
-    void changeBackground();
-    void changeTableBg();
     void on_actionView_ban_list_triggered();
 
     void on_actionDownload_Hero_Skin_and_BGM_triggered();
+
+    void configureServerText(QObject *server, QQuickItem *serverText);
+
+signals:
+    void qml_switchToStartScene();
+    void qml_switchToRoomScene();
+    void qml_switchToServerScene(QObject *server);
 };
 
 #endif
