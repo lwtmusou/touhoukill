@@ -92,7 +92,7 @@ public:
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
-    const Card *getEngineCard(int cardId) const;
+    Q_INVOKABLE const Card *getEngineCard(int cardId) const;
     // @todo: consider making this const Card *
     Card *getCard(int cardId);
     WrappedCard *getWrappedCard(int cardId);

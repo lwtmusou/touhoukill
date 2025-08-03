@@ -1427,7 +1427,7 @@ void Client::setCardFlag(const QVariant &pattern_str)
     int id = pattern[0].toInt();
     QString flag = pattern[1].toString();
 
-    Card *card = Sanguosha->getCard(id);
+    const Card *card = Sanguosha->getCard(id);
     if (card != nullptr)
         card->setFlags(flag);
 }

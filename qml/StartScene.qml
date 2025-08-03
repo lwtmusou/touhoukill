@@ -1,8 +1,10 @@
 import QtQuick 6.5
 
+import rocks.touhousatsu 1.0
+
 Image {
     id: startScene
-    source: "../" + Config.BackgroundImage
+    source: G.getUrl(Config.BackgroundImage)
     fillMode: Image.PreserveAspectCrop
     anchors.fill: parent
 
@@ -34,9 +36,9 @@ Image {
 
             text: qsTr("Start game")
             onClicked: MainWindowInstance.on_actionStart_Game_triggered()
-            font.pixelSize: 40
+            font.pixelSize: 53
 
-            source: "../image/system/button/button.png"
+            source: G.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -45,9 +47,9 @@ Image {
 
             text: qsTr("General overview")
             onClicked: MainWindowInstance.on_actionGeneral_Overview_triggered()
-            font.pixelSize: 40
+            font.pixelSize: 53
 
-            source: "../image/system/button/button.png"
+            source: G.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -56,9 +58,9 @@ Image {
 
             text: qsTr("Start server")
             onClicked: MainWindowInstance.on_actionStart_Server_triggered()
-            font.pixelSize: 40
+            font.pixelSize: 53
 
-            source: "../image/system/button/button.png"
+            source: G.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -67,9 +69,9 @@ Image {
 
             text: qsTr("Card overview")
             onClicked: MainWindowInstance.on_actionCard_Overview_triggered()
-            font.pixelSize: 40
+            font.pixelSize: 53
 
-            source: "../image/system/button/button.png"
+            source: G.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -78,9 +80,9 @@ Image {
 
             text: qsTr("PC Console Start")
             onClicked: MainWindowInstance.on_actionPC_Console_Start_triggered()
-            font.pixelSize: 40
+            font.pixelSize: 53
 
-            source: "../image/system/button/button.png"
+            source: G.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -89,9 +91,9 @@ Image {
 
             text: qsTr("Configure")
             onClicked: MainWindowInstance.on_actionConfigure_triggered()
-            font.pixelSize: 40
+            font.pixelSize: 53
 
-            source: "../image/system/button/button.png"
+            source: G.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -100,9 +102,9 @@ Image {
 
             text: qsTr("Replay")
             onClicked: MainWindowInstance.on_actionReplay_triggered()
-            font.pixelSize: 40
+            font.pixelSize: 53
 
-            source: "../image/system/button/button.png"
+            source: G.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -111,23 +113,37 @@ Image {
 
             text: qsTr("About Us")
             onClicked: MainWindowInstance.on_actionAbout_Us_triggered()
-            font.pixelSize: 40
+            font.pixelSize: 53
 
-            source: "../image/system/button/button.png"
+            source: G.getUrl("image/system/button/button.png")
         }
     }
 
     Image {
         id: logo
-
-        anchors.horizontalCenter: startScene.horizontalCenter
-        anchors.bottom: btnGrid.top
-        anchors.bottomMargin: btnGrid.y / 2 - height / 2
-
-        clip: false
+        clip: true
         fillMode: Image.PreserveAspectFit
+        x: 0
 
-        source: "../image/logo/logo.png"
+        source: G.getUrl("image/logo/logo.png")
+
+        Binding on width {
+            id: logoWidthBinding
+            when: true
+            value: parent.width
+        }
+
+        Binding on height {
+            id: logoHeightBinding
+            when: true
+            value: btnGrid.y / 2
+        }
+
+        Binding on y {
+            id: logoYBinding
+            when: true
+            value: btnGrid.y / 4
+        }
     }
 
     Text {
@@ -136,7 +152,7 @@ Image {
         anchors.top: btnGrid.bottom
         anchors.horizontalCenter: btnGrid.right
 
-        font.pixelSize: 20
+        font.pixelSize: 26
         color: "white"
 
         text: qsTr("TouhouSatsu QQ Qun: 384318315")
@@ -147,27 +163,58 @@ Image {
         visible: false
         color: Qt.rgba(0.1, 0.1, 0.1, 0.5)
 
-        TextEdit {
-            id: serverText
+        Flickable {
+            id: flickable
             anchors.fill: parent
 
-            readOnly: true
+            clip: true
+            contentWidth: width
+            contentHeight: serverText.contentHeight
 
-            enabled: false
-            visible: true
+            contentY: {
+                if (contentHeight < height)
+                    return 0;
+                else
+                    return contentHeight - height;
+            }
 
-            text: "this is the prefilled text"
+            TextEdit {
+                id: serverText
+                width: flickable.width
+
+                readOnly: true
+
+                enabled: false
+                visible: true
+
+                font.pixelSize: 20
+                color: "white"
+                wrapMode: TextEdit.Wrap
+            }
+        }
+
+        Binding on x {
+            id: serverTextXBinding
+            when: false
+            value: parent.width * 0.1
         }
 
         Binding on width {
             id: serverTextWidthBinding
             when: false
-            value: parent.width
+            value: parent.width * 0.8
         }
+
+        Binding on y {
+            id: serverTextYBinding
+            when: false
+            value: 144 + (parent.height - 144) * 0.1
+        }
+
         Binding on height {
             id: serverTextHightBinding
             when: false
-            value: parent.height - 108
+            value: (parent.height - 144) * 0.8
         }
     }
 
@@ -176,68 +223,70 @@ Image {
 
         running: false
         PropertyAnimation {
-            target: logo
-            property: "x"
-            to: 0
-            duration: 1000
-        }
-        PropertyAnimation {
+            id: logoYAnimation
             target: logo
             property: "y"
             to: 0
-            duration: 1000
+            duration: 400
         }
         PropertyAnimation {
             target: logo
             property: "height"
-            to: 108
-            duration: 1000
+            from: btnGrid.y / 2
+            to: 144
+            duration: 400
         }
         PropertyAnimation {
             target: logo
             property: "width"
-            to: 270
-            duration: 1000
+            from: startScene.width
+            to: 360
+            duration: 400
         }
 
         PropertyAnimation {
             target: serverTextBorder
             property: "x"
             from: startScene.width / 2
-            to: 0
-            duration: 1000
+            to: startScene.width * 0.1
+            duration: 400
         }
         PropertyAnimation {
             target: serverTextBorder
             property: "y"
-            from: (startScene.height + 108) / 2
-            to: 108
-            duration: 1000
+            from: (startScene.height + 144) / 2
+            to: 144 + (startScene.height - 144) * 0.1
+            duration: 400
         }
 
         PropertyAnimation {
             target: serverTextBorder
             property: "width"
             from: 0
-            to: startScene.width
-            duration: 1000
+            to: startScene.width * 0.8
+            duration: 400
         }
         PropertyAnimation {
             target: serverTextBorder
             property: "height"
             from: 0
-            to: startScene.height - 108
-            duration: 1000
+            to: (startScene.height - 144) * 0.8
+            duration: 400
         }
         PropertyAnimation {
             target: serverTextBorder
             property: "opacity"
             from: 0
             to: 1.0
-            duration: 1000
+            duration: 400
+        }
+
+        onStarted: {
+            logoYAnimation.from = btnGrid.y / 4;
         }
 
         onFinished: {
+            serverTextXBinding.when = true;
             serverTextWidthBinding.when = true;
             serverTextHightBinding.when = true;
         }
@@ -248,9 +297,10 @@ Image {
         function onQml_switchToServerScene(server) {
             btnGrid.visible = false;
             groupText.visible = false;
-            logo.anchors.horizontalCenter = undefined;
-            logo.anchors.bottom = undefined;
-            logo.anchors.bottomMargin = undefined;
+
+            logoWidthBinding.when = false;
+            logoHeightBinding.when = false;
+            logoYBinding.when = false;
 
             serverTextBorder.visible = true;
             serverText.enabled = true;

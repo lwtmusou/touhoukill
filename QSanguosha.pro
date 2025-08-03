@@ -172,7 +172,8 @@ HEADERS += \
     src/dialog/uilegacy/SkinBank.h \
     src/dialog/uilegacy/qsanbutton.h \
     src/dialog/uilegacy/uiUtils.h \
-    src/qmlui/roomscene.h
+    src/qmlui/roomscene.h \
+    src/qmlui/qmlui.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

@@ -54,10 +54,6 @@ class Player : public QObject
     Q_PROPERTY(bool nude READ isNude)
     Q_PROPERTY(bool all_nude READ isAllNude)
 
-    Q_ENUMS(Phase)
-    Q_ENUMS(Place)
-    Q_ENUMS(Role)
-
 public:
     enum Phase
     {
@@ -71,6 +67,8 @@ public:
         NotActive,
         PhaseNone
     };
+    Q_ENUM(Phase)
+
     enum Place
     {
         PlaceHand,
@@ -83,6 +81,8 @@ public:
         PlaceTable,
         PlaceUnknown
     };
+    Q_ENUM(Place)
+
     enum Role
     {
         Lord,
@@ -90,6 +90,7 @@ public:
         Rebel,
         Renegade
     };
+    Q_ENUM(Role)
 
     explicit Player(QObject *parent);
 

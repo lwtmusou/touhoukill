@@ -958,9 +958,9 @@ void MainWindow::configureServerText(QObject *_server, QQuickItem *serverText)
 
     server_log << (Config.EnableSame ? tr("Same Mode is enabled") : tr("Same Mode is disabled"));
 
-    if (Config.EnableAI) {
+    if (Config.EnableAI)
         server_log << (tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
-    } else
+    else
         server_log << (tr("This server is AI disabled"));
 
     QString serverLogStr = server_log.join("\n");

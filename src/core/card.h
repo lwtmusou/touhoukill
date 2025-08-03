@@ -18,7 +18,7 @@ struct CardUseStruct;
 class Card : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString suit READ getSuitString CONSTANT)
+    Q_PROPERTY(QString suit READ getSuitString STORED false)
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
     Q_PROPERTY(bool black READ isBlack STORED false CONSTANT)
     Q_PROPERTY(int id READ getId CONSTANT)
@@ -26,7 +26,6 @@ class Card : public QObject
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
     Q_PROPERTY(bool mute READ isMute CONSTANT)
-    Q_PROPERTY(bool equipped READ isEquipped)
     Q_PROPERTY(Color color READ getColor)
     Q_PROPERTY(bool can_recast READ canRecast WRITE setCanRecast)
 

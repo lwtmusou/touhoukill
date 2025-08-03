@@ -38,8 +38,13 @@ int main(int argc, char *argv[])
 #endif
 
     QTranslator qt_translator, translator;
-    qt_translator.load("qt_zh_CN.qm");
-    translator.load("sanguosha.qm");
+    bool qmLoadSuccess = qt_translator.load("qt_zh_CN.qm");
+    if (!qmLoadSuccess)
+        qDebug() << "failed to load qt_zh_CN.qm";
+
+    qmLoadSuccess = translator.load("sanguosha.qm");
+    if (!qmLoadSuccess)
+        qDebug() << "failed to load sanguosha.qm";
 
     qApp->installTranslator(&qt_translator);
     qApp->installTranslator(&translator);

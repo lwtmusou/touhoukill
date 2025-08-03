@@ -6,12 +6,14 @@ CppRoomScene {
     id: roomScene
 
     Image {
-        source: "../" + Config.TableBgImage
+        source: G.getUrl(Config.TableBgImage)
         fillMode: Image.PreserveAspectCrop
 
         anchors.fill: parent
 
         QSanButton {
+            id : startSceneButton
+
             anchors.centerIn: parent
             width: parent.width / 4
             height: parent.height / 4
@@ -19,7 +21,7 @@ CppRoomScene {
             text: "return to start scene"
             font.pixelSize: 50
 
-            source: "../image/system/button/button.png"
+            source: G.getUrl("image/system/button/button.png")
 
             onClicked: MainWindowInstance.gotoStartScene()
         }
