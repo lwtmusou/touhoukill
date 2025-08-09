@@ -12,7 +12,7 @@ CppRoomScene {
         anchors.fill: parent
 
         QSanButton {
-            id : startSceneButton
+            id: startSceneButton
 
             anchors.centerIn: parent
             width: parent.width / 4
@@ -24,6 +24,17 @@ CppRoomScene {
             source: G.getUrl("image/system/button/button.png")
 
             onClicked: MainWindowInstance.gotoStartScene()
+        }
+
+        CardItem {
+            x: startSceneButton.x + startSceneButton.width
+            y: startSceneButton.y
+
+            visible: true
+
+            general: "otaku"
+
+            enableDrag: true
         }
     }
 }

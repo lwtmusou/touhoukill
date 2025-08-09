@@ -7,16 +7,21 @@ Item {
     height: 256
     width: 183
 
+    // property set by CardContainer for goBack
     property real homeX
     property real homeY
-    property real homeOpacity
+    property real homeOpacity: 1
 
+    // property set by CardContainer to enable Drag
+    property bool enableDrag: false
+
+    // property for displaying
     property int cardId: -1
     property string general
-
-    property bool selected
-
     property string footnoteText
+
+    // property for recording its status
+    // property bool selected
 
     Item {
         id: cardContent
@@ -86,10 +91,65 @@ Item {
     }
 
     MouseArea {
+        id: cardItemMouseArea
+
         anchors.fill: parent
+
+        // set by onEnableDragChanged to enable draging programatically
+        // drag.target: cardItem
+        drag.axis: Drag.XAndYAxis
+        drag.threshold: 30
+        drag.smoothed: false
+    }
+
+    onEnableDragChanged: {
+        if (enableDrag)
+            cardItemMouseArea.drag.target = cardItem;
+        else
+            cardItemMouseArea.drag.target = undefined;
+    }
+
+    ParallelAnimation {
+        id: goBackAnimation
+        running: false
+
+        PropertyAnimation {
+            id: goBackXAmimation
+
+            target: cardItem
+            property: "x"
+            to: cardItem.homeX
+            easing.type: Easing.OutQuad
+            duration: 250
+        }
+
+        PropertyAnimation {
+            id: goBackYAnimation
+
+            target: cardItem
+            property: "y"
+            to: cardItem.homeY
+            easing.type: Easing.OutQuad
+            duration: 250
+        }
+
+        PropertyAnimation {
+            id: goBackOpacityAnimation
+
+            target: cardItem
+            property: "opacity"
+            to: cardItem.homeOpacity
+            easing.type: Easing.InSine
+            duration: 250
+        }
     }
 
     function goBack() {
+        goBackXAmimation.from = cardItem.x;
+        goBackYAnimation.from = cardItem.y;
+        goBackOpacityAnimation.from = cardItem.opacity;
+
+        goBackAnimation.start();
     }
 
     function setUnknownCard() {

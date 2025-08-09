@@ -197,7 +197,7 @@ OTHER_FILES += \
     qml/Dashboard.qml \
     qml/main.qml \
     qml/Photo.qml \
-    qml/PlayerCardContainer.qml \
+    qml/CardContainer.qml \
     qml/QSanButton.qml \
     qml/RoomScene.qml \
     qml/RootItem.qml \

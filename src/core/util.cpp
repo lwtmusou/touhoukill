@@ -145,11 +145,10 @@ struct qsrand_wrapper
     {
         qsrand(QDateTime::currentSecsSinceEpoch());
     }
-}
+};
 #endif
 
-unsigned int
-    qsgsRand()
+unsigned int qsgsRand()
 {
 #if QT_VERSION_MAJOR >= 6
     static thread_local std::mt19937 engine {std::random_device()()};

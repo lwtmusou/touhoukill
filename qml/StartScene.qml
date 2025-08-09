@@ -220,8 +220,8 @@ Image {
 
     ParallelAnimation {
         id: serverTextAnimation
-
         running: false
+
         PropertyAnimation {
             id: logoYAnimation
             target: logo
@@ -243,7 +243,6 @@ Image {
             to: 360
             duration: 400
         }
-
         PropertyAnimation {
             target: serverTextBorder
             property: "x"
@@ -258,7 +257,6 @@ Image {
             to: 144 + (startScene.height - 144) * 0.1
             duration: 400
         }
-
         PropertyAnimation {
             target: serverTextBorder
             property: "width"
