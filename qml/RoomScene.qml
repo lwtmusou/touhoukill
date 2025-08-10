@@ -25,16 +25,5 @@ CppRoomScene {
 
             onClicked: MainWindowInstance.gotoStartScene()
         }
-
-        CardItem {
-            x: startSceneButton.x + startSceneButton.width
-            y: startSceneButton.y
-
-            visible: true
-
-            general: "otaku"
-
-            enableDrag: true
-        }
     }
 }

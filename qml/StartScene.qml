@@ -279,10 +279,6 @@ Image {
             duration: 400
         }
 
-        onStarted: {
-            logoYAnimation.from = btnGrid.y / 4;
-        }
-
         onFinished: {
             serverTextXBinding.when = true;
             serverTextWidthBinding.when = true;
@@ -292,7 +288,7 @@ Image {
 
     Connections {
         target: MainWindowInstance
-        function onQml_switchToServerScene(server) {
+        function onQml_switchToServerScene(server: QtObject) {
             btnGrid.visible = false;
             groupText.visible = false;
 
@@ -302,6 +298,8 @@ Image {
 
             serverTextBorder.visible = true;
             serverText.enabled = true;
+
+            logoYAnimation.from = btnGrid.y / 4;
 
             serverTextAnimation.start();
 

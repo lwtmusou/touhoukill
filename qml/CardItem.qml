@@ -6,10 +6,11 @@ Item {
 
     height: 256
     width: 183
+    opacity: 0
 
     // property set by CardContainer for goBack
-    property real homeX
-    property real homeY
+    property real homeX: 0
+    property real homeY: 0
     property real homeOpacity: 1
 
     // property set by CardContainer to enable Drag
@@ -145,6 +146,8 @@ Item {
     }
 
     function goBack() {
+        goBackAnimation.stop();
+
         goBackXAmimation.from = cardItem.x;
         goBackYAnimation.from = cardItem.y;
         goBackOpacityAnimation.from = cardItem.opacity;
