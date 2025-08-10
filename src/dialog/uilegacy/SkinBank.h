@@ -238,10 +238,10 @@ public:
         QRect m_skillNameArea;
         QRect m_secondarySkillNameArea;
         QSanShadowTextFont m_skillNameFont;
-        QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
-        QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
+        QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES * QSanSkillButton::S_NUM_SKILL_TYPES];
+        QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES * QSanSkillButton::S_NUM_SKILL_TYPES];
 
-        QSanShadowTextFont getSkillTextFont(QSanButton::ButtonState state, QSanInvokeSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const;
+        QSanShadowTextFont getSkillTextFont(QSanButton::ButtonState state, QSanSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const;
     };
 
     struct CommonLayout
@@ -317,7 +317,7 @@ public:
 
     QString getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
     QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
-    QPixmap getSkillButtonPixmap(QSanButton::ButtonState state, QSanInvokeSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const;
+    QPixmap getSkillButtonPixmap(QSanButton::ButtonState state, QSanSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const;
     QPixmap getCardMainPixmap(const QString &cardName, bool cache = false, bool heroSkin = true) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
     QPixmap getCardTianyiPixmap() const;

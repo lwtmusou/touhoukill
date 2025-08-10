@@ -191,9 +191,9 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName, const QStrin
     return path.arg(buttonName).arg(stateKey);
 }
 
-QPixmap QSanRoomSkin::getSkillButtonPixmap(QSanButton::ButtonState state, QSanInvokeSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const
+QPixmap QSanRoomSkin::getSkillButtonPixmap(QSanButton::ButtonState state, QSanSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const
 {
-    QString path = getButtonPixmapPath(S_SKIN_KEY_BUTTON_SKILL, QSanInvokeSkillButton::getSkillTypeString(type), state);
+    QString path = getButtonPixmapPath(S_SKIN_KEY_BUTTON_SKILL, QSanSkillButton::getSkillTypeString(type), state);
     if (path.isNull())
         return QPixmap(1, 1); // older Qt version cries for non-zero QPixmap...
     else {
@@ -759,7 +759,7 @@ const QSanRoomSkin::CommonLayout &QSanRoomSkin::getCommonLayout() const
     return _m_commonLayout;
 }
 
-QSanRoomSkin::QSanShadowTextFont QSanRoomSkin::DashboardLayout::getSkillTextFont(QSanButton::ButtonState state, QSanInvokeSkillButton::SkillType type,
+QSanRoomSkin::QSanShadowTextFont QSanRoomSkin::DashboardLayout::getSkillTextFont(QSanButton::ButtonState state, QSanSkillButton::SkillType type,
                                                                                  QSanInvokeSkillButton::SkillButtonWidth width) const
 {
     int i = QSanButton::S_NUM_BUTTON_STATES * (int)type + (int)state;
@@ -1011,28 +1011,28 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         if (i < configTextFont.size())
             _m_dashboardLayout.m_skillTextFonts[i].tryParse(configTextFont[i]);
     }
-    for (int i = 0; i < QSanInvokeSkillButton::S_NUM_SKILL_TYPES; i++) {
+    for (int i = 0; i < QSanSkillButton::S_NUM_SKILL_TYPES; i++) {
         QString key;
-        switch ((QSanInvokeSkillButton::SkillType)i) {
-        case QSanInvokeSkillButton::S_SKILL_ARRAY:
+        switch ((QSanSkillButton::SkillType)i) {
+        case QSanSkillButton::S_SKILL_ARRAY:
             key = "arrayFontColor";
             break;
-        case QSanInvokeSkillButton::S_SKILL_AWAKEN:
+        case QSanSkillButton::S_SKILL_AWAKEN:
             key = "awakenFontColor";
             break;
-        case QSanInvokeSkillButton::S_SKILL_COMPULSORY:
+        case QSanSkillButton::S_SKILL_COMPULSORY:
             key = "compulsoryFontColor";
             break;
-        case QSanInvokeSkillButton::S_SKILL_FREQUENT:
+        case QSanSkillButton::S_SKILL_FREQUENT:
             key = "frequentFontColor";
             break;
-        case QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL:
+        case QSanSkillButton::S_SKILL_ONEOFF_SPELL:
             key = "oneoffFontColor";
             break;
-        case QSanInvokeSkillButton::S_SKILL_PROACTIVE:
+        case QSanSkillButton::S_SKILL_PROACTIVE:
             key = "proactiveFontColor";
             break;
-        case QSanInvokeSkillButton::S_SKILL_ATTACHEDLORD:
+        case QSanSkillButton::S_SKILL_ATTACHEDLORD:
             key = "attachedlordFontColor";
             break;
         default:

@@ -89,7 +89,6 @@ SOURCES += \
     src/dialog/TimedProgressBar.cpp \
     src/dialog/serverdialog.cpp \
     src/dialog/uilegacy/SkinBank.cpp \
-    src/dialog/uilegacy/qsanbutton.cpp \
     src/dialog/uilegacy/uiUtils.cpp \
     src/qmlui/qmlui.cpp \
     src/qmlui/roomscene.cpp
