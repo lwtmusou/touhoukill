@@ -5,29 +5,37 @@ import rocks.touhousatsu 1.0
 Item {
     id: rootItem
 
-    anchors.fill: parent
+    Component {
+        id: startSceneComponent
 
-    StartScene {
-        id: startScene
-        anchors.fill: parent
+        StartScene {
+            anchors.fill: parent
+        }
     }
 
-    RoomScene {
-        id: roomScene
+    Component {
+        id: roomSceneComponent
 
-        anchors.fill: parent
-        visible: false
+        RoomScene {
+            anchors.fill: parent
+        }
     }
+
+    property Item currentScene: null
 
     Connections {
         target: MainWindowInstance
         function onQml_switchToRoomScene() {
-            startScene.visible = false;
-            roomScene.visible = true;
+            currentScene.destroy();
+            currentScene = roomSceneComponent.createObject(rootItem, {});
         }
         function onQml_switchToStartScene() {
-            roomScene.visible = false;
-            startScene.visible = true;
+            currentScene.destroy();
+            currentScene = startSceneComponent.createObject(rootItem, {});
         }
+    }
+
+    Component.onCompleted: {
+        currentScene = startSceneComponent.createObject(rootItem, {});
     }
 }

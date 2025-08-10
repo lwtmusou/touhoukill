@@ -13,6 +13,8 @@ Item {
         scale: parent.height / 1440
 
         RootItem {
+            anchors.fill: parent
+
             // This item has:
             // fixed height 1440
             // width scaled with height, with 1440 as minimum
