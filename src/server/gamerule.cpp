@@ -12,7 +12,7 @@ GameRule::GameRule(QObject *)
     : TriggerSkill("game_rule")
 {
     //@todo: this setParent is illegitimate in QT and is equivalent to calling
-    // setParent(NULL). So taking it off at the moment until we figure out
+    // setParent(nullptr). So taking it off at the moment until we figure out
     // a way to do it.
     //setParent(parent);
 

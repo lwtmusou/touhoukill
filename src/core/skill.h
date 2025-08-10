@@ -16,7 +16,11 @@ class QDialog;
 class Skill : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(Frequency)
+    Q_PROPERTY(Frequency frequency READ getFrequency)
+    Q_PROPERTY(QString limitMark READ getLimitMark)
+    Q_PROPERTY(bool lord READ isLordSkill)
+    Q_PROPERTY(bool attachedLord READ isAttachedLordSkill)
+    Q_PROPERTY(bool visible READ isVisible)
 
 public:
     enum Frequency
@@ -29,6 +33,7 @@ public:
         Wake,
         Eternal
     };
+    Q_ENUM(Frequency)
 
     explicit Skill(const QString &name, Frequency frequent = NotFrequent, const QString &showType = "trigger");
     bool isLordSkill() const;
@@ -73,6 +78,8 @@ private:
 class ViewAsSkill : public Skill
 {
     Q_OBJECT
+    Q_PROPERTY(bool responseOrUse READ isResponseOrUse)
+    Q_PROPERTY(QString expandPile READ getExpandPile)
 
 public:
     explicit ViewAsSkill(const QString &name);
@@ -126,17 +133,23 @@ protected:
     QString filter_pattern;
 };
 
-class FilterSkill : public OneCardViewAsSkill
+class FilterSkill : public Skill
 {
     Q_OBJECT
 
 public:
     explicit FilterSkill(const QString &name);
+
+    virtual bool viewFilter(const Card *to_select) const = 0;
+    virtual const Card *viewAs(const Card *originalCard) const = 0;
 };
 
 class TriggerSkill : public Skill
 {
     Q_OBJECT
+    Q_PROPERTY(int priority READ getPriority)
+    Q_PROPERTY(bool global READ isGlobal)
+    Q_PROPERTY(const ViewAsSkill *viewAsSkill READ getViewAsSkill)
 
 public:
     explicit TriggerSkill(const QString &name);
@@ -200,6 +213,7 @@ public:
 class DistanceSkill : public Skill
 {
     Q_OBJECT
+    Q_PROPERTY(const ViewAsSkill *viewAsSkill READ getViewAsSkill)
 
 public:
     explicit DistanceSkill(const QString &name);
@@ -240,7 +254,6 @@ protected:
 class TargetModSkill : public Skill
 {
     Q_OBJECT
-    Q_ENUMS(ModType)
 
 public:
     enum ModType
@@ -249,6 +262,7 @@ public:
         DistanceLimit,
         ExtraTarget
     };
+    Q_ENUM(ModType)
 
     explicit TargetModSkill(const QString &name);
     virtual QString getPattern() const;
@@ -324,6 +338,11 @@ public:
     explicit TreasureSkill(const QString &name);
 };
 
+// todo: a better name
+// Wolong Zhugeliang's Bazhen: skill_name = "EightDiagram", flag = "armor", return true when:
+//   player->getArmor() == nullptr && player->hasSkill(this) && skill_name == "EightDiagram" && flag == "armor"
+//     && !player->isArmorDisabled(); // isArmorDisabled does not currently exist, it includes Qinggang Tag and Wuqian Mark
+// Currently in Touhou Satsu, only Shenbao makes use of this skill heavily
 class ViewHasSkill : public Skill
 {
     Q_OBJECT

@@ -781,7 +781,7 @@ public:
         if (move.to_place == Player::DiscardPile) {
             ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
             //find the real fromer of some cases, such as retrial or provide
-            if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
+            if (move.reason.m_extraData.value<ServerPlayer *>() != nullptr)
                 from = move.reason.m_extraData.value<ServerPlayer *>();
 
             if (from != nullptr && nazurin != from) {

@@ -156,7 +156,7 @@ public:
     void askForDiscard(const QVariant &);
     void askForExchange(const QVariant &);
     void askForSuit(const QVariant &);
-    void askForKingdom(const QVariant &arg = QVariant());
+    void askForKingdom(const QVariant &arg = {});
     void askForNullification(const QVariant &);
     void askForPindian(const QVariant &);
     void askForCardChosen(const QVariant &);

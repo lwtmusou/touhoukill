@@ -13,7 +13,6 @@ ClientPlayer::ClientPlayer(Client *client)
     : Player(client)
     , handcard_num(0)
 {
-    mark_doc = new QTextDocument(this);
 }
 
 int ClientPlayer::aliveCount(bool includeRemoved) const
@@ -123,11 +122,6 @@ void ClientPlayer::setCards(const QList<int> &card_ids)
         known_cards.append(Sanguosha->getCard(cardId));
 }
 
-QTextDocument *ClientPlayer::getMarkDoc() const
-{
-    return mark_doc;
-}
-
 void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids)
 {
     if (name == "shown_card" || name == "huashencard")
@@ -203,29 +197,31 @@ void ClientPlayer::setMark(const QString &mark, int value)
     if (!mark.startsWith("@"))
         return;
 
+    emit mark_changed();
+
     // @todo: consider move all the codes below to PlayerCardContainerUI.cpp
     // set mark doc
-    QString text = "";
-    QMapIterator<QString, int> itor(marks);
-    while (itor.hasNext()) {
-        itor.next();
+    // QString text = "";
+    // QMapIterator<QString, int> itor(marks);
+    // while (itor.hasNext()) {
+    //     itor.next();
 
-        if (itor.key().startsWith("@") && itor.value() > 0) {
-            if (this == Self && (itor.key() == "@HalfLife" || itor.key() == "@CompanionEffect" || itor.key() == "@Pioneer"))
-                continue;
+    //     if (itor.key().startsWith("@") && itor.value() > 0) {
+    //         if (this == Self && (itor.key() == "@HalfLife" || itor.key() == "@CompanionEffect" || itor.key() == "@Pioneer"))
+    //             continue;
 
-            QString itorKey = itor.key();
-            if (itorKey == "@dimai_displaying")
-                itorKey.append(QString::number(itor.value()));
+    //         QString itorKey = itor.key();
+    //         if (itorKey == "@dimai_displaying")
+    //             itorKey.append(QString::number(itor.value()));
 
-            QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itorKey);
-            if ((itor.key() != "@dimai_displaying") && (itor.value() != 1))
-                mark_text.append(QString("<font size='4'>%1</font>").arg(itor.value()));
-            if (this != Self)
-                mark_text.append("<br>");
-            text.append(mark_text);
-        }
-    }
+    //         QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itorKey);
+    //         if ((itor.key() != "@dimai_displaying") && (itor.value() != 1))
+    //             mark_text.append(QString("<font size='4'>%1</font>").arg(itor.value()));
+    //         if (this != Self)
+    //             mark_text.append("<br>");
+    //         text.append(mark_text);
+    //     }
+    // }
 
-    mark_doc->setHtml(text);
+    // mark_doc->setHtml(text);
 }

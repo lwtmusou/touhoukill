@@ -349,7 +349,7 @@ struct DyingStruct
     DyingStruct();
 
     ServerPlayer *who; // who is ask for help
-    DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
+    DamageStruct *damage; // if it is nullptr that means the dying is caused by losing hp
     ServerPlayer *nowAskingForPeaches; // who is asking for peaches
 };
 
@@ -358,7 +358,7 @@ struct DeathStruct
     DeathStruct();
 
     ServerPlayer *who; // who is dead
-    DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
+    DamageStruct *damage; // if it is nullptr that means the dying is caused by losing hp
 
     ServerPlayer *viewAsKiller;
     bool useViewAsKiller;

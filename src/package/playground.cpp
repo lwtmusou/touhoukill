@@ -73,7 +73,7 @@ public:
         } else {
             if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
                 int id = room->askForCardChosen(invoke->targets.first(), invoke->invoker, "hes", objectName(), false, Card::MethodDiscard);
-                room->throwCard(id, invoke->invoker, invoke->invoker == invoke->targets.first() ? NULL : invoke->targets.first());
+                room->throwCard(id, invoke->invoker, invoke->invoker == invoke->targets.first() ? nullptr : invoke->targets.first());
                 return true;
             }
         }

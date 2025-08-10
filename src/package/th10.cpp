@@ -1351,7 +1351,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *sanae = qobject_cast<ServerPlayer *>(move.from);
-        if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
+        if (move.reason.m_extraData.value<ServerPlayer *>() != nullptr)
             sanae = move.reason.m_extraData.value<ServerPlayer *>();
         if (sanae == nullptr || !sanae->hasSkill(this) || sanae->hasFlag("jinian_used"))
             return; // no need to update record.
@@ -1418,7 +1418,7 @@ public:
 
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
+        if (move.reason.m_extraData.value<ServerPlayer *>() != nullptr)
             player = move.reason.m_extraData.value<ServerPlayer *>();
 
         if (player != nullptr && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile && !player->hasFlag("jinian_used") && player->isAlive()) {

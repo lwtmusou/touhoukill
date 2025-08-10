@@ -866,7 +866,7 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
         }
 
         // original line is:
-        // if (validateFunc == NULL || (winner->m_isClientResponseReady && (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
+        // if (validateFunc == nullptr || (winner->m_isClientResponseReady && (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
         // but I prefer m_isClientResponseReady is judged first since disconnection makes m_isClientResponseReady = false
         // processResponse makes m_isClientResponseReady = true
         if (winner->m_isClientResponseReady && (validateFunc == nullptr || (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
@@ -2118,7 +2118,7 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
             int preferIndex = 0;
             foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
                 QString skill = ptr->skill->objectName();
-                // owner or invoker could be NULL
+                // owner or invoker could be nullptr
                 QString ownerName = (ptr->owner) != nullptr ? ptr->owner->objectName() : QString();
                 QString invokerName = (ptr->invoker) != nullptr ? ptr->invoker->objectName() : QString();
                 skill.append(":").append(ownerName).append(":").append(invokerName);
@@ -2843,7 +2843,7 @@ void Room::reportDisconnection()
     // 2. Connected, with an object name : remove it, tell other clients and decrease signup_count
     // 3. Game is not started, but role is assigned, give it the default general(general2) and others same with fourth case
     // 4. Game is started, do not remove it just set its state as offline
-    // all above should set its socket to NULL
+    // all above should set its socket to nullptr
 
     player->setSocket(nullptr);
 
@@ -3451,7 +3451,7 @@ void Room::chooseHegemonyGenerals()
 
         doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
         foreach(ServerPlayer *player, to_assign) {
-            if (player->getGeneral2() != NULL)
+            if (player->getGeneral2() != nullptr)
                 continue;
             QString generalName = player->getClientReply().toString();
             if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
@@ -5489,7 +5489,7 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
                 Q_ASSERT(skill);
                 if (skill->viewFilter(cards[i])) {
                     cards[i] = skill->viewAs(card);
-                    Q_ASSERT(cards[i] != NULL);
+                    Q_ASSERT(cards[i] != nullptr);
                     converged = false;
                     cardChanged[i] = true;
                 }
@@ -6300,7 +6300,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
 QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to, const QString &reason)
 {
     if (!from->isAlive() || !to->isAlive())
-        return QList<const Card *>() << NULL << NULL;
+        return QList<const Card *>() << nullptr << nullptr;
     Q_ASSERT(!from->isKongcheng() && !to->isKongcheng());
     tryPause();
     Countdown countdown;

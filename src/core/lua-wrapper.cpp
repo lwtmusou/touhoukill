@@ -165,7 +165,7 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str)
     } else
         return nullptr;
 
-    const LuaSkillCard *c = LuaSkillCards.value(name, NULL);
+    const LuaSkillCard *c = LuaSkillCards.value(name, nullptr);
     if (c == nullptr)
         return nullptr;
 

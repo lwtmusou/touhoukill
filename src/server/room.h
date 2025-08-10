@@ -168,7 +168,7 @@ public:
     // @param validateFunc
     //        Validation function that verifies whether the reply is a valid one. The first parameter passed to the function
     //        is the response sender, the second parameter is the response content, the third parameter is funcArg passed in.
-    // @return The player that first send a legal request to the server. NULL if no such request is received.
+    // @return The player that first send a legal request to the server. nullptr if no such request is received.
     ServerPlayer *doBroadcastRaceRequest(QList<ServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut, ResponseVerifyFunction validateFunc = nullptr,
                                          void *funcArg = nullptr);
 

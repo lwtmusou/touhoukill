@@ -66,9 +66,12 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const = 0;
 };
 
-class FilterSkill: public OneCardViewAsSkill {
+class FilterSkill: public Skill {
 public:
     FilterSkill(const char *name);
+
+    virtual bool viewFilter(const Card *to_select) const = 0;
+    virtual const Card *viewAs(const Card *originalCard) const = 0;
 };
 
 class LuaFilterSkill: public FilterSkill {

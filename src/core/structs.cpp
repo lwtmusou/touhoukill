@@ -300,7 +300,7 @@ bool CardUseStruct::isValid(const QString &pattern) const
     Q_UNUSED(pattern)
     return card != nullptr;
 #if 0
-    if (card == NULL)
+    if (card == nullptr)
         return false;
     if (!card->getSkillName().isEmpty()) {
         bool validSkill = false;
@@ -308,7 +308,7 @@ bool CardUseStruct::isValid(const QString &pattern) const
         QSet<const Skill *> skills = from->getVisibleSkills();
         for (int i = 0; i < 4; i++) {
             const EquipCard *equip = from->getEquip(i);
-            if (equip == NULL)
+            if (equip == nullptr)
                 continue;
             const Skill *skill = Sanguosha->getSkill(equip);
             if (skill)
@@ -463,8 +463,8 @@ bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const
     return skill->getPriority() == arg2.skill->getPriority() && invoker == arg2.invoker && skill->inherits("EquipSkill") == arg2.skill->inherits("EquipSkill");
 }
 
-SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/,
-                                     const QList<ServerPlayer *> &targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/,
+SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= nullptr*/, ServerPlayer *owner /*= nullptr*/, ServerPlayer *invoker /*= nullptr*/,
+                                     const QList<ServerPlayer *> &targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= nullptr*/,
                                      bool showHidden)
     : skill(skill)
     , owner(owner)
@@ -478,7 +478,7 @@ SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, Serve
 }
 
 SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory /*= false*/,
-                                     ServerPlayer *preferredTarget /*= NULL*/, bool showHidden)
+                                     ServerPlayer *preferredTarget /*= nullptr*/, bool showHidden)
     : skill(skill)
     , owner(owner)
     , invoker(invoker)

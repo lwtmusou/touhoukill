@@ -35,7 +35,7 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
     Slash *newslash = new Slash(Card::NoSuit, 0);
     newslash->setFlags("Global_SlashAvailabilityChecker");
     newslash->deleteLater();
-#define THIS_SLASH (slash == NULL ? newslash : slash)
+#define THIS_SLASH (slash == nullptr ? newslash : slash)
     if (player->isCardLimited(THIS_SLASH, Card::MethodUse))
         return false;
 
@@ -1268,7 +1268,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const
     }
 
     if (dodamage) {
-        //room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
+        //room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : nullptr, effect.to, 1 + effect.effectValue.last()));
         room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : nullptr, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
@@ -1503,7 +1503,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const
 
         qSwap(first, second);
     }
-    //DamageStruct damage(this, second->isAlive() ? second : NULL, first, 1 + effect.effectValue.last());
+    //DamageStruct damage(this, second->isAlive() ? second : nullptr, first, 1 + effect.effectValue.last());
     DamageStruct damage(effect.card, second->isAlive() ? second : nullptr, first, 1 + effect.effectValue.last());
     if (second != effect.from)
         damage.by_user = false;

@@ -3783,7 +3783,7 @@ public:
             return new ShowShenbaoCard();
         }
         //if (name == "cancel")
-        //    return NULL;
+        //    return nullptr;
 
         const ViewAsSkill *skill = Sanguosha->getViewAsSkill(name);
         if (skill == nullptr)
@@ -3906,7 +3906,7 @@ public:
                 if (real_related_weapon->objectName() == weapon_name || real_related_weapon->isKindOf(weapon_name.toStdString().c_str()))
                     return true;
             }
-            //    return (weapon == NULL || weapon->objectName() != skill_name || player->isBrokenEquip(weapon->getEffectiveId()));
+            //    return (weapon == nullptr || weapon->objectName() != skill_name || player->isBrokenEquip(weapon->getEffectiveId()));
         } else if (flag == "armor") {
             QString armor_name = skill_name;
             foreach (const Player *p, player->getAliveSiblings()) {
@@ -3930,7 +3930,7 @@ public:
                 if (real_related_armor->objectName() == armor_name || real_related_armor->isKindOf(armor_name.toStdString().c_str()))
                     return true;
             }
-            //return (armor == NULL || armor->objectName() != skill_name || player->isBrokenEquip(armor->getEffectiveId()));
+            //return (armor == nullptr || armor->objectName() != skill_name || player->isBrokenEquip(armor->getEffectiveId()));
         } else if (flag == "treasure") {
             QString treasure_name = skill_name;
             if (skill_name != "wooden_ox") {
@@ -3959,7 +3959,7 @@ public:
             }
 
             //    return (treasure && treasure->objectName() == skill_name && player->isBrokenEquip(treasure->getEffectiveId()));
-            //    return (treasure == NULL || treasure->objectName() != skill_name || player->isBrokenEquip(treasure->getEffectiveId()));
+            //    return (treasure == nullptr || treasure->objectName() != skill_name || player->isBrokenEquip(treasure->getEffectiveId()));
         }
 
         return false;
@@ -4924,7 +4924,7 @@ void AnyunDialog::popup()
         const General *g = Sanguosha->getGeneral(hidden);
         foreach (const Skill *skill, g->getSkillList()) {
             const ViewAsSkill *vs = Sanguosha->getViewAsSkill(skill->objectName());
-            if ((vs != nullptr) && !vs->inherits("FilterSkill")) {
+            if (vs != nullptr) {
                 bool add = false;
                 if (play && vs->isEnabledAtPlay(Self))
                     add = true;
@@ -6192,7 +6192,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
+            if (move.reason.m_extraData.value<ServerPlayer *>() != nullptr)
                 player = move.reason.m_extraData.value<ServerPlayer *>();
             if (player != nullptr && move.to_place == Player::DiscardPile) {
                 QList<int> equip_ids;
@@ -6230,7 +6230,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
+        if (move.reason.m_extraData.value<ServerPlayer *>() != nullptr)
             player = move.reason.m_extraData.value<ServerPlayer *>();
 
         while (true) {

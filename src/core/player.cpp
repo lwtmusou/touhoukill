@@ -684,7 +684,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
 
         /*if (!skill->isVisible()) {
             const Skill *main_skill = Sanguosha->getMainSkill(skill_name);
-            if (main_skill != NULL)
+            if (main_skill != nullptr)
                 return hasSkill(main_skill);
         }*/
 
@@ -1366,7 +1366,7 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
 
     Slash *newslash = new Slash(Card::NoSuit, 0);
     newslash->deleteLater();
-#define THIS_SLASH (slash == NULL ? newslash : slash)
+#define THIS_SLASH (slash == nullptr ? newslash : slash)
     if (isProhibited(other, THIS_SLASH, others))
         return false;
 
@@ -1620,7 +1620,7 @@ bool Player::canSlashWithoutCrossbow(const Card *slash) const
 {
     Slash *newslash = new Slash(Card::NoSuit, 0);
     newslash->deleteLater();
-#define THIS_SLASH (slash == NULL ? newslash : slash)
+#define THIS_SLASH (slash == nullptr ? newslash : slash)
     int slash_count = getSlashCount();
     int valid_slash_count = 1;
     valid_slash_count += Sanguosha->correctCardTarget(TargetModSkill::Residue, this, THIS_SLASH);

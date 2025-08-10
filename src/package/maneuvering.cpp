@@ -78,7 +78,7 @@ bool Analeptic::IsAvailable(const Player *player, const Card *analeptic)
 {
     Analeptic *newanaleptic = new Analeptic(Card::NoSuit, 0);
     newanaleptic->deleteLater();
-#define THIS_ANALEPTIC (analeptic == NULL ? newanaleptic : analeptic)
+#define THIS_ANALEPTIC (analeptic == nullptr ? newanaleptic : analeptic)
     if (player->isCardLimited(THIS_ANALEPTIC, Card::MethodUse) || player->isProhibited(player, THIS_ANALEPTIC))
         return false;
     return player->getAnalepticCount() <= Sanguosha->correctCardTarget(TargetModSkill::Residue, player, THIS_ANALEPTIC);
