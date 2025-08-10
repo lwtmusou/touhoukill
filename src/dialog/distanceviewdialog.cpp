@@ -27,7 +27,7 @@ public:
         QList<const DistanceSkill *> skills = Sanguosha->getDistanceSkills();
         foreach (const DistanceSkill *skill, skills) {
             bool show_skill = false;
-            foreach (const ClientPlayer *p, ClientInstance->getPlayers()) {
+            foreach (ClientPlayer *p, ClientInstance->getPlayers()) {
                 if (p->hasSkill(skill->objectName())) {
                     show_skill = true;
                     break;
@@ -64,7 +64,7 @@ void FillPlayerNames(QComboBox *ComboBox, bool add_none)
     if (add_none)
         ComboBox->addItem(DistanceViewDialog::tr("None"), ".");
     ComboBox->setIconSize(G_COMMON_LAYOUT.m_tinyAvatarSize);
-    foreach (const ClientPlayer *player, ClientInstance->getPlayers()) {
+    foreach (ClientPlayer *player, ClientInstance->getPlayers()) {
         QString general_name = Sanguosha->translate(player->getGeneralName());
         if (player->getGeneral() == nullptr)
             continue;

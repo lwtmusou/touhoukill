@@ -420,7 +420,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         bool flag = false;
-        foreach (int id, const_cast<Room *>(room)->getDiscardPile()) {
+        foreach (int id, room->getDiscardPile()) {
             const Card *c = Sanguosha->getCard(id);
             if ((c != nullptr) && c->isKindOf("DelayedTrick")) {
                 flag = true;

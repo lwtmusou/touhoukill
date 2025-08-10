@@ -2521,7 +2521,7 @@ void Room::swapPile()
     thread->trigger(DrawPileSwaped, this, qtimes);
 }
 
-QList<int> Room::getDiscardPile()
+QList<int> Room::getDiscardPile() const
 {
     return *m_discardPile;
 }

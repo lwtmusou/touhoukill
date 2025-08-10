@@ -33,7 +33,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
         role_mapping.insert(Self->objectName(), lord_prompt);
     } else {
-        QList<const ClientPlayer *> players = ClientInstance->getPlayers();
+        QList<ClientPlayer *> players = ClientInstance->getPlayers();
         for (int i = 0; i < players.length(); i++) {
             QString role = role_list.at(i);
             const ClientPlayer *player = players.at(i);

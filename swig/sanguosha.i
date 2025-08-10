@@ -1297,7 +1297,6 @@ public:
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
     virtual QDialog *getDialog() const;
 
-    void initMediaSource();
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
     QStringList getSources() const;
@@ -1469,7 +1468,7 @@ public:
     void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);
     void adjustSeats();
     void swapPile();
-    QList<int> getDiscardPile();
+    QList<int> getDiscardPile() const;
     QList<int> getDrawPile() const;
     int getCardFromPile(const char *card_name);
     ServerPlayer *findPlayer(const char *general_name, bool include_dead = false) const;

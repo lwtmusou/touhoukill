@@ -1536,12 +1536,11 @@ void Client::gameOver(const QVariant &arg)
     }
 
     QSet<QString> winners = List2Set(winner.split("+"));
-    foreach (const ClientPlayer *player, players) {
+    foreach (ClientPlayer *player, players) {
         QString role = player->getRole();
         bool win = winners.contains(player->objectName()) || winners.contains(role);
 
-        ClientPlayer *p = const_cast<ClientPlayer *>(player);
-        p->setProperty("win", win);
+        player->setProperty("win", win);
     }
 
     Sanguosha->unregisterRoom();
@@ -1949,7 +1948,7 @@ void Client::onPlayerChooseAG(int card_id)
     setStatus(NotActive);
 }
 
-QList<const ClientPlayer *> Client::getPlayers() const
+QList<ClientPlayer *> Client::getPlayers() const
 {
     return players;
 }

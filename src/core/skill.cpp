@@ -76,7 +76,7 @@ int Skill::getEffectIndex(const ServerPlayer *, const Card *) const
     return -1;
 }
 
-void Skill::initMediaSource()
+void Skill::initMediaSource() const
 {
     sources.clear();
     for (int i = 1;; i++) {

@@ -261,7 +261,7 @@ public:
 
     void adjustSeats();
     void swapPile();
-    QList<int> getDiscardPile();
+    QList<int> getDiscardPile() const;
     inline QList<int> &getDrawPile()
     {
         return *m_drawPile;

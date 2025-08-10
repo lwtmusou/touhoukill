@@ -81,10 +81,8 @@ void Engine::init()
     modes["03_1v2"] = tr("Peasants vs Landlord");
     modes["04_2v2"] = tr("contest 2v2");
 
-    foreach (const Skill *skill, skills) {
-        Skill *mutable_skill = const_cast<Skill *>(skill);
-        mutable_skill->initMediaSource();
-    }
+    foreach (const Skill *skill, skills)
+        skill->initMediaSource();
 }
 
 lua_State *Engine::getLuaState() const

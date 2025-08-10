@@ -46,8 +46,10 @@ public:
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
     virtual QDialog *getDialog() const;
 
-    void initMediaSource();
+    // TODO: move these 2 functions to UI
+    void initMediaSource() const;
     void playAudioEffect(int index = -1) const;
+
     Frequency getFrequency() const;
     QString getLimitMark() const;
     QString getRelatedMark() const;
@@ -72,7 +74,7 @@ protected:
 
 private:
     bool lord_skill;
-    QStringList sources;
+    mutable QStringList sources;
 };
 
 class ViewAsSkill : public Skill
@@ -239,6 +241,7 @@ public:
 class MaxCardsSkill : public Skill
 {
     Q_OBJECT
+    Q_PROPERTY(const ViewAsSkill *viewAsSkill READ getViewAsSkill)
 
 public:
     explicit MaxCardsSkill(const QString &name);
@@ -278,6 +281,7 @@ protected:
 class AttackRangeSkill : public Skill
 {
     Q_OBJECT
+    Q_PROPERTY(const ViewAsSkill *viewAsSkill READ getViewAsSkill)
 
 public:
     explicit AttackRangeSkill(const QString &name);
