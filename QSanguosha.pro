@@ -200,7 +200,9 @@ OTHER_FILES += \
     qml/QSanButton.qml \
     qml/RoomScene.qml \
     qml/RootItem.qml \
-    qml/StartScene.qml
+    qml/StartScene.qml \
+    qml/Magatamas.qml \
+    qml/Magatama.qml
 
 win32{
     CONFIG += skip_target_version_ext
