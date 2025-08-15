@@ -54,8 +54,8 @@ public:
     QString getMODName() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
-    QStringList getHegemonyKingdoms() const;
-    QColor getKingdomColor(const QString &kingdom) const;
+    Q_INVOKABLE QStringList getHegemonyKingdoms() const;
+    Q_INVOKABLE QColor getKingdomColor(const QString &kingdom) const;
     QStringList getChattingEasyTexts() const;
     QString getSetupString() const;
 

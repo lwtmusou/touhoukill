@@ -202,7 +202,9 @@ OTHER_FILES += \
     qml/RootItem.qml \
     qml/StartScene.qml \
     qml/Magatamas.qml \
-    qml/Magatama.qml
+    qml/Magatama.qml \
+    qml/RoleComboBox.qml \
+    qml/HegRoleComboBox.qml
 
 win32{
     CONFIG += skip_target_version_ext

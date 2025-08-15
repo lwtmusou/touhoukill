@@ -5,11 +5,18 @@ import rocks.touhousatsu 1.0
 CppRoomScene {
     id: roomScene
 
+    signal spaceClicked
+
     Image {
         source: G.getUrl(Config.TableBgImage)
         fillMode: Image.PreserveAspectCrop
 
         anchors.fill: parent
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: roomScene.spaceClicked()
+        }
 
         QSanButton {
             id: startSceneButton

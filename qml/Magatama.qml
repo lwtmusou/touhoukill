@@ -5,8 +5,6 @@ import rocks.touhousatsu 1.0
 Image {
     id: magatama
 
-    source: G.getUrl("image/system/magatamas/5.png")
-
     property int n: 5
     property bool lost: false
     property bool dyingThreshold: false
