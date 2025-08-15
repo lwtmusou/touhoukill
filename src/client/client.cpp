@@ -30,7 +30,6 @@ Client::Client(QObject *parent, const QString &filename)
     , status(NotActive)
     , alive_count(1)
     , swap_pile(0)
-    , _m_roomState(true)
     , heartbeatTimer(nullptr)
     , m_isObjectNameRecorded(false)
 {

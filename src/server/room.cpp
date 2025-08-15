@@ -52,7 +52,6 @@ Room::Room(QObject *parent, const QString &mode)
     , provided(nullptr)
     , has_provided(false)
     , provider(nullptr)
-    , _m_roomState(false)
     , m_fillAGWho(nullptr)
 {
     static int s_global_room_id = 0;

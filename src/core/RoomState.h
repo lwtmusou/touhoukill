@@ -12,20 +12,11 @@
 class RoomState
 {
 public:
-    explicit inline RoomState(bool isClient)
+    explicit inline RoomState()
     {
-        m_isClient = isClient;
     }
     ~RoomState();
-    inline bool isClient() const
-    {
-        return m_isClient;
-    }
     Card *getCard(int cardId) const;
-    inline void setCurrentPlayer(Player *player)
-    {
-        m_currentPlayer = player;
-    }
     inline QString getCurrentCardUsePattern() const
     {
         return m_currentCardUsePattern;
@@ -33,10 +24,6 @@ public:
     inline void setCurrentCardUsePattern(const QString &newPattern)
     {
         m_currentCardUsePattern = newPattern;
-    }
-    inline Player *getCurrentPlayer() const
-    {
-        return m_currentPlayer;
     }
     inline CardUseStruct::CardUseReason getCurrentCardUseReason() const
     {
@@ -59,8 +46,6 @@ public:
 
 protected:
     QHash<int, WrappedCard *> m_cards;
-    bool m_isClient;
-    Player *m_currentPlayer;
     QString m_currentCardUsePattern;
     CardUseStruct::CardUseReason m_currentCardUseReason;
 };
