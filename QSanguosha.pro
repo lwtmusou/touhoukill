@@ -205,7 +205,8 @@ OTHER_FILES += \
     qml/Magatama.qml \
     qml/RoleComboBox.qml \
     qml/HegRoleComboBox.qml \
-    qml/HandcardNum.qml
+    qml/HandcardNum.qml \
+    qml/KingdomImage.qml
 
 win32{
     CONFIG += skip_target_version_ext
