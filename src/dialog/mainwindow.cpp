@@ -100,14 +100,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QQuickWidget *qw = new QQuickWidget(this);
 
-    int id = QFontDatabase::addApplicationFont(QDir::currentPath() + "/font/budingti.ttf");
-    QString fontFace = QApplication::font().family();
-
-    if (id != -1)
-        fontFace = QFontDatabase::applicationFontFamilies(id).constFirst();
-
     qw->setResizeMode(QQuickWidget::SizeViewToRootObject);
-    qw->rootContext()->setContextProperty(QStringLiteral("ButtonFontFace"), fontFace);
     qw->rootContext()->setContextProperty(QStringLiteral("MainWindowInstance"), this);
     qw->rootContext()->setContextProperty(QStringLiteral("Sanguosha"), Sanguosha);
     qw->rootContext()->setContextProperty(QStringLiteral("Config"), &Config);

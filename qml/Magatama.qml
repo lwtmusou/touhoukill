@@ -5,6 +5,11 @@ import rocks.touhousatsu 1.0
 Image {
     id: magatama
 
+    width: 53
+    height: 44
+
+    fillMode: Image.PreserveAspectFit
+
     property int n: 5
     property bool lost: false
     property bool dyingThreshold: false

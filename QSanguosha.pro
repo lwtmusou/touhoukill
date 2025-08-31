@@ -206,7 +206,8 @@ OTHER_FILES += \
     qml/RoleComboBox.qml \
     qml/HegRoleComboBox.qml \
     qml/HandcardNum.qml \
-    qml/KingdomImage.qml
+    qml/KingdomImage.qml \
+    qml/PhaseItem.qml
 
 win32{
     CONFIG += skip_target_version_ext

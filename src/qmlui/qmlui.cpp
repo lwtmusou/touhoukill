@@ -4,13 +4,55 @@
 #include "clientplayer.h"
 #include "player.h"
 #include "skill.h"
+#include "util.h"
 
 #include <QApplication>
+#include <QFont>
+#include <QFontDatabase>
 #include <QtQml>
 
 QUrl TouhouKillQmlUiGlobal::getUrl(const QString &path) const
 {
     return QDir::current().absoluteFilePath(path);
+}
+
+bool TouhouKillQmlUiGlobal::isHegemonyGameMode(const QString &mode) const
+{
+    return ::isHegemonyGameMode(mode);
+}
+
+bool TouhouKillQmlUiGlobal::isNormalGameMode(const QString &mode) const
+{
+    return ::isNormalGameMode(mode);
+}
+
+bool TouhouKillQmlUiGlobal::isPlayerMainPhase(Player::Phase phase) const
+{
+    return Player::isMainPhase(phase);
+}
+
+QString TouhouKillQmlUiGlobal::playerPhaseToString(Player::Phase phase) const
+{
+    return Player::getPhaseString(phase);
+}
+
+QString TouhouKillQmlUiGlobal::buttonFontFace() const
+{
+    static const struct FontFaceRecorder
+    {
+        QString fontFace;
+
+        FontFaceRecorder()
+        {
+            int id = QFontDatabase::addApplicationFont(QDir::currentPath() + "/font/budingti.ttf");
+            fontFace = QApplication::font().family();
+
+            if (id != -1)
+                fontFace = QFontDatabase::applicationFontFamilies(id).constFirst();
+        }
+    } fontFaceRecorder;
+
+    return fontFaceRecorder.fontFace;
 }
 
 namespace {
@@ -23,6 +65,15 @@ void registerCore()
 
         if (ret == -1)
             qDebug() << "Failed to register TouhouKillQmlUiGlobal to Qml";
+    }
+
+    {
+        int ret = qmlRegisterSingletonType<TouhouKillServerInfoStruct>("rocks.touhousatsu", 1, 0, "ServerInfo", [](QQmlEngine *, QJSEngine *) -> QObject * {
+            return new TouhouKillServerInfoStruct;
+        });
+
+        if (ret == -1)
+            qDebug() << "Failed to register ServerInfo to Qml";
     }
 
     {

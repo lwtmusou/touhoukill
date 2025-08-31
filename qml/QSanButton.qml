@@ -1,5 +1,7 @@
 import QtQuick 6.5
 
+import rocks.touhousatsu 1.0
+
 Image {
     id: qSanButton
     property bool checkable: false
@@ -10,7 +12,7 @@ Image {
     property string text
     property font font
 
-    font.family: ButtonFontFace
+    font.family: G.ButtonFontFace
 
     signal clicked
     signal doubleClicked

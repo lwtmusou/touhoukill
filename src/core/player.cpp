@@ -883,6 +883,11 @@ void Player::loseSkill(const QString &skill_name, bool head)
 
 QString Player::getPhaseString() const
 {
+    return getPhaseString(phase);
+}
+
+QString Player::getPhaseString(Phase phase)
+{
     switch (phase) {
     case RoundStart:
         return "round_start";
@@ -1144,6 +1149,11 @@ void Player::setPhase(Phase phase)
 }
 
 bool Player::isInMainPhase() const
+{
+    return isMainPhase(phase);
+}
+
+bool Player::isMainPhase(Phase phase)
 {
     return phase == Start || phase == Judge || phase == Draw || phase == Play || phase == Discard || phase == Finish;
 }

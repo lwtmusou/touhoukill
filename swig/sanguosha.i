@@ -137,11 +137,12 @@ public:
     void setSeat(int seat);
     bool isAdjacentTo(const Player *another) const;
     QString getPhaseString() const;
+    static QString getPhaseString(Phase phase);
     void setPhaseString(const char *phase_str);
     Phase getPhase() const;
     void setPhase(Phase phase);
-	bool isInMainPhase() const;
-
+    bool isInMainPhase() const;
+    static bool isMainPhase(Phase phase);
 
     int getAttackRange(bool include_weapon = true) const;
     bool inMyAttackRange(const Player *other) const;

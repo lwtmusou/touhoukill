@@ -166,10 +166,13 @@ public:
     void setInitialSeat(int seat);
     bool isAdjacentTo(const Player *another) const;
     QString getPhaseString() const;
+    static QString getPhaseString(Phase phase);
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;
     void setPhase(Phase phase);
     bool isInMainPhase() const;
+    // TODO: static Q_INVOKABLE can't be called without an instance. currently delegate from TouhouKillQmlUiGlobal
+    static bool isMainPhase(Phase phase);
 
     int getAttackRange(bool include_weapon = true) const;
     bool inMyAttackRange(const Player *other) const;
