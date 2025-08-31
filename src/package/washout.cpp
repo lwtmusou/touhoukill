@@ -211,12 +211,13 @@ void SuperPeach::onEffect(const CardEffectStruct &effect) const
         effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
 }
 
-class GunSkill : public WeaponSkill
+class GunSkill : public TriggerSkill
 {
 public:
     GunSkill()
-        : WeaponSkill("Gun")
+        : TriggerSkill("Gun")
     {
+        equip_skill = true;
         events << Damage;
         frequency = Compulsory;
     }
@@ -224,7 +225,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
+        if (!EquipSkill::equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
         if ((damage.card != nullptr) && damage.card->isKindOf("Slash") && (damage.from != nullptr) && damage.from->isAlive() && damage.to->isAlive() && damage.to != damage.from) {
@@ -261,19 +262,20 @@ Gun::Gun(Suit suit, int number)
     setObjectName("Gun");
 }
 
-class HakkeroSkill : public WeaponSkill
+class HakkeroSkill : public TriggerSkill
 {
 public:
     HakkeroSkill()
-        : WeaponSkill("Hakkero")
+        : TriggerSkill("Hakkero")
     {
+        equip_skill = true;
         events << SlashMissed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (!equipAvailable(effect.from, EquipCard::WeaponLocation, objectName()))
+        if (!EquipSkill::equipAvailable(effect.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
         if (effect.from->isAlive() && effect.to->isAlive() && effect.jink != nullptr && effect.from->canDiscard(effect.to, "hes"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from);
@@ -353,12 +355,13 @@ public:
     }
 };
 
-class JadeSealTriggerSkill : public TreasureSkill
+class JadeSealTriggerSkill : public TriggerSkill
 {
 public:
     JadeSealTriggerSkill()
-        : TreasureSkill("JadeSeal_trigger")
+        : TriggerSkill("JadeSeal_trigger")
     {
+        equip_skill = true;
         events << PreCardUsed << EventPhaseChanging;
         frequency = Compulsory;
         global = true;
@@ -438,12 +441,13 @@ Pagoda::Pagoda(Suit suit, int number)
     setObjectName("Pagoda");
 }
 
-class PagodaTriggerSkill : public TreasureSkill
+class PagodaTriggerSkill : public TriggerSkill
 {
 public:
     PagodaTriggerSkill()
-        : TreasureSkill("Pagoda_trigger")
+        : TriggerSkill("Pagoda_trigger")
     {
+        equip_skill = true;
         events << PreCardUsed << EventPhaseChanging << Cancel;
         frequency = Compulsory;
         global = true;
@@ -506,12 +510,13 @@ void Pagoda::onUninstall(ServerPlayer *player) const
     Treasure::onUninstall(player);
 }
 
-class CamouflageSkill : public ArmorSkill
+class CamouflageSkill : public TriggerSkill
 {
 public:
     CamouflageSkill()
-        : ArmorSkill("Camouflage")
+        : TriggerSkill("Camouflage")
     {
+        equip_skill = true;
         events << DamageInflicted << CardsMoveOneTime;
         frequency = Compulsory;
     }
@@ -520,7 +525,7 @@ public:
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()))
+            if (EquipSkill::equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
         }
         return QList<SkillInvokeDetail>();
@@ -563,12 +568,13 @@ Camouflage::Camouflage(Suit suit, int number)
     setObjectName("Camouflage");
 }
 
-class HagoromoSkill : public ArmorSkill
+class HagoromoSkill : public TriggerSkill
 {
 public:
     HagoromoSkill()
-        : ArmorSkill("Hagoromo")
+        : TriggerSkill("Hagoromo")
     {
+        equip_skill = true;
         events << CardAsked;
         frequency = Compulsory;
     }
@@ -587,7 +593,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *player = ask.player;
-        if (equipAvailable(player, EquipCard::ArmorLocation, objectName()) && (player->getArmor() != nullptr) && player->getArmor()->objectName() == objectName()) {
+        if (EquipSkill::equipAvailable(player, EquipCard::ArmorLocation, objectName()) && (player->getArmor() != nullptr) && player->getArmor()->objectName() == objectName()) {
             if (player->isCardLimited(&j, ask.method))
                 return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);

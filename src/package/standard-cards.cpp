@@ -538,12 +538,13 @@ public:
     }
 };
 
-class TribladeSkill : public WeaponSkill
+class TribladeSkill : public TriggerSkill
 {
 public:
     TribladeSkill()
-        : WeaponSkill("Triblade")
+        : TriggerSkill("Triblade")
     {
+        equip_skill = true;
         events << Damage;
         view_as_skill = new TribladeSkillVS;
     }
@@ -551,7 +552,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName()) || damage.from->isDead() || !damage.from->canDiscard(damage.from, "hs"))
+        if (!EquipSkill::equipAvailable(damage.from, EquipCard::WeaponLocation, objectName()) || damage.from->isDead() || !damage.from->canDiscard(damage.from, "hs"))
             return QList<SkillInvokeDetail>();
 
         if ((damage.to != nullptr) && damage.to->isAlive() && (damage.card != nullptr) && damage.card->isKindOf("Slash") && damage.by_user && !damage.chain && !damage.transfer) {
@@ -581,12 +582,13 @@ Triblade::Triblade(Card::Suit suit, int number)
     setObjectName("Triblade");
 }
 
-class DoubleSwordSkill : public WeaponSkill
+class DoubleSwordSkill : public TriggerSkill
 {
 public:
     DoubleSwordSkill()
-        : WeaponSkill("DoubleSword")
+        : TriggerSkill("DoubleSword")
     {
+        equip_skill = true;
         events << TargetSpecified;
     }
 
@@ -607,7 +609,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+        if (!EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (isHegemonyGameMode(room->getMode()))
@@ -617,7 +619,7 @@ public:
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && use.from != nullptr && diff(use.from, p)) {
-                    if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
+                    if (!EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
                     d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
                 }
@@ -664,12 +666,13 @@ DoubleSword::DoubleSword(Suit suit, int number)
     setObjectName("DoubleSword");
 }
 
-class QinggangSwordSkill : public WeaponSkill
+class QinggangSwordSkill : public TriggerSkill
 {
 public:
     QinggangSwordSkill()
-        : WeaponSkill("QinggangSword")
+        : TriggerSkill("QinggangSword")
     {
+        equip_skill = true;
         events << TargetSpecified;
         frequency = Compulsory;
     }
@@ -677,13 +680,13 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+        if (!EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (use.from != nullptr && use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
-                if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
+                if (!EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                     continue;
                 d << SkillInvokeDetail(this, use.from, use.from, nullptr, true, p);
             }
@@ -724,12 +727,13 @@ QinggangSword::QinggangSword(Suit suit, int number)
     setObjectName("QinggangSword");
 }
 
-class BladeSkill : public WeaponSkill
+class BladeSkill : public TriggerSkill
 {
 public:
     BladeSkill()
-        : WeaponSkill("Blade")
+        : TriggerSkill("Blade")
     {
+        equip_skill = true;
         events << TargetSpecified;
     }
 
@@ -738,7 +742,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Slash"))
             return QList<SkillInvokeDetail>();
-        if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+        if (!EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (use.from != nullptr && use.from->isAlive())
@@ -854,12 +858,13 @@ public:
     }
 };
 
-class AxeSkill : public WeaponSkill
+class AxeSkill : public TriggerSkill
 {
 public:
     AxeSkill()
-        : WeaponSkill("Axe")
+        : TriggerSkill("Axe")
     {
+        equip_skill = true;
         events << SlashMissed;
         view_as_skill = new AxeViewAsSkill;
     }
@@ -867,7 +872,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (!equipAvailable(effect.from, EquipCard::WeaponLocation, objectName()))
+        if (!EquipSkill::equipAvailable(effect.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (!effect.to->isAlive() || effect.jink == nullptr)
@@ -937,19 +942,20 @@ Halberd::Halberd(Suit suit, int number)
     setObjectName("Halberd");
 }
 
-class KylinBowSkill : public WeaponSkill
+class KylinBowSkill : public TriggerSkill
 {
 public:
     KylinBowSkill()
-        : WeaponSkill("KylinBow")
+        : TriggerSkill("KylinBow")
     {
+        equip_skill = true;
         events << DamageCaused;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
+        if (!EquipSkill::equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
         if ((damage.card != nullptr) && damage.card->isKindOf("Slash") && damage.by_user && !damage.chain && !damage.transfer) {
@@ -999,12 +1005,13 @@ KylinBow::KylinBow(Suit suit, int number)
     setObjectName("KylinBow");
 }
 
-class EightDiagramSkill : public ArmorSkill
+class EightDiagramSkill : public TriggerSkill
 {
 public:
     EightDiagramSkill()
-        : ArmorSkill("EightDiagram")
+        : TriggerSkill("EightDiagram")
     {
+        equip_skill = true;
         events << CardAsked;
     }
 
@@ -1020,7 +1027,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *player = ask.player;
-        if (!equipAvailable(player, EquipCard::ArmorLocation, objectName()))
+        if (!EquipSkill::equipAvailable(player, EquipCard::ArmorLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         //since skill yuanfei,we need check
@@ -1081,12 +1088,13 @@ EightDiagram::EightDiagram(Suit suit, int number)
     setObjectName("EightDiagram");
 }
 
-class BreastPlateSkill : public ArmorSkill
+class BreastPlateSkill : public TriggerSkill
 {
 public:
     BreastPlateSkill()
-        : ArmorSkill("BreastPlate")
+        : TriggerSkill("BreastPlate")
     {
+        equip_skill = true;
         events << DamageInflicted;
         frequency = Compulsory;
     }
@@ -1095,7 +1103,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.damage >= damage.to->getHp() && damage.to->isAlive() && (damage.to->getArmor() != nullptr) && damage.to->getArmor()->objectName() == objectName()
-            && equipAvailable(damage.to, EquipCard::ArmorLocation, objectName())) {
+            && EquipSkill::equipAvailable(damage.to, EquipCard::ArmorLocation, objectName())) {
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         }
         return QList<SkillInvokeDetail>();
@@ -1741,19 +1749,20 @@ void Lightning::takeEffect(ServerPlayer *target) const
 
 // EX cards
 
-class IceSwordSkill : public WeaponSkill
+class IceSwordSkill : public TriggerSkill
 {
 public:
     IceSwordSkill()
-        : WeaponSkill("IceSword")
+        : TriggerSkill("IceSword")
     {
+        equip_skill = true;
         events << DamageCaused;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
+        if (!EquipSkill::equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
         if ((damage.card != nullptr) && damage.by_user && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "hes") && !damage.chain && !damage.transfer
@@ -1765,10 +1774,6 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        //bool ret = WeaponSkill::cost(triggerEvent, room, invoke, data);
-        //if (ret)
-        //    room->setEmotion(invoke->invoker, "weapon/ice_sword");
-        //return ret;
         invoke->invoker->tag[this->objectName()] = data;
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
@@ -1806,12 +1811,13 @@ IceSword::IceSword(Suit suit, int number)
     setObjectName("IceSword");
 }
 
-class RenwangShieldSkill : public ArmorSkill
+class RenwangShieldSkill : public TriggerSkill
 {
 public:
     RenwangShieldSkill()
-        : ArmorSkill("RenwangShield")
+        : TriggerSkill("RenwangShield")
     {
+        equip_skill = true;
         events << SlashEffected;
         frequency = Compulsory;
     }
@@ -1819,7 +1825,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (!equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
+        if (!EquipSkill::equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (effect.slash->isBlack())
@@ -1939,12 +1945,13 @@ public:
     }
 };
 
-class WoodenOxTriggerSkill : public TreasureSkill
+class WoodenOxTriggerSkill : public TriggerSkill
 {
 public:
     WoodenOxTriggerSkill()
-        : TreasureSkill("wooden_ox_trigger")
+        : TriggerSkill("wooden_ox_trigger")
     {
+        equip_skill = true;
         events << CardsMoveOneTime;
         frequency = Compulsory;
         global = true;
@@ -2440,12 +2447,13 @@ void SavingEnergy::takeEffect(ServerPlayer *target) const
     target->skip(Player::Discard);
 }
 
-class DeathSickleSkill : public WeaponSkill
+class DeathSickleSkill : public TriggerSkill
 {
 public:
     DeathSickleSkill()
-        : WeaponSkill("DeathSickle")
+        : TriggerSkill("DeathSickle")
     {
+        equip_skill = true;
         events << TargetSpecified << CardFinished; //EventPhaseChanging
     }
 
@@ -2475,14 +2483,14 @@ public:
         if (e != TargetSpecified)
             return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+        if (!EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (use.from != nullptr && use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && p->dyingThreshold() == 1) {
-                    if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
+                    if (!EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
                     d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
                 }

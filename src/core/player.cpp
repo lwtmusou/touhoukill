@@ -1588,7 +1588,7 @@ QString Player::getSkillDescription(bool yellow, const QString &flag) const
     foreach (const Skill *skill, skillList) {
         if (skill->isAttachedLordSkill())
             continue;
-        if (skill->inherits("EquipSkill"))
+        if (skill->isEquipSkill())
             continue;
         if (!isHegemonyGameMode(ServerInfo.GameMode) && !hasSkill(skill->objectName(), true))
             continue;
@@ -1804,7 +1804,7 @@ bool Player::hasShownSkill(const Skill *skill) const
     if (acquired_skills.contains(skill->objectName()) || acquired_skills2.contains(skill->objectName())) // deputy
         return true;
 
-    if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill") || skill->inherits("TreasureSkill"))
+    if (skill->isEquipSkill())
         return true;
 
     if (skill->inherits("TriggerSkill")) {

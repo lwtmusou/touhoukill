@@ -117,19 +117,20 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const
     }
 }
 
-class FanSkill : public WeaponSkill
+class FanSkill : public TriggerSkill
 {
 public:
     FanSkill()
-        : WeaponSkill("Fan")
+        : TriggerSkill("Fan")
     {
+        equip_skill = true;
         events << TargetSpecifying;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+        if (!EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
         if (use.card->isKindOf("Slash") && use.from->isAlive()) {
             if (use.card->isKindOf("FireSlash") || !use.card->isKindOf("NatureSlash"))
@@ -187,12 +188,13 @@ Fan::Fan(Suit suit, int number)
     setObjectName("Fan");
 }
 
-class GudingBladeSkill : public WeaponSkill
+class GudingBladeSkill : public TriggerSkill
 {
 public:
     GudingBladeSkill()
-        : WeaponSkill("GudingBlade")
+        : TriggerSkill("GudingBlade")
     {
+        equip_skill = true;
         events << DamageCaused;
         frequency = Compulsory;
     }
@@ -200,7 +202,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
+        if (!EquipSkill::equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
         if ((damage.card != nullptr) && damage.card->isKindOf("Slash") && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer)
@@ -233,12 +235,13 @@ GudingBlade::GudingBlade(Suit suit, int number)
     setObjectName("GudingBlade");
 }
 
-class IronArmorSkill : public ArmorSkill
+class IronArmorSkill : public TriggerSkill
 {
 public:
     IronArmorSkill()
-        : ArmorSkill("IronArmor")
+        : TriggerSkill("IronArmor")
     {
+        equip_skill = true;
         events << SlashEffected << CardEffected;
         frequency = Compulsory;
     }
@@ -247,13 +250,13 @@ public:
     {
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (!equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
+            if (!EquipSkill::equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
                 return QList<SkillInvokeDetail>();
             if (effect.slash->isKindOf("NatureSlash"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != nullptr
+            if (EquipSkill::equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != nullptr
                 && (effect.card->isKindOf("IronChain") || effect.card->isKindOf("FireAttack")))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
         }
@@ -288,12 +291,13 @@ IronArmor::IronArmor(Suit suit, int number)
     setObjectName("IronArmor");
 }
 
-class VineSkill : public ArmorSkill
+class VineSkill : public TriggerSkill
 {
 public:
     VineSkill()
-        : ArmorSkill("Vine")
+        : TriggerSkill("Vine")
     {
+        equip_skill = true;
         events << DamageInflicted << SlashEffected << CardEffected;
         frequency = Compulsory;
     }
@@ -302,16 +306,16 @@ public:
     {
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.nature == DamageStruct::Normal)
+            if (EquipSkill::equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.nature == DamageStruct::Normal)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != nullptr
+            if (EquipSkill::equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != nullptr
                 && (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.nature == DamageStruct::Fire)
+            if (EquipSkill::equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.nature == DamageStruct::Fire)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
         }
 
@@ -379,12 +383,13 @@ Vine::Vine(Suit suit, int number)
     setObjectName("Vine");
 }
 
-class SilverLionSkill : public ArmorSkill
+class SilverLionSkill : public TriggerSkill
 {
 public:
     SilverLionSkill()
-        : ArmorSkill("SilverLion")
+        : TriggerSkill("SilverLion")
     {
+        equip_skill = true;
         events << DamageInflicted << CardsMoveOneTime;
         frequency = Compulsory;
     }
@@ -393,7 +398,7 @@ public:
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.damage > 1)
+            if (EquipSkill::equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.damage > 1)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
         } else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();

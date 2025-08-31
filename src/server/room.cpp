@@ -1759,10 +1759,16 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         player->showHiddenSkill(skill_name);
         player->showHiddenSkill(card->getSkillName());
         const Skill *equipSkill = Sanguosha->getSkill(skill_name);
-        if ((equipSkill != nullptr) && equipSkill->inherits("WeaponSkill")) {
-            const ViewHasSkill *v = Sanguosha->ViewHas(player, skill_name, "weapon", true);
-            if (v != nullptr)
-                player->showHiddenSkill(v->objectName());
+        if ((equipSkill != nullptr) && equipSkill->isEquipSkill()) {
+            for (const QString &type : {
+                     QStringLiteral("weapon"),
+                     QStringLiteral("armor"),
+                     QStringLiteral("treasure"),
+                 }) {
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skill_name, type, true);
+                if (v != nullptr)
+                    player->showHiddenSkill(v->objectName());
+            }
         }
 
         //move1

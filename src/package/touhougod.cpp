@@ -2655,7 +2655,7 @@ class Benwo : public TriggerSkill
     static bool hasLimitedSkill(const Player *player)
     {
         foreach (const Skill *skill, player->getVisibleSkillList()) {
-            if (skill != nullptr && skill->getFrequency() == Limited && !skill->inherits("EquipSkill"))
+            if (skill != nullptr && skill->getFrequency() == Limited && !skill->isEquipSkill())
                 return true;
         }
         return false;
@@ -2693,7 +2693,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             QString pattern = usePatternWithoutSlash;
             foreach (const Skill *skill, player->getVisibleSkillList()) {
-                if (skill != nullptr && skill->getFrequency() == Skill::Eternal && !skill->inherits("EquipSkill")) {
+                if (skill != nullptr && skill->getFrequency() == Skill::Eternal && !skill->isEquipSkill()) {
                     pattern = usePattern;
                     break;
                 }

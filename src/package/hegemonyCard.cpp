@@ -348,12 +348,13 @@ void AwaitExhaustedHegemony::onEffect(const CardEffectStruct &effect) const
     effect.to->getRoom()->setPlayerFlag(effect.to, "AwaitExhaustedEffected");
 }
 
-class DoubleSwordHegemonySkill : public WeaponSkill
+class DoubleSwordHegemonySkill : public TriggerSkill
 {
 public:
     DoubleSwordHegemonySkill()
-        : WeaponSkill("DoubleSwordHegemony")
+        : TriggerSkill("DoubleSwordHegemony")
     {
+        equip_skill = true;
         events << TargetSpecified;
         global = true;
     }
@@ -361,7 +362,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from == nullptr || !equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+        if (use.from == nullptr || !EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (!isHegemonyGameMode(room->getMode()))
@@ -371,7 +372,7 @@ public:
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && !p->hasShownAllGenerals()) {
-                    if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
+                    if (!EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
                     d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
                 }

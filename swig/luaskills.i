@@ -318,16 +318,14 @@ public:
 };
 
 
-class EquipSkill : public TriggerSkill
+struct EquipSkill
 {
-public:
     static bool equipAvailable(const ServerPlayer *p, EquipCard::Location location, const QString &equip_name);
     static bool equipAvailable(const ServerPlayer *p, const EquipCard *card);
 
-#if SWIGVERSION >= 0x030000
 private:
     EquipSkill() = delete;
-#endif
+    ~EquipSkill() = delete;
 };
 
 %{

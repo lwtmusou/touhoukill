@@ -445,7 +445,7 @@ bool SkillInvokeDetail::operator<(const SkillInvokeDetail &arg2) const // the op
         return room->getFront(invoker, arg2.invoker) == invoker;
     }
 
-    return !skill->inherits("EquipSkill") && arg2.skill->inherits("EquipSkill");
+    return !skill->isEquipSkill() && arg2.skill->isEquipSkill();
 }
 
 bool SkillInvokeDetail::sameSkill(const SkillInvokeDetail &arg2) const
@@ -460,7 +460,7 @@ bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const
     if (!isValid() || !arg2.isValid())
         return false;
 
-    return skill->getPriority() == arg2.skill->getPriority() && invoker == arg2.invoker && skill->inherits("EquipSkill") == arg2.skill->inherits("EquipSkill");
+    return skill->getPriority() == arg2.skill->getPriority() && invoker == arg2.invoker && skill->isEquipSkill() == arg2.skill->isEquipSkill();
 }
 
 SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= nullptr*/, ServerPlayer *owner /*= nullptr*/, ServerPlayer *invoker /*= nullptr*/,

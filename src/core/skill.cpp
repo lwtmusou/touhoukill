@@ -173,6 +173,11 @@ bool Skill::relateToPlace(bool head) const
     return false;
 }
 
+bool Skill::isEquipSkill() const
+{
+    return equip_skill;
+}
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name, Skill::NotFrequent, "viewas")
     , response_or_use(false)
@@ -545,11 +550,6 @@ int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *
         return 0;
 }
 
-EquipSkill::EquipSkill(const QString &name)
-    : TriggerSkill(name)
-{
-}
-
 bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, const QString &equipName, const Player *to /*= nullptr*/)
 {
     if (p == nullptr)
@@ -587,21 +587,6 @@ bool EquipSkill::equipAvailable(const Player *p, const EquipCard *card, const Pl
         return false;
 
     return equipAvailable(p, card->location(), card->objectName(), to);
-}
-
-WeaponSkill::WeaponSkill(const QString &name)
-    : EquipSkill(name)
-{
-}
-
-ArmorSkill::ArmorSkill(const QString &name)
-    : EquipSkill(name)
-{
-}
-
-TreasureSkill::TreasureSkill(const QString &name)
-    : EquipSkill(name)
-{
 }
 
 ViewHasSkill::ViewHasSkill(const QString &name)
