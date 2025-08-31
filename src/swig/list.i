@@ -207,7 +207,7 @@ QVectorIterator<T> *create_qvector_iterator(QVector<T> *list);
 
 %template(CardIdSetIt) QSetIterator<int>;
 %template(TriggerEventSetIt) QSetIterator<QSanguosha::TriggerEvent>;
-%template(StringSetIt) QSetIterator<int>;
+%template(StringSetIt) QSetIterator<QString>;
 %template(SkillSetIt) QSetIterator<const Skill *>;
 %template(CardSetIt) QSetIterator<Card *>;
 %template(ConstCardSetIt) QSetIterator<const Card *>;
