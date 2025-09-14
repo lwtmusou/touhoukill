@@ -1,5 +1,5 @@
-#ifndef _DETECTOR_H
-#define _DETECTOR_H
+#ifndef THKILL_DETECTOR_H
+#define THKILL_DETECTOR_H
 
 #include <QObject>
 #include <QString>

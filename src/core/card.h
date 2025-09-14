@@ -1,5 +1,5 @@
-#ifndef _CARD_H
-#define _CARD_H
+#ifndef THKILL_CARD_H
+#define THKILL_CARD_H
 
 #include <QIcon>
 #include <QMap>

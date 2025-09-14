@@ -89,7 +89,6 @@ SOURCES += \
     src/dialog/TimedProgressBar.cpp \
     src/dialog/serverdialog.cpp \
     src/dialog/uilegacy/SkinBank.cpp \
-    src/dialog/uilegacy/uiUtils.cpp \
     src/qmlui/qmlui.cpp \
     src/qmlui/roomscene.cpp
 
@@ -170,7 +169,6 @@ HEADERS += \
     src/dialog/serverdialog.h \
     src/dialog/uilegacy/SkinBank.h \
     src/dialog/uilegacy/qsanbutton.h \
-    src/dialog/uilegacy/uiUtils.h \
     src/qmlui/roomscene.h \
     src/qmlui/qmlui.h
 

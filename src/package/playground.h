@@ -1,5 +1,5 @@
-#ifndef PLAYGROUND_H
-#define PLAYGROUND_H
+#ifndef THKILL_PLAYGROUND_H
+#define THKILL_PLAYGROUND_H
 
 #include "card.h"
 #include "package.h"

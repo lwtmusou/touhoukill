@@ -1,5 +1,5 @@
-#ifndef _TIMED_PROGRESS_BAR_H
-#define _TIMED_PROGRESS_BAR_H
+#ifndef THKILL_TIMED_PROGRESS_BAR_H
+#define THKILL_TIMED_PROGRESS_BAR_H
 
 #include <QPaintEvent>
 #include <QProgressBar>

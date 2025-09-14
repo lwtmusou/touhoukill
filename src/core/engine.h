@@ -1,5 +1,5 @@
-#ifndef _ENGINE_H
-#define _ENGINE_H
+#ifndef THKILL_ENGINE_H
+#define THKILL_ENGINE_H
 
 #include "RoomState.h"
 #include "card.h"

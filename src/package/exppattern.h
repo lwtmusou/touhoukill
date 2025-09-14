@@ -1,5 +1,5 @@
-#ifndef _EXPPATTERN_H
-#define _EXPPATTERN_H
+#ifndef THKILL_EXPPATTERN_H
+#define THKILL_EXPPATTERN_H
 
 #include "card.h"
 #include "package.h"

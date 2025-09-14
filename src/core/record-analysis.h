@@ -1,6 +1,8 @@
 #ifndef _RECORD_ANALYSIS_H
 #define _RECORD_ANALYSIS_H
 
+// TODO: deprecate this
+
 #include "client.h"
 #include "engine.h"
 #include "serverplayer.h"

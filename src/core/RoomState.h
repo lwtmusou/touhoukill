@@ -1,5 +1,5 @@
-#ifndef _ROOM_STATE_H
-#define _ROOM_STATE_H
+#ifndef THKILL_ROOM_STATE_H
+#define THKILL_ROOM_STATE_H
 
 #include "WrappedCard.h"
 #include "player.h"

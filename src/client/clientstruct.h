@@ -1,5 +1,5 @@
-#ifndef _CLIENT_STRUCT_H
-#define _CLIENT_STRUCT_H
+#ifndef THKILL_CLIENT_STRUCT_H
+#define THKILL_CLIENT_STRUCT_H
 
 #include "player.h"
 #include "protocol.h"

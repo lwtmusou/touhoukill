@@ -1,5 +1,5 @@
-#ifndef _SKILL_H
-#define _SKILL_H
+#ifndef THKILL_SKILL_H
+#define THKILL_SKILL_H
 
 class Player;
 class Card;

@@ -1,5 +1,5 @@
-#ifndef _NATIVESOCKET_H
-#define _NATIVESOCKET_H
+#ifndef THKILL_NATIVESOCKET_H
+#define THKILL_NATIVESOCKET_H
 
 #include "socket.h"
 

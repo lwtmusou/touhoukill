@@ -1,5 +1,5 @@
-#ifndef _MANEUVERING_H
-#define _MANEUVERING_H
+#ifndef THKILL_MANEUVERING_H
+#define THKILL_MANEUVERING_H
 
 #include "standard.h"
 

@@ -1,5 +1,5 @@
-#ifndef _PROTOCOL_H
-#define _PROTOCOL_H
+#ifndef THKILL_PROTOCOL_H
+#define THKILL_PROTOCOL_H
 
 #include <QVariant>
 

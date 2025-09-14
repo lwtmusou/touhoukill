@@ -1,5 +1,5 @@
-#ifndef _ABOUT_US_H
-#define _ABOUT_US_H
+#ifndef THKILL_ABOUT_US_H
+#define THKILL_ABOUT_US_H
 
 #include <QDialog>
 

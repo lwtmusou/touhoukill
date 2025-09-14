@@ -1,5 +1,5 @@
-#ifndef _peasants_vs_landlord_H
-#define _peasants_vs_landlord_H
+#ifndef THKILL_PEASANTS_VS_LANDLORD_H
+#define THKILL_PEASANTS_VS_LANDLORD_H
 
 #include "card.h"
 #include "package.h"

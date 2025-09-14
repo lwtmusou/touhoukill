@@ -1,5 +1,5 @@
-#ifndef PCH_H
-#define PCH_H
+#ifndef THKILL_PCH_H
+#define THKILL_PCH_H
 
 #ifndef __cplusplus
 

@@ -1,5 +1,5 @@
-#ifndef _COMPILER_SPECIFIC_H
-#define _COMPILER_SPECIFIC_H
+#ifndef THKILL_COMPILER_SPECIFIC_H
+#define THKILL_COMPILER_SPECIFIC_H
 
 // compiler_warning.h
 #define STRINGISE_IMPL(x) #x

@@ -18,8 +18,8 @@
     Mogara
     *********************************************************************/
 
-#ifndef JSON_H
-#define JSON_H
+#ifndef THKILL_JSON_H
+#define THKILL_JSON_H
 
 #include <QVariantList>
 #include <QVariantMap>

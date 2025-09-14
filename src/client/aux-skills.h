@@ -1,5 +1,5 @@
-#ifndef _AUX_SKILLS_H
-#define _AUX_SKILLS_H
+#ifndef THKILL_AUX_SKILLS_H
+#define THKILL_AUX_SKILLS_H
 
 #include "skill.h"
 

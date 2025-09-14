@@ -1,5 +1,5 @@
-#ifndef _protagonist_H
-#define _protagonist_H
+#ifndef THKILL_PROTAGONIST_H
+#define THKILL_PROTAGONIST_H
 
 #include "card.h"
 #include "package.h"

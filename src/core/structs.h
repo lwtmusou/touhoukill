@@ -1,5 +1,5 @@
-#ifndef _STRUCTS_H
-#define _STRUCTS_H
+#ifndef THKILL_STRUCTS_H
+#define THKILL_STRUCTS_H
 
 class Room;
 class TriggerSkill;

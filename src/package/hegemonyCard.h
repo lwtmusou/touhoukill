@@ -1,5 +1,5 @@
-#ifndef _HEGEMONYCARD_H
-#define _HEGEMONYCARD_H
+#ifndef THKILL_HEGEMONYCARD_H
+#define THKILL_HEGEMONYCARD_H
 
 #include "maneuvering.h"
 #include "standard.h"

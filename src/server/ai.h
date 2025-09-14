@@ -1,5 +1,5 @@
-#ifndef _AI_H
-#define _AI_H
+#ifndef THKILL_AI_H
+#define THKILL_AI_H
 
 class Room;
 class TrickCard;

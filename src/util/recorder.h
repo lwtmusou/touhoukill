@@ -1,5 +1,5 @@
-#ifndef _RECORDER_H
-#define _RECORDER_H
+#ifndef THKILL_RECORDER_H
+#define THKILL_RECORDER_H
 
 #include "protocol.h"
 

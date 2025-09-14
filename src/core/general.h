@@ -1,5 +1,5 @@
-#ifndef _GENERAL_H
-#define _GENERAL_H
+#ifndef THKILL_GENERAL_H
+#define THKILL_GENERAL_H
 
 class Skill;
 class TriggerSkill;

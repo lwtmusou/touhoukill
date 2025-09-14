@@ -1,5 +1,5 @@
-#ifndef _SOCKET_H
-#define _SOCKET_H
+#ifndef THKILL_SOCKET_H
+#define THKILL_SOCKET_H
 
 #include <QObject>
 #include <QTcpServer>

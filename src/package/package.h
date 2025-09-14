@@ -1,5 +1,5 @@
-#ifndef _PACKAGE_H
-#define _PACKAGE_H
+#ifndef THKILL_PACKAGE_H
+#define THKILL_PACKAGE_H
 
 class Skill;
 class Card;

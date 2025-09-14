@@ -1,5 +1,5 @@
-#ifndef _STANDARD_EQUIPS_H
-#define _STANDARD_EQUIPS_H
+#ifndef THKILL_STANDARD_EQUIPS_H
+#define THKILL_STANDARD_EQUIPS_H
 
 #include "standard.h"
 

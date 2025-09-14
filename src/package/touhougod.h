@@ -1,5 +1,5 @@
-#ifndef _touhougod_H
-#define _touhougod_H
+#ifndef THKILL_TOUHOUGOD_H
+#define THKILL_TOUHOUGOD_H
 
 #include "card.h"
 #include "package.h"

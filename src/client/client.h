@@ -1,5 +1,5 @@
-#ifndef _CLIENT_H
-#define _CLIENT_H
+#ifndef THKILL_CLIENT_H
+#define THKILL_CLIENT_H
 
 #include "card.h"
 #include "clientplayer.h"

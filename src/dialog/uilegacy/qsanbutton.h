@@ -1,5 +1,5 @@
-#ifndef _QSAN_BUTTON_H
-#define _QSAN_BUTTON_H
+#ifndef THKILL_QSAN_BUTTON_H
+#define THKILL_QSAN_BUTTON_H
 
 #include <QString>
 

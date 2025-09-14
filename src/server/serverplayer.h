@@ -1,5 +1,5 @@
-#ifndef _SERVER_PLAYER_H
-#define _SERVER_PLAYER_H
+#ifndef THKILL_SERVER_PLAYER_H
+#define THKILL_SERVER_PLAYER_H
 
 class Room;
 class AI;

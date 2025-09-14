@@ -1,5 +1,5 @@
-#ifndef _PLAYER_H
-#define _PLAYER_H
+#ifndef THKILL_PLAYER_H
+#define THKILL_PLAYER_H
 
 #include "WrappedCard.h"
 #include "general.h"

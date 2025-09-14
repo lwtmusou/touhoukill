@@ -1,5 +1,5 @@
-#ifndef _SKIN_BANK_H
-#define _SKIN_BANK_H
+#ifndef THKILL_SKIN_BANK_H
+#define THKILL_SKIN_BANK_H
 
 #define QSAN_UI_LIBRARY_AVAILABLE
 

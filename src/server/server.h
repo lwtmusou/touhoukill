@@ -1,5 +1,5 @@
-#ifndef _SERVER_H
-#define _SERVER_H
+#ifndef THKILL_SERVER_H
+#define THKILL_SERVER_H
 
 class Room;
 class QGroupBox;

@@ -1,5 +1,5 @@
-#ifndef _ROLE_ASSIGN_DIALOG_H
-#define _ROLE_ASSIGN_DIALOG_H
+#ifndef THKILL_ROLE_ASSIGN_DIALOG_H
+#define THKILL_ROLE_ASSIGN_DIALOG_H
 
 #include <QCheckBox>
 #include <QComboBox>

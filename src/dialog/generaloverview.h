@@ -1,5 +1,5 @@
-#ifndef _GENERAL_OVERVIEW_H
-#define _GENERAL_OVERVIEW_H
+#ifndef THKILL_GENERAL_OVERVIEW_H
+#define THKILL_GENERAL_OVERVIEW_H
 
 class General;
 class Skill;

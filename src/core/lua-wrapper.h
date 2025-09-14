@@ -1,5 +1,5 @@
-#ifndef _LUA_WRAPPER_H
-#define _LUA_WRAPPER_H
+#ifndef THKILL_LUA_WRAPPER_H
+#define THKILL_LUA_WRAPPER_H
 
 #include "skill.h"
 #include "standard.h"

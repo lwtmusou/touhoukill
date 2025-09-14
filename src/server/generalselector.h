@@ -1,5 +1,5 @@
-#ifndef _GENERAL_SELECTOR_H
-#define _GENERAL_SELECTOR_H
+#ifndef THKILL_GENERAL_SELECTOR_H
+#define THKILL_GENERAL_SELECTOR_H
 
 #include "lua-wrapper.h"
 

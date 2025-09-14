@@ -1,5 +1,5 @@
-#ifndef _CONNECTION_DIALOG_H
-#define _CONNECTION_DIALOG_H
+#ifndef THKILL_CONNECTION_DIALOG_H
+#define THKILL_CONNECTION_DIALOG_H
 
 #include "engine.h"
 #include "general.h"

@@ -1,5 +1,5 @@
-#ifndef _WRAPPED_CARD_H
-#define _WRAPPED_CARD_H
+#ifndef THKILL_WRAPPED_CARD_H
+#define THKILL_WRAPPED_CARD_H
 
 #include "card.h"
 

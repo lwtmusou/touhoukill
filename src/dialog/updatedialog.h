@@ -1,5 +1,5 @@
-#ifndef UPDATE_DIALOG_H_
-#define UPDATE_DIALOG_H_
+#ifndef THKILL_UPDATE_DIALOG_H_
+#define THKILL_UPDATE_DIALOG_H_
 
 #include <QDialog>
 #include <QJsonObject>

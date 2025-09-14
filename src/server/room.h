@@ -1,5 +1,5 @@
-#ifndef _ROOM_H
-#define _ROOM_H
+#ifndef THKILL_ROOM_H
+#define THKILL_ROOM_H
 
 #include <QAtomicPointer>
 #include <QMutex>

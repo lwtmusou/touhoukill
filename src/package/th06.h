@@ -1,5 +1,5 @@
-#ifndef _th06_H
-#define _th06_H
+#ifndef THKILL_TH06_H
+#define THKILL_TH06_H
 
 #include "card.h"
 #include "package.h"

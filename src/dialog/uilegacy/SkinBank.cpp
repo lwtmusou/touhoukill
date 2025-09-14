@@ -4,7 +4,6 @@
 #include "protocol.h"
 #include "qsanbutton.h"
 #include "settings.h"
-#include "uiUtils.h"
 
 #include <cmath>
 

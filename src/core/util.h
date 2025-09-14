@@ -1,5 +1,5 @@
-#ifndef _UTIL_H
-#define _UTIL_H
+#ifndef THKILL_UTIL_H
+#define THKILL_UTIL_H
 
 struct lua_State;
 class QVariant;

@@ -1,5 +1,5 @@
-#ifndef _hegemonyGeneral_H
-#define _hegemonyGeneral_H
+#ifndef THKILL_HEGEMONY_GENERAL_H
+#define THKILL_HEGEMONY_GENERAL_H
 
 #include "card.h"
 #include "package.h"

@@ -1,5 +1,5 @@
-#ifndef _ROOM_THREAD_H
-#define _ROOM_THREAD_H
+#ifndef THKILL_ROOM_THREAD_H
+#define THKILL_ROOM_THREAD_H
 
 #include <QSemaphore>
 #include <QThread>

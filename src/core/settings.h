@@ -1,5 +1,5 @@
-#ifndef _SETTINGS_H
-#define _SETTINGS_H
+#ifndef THKILL_SETTINGS_H
+#define THKILL_SETTINGS_H
 
 #include "protocol.h"
 

@@ -1,5 +1,7 @@
-#ifndef AUDIO_H
-#define AUDIO_H
+#ifndef THKILL_AUDIO_H
+#define THKILL_AUDIO_H
+
+// TODO: move this file out of core, to UI
 
 #ifdef AUDIO_SUPPORT
 
