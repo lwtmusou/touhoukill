@@ -20,8 +20,8 @@ class AvatarModel : public QAbstractListModel
 public:
     explicit AvatarModel(const QList<const General *> &list);
 
-    int rowCount(const QModelIndex & /*parent*/) const override;
-    QVariant data(const QModelIndex &index, int role) const override;
+    [[nodiscard]] int rowCount(const QModelIndex & /*parent*/) const override;
+    [[nodiscard]] QVariant data(const QModelIndex &index, int role) const override;
 
 private:
     QList<const General *> list;

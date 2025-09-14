@@ -14,8 +14,8 @@ class RoomState
 public:
     explicit inline RoomState() = default;
     ~RoomState();
-    Card *getCard(int cardId) const;
-    inline QString getCurrentCardUsePattern() const
+    [[nodiscard]] Card *getCard(int cardId) const;
+    [[nodiscard]] inline QString getCurrentCardUsePattern() const
     {
         return m_currentCardUsePattern;
     }
@@ -23,7 +23,7 @@ public:
     {
         m_currentCardUsePattern = newPattern;
     }
-    inline CardUseStruct::CardUseReason getCurrentCardUseReason() const
+    [[nodiscard]] inline CardUseStruct::CardUseReason getCurrentCardUseReason() const
     {
         return m_currentCardUseReason;
     }

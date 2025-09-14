@@ -21,9 +21,9 @@ public:
     static QImage TXT2PNG(const QByteArray &data);
     static QByteArray PNG2TXT(const QString &filename);
 
-    bool save(const QString &filename) const;
+    [[nodiscard]] bool save(const QString &filename) const;
     void recordLine(const QString &line);
-    QList<QByteArray> getRecords() const;
+    [[nodiscard]] QList<QByteArray> getRecords() const;
 
 public slots:
     void record(const char *line);

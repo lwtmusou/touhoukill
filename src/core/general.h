@@ -26,18 +26,18 @@ public:
     explicit General(Package *package, const QString &name, const QString &kingdom, int max_hp = 4, bool male = false, bool hidden = false, bool never_shown = false);
 
     // property getters/setters
-    int getMaxHp() const;
-    QString getKingdom() const;
-    bool isMale() const;
-    bool isFemale() const;
-    bool isNeuter() const;
-    bool isLord() const;
-    bool isHidden() const;
-    bool isTotallyHidden() const;
+    [[nodiscard]] int getMaxHp() const;
+    [[nodiscard]] QString getKingdom() const;
+    [[nodiscard]] bool isMale() const;
+    [[nodiscard]] bool isFemale() const;
+    [[nodiscard]] bool isNeuter() const;
+    [[nodiscard]] bool isLord() const;
+    [[nodiscard]] bool isHidden() const;
+    [[nodiscard]] bool isTotallyHidden() const;
 
-    bool isVisible() const;
-    int getMaxHpHead() const;
-    int getMaxHpDeputy() const;
+    [[nodiscard]] bool isVisible() const;
+    [[nodiscard]] int getMaxHpHead() const;
+    [[nodiscard]] int getMaxHpDeputy() const;
 
     enum Gender
     {
@@ -48,30 +48,30 @@ public:
     };
     Q_ENUM(Gender)
 
-    Gender getGender() const;
+    [[nodiscard]] Gender getGender() const;
     void setGender(Gender gender);
 
     void addSkill(Skill *skill);
     void addSkill(const QString &skill_name);
-    bool hasSkill(const QString &skill_name) const;
-    QList<const Skill *> getSkillList(bool relate_to_place = false, bool head_only = true) const;
-    QList<const Skill *> getVisibleSkillList(bool relate_to_place = false, bool head_only = true) const;
-    QSet<const Skill *> getVisibleSkills(bool relate_to_place = false, bool head_only = true) const;
-    QSet<const TriggerSkill *> getTriggerSkills() const;
+    [[nodiscard]] bool hasSkill(const QString &skill_name) const;
+    [[nodiscard]] QList<const Skill *> getSkillList(bool relate_to_place = false, bool head_only = true) const;
+    [[nodiscard]] QList<const Skill *> getVisibleSkillList(bool relate_to_place = false, bool head_only = true) const;
+    [[nodiscard]] QSet<const Skill *> getVisibleSkills(bool relate_to_place = false, bool head_only = true) const;
+    [[nodiscard]] QSet<const TriggerSkill *> getTriggerSkills() const;
 
     void addRelateSkill(const QString &skill_name);
-    QStringList getRelatedSkillNames() const;
+    [[nodiscard]] QStringList getRelatedSkillNames() const;
 
-    QString getPackage() const;
-    QString getSkillDescription(bool include_name = false, bool yellow = true) const;
+    [[nodiscard]] QString getPackage() const;
+    [[nodiscard]] QString getSkillDescription(bool include_name = false, bool yellow = true) const;
     void addCompanion(const QString &name);
-    bool isCompanionWith(const QString &name) const;
-    QString getCompanions() const;
+    [[nodiscard]] bool isCompanionWith(const QString &name) const;
+    [[nodiscard]] QString getCompanions() const;
 
     void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
-    inline QSet<QString> getExtraSkillSet() const
+    [[nodiscard]] inline QSet<QString> getExtraSkillSet() const
     {
         return extra_set;
     }

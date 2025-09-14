@@ -14,16 +14,16 @@ class ClientPlayer : public Player
 
 public:
     explicit ClientPlayer(Client *client);
-    QList<const Card *> getHandcards() const override;
+    [[nodiscard]] QList<const Card *> getHandcards() const override;
     void setCards(const QList<int> &card_ids);
     void changePile(const QString &name, bool add, const QList<int> &card_ids);
-    QString getDeathPixmapPath() const;
+    [[nodiscard]] QString getDeathPixmapPath() const;
     void setHandcardNum(int n);
-    QString getGameMode() const override;
+    [[nodiscard]] QString getGameMode() const override;
 
     void setFlags(const QString &flag) override;
-    int aliveCount(bool includeRemoved = true) const override;
-    int getHandcardNum() const override;
+    [[nodiscard]] int aliveCount(bool includeRemoved = true) const override;
+    [[nodiscard]] int getHandcardNum() const override;
     void removeCard(const Card *card, Place place) override;
     void addCard(const Card *card, Place place) override;
     virtual void addKnownHandCard(const Card *card);

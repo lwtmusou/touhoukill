@@ -27,10 +27,10 @@ public:
     virtual void connectToHost() = 0;
     virtual void disconnectFromHost() = 0;
     virtual void send(const QString &message) = 0;
-    virtual bool isConnected() const = 0;
-    virtual QString peerName() const = 0;
-    virtual QString peerAddress() const = 0;
-    virtual quint32 ipv4Address() const = 0;
+    [[nodiscard]] virtual bool isConnected() const = 0;
+    [[nodiscard]] virtual QString peerName() const = 0;
+    [[nodiscard]] virtual QString peerAddress() const = 0;
+    [[nodiscard]] virtual quint32 ipv4Address() const = 0;
 
 signals:
     void message_got(const char *msg);

@@ -45,8 +45,8 @@ public:
     class AnchoredRect
     {
     public:
-        QRect getTranslatedRect(QRect parentRect) const;
-        QRect getTranslatedRect(QRect parentRect, QSize childSize) const;
+        [[nodiscard]] QRect getTranslatedRect(QRect parentRect) const;
+        [[nodiscard]] QRect getTranslatedRect(QRect parentRect, QSize childSize) const;
         bool tryParse(const QVariant &value);
 
     protected:
@@ -60,19 +60,19 @@ public:
     static const char *S_SKIN_KEY_DEFAULT;
     static const char *S_SKIN_KEY_DEFAULT_SECOND;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName, const QString &audioConfigFileName, const QString &animationConfigFileName);
-    QPixmap getPixmap(const QString &key, const QString &arg = QString(), bool cache = false, bool heroSkin = true) const;
-    QPixmap getPixmapFileName(const QString &key) const;
-    QPixmap getPixmapFromFileName(const QString &fileName, bool cache = false) const;
-    QStringList getAudioFileNames(const QString &key) const;
-    QString getRandomAudioFileName(const QString &key) const;
-    bool isImageKeyDefined(const QString &key) const;
-    QStringList getAnimationFileNames() const;
+    [[nodiscard]] QPixmap getPixmap(const QString &key, const QString &arg = QString(), bool cache = false, bool heroSkin = true) const;
+    [[nodiscard]] QPixmap getPixmapFileName(const QString &key) const;
+    [[nodiscard]] QPixmap getPixmapFromFileName(const QString &fileName, bool cache = false) const;
+    [[nodiscard]] QStringList getAudioFileNames(const QString &key) const;
+    [[nodiscard]] QString getRandomAudioFileName(const QString &key) const;
+    [[nodiscard]] bool isImageKeyDefined(const QString &key) const;
+    [[nodiscard]] QStringList getAnimationFileNames() const;
 
 protected:
     virtual bool _loadLayoutConfig(const QVariant &config) = 0;
     virtual bool _loadImageConfig(const QVariant &config);
     virtual bool _loadAnimationConfig(const QVariant &config) = 0;
-    QString _readConfig(const QVariant &dictionary, const QString &key, const QString &defaultValue = QString()) const;
+    [[nodiscard]] QString _readConfig(const QVariant &dictionary, const QString &key, const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping, QSize &newScale, bool &scaled, const QString &defaultValue = QString()) const;
 
     JsonObject _m_imageConfig;
@@ -241,7 +241,7 @@ public:
         QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES * QSanSkillButton::S_NUM_SKILL_TYPES];
         QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES * QSanSkillButton::S_NUM_SKILL_TYPES];
 
-        QSanShadowTextFont getSkillTextFont(QSanButton::ButtonState state, QSanSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const;
+        [[nodiscard]] QSanShadowTextFont getSkillTextFont(QSanButton::ButtonState state, QSanSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const;
     };
 
     struct CommonLayout
@@ -310,25 +310,25 @@ public:
         S_GENERAL_ICON_SIZE_KOF
     };
 
-    const RoomLayout &getRoomLayout() const;
-    const PhotoLayout &getPhotoLayout() const;
-    const CommonLayout &getCommonLayout() const;
-    const DashboardLayout &getDashboardLayout() const;
+    [[nodiscard]] const RoomLayout &getRoomLayout() const;
+    [[nodiscard]] const PhotoLayout &getPhotoLayout() const;
+    [[nodiscard]] const CommonLayout &getCommonLayout() const;
+    [[nodiscard]] const DashboardLayout &getDashboardLayout() const;
 
-    QString getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
-    QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
-    QPixmap getSkillButtonPixmap(QSanButton::ButtonState state, QSanSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const;
-    QPixmap getCardMainPixmap(const QString &cardName, bool cache = false, bool heroSkin = true) const;
-    QPixmap getCardSuitPixmap(Card::Suit suit) const;
-    QPixmap getCardTianyiPixmap() const;
-    QPixmap getCardNumberPixmap(int point, bool isBlack) const;
-    QPixmap getCardJudgeIconPixmap(const QString &judgeName) const;
-    QPixmap getCardFramePixmap(const QString &frameType) const;
-    QPixmap getCardAvatarPixmap(const QString &generalName, bool heroSkin = true) const;
-    QPixmap getGeneralPixmap(const QString &generalName, GeneralIconSize size, bool heroSkin = true) const;
-    QString getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index = -1) const;
-    QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1) const;
-    QPixmap getProgressBarPixmap(int percentile) const;
+    [[nodiscard]] QString getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
+    [[nodiscard]] QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
+    [[nodiscard]] QPixmap getSkillButtonPixmap(QSanButton::ButtonState state, QSanSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const;
+    [[nodiscard]] QPixmap getCardMainPixmap(const QString &cardName, bool cache = false, bool heroSkin = true) const;
+    [[nodiscard]] QPixmap getCardSuitPixmap(Card::Suit suit) const;
+    [[nodiscard]] QPixmap getCardTianyiPixmap() const;
+    [[nodiscard]] QPixmap getCardNumberPixmap(int point, bool isBlack) const;
+    [[nodiscard]] QPixmap getCardJudgeIconPixmap(const QString &judgeName) const;
+    [[nodiscard]] QPixmap getCardFramePixmap(const QString &frameType) const;
+    [[nodiscard]] QPixmap getCardAvatarPixmap(const QString &generalName, bool heroSkin = true) const;
+    [[nodiscard]] QPixmap getGeneralPixmap(const QString &generalName, GeneralIconSize size, bool heroSkin = true) const;
+    [[nodiscard]] QString getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index = -1) const;
+    [[nodiscard]] QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1) const;
+    [[nodiscard]] QPixmap getProgressBarPixmap(int percentile) const;
 
     void getHeroSkinContainerGeneralIconPathAndClipRegion(const QString &generalName, int skinIndex, QString &generalIconPath, QRect &clipRegion) const;
 
@@ -441,7 +441,7 @@ class QSanSkinScheme
 
 public:
     bool load(const QVariant &configs);
-    const QSanRoomSkin &getRoomSkin() const;
+    [[nodiscard]] const QSanRoomSkin &getRoomSkin() const;
 
 protected:
     QSanRoomSkin _m_roomSkin;
@@ -452,7 +452,7 @@ class QSanSkinFactory
 public:
     static QSanSkinFactory &getInstance();
     static void destroyInstance();
-    const QString &getCurrentSkinName() const;
+    [[nodiscard]] const QString &getCurrentSkinName() const;
     const QSanSkinScheme &getCurrentSkinScheme();
     bool switchSkin(const QString &skinName);
 

@@ -37,7 +37,7 @@ struct DamageStruct
     bool trigger_chain;
     QStringList trigger_info;
 
-    QString getReason() const;
+    [[nodiscard]] QString getReason() const;
 };
 
 struct CardEffectStruct
@@ -91,11 +91,11 @@ struct CardUseStruct
     CardUseStruct();
     CardUseStruct(const Card *card, ServerPlayer *from, const QList<ServerPlayer *> &to = QList<ServerPlayer *>(), bool isOwnerUse = true);
     CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
-    bool isValid(const QString &pattern) const;
+    [[nodiscard]] bool isValid(const QString &pattern) const;
     void parse(const QString &str, Room *room);
     bool tryParse(const QVariant &usage, Room *room);
 
-    QString toString() const;
+    [[nodiscard]] QString toString() const;
 
     const Card *card;
     ServerPlayer *from;
@@ -150,7 +150,7 @@ public:
     }
 
     bool tryParse(const QVariant &);
-    QVariant toVariant() const;
+    [[nodiscard]] QVariant toVariant() const;
 
     inline bool operator==(const CardMoveReason &other) const
     {
@@ -337,7 +337,7 @@ struct CardsMoveStruct
     QList<int> shown_ids; //record broken shown IDs from HandPlace
 
     bool tryParse(const QVariant &arg);
-    QVariant toVariant() const;
+    [[nodiscard]] QVariant toVariant() const;
     inline bool isRelevant(const Player *player) const
     {
         return player != nullptr && (from == player || (to == player && to_place != Player::PlaceSpecial));
@@ -378,7 +378,7 @@ struct RecoverStruct
 struct PindianStruct
 {
     PindianStruct();
-    bool isSuccess() const;
+    [[nodiscard]] bool isSuccess() const;
 
     ServerPlayer *from;
     ServerPlayer *to;
@@ -394,9 +394,9 @@ struct PindianStruct
 struct JudgeStruct
 {
     JudgeStruct();
-    bool isGood() const;
-    bool isBad() const;
-    bool isEffected() const;
+    [[nodiscard]] bool isGood() const;
+    [[nodiscard]] bool isBad() const;
+    [[nodiscard]] bool isEffected() const;
     void updateResult();
 
     bool isGood(const Card *card) const; // For AI
@@ -528,14 +528,14 @@ struct SkillInvokeDetail
 
     bool operator<(const SkillInvokeDetail &arg2) const; // the operator < for sorting the invoke order.
     // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
-    bool sameSkill(const SkillInvokeDetail &arg2) const;
+    [[nodiscard]] bool sameSkill(const SkillInvokeDetail &arg2) const;
     // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
-    bool sameTimingWith(const SkillInvokeDetail &arg2) const;
-    bool isValid() const; // validity check
-    bool preferredTargetLess(const SkillInvokeDetail &arg2) const;
+    [[nodiscard]] bool sameTimingWith(const SkillInvokeDetail &arg2) const;
+    [[nodiscard]] bool isValid() const; // validity check
+    [[nodiscard]] bool preferredTargetLess(const SkillInvokeDetail &arg2) const;
 
-    QVariant toVariant() const;
-    QStringList toList() const;
+    [[nodiscard]] QVariant toVariant() const;
+    [[nodiscard]] QStringList toList() const;
 };
 
 struct HpLostStruct

@@ -37,8 +37,8 @@ public:
     bool isFriend(const ServerPlayer *other) const;
     bool isEnemy(const ServerPlayer *other) const;
 
-    QList<ServerPlayer *> getEnemies() const;
-    QList<ServerPlayer *> getFriends() const;
+    [[nodiscard]] QList<ServerPlayer *> getEnemies() const;
+    [[nodiscard]] QList<ServerPlayer *> getFriends() const;
 
     virtual void activate(CardUseStruct &card_use) = 0;
     virtual Card::Suit askForSuit(const QString &reason) = 0;

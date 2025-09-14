@@ -37,36 +37,36 @@ public:
     explicit JsonDocument(const JsonArray &array);
     explicit JsonDocument(const JsonObject &object);
 
-    QByteArray toJson(bool isIndented = false) const;
+    [[nodiscard]] QByteArray toJson(bool isIndented = false) const;
     static JsonDocument fromJson(const QByteArray &json, bool allowComment = false);
     static JsonDocument fromFilePath(const QString &path, bool allowComment = true);
 
-    inline bool isArray() const
+    [[nodiscard]] inline bool isArray() const
     {
         return value.canConvert<JsonArray>();
     }
-    inline bool isObject() const
+    [[nodiscard]] inline bool isObject() const
     {
         return value.canConvert<JsonObject>();
     }
-    inline bool isValid() const
+    [[nodiscard]] inline bool isValid() const
     {
         return valid;
     }
 
-    inline JsonArray array() const
+    [[nodiscard]] inline JsonArray array() const
     {
         return value.value<JsonArray>();
     }
-    inline JsonObject object() const
+    [[nodiscard]] inline JsonObject object() const
     {
         return value.value<JsonObject>();
     }
-    inline const QVariant &toVariant() const
+    [[nodiscard]] inline const QVariant &toVariant() const
     {
         return value;
     }
-    inline QString errorString() const
+    [[nodiscard]] inline QString errorString() const
     {
         return error;
     }

@@ -188,7 +188,7 @@ void Settings::init()
     EffectVolume = value("EffectVolume", 1.0F).toFloat();
 
     int length = 8;
-    int index = qsgsRand() % length + 1;
+    int index = (qsgsRand() % length) + 1;
     QString bgFilename = QString("%1%2%3").arg("backdrop/hall/gensoukyou_").arg(index).arg(".jpg");
 
     BackgroundImage = bgFilename;

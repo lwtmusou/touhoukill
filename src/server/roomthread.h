@@ -12,8 +12,8 @@ class GameRule;
 struct LogMessage
 {
     LogMessage();
-    QString toString() const;
-    QVariant toJsonValue() const;
+    [[nodiscard]] QString toString() const;
+    [[nodiscard]] QVariant toJsonValue() const;
 
     QString type;
     ServerPlayer *from;
@@ -31,7 +31,7 @@ public:
         , _m_room(room)
     {
     }
-    QString toString() const;
+    [[nodiscard]] QString toString() const;
 
 private:
     TriggerEvent _m_event;
@@ -62,8 +62,8 @@ public:
     ServerPlayer *findHulaoPassNext(ServerPlayer *uuz, const QList<ServerPlayer *> &league);
     void actionNormal(GameRule *game_rule);
 
-    const QList<EventTriplet> *getEventStack() const;
-    inline GameRule *gameRule() const
+    [[nodiscard]] const QList<EventTriplet> *getEventStack() const;
+    [[nodiscard]] inline GameRule *gameRule() const
     {
         return game_rule;
     }
@@ -73,22 +73,22 @@ public:
         nextExtraTurn = p;
     }
 
-    inline bool hasExtraTurn() const
+    [[nodiscard]] inline bool hasExtraTurn() const
     {
         return nextExtraTurn != nullptr;
     }
 
-    inline ServerPlayer *getNextExtraTurn() const
+    [[nodiscard]] inline ServerPlayer *getNextExtraTurn() const
     {
         return nextExtraTurn;
     }
 
-    inline ServerPlayer *getExtraTurnReturn() const
+    [[nodiscard]] inline ServerPlayer *getExtraTurnReturn() const
     {
         return extraTurnReturn;
     }
 
-    inline Room *getRoom() const
+    [[nodiscard]] inline Room *getRoom() const
     {
         return room;
     }

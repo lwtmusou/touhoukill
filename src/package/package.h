@@ -16,7 +16,7 @@ class CardPattern
 {
 public:
     virtual bool match(const Player *player, const Card *card) const = 0;
-    virtual bool willThrow() const
+    [[nodiscard]] virtual bool willThrow() const
     {
         return true;
     }
@@ -42,27 +42,27 @@ public:
         type = pack_type;
     }
 
-    QList<const QMetaObject *> getMetaObjects() const
+    [[nodiscard]] QList<const QMetaObject *> getMetaObjects() const
     {
         return metaobjects;
     }
 
-    QList<const Skill *> getSkills() const
+    [[nodiscard]] QList<const Skill *> getSkills() const
     {
         return skills;
     }
 
-    QMap<QString, const CardPattern *> getPatterns() const
+    [[nodiscard]] QMap<QString, const CardPattern *> getPatterns() const
     {
         return patterns;
     }
 
-    QMultiMap<QString, QString> getRelatedSkills() const
+    [[nodiscard]] QMultiMap<QString, QString> getRelatedSkills() const
     {
         return related_skills;
     }
 
-    Type getType() const
+    [[nodiscard]] Type getType() const
     {
         return type;
     }

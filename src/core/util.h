@@ -29,7 +29,7 @@ template<typename T> void qShuffle(QList<T> &list)
 {
     int n = list.length();
     for (int i = 0; i < n; i++) {
-        int r = qsgsRand() % (n - i) + i;
+        int r = (qsgsRand() % (n - i)) + i;
         list.swapItemsAt(i, r);
     }
 }

@@ -28,14 +28,14 @@ public:
 
     void invoke(const QSanProtocol::AbstractPacket *packet);
     void invoke(const char *method, const QString &arg = ".");
-    QString reportHeader() const;
+    [[nodiscard]] QString reportHeader() const;
     void unicast(const QString &message);
     void drawCard(const Card *card);
-    Room *getRoom() const;
+    [[nodiscard]] Room *getRoom() const;
     void broadcastSkillInvoke(const Card *card) const;
     void broadcastSkillInvoke(const QString &card_name) const;
-    int getRandomHandCardId() const;
-    const Card *getRandomHandCard() const;
+    [[nodiscard]] int getRandomHandCardId() const;
+    [[nodiscard]] const Card *getRandomHandCard() const;
     void obtainCard(const Card *card, bool unhide = true);
     void throwAllEquips();
     void throwAllHandCards();
@@ -49,18 +49,18 @@ public:
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant(), const QString &prompt = QString());
     bool askForSkillInvoke(const Skill *skill, const QVariant &data = QVariant(), const QString &prompt = QString());
     QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
-    QList<int> handCards() const;
-    QList<const Card *> getHandcards() const override;
-    QList<const Card *> getCards(const QString &flags) const;
-    DummyCard *wholeHandCards() const;
-    bool hasNullification() const;
+    [[nodiscard]] QList<int> handCards() const;
+    [[nodiscard]] QList<const Card *> getHandcards() const override;
+    [[nodiscard]] QList<const Card *> getCards(const QString &flags) const;
+    [[nodiscard]] DummyCard *wholeHandCards() const;
+    [[nodiscard]] bool hasNullification() const;
     bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = nullptr);
     void turnOver();
     void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
     bool changePhase(Player::Phase from, Player::Phase to);
 
     QList<Player::Phase> &getPhases();
-    int getPhasesIndex() const;
+    [[nodiscard]] int getPhasesIndex() const;
     void skip(Player::Phase phase, bool isCost = false, bool sendLog = true);
     void insertPhases(QList<Player::Phase> new_phases, int index = -1);
     void exchangePhases(Player::Phase phase, Player::Phase phase1);
@@ -75,23 +75,23 @@ public:
     void setGender(General::Gender gender) override;
 
     void setAI(AI *ai);
-    AI *getAI() const;
-    AI *getSmartAI() const;
+    [[nodiscard]] AI *getAI() const;
+    [[nodiscard]] AI *getSmartAI() const;
 
-    bool isOnline() const;
-    inline bool isOffline() const
+    [[nodiscard]] bool isOnline() const;
+    [[nodiscard]] inline bool isOffline() const
     {
         return getState() == "robot" || getState() == "offline";
     }
 
-    int aliveCount(bool includeRemoved = true) const override;
-    int getHandcardNum() const override;
+    [[nodiscard]] int aliveCount(bool includeRemoved = true) const override;
+    [[nodiscard]] int getHandcardNum() const override;
     void removeCard(const Card *card, Place place) override;
     void addCard(const Card *card, Place place) override;
     bool isLastHandCard(const Card *card, bool contain = false) const override;
 
     void addVictim(ServerPlayer *victim);
-    QList<ServerPlayer *> getVictims() const;
+    [[nodiscard]] QList<ServerPlayer *> getVictims() const;
 
     void startRecord();
     void saveRecord(const QString &filename);
@@ -102,15 +102,15 @@ public:
 
     // 3v3 methods
     void addToSelected(const QString &general);
-    QStringList getSelected() const;
+    [[nodiscard]] QStringList getSelected() const;
     QString findReasonable(const QStringList &generals, bool no_unreasonable = false);
     void clearSelected();
 
-    int getGeneralMaxHp() const;
-    QString getGameMode() const override;
+    [[nodiscard]] int getGeneralMaxHp() const;
+    [[nodiscard]] QString getGameMode() const override;
 
-    QString getIp() const;
-    quint32 ipv4Address() const;
+    [[nodiscard]] QString getIp() const;
+    [[nodiscard]] quint32 ipv4Address() const;
     void introduceTo(ServerPlayer *player);
     void marshal(ServerPlayer *player) const;
 
@@ -199,7 +199,7 @@ public:
     void removeGeneral(bool head_general = true);
     void sendSkillsToOthers(bool head_skill = true);
     void disconnectSkillsFromOthers(bool head_skill = true);
-    int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
+    [[nodiscard]] int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
     bool askForGeneralShow(bool one = true, bool refusable = false);
 
     bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;

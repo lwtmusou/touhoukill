@@ -94,177 +94,177 @@ public:
     explicit Player(QObject *parent);
 
     void setScreenName(const QString &screen_name);
-    QString screenName() const;
+    [[nodiscard]] QString screenName() const;
 
     // property setters/getters
-    int getChaoren() const; //for chaoren
+    [[nodiscard]] int getChaoren() const; //for chaoren
     void setChaoren(int chaoren);
-    QList<int> getShownHandcards() const;
+    [[nodiscard]] QList<int> getShownHandcards() const;
     void setShownHandcards(QList<int> &ids);
-    bool isShownHandcard(int id) const;
-    QList<int> getBrokenEquips() const;
+    [[nodiscard]] bool isShownHandcard(int id) const;
+    [[nodiscard]] QList<int> getBrokenEquips() const;
     void setBrokenEquips(QList<int> &ids);
-    bool isBrokenEquip(int id, bool consider_shenbao = false) const;
-    QStringList getHiddenGenerals() const;
+    [[nodiscard]] bool isBrokenEquip(int id, bool consider_shenbao = false) const;
+    [[nodiscard]] QStringList getHiddenGenerals() const;
     void setHiddenGenerals(const QStringList &generals);
-    QString getShownHiddenGeneral() const;
+    [[nodiscard]] QString getShownHiddenGeneral() const;
     void setShownHiddenGeneral(const QString &general);
-    bool canShowHiddenSkill() const;
-    bool isHiddenSkill(const QString &skill_name) const;
+    [[nodiscard]] bool canShowHiddenSkill() const;
+    [[nodiscard]] bool isHiddenSkill(const QString &skill_name) const;
 
-    int getHp() const;
-    int getRenHp() const; //for banling
-    int getLingHp() const;
+    [[nodiscard]] int getHp() const;
+    [[nodiscard]] int getRenHp() const; //for banling
+    [[nodiscard]] int getLingHp() const;
     void setHp(int hp);
     void setRenHp(int renhp);
     void setLingHp(int linghp);
-    int getDyingFactor() const;
+    [[nodiscard]] int getDyingFactor() const;
     void setDyingFactor(int dyingFactor);
-    int getMaxHp() const;
+    [[nodiscard]] int getMaxHp() const;
     void setMaxHp(int max_hp);
-    int getLostHp() const;
-    bool isWounded() const;
-    int dyingThreshold() const;
-    General::Gender getGender() const;
+    [[nodiscard]] int getLostHp() const;
+    [[nodiscard]] bool isWounded() const;
+    [[nodiscard]] int dyingThreshold() const;
+    [[nodiscard]] General::Gender getGender() const;
     virtual void setGender(General::Gender gender);
-    bool isMale() const;
-    bool isFemale() const;
-    bool isNeuter() const;
+    [[nodiscard]] bool isMale() const;
+    [[nodiscard]] bool isFemale() const;
+    [[nodiscard]] bool isNeuter() const;
 
-    bool isOwner() const;
+    [[nodiscard]] bool isOwner() const;
     void setOwner(bool owner);
 
-    bool hasShownRole() const;
+    [[nodiscard]] bool hasShownRole() const;
     void setShownRole(bool shown);
 
-    int getMaxCards(const QString &except = QString()) const;
+    [[nodiscard]] int getMaxCards(const QString &except = QString()) const;
 
-    QString getKingdom() const;
+    [[nodiscard]] QString getKingdom() const;
     void setKingdom(const QString &kingdom);
 
     void setRole(const QString &role);
-    QString getRole() const;
-    Role getRoleEnum() const;
+    [[nodiscard]] QString getRole() const;
+    [[nodiscard]] Role getRoleEnum() const;
 
     void setGeneral(const General *general);
     void setGeneralName(const QString &general_name);
-    QString getGeneralName() const;
+    [[nodiscard]] QString getGeneralName() const;
 
     void setGeneral2Name(const QString &general_name);
-    QString getGeneral2Name() const;
-    const General *getGeneral2() const;
+    [[nodiscard]] QString getGeneral2Name() const;
+    [[nodiscard]] const General *getGeneral2() const;
 
-    QString getFootnoteName() const;
+    [[nodiscard]] QString getFootnoteName() const;
 
     void setState(const QString &state);
-    QString getState() const;
+    [[nodiscard]] QString getState() const;
 
-    int getSeat() const;
+    [[nodiscard]] int getSeat() const;
     void setSeat(int seat);
-    int getInitialSeat() const;
+    [[nodiscard]] int getInitialSeat() const;
     void setInitialSeat(int seat);
     bool isAdjacentTo(const Player *another) const;
-    QString getPhaseString() const;
+    [[nodiscard]] QString getPhaseString() const;
     static QString getPhaseString(Phase phase);
     void setPhaseString(const QString &phase_str);
-    Phase getPhase() const;
+    [[nodiscard]] Phase getPhase() const;
     void setPhase(Phase phase);
-    bool isInMainPhase() const;
+    [[nodiscard]] bool isInMainPhase() const;
     // TODO: static Q_INVOKABLE still can't be called without an instance. currently delegate from TouhouKillQmlUiGlobal
     static bool isMainPhase(Phase phase);
 
-    int getAttackRange(bool include_weapon = true) const;
+    [[nodiscard]] int getAttackRange(bool include_weapon = true) const;
     bool inMyAttackRange(const Player *other) const;
 
-    bool isAlive() const;
-    bool isDead() const;
+    [[nodiscard]] bool isAlive() const;
+    [[nodiscard]] bool isDead() const;
     void setAlive(bool alive);
 
-    QString getFlags() const;
-    QStringList getFlagList() const;
+    [[nodiscard]] QString getFlags() const;
+    [[nodiscard]] QStringList getFlagList() const;
     virtual void setFlags(const QString &flag);
-    bool hasFlag(const QString &flag) const;
+    [[nodiscard]] bool hasFlag(const QString &flag) const;
     void clearFlags();
 
-    bool faceUp() const;
+    [[nodiscard]] bool faceUp() const;
     void setFaceUp(bool face_up);
 
-    virtual int aliveCount(bool includeRemoved = true) const = 0;
+    [[nodiscard]] virtual int aliveCount(bool includeRemoved = true) const = 0;
     void setFixedDistance(const Player *player, int distance);
     int originalRightDistanceTo(const Player *other) const;
     int distanceTo(const Player *other, int distance_fix = 0) const;
 
     void setNext(Player *next);
     void setNext(const QString &next);
-    Player *getNext(bool ignoreRemoved = true) const;
-    QString getNextName() const;
-    Player *getLast(bool ignoreRemoved = true) const;
-    Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
-    Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
+    [[nodiscard]] Player *getNext(bool ignoreRemoved = true) const;
+    [[nodiscard]] QString getNextName() const;
+    [[nodiscard]] Player *getLast(bool ignoreRemoved = true) const;
+    [[nodiscard]] Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
+    [[nodiscard]] Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
-    const General *getAvatarGeneral() const;
-    const General *getGeneral() const;
+    [[nodiscard]] const General *getAvatarGeneral() const;
+    [[nodiscard]] const General *getGeneral() const;
 
-    bool isLord() const;
-    bool isCurrent() const;
+    [[nodiscard]] bool isLord() const;
+    [[nodiscard]] bool isCurrent() const;
 
     void acquireSkill(const QString &skill_name, bool head = true);
     void detachSkill(const QString &skill_name, bool head = true);
     void detachAllSkills();
     virtual void addSkill(const QString &skill_name, bool head_skill = true);
     virtual void loseSkill(const QString &skill_name, bool head = true);
-    bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_hidden = true) const;
+    [[nodiscard]] bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkill(const Skill *skill, bool include_lose = false, bool include_hidden = true) const;
-    bool hasSkills(const QString &skill_name, bool include_lose = false) const;
-    bool hasInnateSkill(const QString &skill_name) const;
+    [[nodiscard]] bool hasSkills(const QString &skill_name, bool include_lose = false) const;
+    [[nodiscard]] bool hasInnateSkill(const QString &skill_name) const;
     bool hasInnateSkill(const Skill *skill) const;
-    bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
+    [[nodiscard]] bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasLordSkill(const Skill *skill, bool include_lose = false) const;
 
     void setDisableShow(const QString &flags, const QString &reason);
     void removeDisableShow(const QString &reason);
-    QStringList disableShow(bool head) const;
-    bool canShowGeneral(const QString &flags = QString()) const;
+    [[nodiscard]] QStringList disableShow(bool head) const;
+    [[nodiscard]] bool canShowGeneral(const QString &flags = QString()) const;
 
     void setSkillInvalidity(const Skill *skill, bool invalidity);
     void setSkillInvalidity(const QString &skill_name, bool invalidity);
 
     bool isSkillInvalid(const Skill *skill) const;
-    bool isSkillInvalid(const QString &skill_name) const;
+    [[nodiscard]] bool isSkillInvalid(const QString &skill_name) const;
 
-    virtual QString getGameMode() const = 0;
+    [[nodiscard]] virtual QString getGameMode() const = 0;
 
     void setEquip(WrappedCard *equip);
     void removeEquip(WrappedCard *equip);
     bool hasEquip(const Card *card) const;
-    bool hasEquip() const;
+    [[nodiscard]] bool hasEquip() const;
 
-    QList<const Card *> getJudgingArea() const;
-    QList<int> getJudgingAreaID() const; //for marshal
+    [[nodiscard]] QList<const Card *> getJudgingArea() const;
+    [[nodiscard]] QList<int> getJudgingAreaID() const; //for marshal
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    bool containsTrick(const QString &trick_name) const;
+    [[nodiscard]] bool containsTrick(const QString &trick_name) const;
 
-    virtual int getHandcardNum() const = 0;
+    [[nodiscard]] virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;
     virtual void addCard(const Card *card, Place place) = 0;
-    virtual QList<const Card *> getHandcards() const = 0;
+    [[nodiscard]] virtual QList<const Card *> getHandcards() const = 0;
 
-    WrappedCard *getWeapon() const;
-    WrappedCard *getArmor() const;
-    WrappedCard *getDefensiveHorse() const;
-    WrappedCard *getOffensiveHorse() const;
-    WrappedCard *getTreasure() const;
-    QList<const Card *> getEquips() const;
-    const EquipCard *getEquip(int index) const;
+    [[nodiscard]] WrappedCard *getWeapon() const;
+    [[nodiscard]] WrappedCard *getArmor() const;
+    [[nodiscard]] WrappedCard *getDefensiveHorse() const;
+    [[nodiscard]] WrappedCard *getOffensiveHorse() const;
+    [[nodiscard]] WrappedCard *getTreasure() const;
+    [[nodiscard]] QList<const Card *> getEquips() const;
+    [[nodiscard]] const EquipCard *getEquip(int index) const;
 
-    bool hasWeapon(const QString &weapon_name, bool selfOnly = false, bool ignore_preshow = false) const;
-    bool hasArmorEffect(const QString &armor_name, bool selfOnly = false) const;
-    bool hasTreasure(const QString &treasure_name, bool selfOnly = false) const;
+    [[nodiscard]] bool hasWeapon(const QString &weapon_name, bool selfOnly = false, bool ignore_preshow = false) const;
+    [[nodiscard]] bool hasArmorEffect(const QString &armor_name, bool selfOnly = false) const;
+    [[nodiscard]] bool hasTreasure(const QString &treasure_name, bool selfOnly = false) const;
 
-    bool isKongcheng() const;
-    bool isNude() const;
-    bool isAllNude() const;
+    [[nodiscard]] bool isKongcheng() const;
+    [[nodiscard]] bool isNude() const;
+    [[nodiscard]] bool isAllNude() const;
 
     bool canDiscard(const Player *to, const QString &flags, const QString &reason = "") const;
     bool canDiscard(const Player *to, int card_id, const QString &reason = "") const;
@@ -272,47 +272,47 @@ public:
     void addMark(const QString &mark, int add_num = 1);
     void removeMark(const QString &mark, int remove_num = 1);
     virtual void setMark(const QString &mark, int value);
-    int getMark(const QString &mark) const;
-    QMap<QString, int> getMarkMap() const;
+    [[nodiscard]] int getMark(const QString &mark) const;
+    [[nodiscard]] QMap<QString, int> getMarkMap() const;
 
     void setChained(bool chained);
-    bool isChained() const;
-    bool isDebuffStatus() const;
+    [[nodiscard]] bool isChained() const;
+    [[nodiscard]] bool isDebuffStatus() const;
 
     void setRemoved(bool removed);
-    bool isRemoved() const;
+    [[nodiscard]] bool isRemoved() const;
 
     bool canSlash(const Player *other, const Card *slash, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
-    int getCardCount(bool include_equip = true, bool include_judging = false) const;
+    [[nodiscard]] int getCardCount(bool include_equip = true, bool include_judging = false) const;
 
-    QList<int> getPile(const QString &pile_name) const;
-    QStringList getPileNames() const;
-    QString getPileName(int card_id) const;
+    [[nodiscard]] QList<int> getPile(const QString &pile_name) const;
+    [[nodiscard]] QStringList getPileNames() const;
+    [[nodiscard]] QString getPileName(int card_id) const;
 
-    bool pileOpen(const QString &pile_name, const QString &player) const;
+    [[nodiscard]] bool pileOpen(const QString &pile_name, const QString &player) const;
     void setPileOpen(const QString &pile_name, const QString &player);
-    QList<int> getHandPile() const;
-    QStringList getHandPileList(bool view_as_skill = true) const;
+    [[nodiscard]] QList<int> getHandPile() const;
+    [[nodiscard]] QStringList getHandPileList(bool view_as_skill = true) const;
 
     void addHistory(const QString &name, int times = 1);
     void clearHistory();
-    bool hasUsed(const QString &card_class) const;
-    int usedTimes(const QString &card_class) const;
-    int getSlashCount() const;
-    int getAnalepticCount() const;
+    [[nodiscard]] bool hasUsed(const QString &card_class) const;
+    [[nodiscard]] int usedTimes(const QString &card_class) const;
+    [[nodiscard]] int getSlashCount() const;
+    [[nodiscard]] int getAnalepticCount() const;
 
-    bool hasEquipSkill(const QString &skill_name) const;
-    QSet<const TriggerSkill *> getTriggerSkills() const;
-    QSet<const Skill *> getSkills(bool include_equip = false, bool visible_only = true) const;
-    QList<const Skill *> getSkillList(bool include_equip = false, bool visible_only = true) const;
-    QSet<const Skill *> getVisibleSkills(bool include_equip = false) const;
-    QList<const Skill *> getVisibleSkillList(bool include_equip = false) const;
-    QList<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const;
-    QList<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const;
+    [[nodiscard]] bool hasEquipSkill(const QString &skill_name) const;
+    [[nodiscard]] QSet<const TriggerSkill *> getTriggerSkills() const;
+    [[nodiscard]] QSet<const Skill *> getSkills(bool include_equip = false, bool visible_only = true) const;
+    [[nodiscard]] QList<const Skill *> getSkillList(bool include_equip = false, bool visible_only = true) const;
+    [[nodiscard]] QSet<const Skill *> getVisibleSkills(bool include_equip = false) const;
+    [[nodiscard]] QList<const Skill *> getVisibleSkillList(bool include_equip = false) const;
+    [[nodiscard]] QList<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const;
+    [[nodiscard]] QList<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const;
 
-    QSet<QString> getAcquiredSkills() const;
-    QString getSkillDescription(bool yellow = true, const QString &flag = QString()) const;
+    [[nodiscard]] QSet<QString> getAcquiredSkills() const;
+    [[nodiscard]] QString getSkillDescription(bool yellow = true, const QString &flag = QString()) const;
 
     virtual bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow(const Card *slash = nullptr) const;
@@ -331,7 +331,7 @@ public:
     void removeCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason = false);
     void clearCardLimitation(bool single_turn = false);
     bool isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard = false) const;
-    bool isCardLimited(const QString &limit_list, const QString &reason) const;
+    [[nodiscard]] bool isCardLimited(const QString &limit_list, const QString &reason) const;
 
     // just for convenience
     void addQinggangTag(const Card *card);
@@ -339,35 +339,35 @@ public:
 
     void copyFrom(Player *p);
 
-    QList<const Player *> getSiblings() const;
-    QList<const Player *> getAliveSiblings() const;
+    [[nodiscard]] QList<const Player *> getSiblings() const;
+    [[nodiscard]] QList<const Player *> getAliveSiblings() const;
 
     bool hasShownSkill(const Skill *skill) const; //hegemony
-    bool hasShownSkill(const QString &skill_name) const; //hegemony
-    bool hasShownSkills(const QString &skill_names) const;
-    bool inHeadSkills(const QString &skill_name) const;
-    bool inDeputySkills(const QString &skill_name) const;
+    [[nodiscard]] bool hasShownSkill(const QString &skill_name) const; //hegemony
+    [[nodiscard]] bool hasShownSkills(const QString &skill_names) const;
+    [[nodiscard]] bool inHeadSkills(const QString &skill_name) const;
+    [[nodiscard]] bool inDeputySkills(const QString &skill_name) const;
     void setSkillPreshowed(const QString &skill, bool preshowed = true); //hegemony
     void setSkillsPreshowed(const QString &flag = "hd", bool preshowed = true);
-    bool hasPreshowedSkill(const QString &name) const;
+    [[nodiscard]] bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
-    bool isHidden(bool head_general) const;
+    [[nodiscard]] bool isHidden(bool head_general) const;
 
-    bool hasShownGeneral() const;
+    [[nodiscard]] bool hasShownGeneral() const;
     void setGeneralShowed(bool showed);
-    bool hasShownGeneral2() const;
+    [[nodiscard]] bool hasShownGeneral2() const;
     void setGeneral2Showed(bool showed);
-    bool hasShownOneGeneral() const;
-    bool hasShownAllGenerals() const;
-    bool ownSkill(const QString &skill_name) const;
+    [[nodiscard]] bool hasShownOneGeneral() const;
+    [[nodiscard]] bool hasShownAllGenerals() const;
+    [[nodiscard]] bool ownSkill(const QString &skill_name) const;
     bool ownSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player, bool considerAnjiang = false) const;
     bool willBeFriendWith(const Player *player) const;
-    bool canTransform(bool head) const;
+    [[nodiscard]] bool canTransform(bool head) const;
 
-    QList<const Player *> getFormation() const;
+    [[nodiscard]] QList<const Player *> getFormation() const;
 
-    const Player *getLord(bool include_death = false) const;
+    [[nodiscard]] const Player *getLord(bool include_death = false) const;
 
     QVariantMap tag;
 

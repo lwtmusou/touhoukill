@@ -35,10 +35,10 @@ public:
     void connectToHost() override;
     void disconnectFromHost() override;
     void send(const QString &message) override;
-    bool isConnected() const override;
-    QString peerName() const override;
-    QString peerAddress() const override;
-    quint32 ipv4Address() const override;
+    [[nodiscard]] bool isConnected() const override;
+    [[nodiscard]] QString peerName() const override;
+    [[nodiscard]] QString peerAddress() const override;
+    [[nodiscard]] quint32 ipv4Address() const override;
 
 private slots:
     void getMessage();

@@ -227,8 +227,8 @@ public:
     {
     }
     bool tryParse(const QVariant &val);
-    QVariant toVariant() const;
-    inline bool hasTimedOut() const
+    [[nodiscard]] QVariant toVariant() const;
+    [[nodiscard]] inline bool hasTimedOut() const
     {
         if (type == S_COUNTDOWN_NO_LIMIT)
             return false;
@@ -243,13 +243,13 @@ public:
     virtual ~AbstractPacket() = default;
 
     virtual bool parse(const QByteArray &) = 0;
-    virtual QByteArray toJson() const = 0;
-    virtual QString toString() const = 0;
-    virtual PacketDescription getPacketDestination() const = 0;
-    virtual PacketDescription getPacketSource() const = 0;
-    virtual PacketDescription getPacketType() const = 0;
-    virtual PacketDescription getPacketDescription() const = 0;
-    virtual CommandType getCommandType() const = 0;
+    [[nodiscard]] virtual QByteArray toJson() const = 0;
+    [[nodiscard]] virtual QString toString() const = 0;
+    [[nodiscard]] virtual PacketDescription getPacketDestination() const = 0;
+    [[nodiscard]] virtual PacketDescription getPacketSource() const = 0;
+    [[nodiscard]] virtual PacketDescription getPacketType() const = 0;
+    [[nodiscard]] virtual PacketDescription getPacketDescription() const = 0;
+    [[nodiscard]] virtual CommandType getCommandType() const = 0;
 };
 
 class Packet : public AbstractPacket
@@ -265,30 +265,30 @@ public:
     {
         messageBody = value;
     }
-    inline const QVariant &getMessageBody() const
+    [[nodiscard]] inline const QVariant &getMessageBody() const
     {
         return messageBody;
     }
     bool parse(const QByteArray &raw) override;
-    QByteArray toJson() const override;
-    QString toString() const override;
-    PacketDescription getPacketDestination() const override
+    [[nodiscard]] QByteArray toJson() const override;
+    [[nodiscard]] QString toString() const override;
+    [[nodiscard]] PacketDescription getPacketDestination() const override
     {
         return static_cast<PacketDescription>(packetDescription & S_DEST_MASK);
     }
-    PacketDescription getPacketSource() const override
+    [[nodiscard]] PacketDescription getPacketSource() const override
     {
         return static_cast<PacketDescription>(packetDescription & S_SRC_MASK);
     }
-    PacketDescription getPacketType() const override
+    [[nodiscard]] PacketDescription getPacketType() const override
     {
         return static_cast<PacketDescription>(packetDescription & S_TYPE_MASK);
     }
-    PacketDescription getPacketDescription() const override
+    [[nodiscard]] PacketDescription getPacketDescription() const override
     {
         return packetDescription;
     }
-    CommandType getCommandType() const override
+    [[nodiscard]] CommandType getCommandType() const override
     {
         return command;
     }
