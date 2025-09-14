@@ -83,29 +83,30 @@ CppRoomScene {
                     general: "luize"
                     kingdom: "pc98"
                     phase: Player.Start
+                    seat: 3
                 }
 
                 Photo {
                     general: "yingyingguai"
                     kingdom: "touhougod"
                     huashenGeneral: "sujiangf"
+                    seat: 5
                 }
 
-                Column{
-                    PhaseItem{
-                        phase : Player.Start
+                Column {
+                    PhaseItem {
+                        phase: Player.Start
                     }
                     PhaseItem {
-                        phase : Player.RoundStart
+                        phase: Player.RoundStart
                     }
                     PhaseItem {
-                        phase : Player.NotActive
+                        phase: Player.NotActive
                     }
                     PhaseItem {
-                        phase : Player.Play
+                        phase: Player.Play
                     }
                 }
-
             }
         }
     }

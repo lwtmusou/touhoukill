@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <sstream>
 
-using namespace std;
 using namespace QSanProtocol;
 
 unsigned int QSanProtocol::Packet::globalSerialSequence = 0;

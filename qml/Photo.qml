@@ -19,8 +19,10 @@ Item {
     property int maxhp: 5
     property int dyingThreshold: 0
     property int phase: Player.NotActive
-
+    property int seat
+    property var privatePile: ({})
     property string screenName: "东方杀"
+
 
     Image {
         id: generalImage
@@ -161,6 +163,17 @@ Item {
             verticalAlignment: Qt.AlignVCenter
             text: screenName
         }
+
+        SeatNumberItem {
+            id: seatNumber
+
+            visible: false
+
+            height: parent.height
+            seat: photo.seat
+            anchors.left: parent
+            anchors.top: parent
+        }
     }
 
     KingdomImage {
@@ -288,6 +301,7 @@ Item {
     Component.onCompleted: {
         if (G.isHegemonyGameMode(ServerInfo.GameMode)) {
             hegRoleComboBox.visible = true;
+            seatNumber.visible = true;
         } else if (G.isNormalGameMode(ServerInfo.GameMode)) {
             roleComboBox.visible = true;
             kingdomImage.visible = true;

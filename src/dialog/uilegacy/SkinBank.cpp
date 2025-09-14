@@ -20,7 +20,6 @@
 #include <QStyleOptionGraphicsItem>
 #include <QTextItem>
 
-using namespace std;
 using namespace JsonUtils;
 
 const char *IQSanComponentSkin::S_SKIN_KEY_DEFAULT = "default";

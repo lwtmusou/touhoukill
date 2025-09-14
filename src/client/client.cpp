@@ -18,7 +18,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-using namespace std;
 using namespace QSanProtocol;
 using namespace JsonUtils;
 

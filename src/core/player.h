@@ -33,13 +33,12 @@ class Player : public QObject
     Q_PROPERTY(QString general READ getGeneralName WRITE setGeneralName)
     Q_PROPERTY(QString general2 READ getGeneral2Name WRITE setGeneral2Name)
     Q_PROPERTY(QString state READ getState WRITE setState)
-    Q_PROPERTY(int handcard_num READ getHandcardNum)
+    Q_PROPERTY(int handcard_num READ getHandcardNum STORED false)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
     Q_PROPERTY(int inital_seat READ getInitialSeat WRITE setInitialSeat)
     Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
     Q_PROPERTY(bool faceup READ faceUp WRITE setFaceUp)
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
-    Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
     Q_PROPERTY(bool removed READ isRemoved WRITE setRemoved)
     Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
@@ -50,9 +49,9 @@ class Player : public QObject
 
     Q_PROPERTY(QString next READ getNextName WRITE setNext)
 
-    Q_PROPERTY(bool kongcheng READ isKongcheng)
-    Q_PROPERTY(bool nude READ isNude)
-    Q_PROPERTY(bool all_nude READ isAllNude)
+    Q_PROPERTY(bool kongcheng READ isKongcheng STORED false)
+    Q_PROPERTY(bool nude READ isNude STORED false)
+    Q_PROPERTY(bool all_nude READ isAllNude STORED false)
 
 public:
     enum Phase
@@ -171,7 +170,7 @@ public:
     Phase getPhase() const;
     void setPhase(Phase phase);
     bool isInMainPhase() const;
-    // TODO: static Q_INVOKABLE can't be called without an instance. currently delegate from TouhouKillQmlUiGlobal
+    // TODO: static Q_INVOKABLE still can't be called without an instance. currently delegate from TouhouKillQmlUiGlobal
     static bool isMainPhase(Phase phase);
 
     int getAttackRange(bool include_weapon = true) const;

@@ -1,6 +1,8 @@
 #ifndef _QSAN_BUTTON_H
 #define _QSAN_BUTTON_H
 
+#include <QString>
+
 namespace QSanButton {
 enum ButtonState
 {
