@@ -305,7 +305,8 @@ void FreeChooseDialog::chooseGeneral()
 {
     if (pair_choose) {
         QList<QAbstractButton *> buttons = group->buttons();
-        QString first, second;
+        QString first;
+        QString second;
         foreach (QAbstractButton *button, buttons) {
             if (!button->isChecked())
                 continue;

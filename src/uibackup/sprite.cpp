@@ -77,7 +77,7 @@ void EffectAnimation::effectOut(QGraphicsItem *map)
     effect = registered.value(map);
     if (effect != nullptr)
         effect->deleteLater();
-    registered.insert(map, NULL);
+    registered.insert(map, nullptr);
 }
 
 void EffectAnimation::deleteEffect()
@@ -98,7 +98,7 @@ void EffectAnimation::deleteEffect(QAnimatedEffect *effect)
             effect->reset();
         pix->setGraphicsEffect(registered.value(pix));
         effects.insert(pix, registered.value(pix));
-        registered.insert(pix, NULL);
+        registered.insert(pix, nullptr);
     }
 }
 
@@ -122,7 +122,7 @@ void EmphasizeEffect::draw(QPainter *painter)
 
     QPoint offset;
     QPixmap pixmap = sourcePixmap(Qt::LogicalCoordinates, &offset);
-    const QRectF target = boundingRect().adjusted(s.width() * scale - 1, s.height() * scale, -s.width() * scale, -s.height() * scale);
+    const QRectF target = boundingRect().adjusted((s.width() * scale) - 1, s.height() * scale, -s.width() * scale, -s.height() * scale);
     const QRectF source(s.width() * 0.1, s.height() * 0.1, s.width(), s.height());
 
     painter->setRenderHint(QPainter::SmoothPixmapTransform);

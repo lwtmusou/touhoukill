@@ -173,7 +173,8 @@ void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const
     }
 
     ServerPlayer *source = card_use.from;
-    QList<ServerPlayer *> targets, all_players = room->getAllPlayers();
+    QList<ServerPlayer *> targets;
+    QList<ServerPlayer *> all_players = room->getAllPlayers();
     QList<const Player *> useTos;
     foreach (ServerPlayer *p, room->getAllPlayers())
         useTos << p;
@@ -217,7 +218,7 @@ bool GlobalEffect::isAvailable(const Player *player) const
     return canUse && TrickCard::isAvailable(player);
 }
 
-bool GlobalEffect::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
+bool GlobalEffect::targetFilter(const QList<const Player *> & /*targets*/, const Player * /*to_select*/, const Player * /*Self*/) const
 {
     return true;
 }
@@ -251,7 +252,8 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const
     }
 
     ServerPlayer *source = card_use.from;
-    QList<ServerPlayer *> targets, all_players = room->getOtherPlayers(source);
+    QList<ServerPlayer *> targets;
+    QList<ServerPlayer *> all_players = room->getOtherPlayers(source);
     QList<const Player *> useTos;
     foreach (ServerPlayer *p, room->getOtherPlayers(source))
         useTos << p;
@@ -278,7 +280,7 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const
     TrickCard::onUse(room, use);
 }
 
-bool AOE::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
+bool AOE::targetFilter(const QList<const Player *> & /*targets*/, const Player *to_select, const Player *Self) const
 {
     return to_select != Self;
 }
@@ -288,12 +290,10 @@ QString SingleTargetTrick::getSubtype() const
     return "single_target_trick";
 }
 
-bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const
+bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player * /*to_select*/, const Player *Self) const
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (targets.length() >= total_num)
-        return false;
-    return true;
+    return targets.length() < total_num;
 }
 
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
@@ -491,7 +491,7 @@ QString Weapon::getSubtype() const
 
 void Weapon::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    CardUseStruct use = card_use;
+    const CardUseStruct &use = card_use;
     ServerPlayer *player = card_use.from;
     if (room->getMode() == "04_1v3" && use.card->isKindOf("Weapon")
         && (player->isCardLimited(use.card, Card::MethodUse)
@@ -550,11 +550,11 @@ int Horse::getCorrect() const
     return correct;
 }
 
-void Horse::onInstall(ServerPlayer *) const
+void Horse::onInstall(ServerPlayer * /*player*/) const
 {
 }
 
-void Horse::onUninstall(ServerPlayer *) const
+void Horse::onUninstall(ServerPlayer * /*player*/) const
 {
 }
 

@@ -129,12 +129,12 @@ public:
         set = List2Set(names);
     }
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const override
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/) const override
     {
         return targets.isEmpty() && set.contains(to_select->objectName());
     }
 
-    void use(Room *, const CardUseStruct &) const override
+    void use(Room * /*room*/, const CardUseStruct & /*card_use*/) const override
     {
 #if 0
         ServerPlayer *target = targets.first();
@@ -213,7 +213,7 @@ public:
         set = List2Set(names);
     }
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const override
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/) const override
     {
         return targets.isEmpty() && set.contains(to_select->objectName());
     }

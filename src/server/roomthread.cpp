@@ -175,13 +175,13 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
     }
 }
 
-ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *, QList<ServerPlayer *>)
+ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer * /*unused*/, const QList<ServerPlayer *> & /*unused*/)
 {
     ServerPlayer *current = room->getCurrent();
     return qobject_cast<ServerPlayer *>(current->getNextAlive(1, false));
 }
 
-void RoomThread::actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league, GameRule *game_rule)
+void RoomThread::actionHulaoPass(ServerPlayer *uuz, const QList<ServerPlayer *> &league, GameRule *game_rule)
 {
     try {
         forever {
@@ -209,7 +209,7 @@ void RoomThread::actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league
     }
 }
 
-void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league, GameRule *game_rule)
+void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, const QList<ServerPlayer *> &league, GameRule *game_rule)
 {
     try {
         ServerPlayer *player = room->getCurrent();
@@ -412,8 +412,10 @@ void RoomThread::run()
     // start game
     try {
         QString order;
-        QList<ServerPlayer *> warm, cool;
-        QList<ServerPlayer *> first, second;
+        QList<ServerPlayer *> warm;
+        QList<ServerPlayer *> cool;
+        QList<ServerPlayer *> first;
+        QList<ServerPlayer *> second;
         if (room->getMode() == "06_3v3") {
             foreach (ServerPlayer *player, room->m_players) {
                 switch (player->getRoleEnum()) {

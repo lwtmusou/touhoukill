@@ -1,4 +1,5 @@
 #include "serverplayer.h"
+
 #include "ai.h"
 #include "engine.h"
 #include "gamerule.h"
@@ -7,6 +8,7 @@
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
+#include <utility>
 
 using namespace QSanProtocol;
 using namespace JsonUtils;
@@ -134,7 +136,7 @@ void ServerPlayer::throwAllMarks(bool visible_only)
         marks.clear();
 }
 
-void ServerPlayer::clearOnePrivatePile(QString pile_name)
+void ServerPlayer::clearOnePrivatePile(const QString &pile_name)
 {
     if (!piles.contains(pile_name))
         return;
@@ -330,7 +332,7 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
     }
 
     if (no_unreasonable)
-        return QString();
+        return {};
 
     return generals.first();
 }
@@ -1102,7 +1104,7 @@ QString ServerPlayer::getIp() const
     if (socket != nullptr)
         return socket->peerAddress();
     else
-        return QString();
+        return {};
 }
 
 quint32 ServerPlayer::ipv4Address() const
@@ -1110,7 +1112,7 @@ quint32 ServerPlayer::ipv4Address() const
     if (socket != nullptr)
         return socket->ipv4Address();
     else
-        return 0u;
+        return 0U;
 }
 
 void ServerPlayer::introduceTo(ServerPlayer *player)
@@ -1444,22 +1446,22 @@ void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool op
         card_ids = card->getSubcards();
     else
         card_ids << card->getEffectiveId();
-    return addToPile(pile_name, card_ids, open, open_players);
+    addToPile(pile_name, card_ids, open, std::move(open_players));
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open, QList<ServerPlayer *> open_players)
 {
     QList<int> card_ids;
     card_ids << card_id;
-    return addToPile(pile_name, card_ids, open, open_players);
+    addToPile(pile_name, card_ids, open, std::move(open_players));
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, QList<ServerPlayer *> open_players)
+void ServerPlayer::addToPile(const QString &pile_name, const QList<int> &card_ids, bool open, QList<ServerPlayer *> open_players)
 {
-    return addToPile(pile_name, card_ids, open, CardMoveReason(), open_players);
+    addToPile(pile_name, card_ids, open, CardMoveReason(), std::move(open_players));
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players)
+void ServerPlayer::addToPile(const QString &pile_name, const QList<int> &card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players)
 {
     if (open)
         open_players = room->getAllPlayers();
@@ -1473,11 +1475,11 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     move.card_ids = card_ids;
     move.to = this;
     move.to_place = Player::PlaceSpecial;
-    move.reason = reason;
+    move.reason = std::move(reason);
     room->moveCardsAtomic(move, open);
 }
 
-void ServerPlayer::addToShownHandCards(QList<int> card_ids)
+void ServerPlayer::addToShownHandCards(const QList<int> &card_ids)
 {
     QList<int> add_ids;
     foreach (int id, card_ids) {
@@ -1514,7 +1516,7 @@ void ServerPlayer::addToShownHandCards(QList<int> card_ids)
     room->filterCards(this, this->getCards("hs"), true);
 }
 
-void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool moveFromHand)
+void ServerPlayer::removeShownHandCards(const QList<int> &card_ids, bool sendLog, bool moveFromHand)
 {
     QList<int> removed_ids;
     foreach (int id, card_ids) {
@@ -1550,7 +1552,7 @@ void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool 
     room->getThread()->trigger(ShownCardChanged, room, v);
 }
 
-void ServerPlayer::addBrokenEquips(QList<int> card_ids)
+void ServerPlayer::addBrokenEquips(const QList<int> &card_ids)
 {
     QList<int> add_ids;
     foreach (int id, card_ids) {
@@ -1588,7 +1590,7 @@ void ServerPlayer::addBrokenEquips(QList<int> card_ids)
     room->getThread()->trigger(BrokenEquipChanged, room, bv);
 }
 
-void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog, bool moveFromEquip)
+void ServerPlayer::removeBrokenEquips(const QList<int> &card_ids, bool sendLog, bool moveFromEquip)
 {
     QList<int> removed_ids;
     foreach (int id, card_ids) {
@@ -1756,13 +1758,13 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
 QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 {
     if (use.card == nullptr || use.card->getTypeId() == Card::TypeSkill)
-        return QStringList();
+        return {};
     if (!isHegemonyGameMode(room->getMode())) {
         if (!canShowHiddenSkill())
-            return QStringList();
+            return {};
         QString cardskill = use.card->getSkillName(); //check double hidden skill
         if (cardskill != nullptr && use.from->isHiddenSkill(cardskill))
-            return QStringList();
+            return {};
     }
 
     QList<const TargetModSkill *> tarmods;
@@ -1786,7 +1788,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     }
 
     if (tarmods.isEmpty())
-        return QStringList();
+        return {};
 
     QSet<QString> showExtraTarget;
     QSet<QString> disShowExtraTarget;
@@ -1922,7 +1924,7 @@ void ServerPlayer::notifyPreshow()
     room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args2);
 }
 
-void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendLog, bool)
+void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendLog, bool /*unused*/)
 {
     QStringList names = room->getTag(objectName()).toStringList();
     if (names.isEmpty())
@@ -2222,7 +2224,8 @@ void ServerPlayer::hideGeneral(bool head_general)
 void ServerPlayer::removeGeneral(bool head_general)
 
 {
-    QString general_name, from_general;
+    QString general_name;
+    QString from_general;
     room->tryPause();
     room->setEmotion(this, "remove");
 
@@ -2355,7 +2358,7 @@ void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */)
     }
 }
 
-int ServerPlayer::getPlayerNumWithSameKingdom(const QString &, const QString &_to_calculate) const
+int ServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const QString &_to_calculate) const
 {
     QString to_calculate = _to_calculate;
 
@@ -2435,7 +2438,7 @@ bool ServerPlayer::inFormationRalation(ServerPlayer *teammate) const
     return teammates.length() > 1 && teammates.contains(teammate);
 }
 
-void ServerPlayer::summonFriends(const QString type)
+void ServerPlayer::summonFriends(const QString &type)
 {
     room->tryPause();
 

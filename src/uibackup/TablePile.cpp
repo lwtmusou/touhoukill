@@ -5,7 +5,7 @@
 #include <QParallelAnimationGroup>
 #include <QTimer>
 
-QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place)
+QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place /*place*/)
 {
     QList<CardItem *> result;
     _m_mutex_pileCards.lock();
@@ -31,12 +31,12 @@ QRectF TablePile::boundingRect() const
 void TablePile::setSize(double width, double height)
 {
     m_cardsDisplayRegion = QRect(0, 0, width, height);
-    m_numCardsVisible = width / G_COMMON_LAYOUT.m_cardNormalHeight + 1;
+    m_numCardsVisible = (width / G_COMMON_LAYOUT.m_cardNormalHeight) + 1;
     resetTransform();
     setTransform(QTransform::fromTranslate(-width / 2, -height / 2), true);
 }
 
-void TablePile::timerEvent(QTimerEvent *)
+void TablePile::timerEvent(QTimerEvent * /*event*/)
 {
     QList<CardItem *> oldCards;
     _m_mutex_pileCards.lock();

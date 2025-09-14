@@ -32,7 +32,7 @@ AvatarModel::AvatarModel(const QList<const General *> &list)
 {
 }
 
-int AvatarModel::rowCount(const QModelIndex &) const
+int AvatarModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return list.size();
 }
@@ -41,7 +41,7 @@ QVariant AvatarModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
     if (row < 0 || row >= list.length())
-        return QVariant();
+        return {};
 
     const General *general = list.at(row);
 
@@ -56,7 +56,7 @@ QVariant AvatarModel::data(const QModelIndex &index, int role) const
     }
     }
 
-    return QVariant();
+    return {};
 }
 
 void ConnectionDialog::hideAvatarList()
@@ -258,9 +258,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     connectbtn->setFocus();
 }
 
-ConnectionDialog::~ConnectionDialog()
-{
-}
+ConnectionDialog::~ConnectionDialog() = default;
 
 void ConnectionDialog::showEvent(QShowEvent *e)
 {

@@ -61,7 +61,7 @@ void GeneralCardItem::changeGeneral(const QString &generalName)
     setOuterGlowColor(Sanguosha->getKingdomColor(general->getKingdom()));
 }
 
-void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
@@ -81,7 +81,7 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 
     QString kingdom = Sanguosha->getGeneral(objectName())->getKingdom(); //"wei";
     QPixmap icon = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON, kingdom);
-    painter->drawPixmap(boundingRect().center().x() - icon.width() / 2 + 3, boundingRect().bottom() - icon.height(), icon);
+    painter->drawPixmap(boundingRect().center().x() - (icon.width() / 2) + 3, boundingRect().bottom() - icon.height(), icon);
 
     painter->drawPixmap(G_COMMON_LAYOUT.m_generalCardItemCompanionPromptRegion, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT, kingdom));
 }
@@ -217,7 +217,7 @@ void ChooseGeneralBox::paintLayout(QPainter *painter)
         split_line_y += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
 
     QPixmap line = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE);
-    const int line_length = boundingRect().width() - 2 * left_blank_width;
+    const int line_length = boundingRect().width() - (2 * left_blank_width);
     const QRectF rect = boundingRect();
 
     painter->drawPixmap(left_blank_width, split_line_y, line, (line.width() - line_length) / 2, rect.y(), line_length, line.height());
@@ -237,7 +237,8 @@ void ChooseGeneralBox::paintLayout(QPainter *painter)
 QRectF ChooseGeneralBox::boundingRect() const
 {
     //confirm the general count of the first and second row
-    int first_row = 0, second_row = 0;
+    int first_row = 0;
+    int second_row = 0;
 
     //arrange them in two rows if there are more than 6 generals.
     //Number of cards in the second row cannot be greater than that in the first row
@@ -249,7 +250,7 @@ QRectF ChooseGeneralBox::boundingRect() const
         first_row = general_number - second_row;
     }
 
-    const int width = first_row * G_COMMON_LAYOUT.m_cardNormalWidth + (first_row - 1) * card_to_center_line + left_blank_width * 2;
+    const int width = (first_row * G_COMMON_LAYOUT.m_cardNormalWidth) + ((first_row - 1) * card_to_center_line) + (left_blank_width * 2);
 
     int height = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + bottom_blank_width;
 
@@ -285,7 +286,7 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2)
         return false;
 }
 
-void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason, const Player *, const bool)
+void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason, const Player * /*unused*/, const bool /*unused*/)
 {
     //repaint background
     QStringList generals = _generals;
@@ -382,15 +383,15 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
 
         QPointF pos;
         if (i < first_row) {
-            pos.setX(left_blank_width + (card_width + card_to_center_line) * i + card_width / 2);
-            pos.setY(top_blank_width + card_height / 2);
+            pos.setX(left_blank_width + ((card_width + card_to_center_line) * i) + (card_width / 2));
+            pos.setY(top_blank_width + (card_height / 2));
         } else {
             if (items.length() % 2 == 1) {
-                pos.setX(left_blank_width + card_width / 2 + card_to_center_line / 2 + (card_width + card_to_center_line) * (i - first_row) + card_width / 2);
+                pos.setX(left_blank_width + (card_width / 2) + (card_to_center_line / 2) + ((card_width + card_to_center_line) * (i - first_row)) + (card_width / 2));
             } else {
-                pos.setX(left_blank_width + (card_width + card_to_center_line) * (i - first_row) + card_width / 2);
+                pos.setX(left_blank_width + ((card_width + card_to_center_line) * (i - first_row)) + (card_width / 2));
             }
-            pos.setY(top_blank_width + card_height + card_to_center_line + card_height / 2);
+            pos.setY(top_blank_width + card_height + card_to_center_line + (card_height / 2));
         }
 
         card_item->setPos(25, 45);
@@ -404,7 +405,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     if (single_result) {
         confirm->hide();
     } else {
-        confirm->setPos(boundingRect().center().x() - confirm->boundingRect().width() / 2, boundingRect().height() - 60);
+        confirm->setPos(boundingRect().center().x() - (confirm->boundingRect().width() / 2), boundingRect().height() - 60);
         confirm->show();
     }
     if (!view_only && !single_result)
@@ -418,7 +419,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
             progress_bar->setTimerEnabled(true);
             progress_bar_item = new QGraphicsProxyWidget(this);
             progress_bar_item->setWidget(progress_bar);
-            progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
+            progress_bar_item->setPos(boundingRect().center().x() - (progress_bar_item->boundingRect().width() / 2), boundingRect().height() - 20);
             connect(progress_bar, &QSanCommandProgressBar::timedOut, this, &ChooseGeneralBox::reply);
         }
         if (view_only) {
@@ -468,13 +469,13 @@ void ChooseGeneralBox::adjustItems()
         const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
         const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
 
-        int dest_seat_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat + card_height / 2 - 1;
+        int dest_seat_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat + (card_height / 2) - 1;
         if (general_number > 5)
             dest_seat_y += (card_to_center_line + card_height);
-        selected.first()->setHomePos(QPointF(boundingRect().center().x() - card_to_center_line - card_width / 2 - 2, dest_seat_y));
+        selected.first()->setHomePos(QPointF(boundingRect().center().x() - card_to_center_line - (card_width / 2) - 2, dest_seat_y));
         selected.first()->goBack(true);
         if (selected.length() == 2) {
-            selected.last()->setHomePos(QPointF(boundingRect().center().x() + card_to_center_line + card_width / 2 - 1, dest_seat_y));
+            selected.last()->setHomePos(QPointF(boundingRect().center().x() + card_to_center_line + (card_width / 2) - 1, dest_seat_y));
             selected.last()->goBack(true);
         }
     }
@@ -590,8 +591,10 @@ void ChooseGeneralBox::reply()
         progress_bar = nullptr;
     }
 
-    if (m_viewOnly)
-        return clear();
+    if (m_viewOnly) {
+        clear();
+        return;
+    }
 
     QString generals;
     if (!selected.isEmpty()) {

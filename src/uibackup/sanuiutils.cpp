@@ -4,9 +4,9 @@
 #include <QImage>
 #include <QPixmap>
 
-#define NEW_PIXEL_CHANNEL(x, y, channel) (newImage[(y * cols + x) * 4 + channel])
+#define NEW_PIXEL_CHANNEL(x, y, channel) (newImage[((y) * cols + (x)) * 4 + (channel)])
 #define NEW_PIXEL(x, y) NEW_PIXEL_CHANNEL(x, y, 3)
-#define OLD_PIXEL(x, y) (oldImage[(y * cols + x) * 4 + 3])
+#define OLD_PIXEL(x, y) (oldImage[((y) * cols + (x)) * 4 + 3])
 
 void SanUiUtils::makeGray(QPixmap &pixmap)
 {
@@ -53,19 +53,19 @@ QImage SanUiUtils::produceShadow(const QImage &image, const QColor &shadowColor,
                 for (int dx = -radius; dx <= radius; ++dx) {
                     int wx = x + dx;
                     int wy = y + dy;
-                    int dist = dx * dx + dy * dy;
+                    int dist = (dx * dx) + (dy * dy);
 
                     if (wx < 0 || wy < 0 || wx >= cols || wy >= rows) {
                         continue;
                     }
 
-                    if (dx * dx + dy * dy > radius * radius) {
+                    if ((dx * dx) + (dy * dy) > radius * radius) {
                         continue;
                     }
 
                     Q_ASSERT((wy * cols + wx) * 4 < cols * rows * 4);
 
-                    int newVal = alpha - decade * dist;
+                    int newVal = alpha - (decade * dist);
                     NEW_PIXEL(wx, wy) = (uchar)qMax((int)NEW_PIXEL(wx, wy), newVal);
                 }
             }

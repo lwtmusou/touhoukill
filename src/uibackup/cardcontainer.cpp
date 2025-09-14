@@ -24,7 +24,7 @@ CardContainer::CardContainer()
     connect(close_button, SIGNAL(clicked()), this, SLOT(clear()));
 }
 
-void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->drawPixmap(0, 0, _m_background);
 }
@@ -55,8 +55,8 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         card_items = _createCards(card_ids);
 
     int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
-    QPointF pos1(30 + card_width / 2, 40 + G_COMMON_LAYOUT.m_cardNormalHeight / 2);
-    QPointF pos2(30 + card_width / 2, 184 + G_COMMON_LAYOUT.m_cardNormalHeight / 2);
+    QPointF pos1(30 + (card_width / 2), 40 + (G_COMMON_LAYOUT.m_cardNormalHeight / 2));
+    QPointF pos2(30 + (card_width / 2), 184 + (G_COMMON_LAYOUT.m_cardNormalHeight / 2));
     int skip = 102;
     qreal whole_width = skip * 4;
     items.append(card_items);
@@ -67,10 +67,10 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         if (n <= 10) {
             if (i < 5) {
                 pos = pos1;
-                pos.setX(pos.x() + i * skip);
+                pos.setX(pos.x() + (i * skip));
             } else {
                 pos = pos2;
-                pos.setX(pos.x() + (i - 5) * skip);
+                pos.setX(pos.x() + ((i - 5) * skip));
             }
         } else {
             int half = (n + 1) / 2;
@@ -78,10 +78,10 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
 
             if (i < half) {
                 pos = pos1;
-                pos.setX(pos.x() + i * real_skip);
+                pos.setX(pos.x() + (i * real_skip));
             } else {
                 pos = pos2;
-                pos.setX(pos.x() + (i - half) * real_skip);
+                pos.setX(pos.x() + ((i - half) * real_skip));
             }
         }
         CardItem *item = items[i];
@@ -133,9 +133,9 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
     int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
     bool one_row = true;
-    int width = (card_width + cardInterval) * itemCount - cardInterval + 50;
+    int width = ((card_width + cardInterval) * itemCount) - cardInterval + 50;
     if (width * 1.5 > scene_width) {
-        width = (card_width + cardInterval) * ((itemCount + 1) / 2) - cardInterval + 50;
+        width = ((card_width + cardInterval) * ((itemCount + 1) / 2)) - cardInterval + 50;
         one_row = false;
     }
     int first_row = one_row ? itemCount : (itemCount + 1) / 2;
@@ -143,13 +143,13 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
     for (int i = 0; i < itemCount; i++) {
         QPointF pos;
         if (i < first_row) {
-            pos.setX(25 + (card_width + cardInterval) * i);
+            pos.setX(25 + ((card_width + cardInterval) * i));
             pos.setY(45);
         } else {
             if (itemCount % 2 == 1)
-                pos.setX(25 + card_width / 2 + cardInterval / 2 + (card_width + cardInterval) * (i - first_row));
+                pos.setX(25 + (card_width / 2) + (cardInterval / 2) + ((card_width + cardInterval) * (i - first_row)));
             else
-                pos.setX(25 + (card_width + cardInterval) * (i - first_row));
+                pos.setX(25 + ((card_width + cardInterval) * (i - first_row)));
             pos.setY(45 + card_height + cardInterval);
         }
         CardItem *item = items[i];
@@ -166,12 +166,12 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
     }
 
     //close_button->setPos(boundingRect().center().x() - close_button->boundingRect().width() / 2, boundingRect().height() - 40);
-    close_button->setPos(boundingRect().topRight().x() - boundingRect().width() / 10, boundingRect().topRight().y() + boundingRect().height() / 10);
+    close_button->setPos(boundingRect().topRight().x() - (boundingRect().width() / 10), boundingRect().topRight().y() + (boundingRect().height() / 10));
     close_button->show();
     //confirm_button->setPos(boundingRect().center().x() - confirm_button->boundingRect().width() / 2, boundingRect().height() - 40);
 }
 
-bool CardContainer::_addCardItems(QList<CardItem *> &, const CardsMoveStruct &)
+bool CardContainer::_addCardItems(QList<CardItem *> & /*card_items*/, const CardsMoveStruct & /*moveInfo*/)
 {
     return true;
 }
@@ -208,7 +208,7 @@ void CardContainer::freezeCards(bool is_frozen)
         item->setFrozen(is_frozen);
 }
 
-QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place)
+QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place /*place*/)
 {
     QList<CardItem *> result;
     foreach (int card_id, card_ids) {
@@ -313,7 +313,7 @@ void SanCloseButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
     event->accept();
 }
 
-void SanCloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void SanCloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     emit clicked();
 }
@@ -335,7 +335,7 @@ GuanxingBox::GuanxingBox()
     setFlag(ItemIsMovable);
 }
 
-void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only, QString skillName)
+void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only, const QString &skillName)
 {
     if (card_ids.isEmpty()) {
         clear();
@@ -367,14 +367,14 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only, QString s
     QPointF source(start_x, start_y1);
     for (int i = 0; i < up_items.length(); i++) {
         CardItem *card_item = up_items.at(i);
-        QPointF pos(start_x + i * skip, start_y1);
+        QPointF pos(start_x + (i * skip), start_y1);
         card_item->setPos(source);
         card_item->setHomePos(pos);
         card_item->goBack(true);
     }
     for (int i = 0; i < down_items.length(); i++) {
         CardItem *card_item = down_items.at(i);
-        QPointF pos(start_x + i * skip, start_y2);
+        QPointF pos(start_x + (i * skip), start_y2);
         card_item->setPos(source);
         card_item->setHomePos(pos);
         card_item->goBack(true);
@@ -399,13 +399,13 @@ void GuanxingBox::adjust()
     items->insert(c, item);
 
     for (int i = 0; i < up_items.length(); i++) {
-        QPointF pos(start_x + i * skip, start_y1);
+        QPointF pos(start_x + (i * skip), start_y1);
         up_items.at(i)->setHomePos(pos);
         up_items.at(i)->goBack(true);
     }
 
     for (int i = 0; i < down_items.length(); i++) {
-        QPointF pos(start_x + i * skip, start_y2);
+        QPointF pos(start_x + (i * skip), start_y2);
         down_items.at(i)->setHomePos(pos);
         down_items.at(i)->goBack(true);
     }
@@ -426,7 +426,8 @@ void GuanxingBox::clear()
 
 void GuanxingBox::reply()
 {
-    QList<int> up_cards, down_cards;
+    QList<int> up_cards;
+    QList<int> down_cards;
     foreach (CardItem *card_item, up_items)
         up_cards << card_item->getCard()->getId();
 

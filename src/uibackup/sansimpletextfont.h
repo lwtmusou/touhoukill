@@ -58,11 +58,11 @@ public:
 
     bool tryParse(const QVariant &arg);
 
-    void paintText(QPainter *const painter, const QRect &pos, const Qt::Alignment &align, const QString &text) const;
+    void paintText(QPainter *painter, const QRect &pos, const Qt::Alignment &align, const QString &text) const;
 
     // this function's prototype is confusing. It will CLEAR ALL contents on the
     // QGraphicsPixmapItem passed in and then start drawing.
-    void paintText(QGraphicsPixmapItem *const item, const QRect &pos, const Qt::Alignment &align, const QString &text) const;
+    void paintText(QGraphicsPixmapItem *item, const QRect &pos, const Qt::Alignment &align, const QString &text) const;
 
 protected:
     void _initFontFace(const QString &fontName);

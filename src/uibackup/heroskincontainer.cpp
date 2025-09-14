@@ -205,8 +205,8 @@ void HeroSkinContainer::fillSkins()
         connect(m_vScrollBar, SIGNAL(valueChanged(int)), this, SLOT(scrollBarValueChanged(int)));
 
         m_vScrollBar->setMaximum((rows - 1) * (SKIN_ITEM_HEIGHT + Y_STEP));
-        m_vScrollBar->setPageStep(12 + (rows - 1) * 3);
-        m_vScrollBar->setSingleStep(15 + (rows - 1) * 3);
+        m_vScrollBar->setPageStep(12 + ((rows - 1) * 3));
+        m_vScrollBar->setSingleStep(15 + ((rows - 1) * 3));
 
         QGraphicsProxyWidget *scrollBarWidget = new QGraphicsProxyWidget(this);
         scrollBarWidget->setWidget(m_vScrollBar);
@@ -241,7 +241,7 @@ QRectF HeroSkinContainer::boundingRect() const
     return QRectF(QPoint(0, 0), m_backgroundPixmap.size());
 }
 
-void HeroSkinContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void HeroSkinContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->drawPixmap(0, 0, m_backgroundPixmap);
 }
@@ -294,7 +294,7 @@ const SanShadowTextFont &HeroSkinContainer::getAvatarNameFont()
     return avatarNameFont;
 }
 
-void HeroSkinContainer::mousePressEvent(QGraphicsSceneMouseEvent *)
+void HeroSkinContainer::mousePressEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     bringToTopMost();
 }

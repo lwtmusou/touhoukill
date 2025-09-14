@@ -13,7 +13,7 @@ ClientLogBox::ClientLogBox(QWidget *parent)
     setReadOnly(true);
 }
 
-void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos, QString card_str, QString arg, QString arg2)
+void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos, const QString &card_str, QString arg, QString arg2)
 {
     if (Self->hasFlag("marshalling"))
         return;
@@ -160,7 +160,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
     append(log);
 }
 
-QString ClientLogBox::bold(const QString &str, QColor color) const
+QString ClientLogBox::bold(const QString &str, const QColor &color) const
 {
     return QString("<font color='%1'><b>%2</b></font>").arg(color.name()).arg(str);
 }

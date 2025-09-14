@@ -51,7 +51,7 @@ QList<QByteArray> Recorder::getRecords() const
     return records;
 }
 
-QImage Recorder::TXT2PNG(QByteArray txtData)
+QImage Recorder::TXT2PNG(const QByteArray &txtData)
 {
     QByteArray data = qCompress(txtData, 9);
     qint32 actual_size = data.size();
@@ -60,7 +60,7 @@ QImage Recorder::TXT2PNG(QByteArray txtData)
     // actual data = width * height - padding
     int width = ceil(sqrt((double)data.size()));
     int height = width;
-    int padding = width * height - data.size();
+    int padding = (width * height) - data.size();
     QByteArray paddingData;
     paddingData.fill('\0', padding);
     data.append(paddingData);

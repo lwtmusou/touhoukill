@@ -12,9 +12,7 @@
 class RoomState
 {
 public:
-    explicit inline RoomState()
-    {
-    }
+    explicit inline RoomState() = default;
     ~RoomState();
     Card *getCard(int cardId) const;
     inline QString getCurrentCardUsePattern() const

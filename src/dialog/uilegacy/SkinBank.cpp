@@ -172,7 +172,7 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName, const QStrin
     QByteArray arr = qkey.toLatin1();
     key = arr.constData();
     if (!isImageKeyDefined(key))
-        return QString();
+        return {};
     QString path = _m_imageConfig[key].toString();
     QString stateKey;
     if (state == QSanButton::S_STATE_DISABLED)
@@ -186,7 +186,7 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName, const QStrin
     else if (state == QSanButton::S_STATE_CANPRESHOW)
         stateKey = "disabled"; //use codes to make button lighter than other states
     else
-        return QString();
+        return {};
     return path.arg(buttonName).arg(stateKey);
 }
 
@@ -194,7 +194,7 @@ QPixmap QSanRoomSkin::getSkillButtonPixmap(QSanButton::ButtonState state, QSanSk
 {
     QString path = getButtonPixmapPath(S_SKIN_KEY_BUTTON_SKILL, QSanSkillButton::getSkillTypeString(type), state);
     if (path.isNull())
-        return QPixmap(1, 1); // older Qt version cries for non-zero QPixmap...
+        return {1, 1}; // older Qt version cries for non-zero QPixmap...
     else {
         QString arg2;
         if (width == QSanInvokeSkillButton::S_WIDTH_NARROW)
@@ -211,7 +211,7 @@ QPixmap QSanRoomSkin::getButtonPixmap(const QString &groupName, const QString &b
 {
     QString path = getButtonPixmapPath(groupName, buttonName, state);
     if (path.isNull())
-        return QPixmap(1, 1); // older Qt version cries for non-zero QPixmap...
+        return {1, 1}; // older Qt version cries for non-zero QPixmap...
     else
         return getPixmapFromFileName(path);
 }
@@ -225,7 +225,7 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const
 {
     QVariant allMaps_var = _m_imageConfig[S_SKIN_KEY_PROGRESS_BAR_IMAGE];
     if (!allMaps_var.canConvert<JsonArray>())
-        return QPixmap(1, 1);
+        return {1, 1};
 
     JsonArray allMaps = allMaps_var.value<JsonArray>();
 
@@ -239,7 +239,7 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const
             return getPixmapFromFileName(allMaps[i].value<JsonArray>()[1].toString(), true);
         }
     }
-    return QPixmap(1, 1);
+    return {1, 1};
 }
 
 QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, bool heroSkin) const
@@ -379,32 +379,32 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSiz
 {
     QPoint parentAnchor;
     Qt::Alignment hAlign = m_anchorParent & Qt::AlignHorizontal_Mask;
-    if (hAlign & Qt::AlignRight)
+    if ((hAlign & Qt::AlignRight) != 0u)
         parentAnchor.setX(parentRect.right());
-    else if (hAlign & Qt::AlignHCenter)
+    else if ((hAlign & Qt::AlignHCenter) != 0u)
         parentAnchor.setX(parentRect.center().x());
     else
         parentAnchor.setX(parentRect.left());
     Qt::Alignment vAlign = m_anchorParent & Qt::AlignVertical_Mask;
-    if (vAlign & Qt::AlignBottom)
+    if ((vAlign & Qt::AlignBottom) != 0u)
         parentAnchor.setY(parentRect.bottom());
-    else if (vAlign & Qt::AlignVCenter)
+    else if ((vAlign & Qt::AlignVCenter) != 0u)
         parentAnchor.setY(parentRect.center().y());
     else
         parentAnchor.setY(parentRect.top());
 
     QPoint childAnchor;
     hAlign = m_anchorChild & Qt::AlignHorizontal_Mask;
-    if (hAlign & Qt::AlignRight)
+    if ((hAlign & Qt::AlignRight) != 0u)
         childAnchor.setX(size.width());
-    else if (hAlign & Qt::AlignHCenter)
+    else if ((hAlign & Qt::AlignHCenter) != 0u)
         childAnchor.setX(size.width() / 2);
     else
         childAnchor.setX(0);
     vAlign = m_anchorChild & Qt::AlignVertical_Mask;
-    if (vAlign & Qt::AlignBottom)
+    if ((vAlign & Qt::AlignBottom) != 0u)
         childAnchor.setY(size.height());
-    else if (vAlign & Qt::AlignVCenter)
+    else if ((vAlign & Qt::AlignVCenter) != 0u)
         childAnchor.setY(size.height() / 2);
     else
         childAnchor.setY(0);
@@ -516,7 +516,7 @@ QStringList IQSanComponentSkin::getAudioFileNames(const QString &key) const
 {
     const QVariant &result = _m_audioConfig[key];
     if (result.isNull())
-        return QStringList();
+        return {};
     else if (JsonUtils::isString(result))
         return QStringList(result.toString());
     else if (result.canConvert<JsonArray>()) {
@@ -524,7 +524,7 @@ QStringList IQSanComponentSkin::getAudioFileNames(const QString &key) const
         tryParse(result, audios);
         return audios;
     }
-    return QStringList();
+    return {};
 }
 
 QStringList IQSanComponentSkin::getAnimationFileNames() const
@@ -540,7 +540,7 @@ QString IQSanComponentSkin::getRandomAudioFileName(const QString &key) const
 {
     QStringList audios = getAudioFileNames(key);
     if (audios.isEmpty())
-        return QString();
+        return {};
     int r = qsgsRand() % audios.length();
     return audios[r];
 }
@@ -680,7 +680,7 @@ QPixmap IQSanComponentSkin::getPixmapFileName(const QString &key) const
 QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName, bool cache) const
 {
     if (fileName == "deprecated" || fileName.isEmpty()) {
-        return QPixmap(1, 1);
+        return {1, 1};
     } else {
         QPixmap pixmap;
         bool success = true;
@@ -695,13 +695,13 @@ QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName, bool 
             }
         }
         if (!success)
-            return QPixmap(1, 1); // make Qt happy
+            return {1, 1}; // make Qt happy
         else
             return pixmap;
     }
 }
 
-bool QSanRoomSkin::_loadAnimationConfig(const QVariant &)
+bool QSanRoomSkin::_loadAnimationConfig(const QVariant & /*config*/)
 {
     return true;
 }
@@ -723,7 +723,7 @@ QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar,
         animation->setDuration(duration);
         JsonArray keyValues = huashenConfig[1].value<JsonArray>();
         for (int i = 0; i < keyValues.size(); i++) {
-            QVariant keyValue = keyValues[i];
+            const QVariant &keyValue = keyValues[i];
             if (!keyValue.canConvert<JsonArray>() || keyValue.value<JsonArray>().length() != 2)
                 continue;
             double step = NAN;
@@ -761,7 +761,7 @@ const QSanRoomSkin::CommonLayout &QSanRoomSkin::getCommonLayout() const
 QSanRoomSkin::QSanShadowTextFont QSanRoomSkin::DashboardLayout::getSkillTextFont(QSanButton::ButtonState state, QSanSkillButton::SkillType type,
                                                                                  QSanInvokeSkillButton::SkillButtonWidth width) const
 {
-    int i = QSanButton::S_NUM_BUTTON_STATES * (int)type + (int)state;
+    int i = (QSanButton::S_NUM_BUTTON_STATES * (int)type) + (int)state;
     QSanShadowTextFont font = m_skillTextFonts[width];
     font.m_color = m_skillTextColors[i];
     font.m_shadowColor = m_skillTextShadowColors[i];
@@ -960,7 +960,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
     if (!tryParse(config["focusFrameArea"], _m_photoLayout.m_focusFrameArea) && isNumber(config["borderWidth"])) {
         int borderWidth = 0;
         tryParse(config["borderWidth"], borderWidth);
-        _m_photoLayout.m_focusFrameArea = QRect(-borderWidth, -borderWidth, _m_photoLayout.m_normalWidth + 2 * borderWidth, _m_photoLayout.m_normalHeight + 2 * borderWidth);
+        _m_photoLayout.m_focusFrameArea = QRect(-borderWidth, -borderWidth, _m_photoLayout.m_normalWidth + (2 * borderWidth), _m_photoLayout.m_normalHeight + (2 * borderWidth));
     }
     tryParse(config["mainFrameArea"], _m_photoLayout.m_mainFrameArea);
     tryParse(config["onlineStatusArea"], _m_photoLayout.m_onlineStatusArea);
@@ -1041,7 +1041,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
 
         JsonArray subconfig = config[key].value<JsonArray>();
         for (int j = 0; j < QSanButton::S_NUM_BUTTON_STATES && j < subconfig.size(); j++) {
-            int index = i * QSanButton::S_NUM_BUTTON_STATES + j;
+            int index = (i * QSanButton::S_NUM_BUTTON_STATES) + j;
             JsonArray config = subconfig[j].value<JsonArray>();
             if (config.size() < 2)
                 continue;
@@ -1099,7 +1099,7 @@ const QSanSkinScheme &QSanSkinFactory::getCurrentSkinScheme()
     return _sm_currentSkin;
 }
 
-bool QSanSkinFactory::switchSkin(QString skinName)
+bool QSanSkinFactory::switchSkin(const QString &skinName)
 {
     if (skinName == _m_skinName)
         return false;

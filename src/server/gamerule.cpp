@@ -8,7 +8,7 @@
 #include "washout.h"
 #include <QTime>
 
-GameRule::GameRule(QObject *)
+GameRule::GameRule(QObject * /*unused*/)
     : TriggerSkill("game_rule")
 {
     //@todo: this setParent is illegitimate in QT and is equivalent to calling
@@ -27,7 +27,7 @@ int GameRule::getPriority() const
     return 0;
 }
 
-QList<SkillInvokeDetail> GameRule::triggerable(TriggerEvent, const Room *, const QVariant &) const
+QList<SkillInvokeDetail> GameRule::triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant & /*data*/) const
 {
     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nullptr, nullptr, nullptr, true);
 }
@@ -117,7 +117,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
     }
 }
 
-bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
+bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> /*invoke*/, QVariant &data) const
 {
     if (room->getTag("SkipGameRule").toBool()) {
         room->removeTag("SkipGameRule");
@@ -949,7 +949,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     }
     case BuryVictim: {
         DeathStruct death = data.value<DeathStruct>();
-        bool skipRewardAndPunish = death.who->hasFlag("skipRewardAndPunish") ? true : false;
+        bool skipRewardAndPunish = death.who->hasFlag("skipRewardAndPunish");
         if (room->getMode() == "03_1v2" || room->getMode() == "04_2v2")
             skipRewardAndPunish = true;
         death.who->bury();

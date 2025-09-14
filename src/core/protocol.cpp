@@ -110,7 +110,7 @@ QByteArray QSanProtocol::Packet::toJson() const
 
     //return an empty string here, for Packet::parse won't parse it (line 92)
     if (msg.length() > S_MAX_PACKET_SIZE)
-        return QByteArray();
+        return {};
 
     return msg;
 }

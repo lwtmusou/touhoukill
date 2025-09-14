@@ -19,7 +19,7 @@ SanFreeTypeFont::SanFreeTypeFont()
     : m_ftLib(nullptr)
 {
     FT_Error error = FT_Init_FreeType(&m_ftLib);
-    if (error) {
+    if (error != 0) {
         qWarning("Error loading FreeType library.");
     }
 }
@@ -54,7 +54,7 @@ QString SanFreeTypeFont::resolveFont(const QString &fontName)
 
 const int *SanFreeTypeFont::loadFont(const QString &fontName)
 {
-    if (!m_ftLib) {
+    if (m_ftLib == nullptr) {
         return nullptr;
     }
 
@@ -64,7 +64,7 @@ const int *SanFreeTypeFont::loadFont(const QString &fontName)
 
     FT_Face face = nullptr;
     FT_Error error = FT_New_Face(m_ftLib, fontPath, 0, &face);
-    if (error) {
+    if (error != 0) {
         if (error == FT_Err_Unknown_File_Format) {
             qWarning("Unsupported font format: %s.", fontPath);
         } else {
@@ -80,7 +80,7 @@ const int *SanFreeTypeFont::loadFont(const QString &fontName)
 bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight,
                                   QRect &boundingBox, const Qt::Orientation &orient, const Qt::Alignment &align)
 {
-    if (!m_ftLib || font == nullptr || painter == nullptr || text.isEmpty()) {
+    if ((m_ftLib == nullptr) || font == nullptr || painter == nullptr || text.isEmpty()) {
         return false;
     }
 
@@ -98,7 +98,8 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
 
     QVector<uint> charcodes = text.toUcs4();
     int len = charcodes.size();
-    int xstep = 0, ystep = 0;
+    int xstep = 0;
+    int ystep = 0;
 
     if (orient == Qt::Vertical) {
         xstep = 0;
@@ -108,7 +109,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
         ystep = spacing + fontSize.height();
         // AlignJustify means the text should fill out the whole rect space
         // so we increase the step
-        if (align & Qt::AlignJustify) {
+        if ((align & Qt::AlignJustify) != 0u) {
             ystep = boundingBox.height() / len;
             if (fontSize.height() + spacing > ystep) {
                 fontSize.setHeight(ystep - spacing);
@@ -122,7 +123,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
         xstep = spacing + fontSize.width();
         // AlignJustifx means the text should fill out the whole rect space
         // so we increase the step
-        if (align & Qt::AlignJustify) {
+        if ((align & Qt::AlignJustify) != 0u) {
             xstep = boundingBox.width() / len;
             if (fontSize.width() + spacing > xstep) {
                 fontSize.setWidth(xstep - spacing);
@@ -164,11 +165,11 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
         FT_Vector delta;
         FT_UInt glyph_index = FT_Get_Char_Index(face, charcodes[i]);
         error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT | FT_LOAD_NO_BITMAP);
-        if (error) {
+        if (error != 0) {
             continue;
         }
 
-        if (useKerning && previous && glyph_index) {
+        if (useKerning && (previous != 0u) && (glyph_index != 0u)) {
             error = FT_Get_Kerning(face, previous, glyph_index, FT_KERNING_DEFAULT, &delta);
             currentX += delta.x >> 6;
         }
@@ -233,7 +234,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
             } else {
                 int mask = 0x80;
                 for (int x = 0; x < fontClippedCols; ++x) {
-                    if (*fontPtr & mask) {
+                    if ((*fontPtr & mask) != 0) {
                         *imagePtr = 255;
                     }
 
@@ -259,46 +260,47 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
 
     m_paintTextMutex.unlock();
 
-    int xstart = 0, ystart = 0;
+    int xstart = 0;
+    int ystart = 0;
     if (orient == Qt::Vertical) {
-        if (hAlign & Qt::AlignLeft) {
+        if ((hAlign & Qt::AlignLeft) != 0u) {
             xstart = spacing;
-        } else if (hAlign & Qt::AlignHCenter) {
+        } else if ((hAlign & Qt::AlignHCenter) != 0u) {
             xstart = (boundingBox.width() - fontSize.width()) / 2;
-        } else if (hAlign & Qt::AlignRight) {
+        } else if ((hAlign & Qt::AlignRight) != 0u) {
             xstart = boundingBox.right() - spacing - fontSize.width();
         } else {
             xstart = 0;
             Q_ASSERT(false);
         }
 
-        if (vAlign & Qt::AlignTop) {
+        if ((vAlign & Qt::AlignTop) != 0u) {
             ystart = spacing;
-        } else if (vAlign & Qt::AlignVCenter || align & Qt::AlignJustify) {
+        } else if (((vAlign & Qt::AlignVCenter) != 0u) || ((align & Qt::AlignJustify) != 0u)) {
             ystart = (boundingBox.height() - currentY) / 2;
-        } else if (vAlign & Qt::AlignBottom) {
+        } else if ((vAlign & Qt::AlignBottom) != 0u) {
             ystart = boundingBox.height() - currentY - spacing;
         } else {
             ystart = 0;
             Q_ASSERT(false);
         }
     } else {
-        if (vAlign & Qt::AlignTop) {
+        if ((vAlign & Qt::AlignTop) != 0u) {
             ystart = spacing;
-        } else if (vAlign & Qt::AlignVCenter) {
+        } else if ((vAlign & Qt::AlignVCenter) != 0u) {
             ystart = (boundingBox.height() - fontSize.height()) / 2;
-        } else if (vAlign & Qt::AlignBottom) {
+        } else if ((vAlign & Qt::AlignBottom) != 0u) {
             ystart = boundingBox.bottom() - spacing - fontSize.height();
         } else {
             ystart = 0;
             Q_ASSERT(false);
         }
 
-        if (hAlign & Qt::AlignLeft) {
+        if ((hAlign & Qt::AlignLeft) != 0u) {
             xstart = spacing;
-        } else if (hAlign & Qt::AlignHCenter || align & Qt::AlignJustify) {
+        } else if (((hAlign & Qt::AlignHCenter) != 0u) || ((align & Qt::AlignJustify) != 0u)) {
             xstart = (boundingBox.width() - currentX) / 2;
-        } else if (hAlign & Qt::AlignRight) {
+        } else if ((hAlign & Qt::AlignRight) != 0u) {
             xstart = boundingBox.right() - currentX - spacing;
         } else {
             xstart = 0;
@@ -331,7 +333,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     QVector<uint> charcodes = text.toUcs4();
     int len = charcodes.size();
     int charsPerLine = boundingBox.width() / fontSize.width();
-    int numLines = (len - 1) / charsPerLine + 1;
+    int numLines = ((len - 1) / charsPerLine) + 1;
 
     QPoint topLeft = boundingBox.topLeft();
     boundingBox.moveTopLeft(QPoint(0, 0));
@@ -339,7 +341,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     int xstep = 0;
     // AlignJustifx means the text should fill out the whole rect space
     // so we increase the step
-    if (align & Qt::AlignJustify) {
+    if ((align & Qt::AlignJustify) != 0u) {
         xstep = boundingBox.width() / len;
         if (fontSize.width() + spacing > xstep) {
             fontSize.setWidth(xstep - spacing);
@@ -349,7 +351,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     }
 
     if (fontSize.height() * numLines > boundingBox.height()) {
-        fontSize.setHeight(boundingBox.height() / numLines - spacing);
+        fontSize.setHeight((boundingBox.height() / numLines) - spacing);
     }
 
     int ystep = fontSize.height() + spacing;
@@ -407,11 +409,11 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
         FT_Vector delta;
         FT_UInt glyph_index = FT_Get_Char_Index(face, charcodes[i]);
         error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT | FT_LOAD_NO_BITMAP);
-        if (error) {
+        if (error != 0) {
             continue;
         }
 
-        if (useKerning && previous && glyph_index) {
+        if (useKerning && (previous != 0u) && (glyph_index != 0u)) {
             error = FT_Get_Kerning(face, previous, glyph_index, FT_KERNING_DEFAULT, &delta);
             currentX += delta.x >> 6;
         }
@@ -466,7 +468,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
             } else {
                 int mask = 0x80;
                 for (int x = 0; x < fontClippedCols; ++x) {
-                    if (*fontPtr & mask) {
+                    if ((*fontPtr & mask) != 0) {
                         *imagePtr = 255;
                     }
 
@@ -501,23 +503,24 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     Qt::Alignment hAlign = align & Qt::AlignHorizontal_Mask;
     Qt::Alignment vAlign = align & Qt::AlignVertical_Mask;
 
-    int xstart = 0, ystart = 0;
-    if (hAlign & Qt::AlignLeft) {
+    int xstart = 0;
+    int ystart = 0;
+    if ((hAlign & Qt::AlignLeft) != 0u) {
         xstart = spacing;
-    } else if (hAlign & Qt::AlignHCenter || align & Qt::AlignJustify) {
+    } else if (((hAlign & Qt::AlignHCenter) != 0u) || ((align & Qt::AlignJustify) != 0u)) {
         xstart = (boundingBox.width() - maxX) / 2;
-    } else if (hAlign & Qt::AlignRight) {
+    } else if ((hAlign & Qt::AlignRight) != 0u) {
         xstart = boundingBox.right() - maxX - spacing;
     } else {
         xstart = 0;
         Q_ASSERT(false);
     }
 
-    if (vAlign & Qt::AlignTop) {
+    if ((vAlign & Qt::AlignTop) != 0u) {
         ystart = spacing;
-    } else if (vAlign & Qt::AlignVCenter) {
+    } else if ((vAlign & Qt::AlignVCenter) != 0u) {
         ystart = (boundingBox.height() - maxY) / 2;
-    } else if (vAlign & Qt::AlignBottom) {
+    } else if ((vAlign & Qt::AlignBottom) != 0u) {
         ystart = boundingBox.height() - maxY - spacing;
     } else {
         ystart = 0;

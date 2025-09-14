@@ -260,7 +260,7 @@ bool AwaitExhaustedHegemony::isAvailable(const Player *player) const
     return canUse && TrickCard::isAvailable(player);
 }
 
-bool AwaitExhaustedHegemony::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
+bool AwaitExhaustedHegemony::targetFilter(const QList<const Player *> & /*targets*/, const Player *to_select, const Player *Self) const
 {
     return Self->willBeFriendWith(to_select);
 }
@@ -359,14 +359,14 @@ public:
         global = true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from == nullptr || !EquipSkill::equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
-            return QList<SkillInvokeDetail>();
+            return {};
 
         if (!isHegemonyGameMode(room->getMode()))
-            return QList<SkillInvokeDetail>();
+            return {};
 
         if (use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
@@ -381,10 +381,10 @@ public:
             return d;
         }
 
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
@@ -397,7 +397,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         //canshow?
         QStringList select;
@@ -444,7 +444,7 @@ public:
     {
     }
 
-    int getExtra(const Player *target, bool) const override
+    int getExtra(const Player *target, bool /*include_weapon*/) const override
     {
         foreach (const Player *p, target->getAliveSiblings()) {
             if (p->hasWeapon("SixSwords") && p->isFriendWith(target) && p->getMark("Equips_Nullified_to_Yourself") == 0)

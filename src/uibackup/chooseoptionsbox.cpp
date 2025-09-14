@@ -42,8 +42,8 @@ ChooseOptionsBox::ChooseOptionsBox()
 
 QRectF ChooseOptionsBox::boundingRect() const
 {
-    const int width = getButtonWidth() + outerBlankWidth * 2;
-    int height = topBlankWidth + options.size() * defaultButtonHeight + (options.size() - 1) * interval + bottomBlankWidth;
+    const int width = getButtonWidth() + (outerBlankWidth * 2);
+    int height = topBlankWidth + (options.size() * defaultButtonHeight) + ((options.size() - 1) * interval) + bottomBlankWidth;
 
     if (ServerInfo.OperationTimeout != 0)
         height += 12;
@@ -88,7 +88,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
                 } else if (element.startsWith("log:")) {
                     QStringList logs = element.split(":");
                     if (!logs.at(1).isEmpty()) {
-                        QString log = logs.at(1);
+                        const QString &log = logs.at(1);
                         text.replace("%log", log);
                     }
                 }
@@ -150,7 +150,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             progressBar->setTimerEnabled(true);
             progressBarItem = new QGraphicsProxyWidget(this);
             progressBarItem->setWidget(progressBar);
-            progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2, boundingRect().height() - 20);
+            progressBarItem->setPos(boundingRect().center().x() - (progressBarItem->boundingRect().width() / 2), boundingRect().height() - 20);
             connect(progressBar, &QSanCommandProgressBar::timedOut, this, &ChooseOptionsBox::reply);
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);

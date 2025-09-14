@@ -36,7 +36,7 @@ QRectF RectObject::boundingRect() const
     return m_boundingRect;
 }
 
-void RectObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void RectObject::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setPen(Qt::NoPen);
     painter->setBrush(m_brush);
@@ -74,7 +74,7 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
     generalPixmap->setTransformOriginPoint(generalPixmap->boundingRect().width() / 2, generalPixmap->boundingRect().height() / 2);
     generalPixmap->setPixmap(G_ROOM_SKIN.getPixmap(G_ROOM_SKIN.S_SKIN_KEY_LIGHTBOX, general_name, true, false));
     generalPixmap->setScale(0.3);
-    generalPixmap->setPos(-generalPixmap->boundingRect().width(), rect.height() / 2.5 - generalPixmap->boundingRect().height() / 2);
+    generalPixmap->setPos(-generalPixmap->boundingRect().width(), (rect.height() / 2.5) - (generalPixmap->boundingRect().height() / 2));
     generalPixmap->setZValue(0);
 
     flick = new RectObject(rect, Qt::white, this);
@@ -102,7 +102,7 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
 
     QPropertyAnimation *step1_2 = new QPropertyAnimation(generalPixmap, "x");
     step1_2->setStartValue(-generalPixmap->boundingRect().width());
-    step1_2->setEndValue(boundingRect().width() / 2.3 - generalPixmap->boundingRect().width() / 2);
+    step1_2->setEndValue((boundingRect().width() / 2.3) - (generalPixmap->boundingRect().width() / 2));
     step1_2->setDuration(600);
 
     QParallelAnimationGroup *step1 = new QParallelAnimationGroup;

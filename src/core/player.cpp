@@ -388,7 +388,8 @@ int Player::getAttackRange(bool include_weapon) const
     if (fixeddis > 0)
         return fixeddis;
 
-    int original_range = 1, weapon_range = 0;
+    int original_range = 1;
+    int weapon_range = 0;
 
     if (include_weapon) {
         const Weapon *card = qobject_cast<const Weapon *>(weapon->getRealCard());
@@ -543,7 +544,7 @@ QString Player::getGeneralName() const
     if (general != nullptr)
         return general->objectName();
     else
-        return QString();
+        return {};
 }
 
 void Player::setGeneral2Name(const QString &general_name)
@@ -561,7 +562,7 @@ QString Player::getGeneral2Name() const
     if (general2 != nullptr)
         return general2->objectName();
     else
-        return QString();
+        return {};
 }
 
 const General *Player::getGeneral2() const
@@ -975,7 +976,11 @@ void Player::removeEquip(WrappedCard *equip)
 bool Player::hasEquip(const Card *card) const
 {
     Q_ASSERT(card != nullptr);
-    int weapon_id = -1, armor_id = -1, def_id = -1, off_id = -1, tr_id = -1;
+    int weapon_id = -1;
+    int armor_id = -1;
+    int def_id = -1;
+    int off_id = -1;
+    int tr_id = -1;
     if (weapon != nullptr)
         weapon_id = weapon->getEffectiveId();
     if (armor != nullptr)
@@ -1076,7 +1081,7 @@ const EquipCard *Player::getEquip(int index) const
     return nullptr;
 }
 
-bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) const
+bool Player::hasWeapon(const QString &weapon_name, bool /*unused*/, bool ignore_preshow) const
 {
     if (getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
@@ -1092,7 +1097,7 @@ bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) co
     return real_weapon->objectName() == weapon_name || real_weapon->isKindOf(weapon_name.toStdString().c_str());
 }
 
-bool Player::hasArmorEffect(const QString &armor_name, bool) const
+bool Player::hasArmorEffect(const QString &armor_name, bool /*unused*/) const
 {
     if (!tag["Qinggang"].toStringList().isEmpty() || getMark("Armor_Nullified") > 0 || getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
@@ -1108,7 +1113,7 @@ bool Player::hasArmorEffect(const QString &armor_name, bool) const
     return real_armor->objectName() == armor_name || real_armor->isKindOf(armor_name.toStdString().c_str());
 }
 
-bool Player::hasTreasure(const QString &treasure_name, bool) const
+bool Player::hasTreasure(const QString &treasure_name, bool /*unused*/) const
 {
     if (getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
@@ -1176,7 +1181,9 @@ int Player::getMaxCards(const QString &except) const
     int origin = Sanguosha->correctMaxCards(this, true, except);
     if (origin == 0)
         origin = qMax(getHp(), 0);
-    int rule = 0, total = 0, extra = 0;
+    int rule = 0;
+    int total = 0;
+    int extra = 0;
     if (Config.MaxHpScheme == 3 && (general2 != nullptr)) {
         total = general->getMaxHp() + general2->getMaxHp();
         if (total % 2 != 0 && getMark("AwakenLostMaxHp") == 0)
@@ -1435,7 +1442,7 @@ QString Player::getPileName(int card_id) const
             return pile_name;
     }
 
-    return QString();
+    return {};
 }
 
 bool Player::pileOpen(const QString &pile_name, const QString &player) const
@@ -2224,7 +2231,8 @@ QStringList Player::disableShow(bool head) const
 
 bool Player::canShowGeneral(const QString &flags) const
 {
-    bool head = true, deputy = true;
+    bool head = true;
+    bool deputy = true;
     foreach (const QString &dis_str, disable_show) {
         QStringList dis_list = dis_str.split(',');
         if (dis_list.at(0).contains("h"))

@@ -21,7 +21,7 @@ bool ExpPattern::match(const Player *player, const Card *card) const
 // 2nd patt means the card suit, and ',' means more than one options.
 // 3rd part means the card number, and ',' means more than one options,
 // the number uses '~' to make a scale for valid expressions
-bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) const
+bool ExpPattern::matchOne(const Player *player, const Card *card, const QString &exp) const
 {
     QStringList factors = exp.split('|');
 
@@ -98,7 +98,8 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
         bool isInt = false;
         if (number.contains('~')) {
             QStringList params = number.split('~');
-            int from = 0, to = 0;
+            int from = 0;
+            int to = 0;
             if (params.at(0).size() == 0)
                 from = 1;
             else
@@ -129,7 +130,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     else if (place == "equipped" && player->hasEquip(card)) checkpoint = true;
     else if (place == "hand" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) checkpoint = true;*/
     checkpoint = false;
-    QString place = factors.at(3);
+    const QString &place = factors.at(3);
     if ((player == nullptr) || place == ".")
         checkpoint = true;
     if (!checkpoint) {

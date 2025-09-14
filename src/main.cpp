@@ -37,7 +37,8 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    QTranslator qt_translator, translator;
+    QTranslator qt_translator;
+    QTranslator translator;
     bool qmLoadSuccess = qt_translator.load("qt_zh_CN.qm");
     if (!qmLoadSuccess)
         qDebug() << "failed to load qt_zh_CN.qm";

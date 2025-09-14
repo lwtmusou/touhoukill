@@ -76,7 +76,7 @@ public:
     QList<const Package *> getPackages() const;
 
     const General *getGeneral(const QString &name) const;
-    const QStringList getGenerals() const;
+    QStringList getGenerals() const;
     int getGeneralCount(bool include_banned = false) const;
     const Skill *getSkill(const QString &skill_name) const;
     const Skill *getSkill(const EquipCard *card) const;
@@ -114,7 +114,7 @@ public:
     const ViewHasSkill *ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow = false) const;
     int correctDistance(const Player *from, const Player *to) const;
     int correctMaxCards(const Player *target, bool fixed = false, const QString &except = QString()) const;
-    int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
+    int correctCardTarget(TargetModSkill::ModType type, const Player *from, const Card *card) const;
     int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
     void registerRoom(QObject *room);
@@ -131,7 +131,7 @@ public:
     QStringList LordBGMConvertList;
     QStringList LordBackdropConvertList;
     QStringList LatestGeneralList;
-    int operationTimeRate(QSanProtocol::CommandType command, QVariant msg);
+    int operationTimeRate(QSanProtocol::CommandType command, const QVariant &msg);
 
     QString GetMappedKingdom(const QString &role); //hegemony
 

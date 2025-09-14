@@ -14,6 +14,7 @@
 #include <QPropertyAnimation>
 #include <QPushButton>
 #include <QTextDocument>
+#include <utility>
 
 using namespace QSanProtocol;
 
@@ -22,7 +23,7 @@ QList<CardItem *> GenericCardContainer::cloneCardItems(QList<int> card_ids)
     return _createCards(card_ids);
 }
 
-QList<CardItem *> GenericCardContainer::_createCards(QList<int> card_ids)
+QList<CardItem *> GenericCardContainer::_createCards(const QList<int> &card_ids)
 {
     QList<CardItem *> result;
     foreach (int card_id, card_ids) {
@@ -71,11 +72,11 @@ void GenericCardContainer::_disperseCards(QList<CardItem *> &cards, QRectF fillR
         CardItem *card = cards[i];
         double newX = 0;
         if (align == Qt::AlignHCenter)
-            newX = fillRegion.center().x() + step * (i - (numCards - 1) / 2.0);
+            newX = fillRegion.center().x() + (step * (i - (numCards - 1) / 2.0));
         else if (align == Qt::AlignLeft)
-            newX = fillRegion.left() + step * i + card->boundingRect().width() / 2.0;
+            newX = fillRegion.left() + (step * i) + (card->boundingRect().width() / 2.0);
         else if (align == Qt::AlignRight)
-            newX = fillRegion.right() + step * (i - numCards) + card->boundingRect().width() / 2.0;
+            newX = fillRegion.right() + (step * (i - numCards)) + (card->boundingRect().width() / 2.0);
         else
             continue;
         QPointF newPos = QPointF(newX, fillRegion.center().y());
@@ -425,7 +426,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     if (pile.size() == 0) {
         if (_m_privatePiles.contains(pile_name)) {
             delete _m_privatePiles[pile_name];
-            _m_privatePiles[pile_name] = NULL;
+            _m_privatePiles[pile_name] = nullptr;
             _m_privatePiles.remove(pile_name);
         }
     } else {
@@ -471,7 +472,9 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     QPoint start = (ServerInfo.Enable2ndGeneral && getPlayer() == Self) ? _m_layout->m_privatePileStartPosDouble : _m_layout->m_privatePileStartPos;
     QPoint step = _m_layout->m_privatePileStep;
     QSize size = _m_layout->m_privatePileButtonSize;
-    QList<QGraphicsProxyWidget *> widgets_t, widgets_p, widgets = _m_privatePiles.values();
+    QList<QGraphicsProxyWidget *> widgets_t;
+    QList<QGraphicsProxyWidget *> widgets_p;
+    QList<QGraphicsProxyWidget *> widgets = _m_privatePiles.values();
     foreach (QGraphicsProxyWidget *widget, widgets) {
         if (widget->objectName() == treasure_name)
             widgets_t << widget;
@@ -544,9 +547,9 @@ void PlayerCardContainer::updateMarks()
             _m_markItem->setPos(newRect.topLeft());
     } else {
         if (ServerInfo.Enable2ndGeneral)
-            _m_markItem->setPos(newRect.left() - 150, newRect.top() + newRect.height() / 2);
+            _m_markItem->setPos(newRect.left() - 150, newRect.top() + (newRect.height() / 2));
         else
-            _m_markItem->setPos(newRect.left(), newRect.top() + newRect.height() / 2);
+            _m_markItem->setPos(newRect.left(), newRect.top() + (newRect.height() / 2));
     }
 }
 
@@ -1311,7 +1314,7 @@ void PlayerCardContainer::revivePlayer()
     refresh();
 }
 
-void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *)
+void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
 }
 
@@ -1362,7 +1365,7 @@ void PlayerCardContainer::onRemovedChanged()
 void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem *item = getMouseClickReceiver();
-    if (item != nullptr && item->isUnderMouse() && isEnabled() && ((flags() & QGraphicsItem::ItemIsSelectable) != 0u)) {
+    if (item != nullptr && item->isUnderMouse() && isEnabled() && ((flags() & QGraphicsItem::ItemIsSelectable) != 0U)) {
         if (event->button() == Qt::RightButton)
             setSelected(false);
         else if (event->button() == Qt::LeftButton) {
@@ -1375,7 +1378,7 @@ void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void PlayerCardContainer::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
+void PlayerCardContainer::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     if (Config.EnableDoubleClick && _m_maxVotes <= 1)
         RoomSceneInstance->doOkButton();

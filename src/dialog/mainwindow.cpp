@@ -133,7 +133,7 @@ void MainWindow::restoreFromConfig()
     ui->actionNever_nullify_my_trick->setEnabled(false);
 }
 
-void MainWindow::closeEvent(QCloseEvent *)
+void MainWindow::closeEvent(QCloseEvent * /*event*/)
 {
     Config.setValue("WindowWidth", width());
     Config.setValue("WindowHeight", height());

@@ -43,7 +43,7 @@ public:
     void throwAllCards();
     void bury();
     void throwAllMarks(bool visible_only = true);
-    void clearOnePrivatePile(QString pile_name);
+    void clearOnePrivatePile(const QString &pile_name);
     void clearPrivatePiles();
     void drawCards(int n, const QString &reason = QString());
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant(), const QString &prompt = QString());
@@ -116,12 +116,12 @@ public:
 
     void addToPile(const QString &pile_name, const Card *card, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     void addToPile(const QString &pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    void addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    void addToShownHandCards(QList<int> card_ids);
-    void removeShownHandCards(QList<int> card_ids, bool sendLog = false, bool moveFromHand = false);
-    void addBrokenEquips(QList<int> card_ids);
-    void removeBrokenEquips(QList<int> card_ids, bool sendLog = true, bool moveFromEquip = false);
+    void addToPile(const QString &pile_name, const QList<int> &card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    void addToPile(const QString &pile_name, const QList<int> &card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    void addToShownHandCards(const QList<int> &card_ids);
+    void removeShownHandCards(const QList<int> &card_ids, bool sendLog = false, bool moveFromHand = false);
+    void addBrokenEquips(const QList<int> &card_ids);
+    void removeBrokenEquips(const QList<int> &card_ids, bool sendLog = true, bool moveFromEquip = false);
     void addHiddenGenerals(const QStringList &generals);
     void removeHiddenGenerals(const QStringList &generals);
     void gainAnExtraTurn();
@@ -204,7 +204,7 @@ public:
 
     bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
     bool inFormationRalation(ServerPlayer *teammate) const;
-    void summonFriends(const QString type);
+    void summonFriends(const QString &type);
 
 protected:
     //Synchronization helpers

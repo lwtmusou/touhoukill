@@ -141,7 +141,7 @@ QString DamageStruct::getReason() const
         return reason;
     else if (card != nullptr)
         return card->objectName();
-    return QString();
+    return {};
 }
 
 CardEffectStruct::CardEffectStruct()
@@ -370,7 +370,7 @@ void CardUseStruct::parse(const QString &str, Room *room)
     QStringList words = str.split("->", Qt::KeepEmptyParts);
     Q_ASSERT(words.length() == 1 || words.length() == 2);
 
-    QString card_str = words.at(0);
+    const QString &card_str = words.at(0);
     QString target_str = ".";
 
     if (words.length() == 2 && !words.at(1).isEmpty())
@@ -388,7 +388,7 @@ void CardUseStruct::parse(const QString &str, Room *room)
 QString CardUseStruct::toString() const
 {
     if (card == nullptr)
-        return QString();
+        return {};
 
     QStringList l;
     l << card->toString();
@@ -510,7 +510,7 @@ bool SkillInvokeDetail::preferredTargetLess(const SkillInvokeDetail &arg2) const
 QVariant SkillInvokeDetail::toVariant() const
 {
     if (!isValid())
-        return QVariant();
+        return {};
 
     JsonObject ob;
     if (skill != nullptr)

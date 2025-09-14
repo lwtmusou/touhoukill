@@ -120,7 +120,7 @@ QString Card::getNumberString() const
         return "10";
     else {
         static const char *number_string = "-A23456789-JQK";
-        return QString(number_string[number]);
+        return {number_string[number]};
     }
 }
 
@@ -295,7 +295,7 @@ QString Card::getPackage() const
     if (parent() != nullptr)
         return parent()->objectName();
     else
-        return QString();
+        return {};
 }
 
 QString Card::getFullName(bool include_suit) const
@@ -345,7 +345,7 @@ QString Card::getLogName() const
 
 QString Card::getCommonEffectName() const
 {
-    return QString();
+    return {};
 }
 
 QString Card::getName() const
@@ -450,7 +450,9 @@ const Card *Card::Parse(const QString &str)
         QRegularExpression ex_pattern(QRegularExpression::anchoredPattern("@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?"));
 
         QStringList texts;
-        QString card_name, card_suit, card_number;
+        QString card_name;
+        QString card_suit;
+        QString card_number;
         QStringList subcard_ids;
         QString subcard_str;
         QString user_string;
@@ -530,11 +532,11 @@ const Card *Card::Parse(const QString &str)
             return nullptr;
 
         QStringList texts = m.capturedTexts();
-        QString card_name = texts.at(1);
-        QString m_skillName = texts.at(2);
-        QString suit_string = texts.at(3);
-        QString number_string = texts.at(4);
-        QString subcard_str = texts.at(5);
+        const QString &card_name = texts.at(1);
+        const QString &m_skillName = texts.at(2);
+        const QString &suit_string = texts.at(3);
+        const QString &number_string = texts.at(4);
+        const QString &subcard_str = texts.at(5);
         QStringList subcard_ids;
         if (subcard_str != ".")
             subcard_ids = subcard_str.split("+");
@@ -651,7 +653,7 @@ bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_s
     return canSelect;
 }
 
-void Card::doPreAction(Room *, const CardUseStruct &) const
+void Card::doPreAction(Room * /*unused*/, const CardUseStruct & /*unused*/) const
 {
 }
 
@@ -761,11 +763,11 @@ void Card::use(Room *room, const CardUseStruct &card_use) const
     }
 }
 
-void Card::onEffect(const CardEffectStruct &) const
+void Card::onEffect(const CardEffectStruct & /*unused*/) const
 {
 }
 
-bool Card::isCancelable(const CardEffectStruct &) const
+bool Card::isCancelable(const CardEffectStruct & /*unused*/) const
 {
     return false;
 }
@@ -808,17 +810,17 @@ bool Card::isAvailable(const Player *player) const
     return !player->isCardLimited(this, handling_method) || (can_recast && !player->isCardLimited(this, Card::MethodRecast));
 }
 
-bool Card::ignoreCardValidty(const Player *) const
+bool Card::ignoreCardValidty(const Player * /*unused*/) const
 {
     return false;
 }
 
-const Card *Card::validate(CardUseStruct &) const
+const Card *Card::validate(CardUseStruct & /*unused*/) const
 {
     return this;
 }
 
-const Card *Card::validateInResponse(ServerPlayer *) const
+const Card *Card::validateInResponse(ServerPlayer * /*unused*/) const
 {
     return this;
 }
@@ -1001,7 +1003,7 @@ void SkillCard::onUse(Room *room, const CardUseStruct &_use) const
     use(room, card_use);
 }
 
-void SkillCard::use(Room *, const CardUseStruct &card_use) const
+void SkillCard::use(Room * /*room*/, const CardUseStruct &card_use) const
 {
     ServerPlayer *source = card_use.from;
     const QList<ServerPlayer *> &targets = card_use.to;
@@ -1044,7 +1046,7 @@ QString DummyCard::getSubtype() const
     return "dummy_card";
 }
 
-QString DummyCard::toString(bool) const
+QString DummyCard::toString(bool /*hidden*/) const
 {
     return "$" + subcardString();
 }

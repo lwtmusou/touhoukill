@@ -50,7 +50,7 @@ void IndicatorItem::setFinish(const QPointF &finish)
     update();
 }
 
-void IndicatorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void IndicatorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setRenderHint(QPainter::Antialiasing);
 

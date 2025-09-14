@@ -16,7 +16,7 @@ public:
     ~BubbleChatBox() override;
 
     QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) override;
     QPainterPath shape() const override;
 
     void setText(const QString &text);

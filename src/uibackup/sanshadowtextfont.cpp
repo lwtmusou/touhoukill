@@ -83,7 +83,7 @@ bool SanShadowTextFont::_paintTextHelper(const QRect &pos, const Qt::Alignment &
 
     // @todo: currently, we have not considered m_shadowOffset yet
     QPainter imagePainter(&image);
-    SanSimpleTextFont::paintText(&imagePainter, QRect(m_shadowRadius, m_shadowRadius, pos.width() - m_shadowRadius * 2, pos.height() - m_shadowRadius * 2), align, text);
+    SanSimpleTextFont::paintText(&imagePainter, QRect(m_shadowRadius, m_shadowRadius, pos.width() - (m_shadowRadius * 2), pos.height() - (m_shadowRadius * 2)), align, text);
 
     if (m_shadowRadius < 0 || (m_shadowRadius == 0 && m_shadowOffset.x() == 0 && m_shadowOffset.y() == 0)) {
         pixmap = QPixmap::fromImage(image);

@@ -15,7 +15,7 @@ public:
         events << EventPhaseStart;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *player = data.value<ServerPlayer *>();
@@ -30,7 +30,7 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Start) {
@@ -41,7 +41,7 @@ public:
         return true;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Start) {
@@ -66,7 +66,7 @@ public:
         events << TargetConfirmed;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
@@ -79,7 +79,7 @@ public:
         return d;
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room * /*room*/, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         use.nullified_list << invoke->invoker->objectName();
@@ -147,7 +147,7 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         if (invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner))) {
             room->broadcastSkillInvoke(objectName());
@@ -177,7 +177,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         int moyiId = invoke->invoker->tag["moyi_id"].toInt();
         invoke->invoker->tag.remove("moyi_id");
@@ -189,7 +189,7 @@ public:
 class LeitingVS : public ZeroCardViewAsSkill
 {
 public:
-    LeitingVS(const QString &base)
+    explicit LeitingVS(const QString &base)
         : ZeroCardViewAsSkill(base)
     {
         response_pattern = "@@leiting!";
@@ -213,7 +213,7 @@ public:
         events = {EventPhaseChanging, CardUsed};
     }
 
-    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const override
+    void record(TriggerEvent triggerEvent, Room * /*room*/, QVariant &data) const override
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -237,7 +237,7 @@ public:
         return {};
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         QList<ServerPlayer *> targets;
 
@@ -257,7 +257,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         ServerPlayer *target = invoke->targets.first();
         QString leitingLastChoice = "unknown";
@@ -296,7 +296,7 @@ public:
                 target->drawCards(1);
                 room->damage(DamageStruct("leiting", nullptr, target, 1, DamageStruct::Thunder));
             } else if (choice == "choice2") {
-                if (!room->askForUseCard(target, "@@leiting!", "leiting-usethunderslash", 0)) {
+                if (room->askForUseCard(target, "@@leiting!", "leiting-usethunderslash", 0) == nullptr) {
                     CardUseStruct use;
                     ThunderSlash *ts = new ThunderSlash(Card::SuitToBeDecided, -1);
                     ts->setSkillName("_" + objectName());
@@ -403,7 +403,8 @@ public:
         QList<int> h2 = p2->handCards();
 
         QList<CardsMoveStruct> moves;
-        CardsMoveStruct move1, move2;
+        CardsMoveStruct move1;
+        CardsMoveStruct move2;
         move1.card_ids = h1;
         move1.to = p2;
         move1.to_place = Player::PlaceHand;
@@ -415,7 +416,7 @@ public:
         room->moveCardsAtomic(moves, false);
     }
 
-    bool cost(TriggerEvent e, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent e, Room * /*room*/, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (e == CardFinished)
             return true;
@@ -453,7 +454,7 @@ public:
         events << EnterDying;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *r, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *r, const QVariant &data) const override
     {
         DyingStruct dying = data.value<DyingStruct>();
         if (dying.who->hasSkill(this) && dying.who->isAlive()) {
@@ -463,10 +464,10 @@ public:
             }
         }
 
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         QList<ServerPlayer *> ts;
         DyingStruct dying = data.value<DyingStruct>();
@@ -484,7 +485,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         ServerPlayer *target = invoke->targets.first();
         QList<int> ids;
@@ -511,7 +512,7 @@ public:
         events << Damaged;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.to->hasSkill(this) && damage.to->isAlive()) {
@@ -520,10 +521,10 @@ public:
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
             }
         }
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         ServerPlayer *player = invoke->invoker;
         QList<ServerPlayer *> listt;
@@ -539,7 +540,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
         room->obtainCard(invoke->invoker, id, false);
@@ -564,7 +565,7 @@ public:
         return r;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> d;
         CardUseStruct use = data.value<CardUseStruct>();
@@ -585,7 +586,7 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         ServerPlayer *benben = invoke->invoker;
         CardUseStruct use = data.value<CardUseStruct>();
@@ -608,7 +609,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         use.to << invoke->targets.first();
@@ -645,7 +646,7 @@ public:
         pattern = ".";
     }
 
-    int getExtraTargetNum(const Player *, const Card *card) const override
+    int getExtraTargetNum(const Player * /*from*/, const Card *card) const override
     {
         if (card->hasFlag("wuchang") || card->hasFlag("wuchang2"))
             return 1000;
@@ -653,7 +654,7 @@ public:
         return 0;
     }
 
-    int getDistanceLimit(const Player *, const Card *card) const override
+    int getDistanceLimit(const Player * /*from*/, const Card *card) const override
     {
         if (card->hasFlag("wuchang2"))
             return 1000;
@@ -671,7 +672,7 @@ public:
         events << Damage;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         if ((damage.from != nullptr) && damage.from->isAlive() && damage.from->hasSkill(this)) {
@@ -680,10 +681,10 @@ public:
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
             }
         }
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         ServerPlayer *player = invoke->invoker;
         QList<ServerPlayer *> listt;
@@ -699,7 +700,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
         room->obtainCard(invoke->invoker, id, false);
@@ -716,27 +717,27 @@ public:
         events << CardAsked;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
     {
         ServerPlayer *current = room->getCurrent();
         CardAskedStruct s = data.value<CardAskedStruct>();
         if ((current == nullptr) || !current->isAlive() || current == s.player || !s.player->hasSkill(this))
-            return QList<SkillInvokeDetail>();
+            return {};
 
         Jink jink(Card::NoSuit, 0);
         const CardPattern *cardPattern = Sanguosha->getPattern(s.pattern);
         if (cardPattern != nullptr && cardPattern->match(s.player, &jink) && !s.player->isCardLimited(&jink, s.method))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player, nullptr, false, current);
 
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room * /*room*/, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         return invoke->invoker->askForSkillInvoke(objectName(), "throw:" + invoke->preferredTarget->objectName());
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         const Card *card = room->askForCard(invoke->targets.first(), ".|red|.|hand", "@juwang:" + invoke->invoker->objectName(), data);
@@ -755,26 +756,26 @@ public:
         events << CardAsked;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
     {
         CardAskedStruct s = data.value<CardAskedStruct>();
         if (s.pattern == "jink" && s.player->hasSkill(this) && s.player->getEquips().length() > 0) {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
             if (s.player->isCardLimited(jink, s.method))
-                return QList<SkillInvokeDetail>();
+                return {};
 
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player);
         }
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room * /*room*/, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         return invoke->invoker->askForSkillInvoke(objectName(), data);
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         ServerPlayer *player = invoke->invoker;
         QList<int> equips;
@@ -796,9 +797,7 @@ public:
     }
 };
 
-YuanfeiCard::YuanfeiCard()
-{
-}
+YuanfeiCard::YuanfeiCard() = default;
 
 bool YuanfeiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
@@ -923,17 +922,17 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
     {
         if (triggerEvent != EventPhaseStart)
-            return QList<SkillInvokeDetail>();
+            return {};
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Finish && player->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         invoke->invoker->drawCards(1);
         if (!invoke->invoker->isKongcheng()) {
@@ -1009,7 +1008,7 @@ public:
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() != Player::Finish)
-                return QList<SkillInvokeDetail>();
+                return {};
 
             bool hasPeach = false;
             QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
@@ -1020,7 +1019,7 @@ public:
                 }
             }
             if (!hasPeach)
-                return QList<SkillInvokeDetail>();
+                return {};
 
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
@@ -1029,15 +1028,15 @@ public:
             }
             return d;
         }
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room * /*room*/, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         return invoke->invoker->askForSkillInvoke(objectName(), data);
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         ServerPlayer *source = invoke->invoker;
         QList<int> temp_ids;
@@ -1126,7 +1125,7 @@ public:
         global = true;
     }
 
-    void record(TriggerEvent e, Room *, QVariant &data) const override
+    void record(TriggerEvent e, Room * /*room*/, QVariant &data) const override
     {
         if (e == SlashHit) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -1147,7 +1146,7 @@ public:
         events = {PostCardEffected};
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if (effect.card->isKindOf("BasicCard") || effect.card->isNDTrick()) {
@@ -1162,7 +1161,7 @@ public:
         return {};
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent /*triggerEvent*/, Room * /*room*/, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         QString prompt = "target2";
         if (!invoke->targets.isEmpty())
@@ -1172,7 +1171,7 @@ public:
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         if (!invoke->targets.isEmpty()) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
@@ -1242,7 +1241,7 @@ public:
         return TriggerSkill::cost(triggerEvent, room, invoke, data);
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
     {
         if (triggerEvent == Damage) {
             int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "ej", objectName());

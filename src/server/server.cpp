@@ -132,7 +132,7 @@ void Server::processRequest(const char *request)
                 emit server_message(tr("unimplemented operation: %1").arg(ps.first()));
                 messageBodyToSend = "OPERATION_NOT_IMPLEMENTED";
             } else if (ps.first() == "getwinners") {
-                QString tableName = ps.last();
+                const QString &tableName = ps.last();
                 getWinnersTableFile(socket, tableName);
                 return;
             } else {

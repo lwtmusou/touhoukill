@@ -78,7 +78,7 @@ void SanSimpleTextFont::paintText(QPainter *const painter, const QRect &pos, con
 
     QSize actualSize = m_fontSize;
     QRect actualRect = pos;
-    if ((align & Qt::TextWrapAnywhere) && !m_vertical) {
+    if (((align & Qt::TextWrapAnywhere) != 0u) && !m_vertical) {
         SanFreeTypeFont::getInstance()->paintStringMultiLine(painter, text, m_fontFace, m_color, actualSize, m_spacing, m_weight, actualRect, align);
     } else {
         SanFreeTypeFont::getInstance()->paintString(painter, text, m_fontFace, m_color, actualSize, m_spacing, m_weight, actualRect, m_vertical ? Qt::Vertical : Qt::Horizontal,

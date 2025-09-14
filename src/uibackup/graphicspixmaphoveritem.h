@@ -21,16 +21,16 @@ public:
         return (0 == m_timer);
     }
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget * /*widget*/) override;
 
 public slots:
     void startChangeHeroSkinAnimation(const QString &generalName);
 
 protected:
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent * /*event*/) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent * /*event*/) override;
 
-    void timerEvent(QTimerEvent *) override;
+    void timerEvent(QTimerEvent * /*event*/) override;
 
 private:
     bool isPrimaryAvartarItem() const;

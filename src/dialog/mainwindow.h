@@ -48,7 +48,7 @@ public:
     ~MainWindow() override;
 
 protected:
-    void closeEvent(QCloseEvent *) override;
+    void closeEvent(QCloseEvent * /*event*/) override;
 
 private:
     Ui::MainWindow *ui;

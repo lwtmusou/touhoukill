@@ -39,7 +39,7 @@ public:
     void view(const ClientPlayer *player);
     QRectF boundingRect() const override;
     ClientPlayer *m_currentPlayer;
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override;
+    void paint(QPainter * /*painter*/, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) override;
     bool retained();
 
 public slots:
@@ -85,7 +85,7 @@ public:
     void reply();
 
 public slots:
-    void doGuanxing(const QList<int> &card_ids, bool up_only, QString skillName);
+    void doGuanxing(const QList<int> &card_ids, bool up_only, const QString &skillName);
     void adjust();
 
 private:

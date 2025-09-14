@@ -37,7 +37,7 @@ public:
 protected:
     // @return Whether the card items should be destroyed after animation
     virtual bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) = 0;
-    QList<CardItem *> _createCards(QList<int> card_ids);
+    QList<CardItem *> _createCards(const QList<int> &card_ids);
     CardItem *_createCard(int card_id);
     void _disperseCards(QList<CardItem *> &cards, QRectF fillRegion, Qt::Alignment align, bool useHomePos, bool keepOrder);
     void _playMoveCardsAnimation(QList<CardItem *> &cards, bool destroyCards);

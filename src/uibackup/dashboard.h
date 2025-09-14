@@ -70,7 +70,7 @@ public:
     QSanSkillButton *addSkillButton(const QString &skillName, const bool &head = true);
     bool isAvatarUnderMouse();
 
-    void highlightEquip(QString skillName, bool highlight);
+    void highlightEquip(const QString &skillName, bool highlight);
 
     void setTrust(bool trust);
     void killPlayer() override;

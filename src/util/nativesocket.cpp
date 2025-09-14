@@ -73,7 +73,7 @@ void NativeClientSocket::init()
 void NativeClientSocket::connectToHost()
 {
     QString address = "127.0.0.1";
-    ushort port = 9527u;
+    ushort port = 9527U;
 
     QUrl hostUrl(Config.HostAddress);
     if (hostUrl.scheme() == "qths") {

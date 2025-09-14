@@ -341,7 +341,7 @@ class BattleArraySkill : public TriggerSkill
     Q_OBJECT
 
 public:
-    BattleArraySkill(const QString &name, const QString arrayType); //
+    BattleArraySkill(const QString &name, const QString &arrayType); //
     //virtual QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
     //virtual bool triggerable(const ServerPlayer *player) const;
 

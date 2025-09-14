@@ -67,7 +67,7 @@ void RecAnalysis::initialize(const QString &dir)
                         m_recordPackages << Sanguosha->translate(package->objectName());
                 }
 
-                QString flags = texts.at(6);
+                const QString &flags = texts.at(6);
                 if (flags.contains("R"))
                     m_recordServerOptions << tr("RandomSeats");
                 if (flags.contains("C"))

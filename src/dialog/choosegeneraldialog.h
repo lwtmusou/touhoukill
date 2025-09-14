@@ -18,7 +18,7 @@ public:
     explicit OptionButton(const QString &icon_path, const QString &caption = "", QWidget *parent = nullptr);
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent *) override;
+    void mouseDoubleClickEvent(QMouseEvent * /*event*/) override;
 
 signals:
     void double_clicked();

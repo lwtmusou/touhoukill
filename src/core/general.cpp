@@ -164,7 +164,7 @@ QString General::getPackage() const
     if (p != nullptr)
         return p->objectName();
     else
-        return QString(); // avoid null pointer exception;
+        return {}; // avoid null pointer exception;
 }
 
 QString General::getSkillDescription(bool include_name, bool yellow) const

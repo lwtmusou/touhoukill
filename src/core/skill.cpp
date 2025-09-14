@@ -50,7 +50,7 @@ QString Skill::getDescription(bool yellow, bool addHegemony) const
     if (normal_game && des_src.startsWith(":"))
         des_src = Sanguosha->translate(":" + objectName());
     if (des_src.startsWith(":"))
-        return QString();
+        return {};
     QString desc = QString("<font color=%1>%2</font>").arg((yellow ? "#FFFF33" : "#FF0080"), des_src);
     //if (isHegemonyGameMode(ServerInfo.GameMode) && !canPreshow())
     if (addHegemony && !canPreshow())
@@ -71,7 +71,7 @@ bool Skill::isVisible() const
     return !objectName().startsWith("#");
 }
 
-int Skill::getEffectIndex(const ServerPlayer *, const Card *) const
+int Skill::getEffectIndex(const ServerPlayer * /*unused*/, const Card * /*unused*/) const
 {
     return -1;
 }
@@ -201,19 +201,19 @@ bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReaso
     }
 }
 
-bool ViewAsSkill::isEnabledAtPlay(const Player *) const
+bool ViewAsSkill::isEnabledAtPlay(const Player * /*unused*/) const
 {
     return response_pattern.isEmpty();
 }
 
-bool ViewAsSkill::isEnabledAtResponse(const Player *, const QString &pattern) const
+bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, const QString &pattern) const
 {
     if (!response_pattern.isEmpty())
         return pattern == response_pattern;
     return false;
 }
 
-bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer *) const
+bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer * /*unused*/) const
 {
     return false;
 }
@@ -275,7 +275,7 @@ const Card *ZeroCardViewAsSkill::viewAs(const QList<const Card *> &cards) const
         return nullptr;
 }
 
-bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> &, const Card *) const
+bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> & /*selected*/, const Card * /*to_select*/) const
 {
     return false;
 }
@@ -345,16 +345,16 @@ int TriggerSkill::getPriority() const
     return 2;
 }
 
-void TriggerSkill::record(TriggerEvent, Room *, QVariant &) const
+void TriggerSkill::record(TriggerEvent /*unused*/, Room * /*unused*/, QVariant & /*unused*/) const
 {
 }
 
-QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, const QVariant &) const
+QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent /*unused*/, const Room * /*unused*/, const QVariant & /*unused*/) const
 {
-    return QList<SkillInvokeDetail>();
+    return {};
 }
 
-bool TriggerSkill::cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+bool TriggerSkill::cost(TriggerEvent /*unused*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
     if (invoke->isCompulsory) { //for hegemony_mode or reimu_god
         if (invoke->owner == nullptr || invoke->owner != invoke->invoker || frequency == Eternal)
@@ -385,7 +385,7 @@ bool TriggerSkill::cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDeta
     return false;
 }
 
-bool TriggerSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
+bool TriggerSkill::effect(TriggerEvent /*unused*/, Room * /*unused*/, QSharedPointer<SkillInvokeDetail> /*unused*/, QVariant & /*unused*/) const
 {
     return false;
 }
@@ -396,18 +396,18 @@ MasochismSkill::MasochismSkill(const QString &name)
     events << Damaged;
 }
 
-QList<SkillInvokeDetail> MasochismSkill::triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+QList<SkillInvokeDetail> MasochismSkill::triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const
 {
     DamageStruct damage = data.value<DamageStruct>();
     return triggerable(room, damage);
 }
 
-QList<SkillInvokeDetail> MasochismSkill::triggerable(const Room *, const DamageStruct &) const
+QList<SkillInvokeDetail> MasochismSkill::triggerable(const Room * /*unused*/, const DamageStruct & /*unused*/) const
 {
-    return QList<SkillInvokeDetail>();
+    return {};
 }
 
-bool MasochismSkill::effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+bool MasochismSkill::effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
     DamageStruct damage = data.value<DamageStruct>();
     onDamaged(room, invoke, damage);
@@ -421,18 +421,18 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
     events << EventPhaseStart;
 }
 
-bool PhaseChangeSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
+bool PhaseChangeSkill::effect(TriggerEvent /*triggerEvent*/, Room * /*room*/, QSharedPointer<SkillInvokeDetail> /*invoke*/, QVariant &data) const
 {
     ServerPlayer *player = data.value<ServerPlayer *>();
     return onPhaseChange(player);
 }
 
-int MaxCardsSkill::getExtra(const Player *) const
+int MaxCardsSkill::getExtra(const Player * /*unused*/) const
 {
     return 0;
 }
 
-int MaxCardsSkill::getFixed(const Player *) const
+int MaxCardsSkill::getFixed(const Player * /*unused*/) const
 {
     return -1;
 }
@@ -500,17 +500,17 @@ QString TargetModSkill::getPattern() const
     return pattern;
 }
 
-int TargetModSkill::getResidueNum(const Player *, const Card *) const
+int TargetModSkill::getResidueNum(const Player * /*unused*/, const Card * /*unused*/) const
 {
     return 0;
 }
 
-int TargetModSkill::getDistanceLimit(const Player *, const Card *) const
+int TargetModSkill::getDistanceLimit(const Player * /*unused*/, const Card * /*unused*/) const
 {
     return 0;
 }
 
-int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const
+int TargetModSkill::getExtraTargetNum(const Player * /*unused*/, const Card * /*unused*/) const
 {
     return 0;
 }
@@ -526,12 +526,12 @@ const ViewAsSkill *AttackRangeSkill::getViewAsSkill() const
     return view_as_skill;
 }
 
-int AttackRangeSkill::getExtra(const Player *, bool) const
+int AttackRangeSkill::getExtra(const Player * /*unused*/, bool /*unused*/) const
 {
     return 0;
 }
 
-int AttackRangeSkill::getFixed(const Player *, bool) const
+int AttackRangeSkill::getFixed(const Player * /*unused*/, bool /*unused*/) const
 {
     return -1;
 }
@@ -595,7 +595,7 @@ ViewHasSkill::ViewHasSkill(const QString &name)
 {
 }
 
-BattleArraySkill::BattleArraySkill(const QString &name, const QString type) //
+BattleArraySkill::BattleArraySkill(const QString &name, const QString &type) //
     : TriggerSkill(name)
     , array_type(type)
 {

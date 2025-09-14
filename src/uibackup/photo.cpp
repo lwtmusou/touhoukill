@@ -36,7 +36,6 @@ using namespace QSanProtocol;
 // make layers (drawing order) configurable
 
 Photo::Photo()
-    : PlayerCardContainer()
 {
     _m_mainFrame = nullptr;
     m_player = nullptr;
@@ -170,7 +169,7 @@ const ClientPlayer *Photo::getPlayer() const
     return m_player;
 }
 
-void Photo::speak(const QString &)
+void Photo::speak(const QString & /*unused*/)
 {
     //@@todo:complete it
 }
@@ -247,7 +246,7 @@ void Photo::updatePhase()
         setFrame(S_FRAME_NO_FRAME);
 }
 
-void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }
@@ -351,8 +350,8 @@ void Photo::_createBattleArrayAnimations()
         if (!_m_frameBorders[kingdom]->valid()) {
             delete _m_frameBorders[kingdom];
             delete _m_roleBorders[kingdom];
-            _m_frameBorders[kingdom] = NULL;
-            _m_roleBorders[kingdom] = NULL;
+            _m_frameBorders[kingdom] = nullptr;
+            _m_roleBorders[kingdom] = nullptr;
             continue;
         }
         _m_frameBorders[kingdom]->setPos(-G_PHOTO_LAYOUT.m_normalWidth * 0.1, -G_PHOTO_LAYOUT.m_normalHeight * 0.1);

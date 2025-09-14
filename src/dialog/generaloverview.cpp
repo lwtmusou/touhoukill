@@ -319,7 +319,11 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
     for (int i = 0; i < copy_generals.length(); i++) {
         const General *general = copy_generals[i];
         QString general_name = general->objectName();
-        QString name, kingdom, gender, max_hp, package;
+        QString name;
+        QString kingdom;
+        QString gender;
+        QString max_hp;
+        QString package;
 
         //we show full name here, since long name cannot be  displayed clearly on carditem
         name = Sanguosha->translate("!" + general->objectName());
@@ -504,7 +508,7 @@ void GeneralOverview::addLines(const Skill *skill)
     } else {
         QRegularExpression rx(QRegularExpression::anchoredPattern(".+/(\\w+\\d?).ogg"));
         for (int i = 0; i < sources.length(); i++) {
-            QString source = sources[i];
+            const QString &source = sources[i];
             QRegularExpressionMatch m = rx.match(source);
             if (!m.hasMatch())
                 continue;
@@ -644,7 +648,7 @@ void GeneralOverview::askTransfiguration()
     }
 }
 
-void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem *)
+void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem * /*unused*/)
 {
     if (ServerInfo.EnableCheat && (Self != nullptr)) {
         askTransfiguration();
@@ -722,7 +726,7 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
         }
         if (!kingdoms.isEmpty() && !kingdoms.contains(general->getKingdom()))
             continue;
-        if (!(lower == 0 && upper == 0) && (general->getMaxHp() < lower || general->getMaxHp() > upper))
+        if ((lower != 0 || upper != 0) && (general->getMaxHp() < lower || general->getMaxHp() > upper))
             continue;
         if (!packages.isEmpty() && !packages.contains(general->getPackage()))
             continue;

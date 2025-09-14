@@ -242,7 +242,7 @@ public:
     }
 
 protected:
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override
+    void paint(QPainter * /*painter*/, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) override
     {
     }
     QList<QSanInvokeSkillButton *> _m_buttons;

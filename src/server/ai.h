@@ -49,7 +49,7 @@ public:
     virtual const Card *askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive) = 0;
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason, Card::HandlingMethod method) = 0;
     virtual const Card *askForCard(const QString &pattern, const QString &prompt, const QVariant &data) = 0;
-    virtual QString askForUseCard(const QString &pattern, const QString &prompt, const Card::HandlingMethod method) = 0;
+    virtual QString askForUseCard(const QString &pattern, const QString &prompt, Card::HandlingMethod method) = 0;
     virtual int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason) = 0;
     virtual const Card *askForCardShow(ServerPlayer *requester, const QString &reason) = 0;
     virtual const Card *askForPindian(ServerPlayer *requester, const QString &reason) = 0;
@@ -73,7 +73,7 @@ public:
     ~TrustAI() override;
 
     void activate(CardUseStruct &card_use) override;
-    Card::Suit askForSuit(const QString &) override;
+    Card::Suit askForSuit(const QString & /*reason*/) override;
     QString askForKingdom() override;
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data) override;
     QString askForChoice(const QString &skill_name, const QString &choices, const QVariant &data) override;
@@ -81,7 +81,7 @@ public:
     const Card *askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive) override;
     int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason, Card::HandlingMethod method) override;
     const Card *askForCard(const QString &pattern, const QString &prompt, const QVariant &data) override;
-    QString askForUseCard(const QString &pattern, const QString &prompt, const Card::HandlingMethod method) override;
+    QString askForUseCard(const QString &pattern, const QString &prompt, Card::HandlingMethod method) override;
     int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason) override;
     const Card *askForCardShow(ServerPlayer *requester, const QString &reason) override;
     const Card *askForPindian(ServerPlayer *requester, const QString &reason) override;
@@ -106,7 +106,7 @@ public:
     const Card *askForCardShow(ServerPlayer *requester, const QString &reason) override;
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data) override;
     void activate(CardUseStruct &card_use) override;
-    QString askForUseCard(const QString &pattern, const QString &prompt, const Card::HandlingMethod method) override;
+    QString askForUseCard(const QString &pattern, const QString &prompt, Card::HandlingMethod method) override;
     QList<int> askForDiscard(const QString &reason, int discard_num, int min_num, bool optional, bool include_equip) override;
     const Card *askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive) override;
     QString askForChoice(const QString &skill_name, const QString &choices, const QVariant &data) override;

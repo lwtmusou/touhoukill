@@ -120,7 +120,7 @@ void Settings::init()
     AIProhibitBlindAttack = value("AIProhibitBlindAttack", false).toBool();
     SurrenderAtDeath = value("SurrenderAtDeath", false).toBool();
     LuckCardLimitation = value("LuckCardLimitation", 0).toInt();
-    ServerPort = value("ServerPort", 9527u).toUInt();
+    ServerPort = value("ServerPort", 9527U).toUInt();
     DisableLua = value("DisableLua", false).toBool();
     LimitRobot = value("LimitRobot", false).toBool();
 
@@ -156,7 +156,7 @@ void Settings::init()
         }
     }
     HistoryIPs = value("HistoryUrls").toStringList();
-    DetectorPort = value("DetectorPort", 9526u).toUInt();
+    DetectorPort = value("DetectorPort", 9526U).toUInt();
     MaxCards = value("MaxCards", 12).toInt();
 
     HegemonyFirstShowReward = value("HegemonyFirstShowReward", "None").toString();
@@ -184,8 +184,8 @@ void Settings::init()
     EnableLastWord = value("EnableLastWord", true).toBool();
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     UseLordBGM = value("UseLordBGM", true).toBool();
-    BGMVolume = value("BGMVolume", 1.0f).toFloat();
-    EffectVolume = value("EffectVolume", 1.0f).toFloat();
+    BGMVolume = value("BGMVolume", 1.0F).toFloat();
+    EffectVolume = value("EffectVolume", 1.0F).toFloat();
 
     int length = 8;
     int index = qsgsRand() % length + 1;
@@ -200,7 +200,15 @@ void Settings::init()
     RecordSavePath = value("RecordSavePath", "records/").toString();
 
     lua_State *lua = Sanguosha->getLuaState();
-    QStringList roles_ban, peasantsvslandlord_ban, contest2v2_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;
+    QStringList roles_ban;
+    QStringList peasantsvslandlord_ban;
+    QStringList contest2v2_ban;
+    QStringList kof_ban;
+    QStringList hulao_ban;
+    QStringList xmode_ban;
+    QStringList basara_ban;
+    QStringList hegemony_ban;
+    QStringList pairs_ban;
 
     roles_ban = GetConfigFromLuaState(lua, "roles_ban").toStringList();
     peasantsvslandlord_ban = GetConfigFromLuaState(lua, "peasantsvslandlord_ban").toStringList();

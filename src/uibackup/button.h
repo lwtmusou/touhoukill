@@ -25,7 +25,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
-    void timerEvent(QTimerEvent *) override;
+    void timerEvent(QTimerEvent * /*event*/) override;
 
 private:
     QString label;

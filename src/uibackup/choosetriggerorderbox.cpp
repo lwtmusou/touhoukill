@@ -163,7 +163,7 @@ QFont TriggerOptionButton::defaultFont()
     return font;
 }
 
-void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setRenderHint(QPainter::Antialiasing);
     painter->save();
@@ -201,12 +201,12 @@ void TriggerOptionButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
     event->accept();
 }
 
-void TriggerOptionButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void TriggerOptionButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     emit clicked();
 }
 
-void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
     animation->setEndValue(1.0);
@@ -215,7 +215,7 @@ void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent *)
     emit hovered(true);
 }
 
-void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
     animation->setEndValue(initialOpacity);
@@ -290,9 +290,9 @@ void ChooseTriggerOrderBox::storeMinimumWidth()
 
 QRectF ChooseTriggerOrderBox::boundingRect() const
 {
-    int width = m_minimumWidth + m_leftBlankWidth * 2;
+    int width = m_minimumWidth + (m_leftBlankWidth * 2);
 
-    int height = m_topBlankWidth + optionButtons.size() * optionButtonHeight + (optionButtons.size() - 1) * interval + bottom_blank_width;
+    int height = m_topBlankWidth + (optionButtons.size() * optionButtonHeight) + ((optionButtons.size() - 1) * interval) + bottom_blank_width;
 
     if (ServerInfo.OperationTimeout != 0)
         height += 12;
@@ -365,7 +365,7 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
             progressBar->setTimerEnabled(true);
             progress_bar_item = new QGraphicsProxyWidget(this);
             progress_bar_item->setWidget(progressBar);
-            progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
+            progress_bar_item->setPos(boundingRect().center().x() - (progress_bar_item->boundingRect().width() / 2), boundingRect().height() - 20);
             connect(progressBar, &QSanCommandProgressBar::timedOut, this, &ChooseTriggerOrderBox::reply);
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_TRIGGER_ORDER);

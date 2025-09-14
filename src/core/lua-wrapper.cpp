@@ -87,8 +87,7 @@ static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 static QHash<QString, QString> LuaSkillCardsSkillName;
 
 LuaSkillCard::LuaSkillCard(const char *name, const char *skillName)
-    : SkillCard()
-    , filter(0)
+    : filter(0)
     , feasible(0)
     , about_to_use(0)
     , on_use(0)
@@ -146,7 +145,9 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str)
     }
 
     QStringList texts;
-    QString name, suit, number;
+    QString name;
+    QString suit;
+    QString number;
     QString subcard_str;
     QString user_string;
 
