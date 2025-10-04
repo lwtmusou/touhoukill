@@ -2027,6 +2027,11 @@ THNDJPackage::THNDJPackage()
     youmu_ndj->addSkill(new Hunpo);
     youmu_ndj->addSkill(new Fanji);
 
+    General *tenshi_ndj = new General(this, "tenshi_ndj", "zhan", 4);
+    tenshi_ndj->addSkill(new Youle);
+    tenshi_ndj->addSkill(new YouleRecord);
+    related_skills.insert("youle", "#youle-record");
+
     General *merry_ndj = new General(this, "merry_ndj", "wai", 3);
     merry_ndj->addSkill(new Liexi);
     merry_ndj->addSkill(new LiexiTargetMod);
@@ -2053,11 +2058,6 @@ THNDJPackage::THNDJPackage()
     aya_ndj->addSkill(new JinengTargetMod);
     aya_ndj->addSkill(new Kuaibao);
     related_skills.insert("jineng", "#jinengmod");
-
-    General *tenshi_ndj = new General(this, "tenshi_ndj", "zhan", 4);
-    tenshi_ndj->addSkill(new Youle);
-    tenshi_ndj->addSkill(new YouleRecord);
-    related_skills.insert("youle", "#youle-record");
 
     General *eirin = new General(this, "eirin_ndj", "yyc");
     eirin->addSkill(new Yaoli);

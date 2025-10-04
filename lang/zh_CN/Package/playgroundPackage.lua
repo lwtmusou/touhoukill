@@ -1,6 +1,7 @@
 return {
 	["playground"] = "游乐场包",
 
+	-- removed skills
 	["fsu0413gepi"] = "嗝屁",
 	[":fsu0413gepi"] = "一名角色的准备阶段开始时，你可以令其弃置你的一张牌，若如此做，你令其一个技能（主公技、觉醒技和永久技除外）于此回合内无效，若以此法无效描述中不带“出牌阶段”的技能或不能无效技能时，其摸三张牌。" ,
 	["$Fsu0413GepiNullify"] = "%from 发动 <font color=\"yellow\"><b>嗝屁</b></font> 令 %to 的技能 %arg 于本回合无效",
@@ -11,6 +12,8 @@ return {
 	["fsu0413sile"] = "死了",
 	[":fsu0413sile"] = "。",
 
+--************************************************
+	-- GG GGG 势力：神 5血
 	["#fsu0413"] = "咕咕咕开发者",
 	["fsu0413"] = "咕咕Fs",
 	["designer:fsu0413"] = "Fs",
@@ -23,27 +26,8 @@ return {
 	["fsu0413lese"] = "了塞",
 	[":fsu0413lese"] = "<font color=blue><b>锁定技，</b></font>摸牌阶段，你随机获得弃牌堆中的一张延时类锦囊牌。",
 
-	--[==[
-	["#jmshtry"] = "稿子测试用",
-	["jmshtry"] = "𨰻𣛧㵘燚㙓𣊫朤",
-	["designer:jmshtry"] = "七曜",
-
-	["jmshtrymdlkudi"] = "苦谛",
-	[":jmshtrymdlkudi"] = "准备阶段或当你受到伤害时，你可以观看牌堆顶的三张牌，展示并获得其中任意张花色相同的牌，然后将剩余的牌以任意顺序置于牌堆底。",
-	]==]
-
-	["kitsuhattyou"] = "神 吉八弔千慧",
-	["&kitsuhattyou"] = "神吉八弔千慧",
-	["designer:kitsuhattyou"] = "Fs",
-	["#kitsuhattyou"] = "弔爆了",
-
-	["fsu0413jbdnasha"] = "那啥",
-	[":fsu0413jbdnasha"] = "<font color=green><b>出牌阶段限一千次，</b></font>你可以弃置一张牌，令你攻击范围内的一名角色获得“鸟”标记。拥有“鸟”标记的角色于其回合开始前弃“鸟”标记并选择一项：翻面或弃置所有区域内的牌。",
-	["@Brid"] = "鸟",
-
-	["fsu0413jbdnasha:turn"] = "翻面",
-	["fsu0413jbdnasha:disc"] = "弃置所有区域内的牌",
-
+--************************************************
+	-- BM WHFY 势力：神 5血
 	["#benmao"] = "笨猫",
 	["benmao"] = "神 蔚海幽浮",
 	["designer:benmao"] = "吉八弔千慧",
@@ -67,6 +51,8 @@ return {
 	["$bmmaoji3"] = "笨猫笨猫笨",
 	["~benmao"] = "喵",
 
+--************************************************
+	-- FS FZ 势力：神 5血
 	["otaku"] = "肥宅",
 	["#otaku"] = "死肥宅",
 	["designer:otaku"] = "F宅·s胖子",
@@ -75,9 +61,10 @@ return {
 	["fsu0413fei2zhai"] = "肥宅",
 	[":fsu0413fei2zhai"] = "<font color=\"#808080\"><b>永久技，</b></font>当一张【桃】或仙【桃】不因使用而置入弃牌堆后，你获得之；你跳过弃牌阶段。",
 	["fsu0413fei4zhai"] = "废宅",
-	-- [":fsu0413fei4zhai"] = "<font color=\"#808080\"><b>永久技，</b></font>当你造成伤害时，若伤害点数大于1或你于此回合造成过伤害，你防止此伤害。",
 	[":fsu0413fei4zhai"] = "<font color=\"#808080\"><b>永久技，</b></font>当你因【桃】或仙【桃】的效果回复体力时，若你不处于濒死状态，你防止此回复体力。",
 
+--************************************************
+	-- BD WMSSJS 势力：神 9血
 	["god9"] = "⑨",
 	["#god9"] = "算数天才",
 	["designer:god9"] = "飞天明",
@@ -87,6 +74,8 @@ return {
 	["ftmsuanshu"] = "算数",
 	[":ftmsuanshu"] = "<font color=blue><b>锁定技，</b></font>若你的手牌数为⑨，你所有的手牌视为【无中生有】。",
 
+--************************************************
+	-- ZJ FT 势力：神 4血
 	["flyingskybright"] = "辰焰天明",
 	["#flyingskybright"] = "飞天明",
 	["designer:flyingskybright"] = "飞天明",
@@ -99,6 +88,8 @@ return {
 	["ftmfeitian_x:recover-or-losehp"] = "飞天：点击“确定”令 %src 失去 1 点体力，或者点击“取消”令 %src 回复 1 点体力。",
 	["@flying"] = "飞",
 
+--************************************************
+	-- （编号未定） 势力：神 2血
 	["tailormokou"] = "神 藤原妹红",
 	["&tailormokou"] = "神藤原妹红",
 	["designer:tailormokou"] = "裁月镌云",

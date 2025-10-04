@@ -2282,33 +2282,6 @@ TH18Package::TH18Package()
     chimata->addSkill(new Liuneng);
     chimata->addSkill(new Shirong);
 
-    General *mike = new General(this, "mike", "hld", 3);
-    mike->addSkill(new Cizhao);
-    mike->addSkill(new CizhaoDistance);
-    mike->addSkill(new Danran);
-    related_skills.insert("cizhao", "#cizhao-distance");
-
-    General *takane = new General(this, "takane", "hld");
-    takane->addSkill(new Yingji);
-    takane->addSkill(new YingjiRecord);
-    takane->addSkill(new Zhixiao);
-    related_skills.insert("yingji", "#yingji-record");
-
-    General *sannyo = new General(this, "sannyo", "hld");
-    sannyo->addSkill(new Boxi);
-
-    General *misumaru = new General(this, "misumaru", "hld");
-    misumaru->addSkill(new Zhuyu);
-    misumaru->addSkill(new Shuzhu);
-
-    General *tsukasa = new General(this, "tsukasa", "hld", 3);
-    tsukasa->addSkill(new Tiaosuo);
-    tsukasa->addSkill(new TiaosuoT);
-    tsukasa->addSkill(new TiaosuoP);
-    tsukasa->addSkill(new Zuanying);
-    related_skills.insert("tiaosuo", "#tiaosuo-distance");
-    related_skills.insert("tiaosuo", "#tiaosuo-targetmod");
-
     General *megumu = new General(this, "megumu", "hld");
     megumu->addSkill(new FgwlShezheng);
     megumu->addSkill(new Miji);
@@ -2318,6 +2291,33 @@ TH18Package::TH18Package()
     General *momoyo = new General(this, "momoyo", "hld");
     momoyo->addSkill(new Juezhu);
     momoyo->addSkill(new Zhanyi);
+
+    General *tsukasa = new General(this, "tsukasa", "hld", 3);
+    tsukasa->addSkill(new Tiaosuo);
+    tsukasa->addSkill(new TiaosuoT);
+    tsukasa->addSkill(new TiaosuoP);
+    tsukasa->addSkill(new Zuanying);
+    related_skills.insert("tiaosuo", "#tiaosuo-distance");
+    related_skills.insert("tiaosuo", "#tiaosuo-targetmod");
+
+    General *sannyo = new General(this, "sannyo", "hld");
+    sannyo->addSkill(new Boxi);
+
+    General *takane = new General(this, "takane", "hld");
+    takane->addSkill(new Yingji);
+    takane->addSkill(new YingjiRecord);
+    takane->addSkill(new Zhixiao);
+    related_skills.insert("yingji", "#yingji-record");
+
+    General *misumaru = new General(this, "misumaru", "hld");
+    misumaru->addSkill(new Zhuyu);
+    misumaru->addSkill(new Shuzhu);
+
+    General *mike = new General(this, "mike", "hld", 3);
+    mike->addSkill(new Cizhao);
+    mike->addSkill(new CizhaoDistance);
+    mike->addSkill(new Danran);
+    related_skills.insert("cizhao", "#cizhao-distance");
 
     addMetaObject<BoxiCard>();
     addMetaObject<BoxiUseOrObtainCard>();

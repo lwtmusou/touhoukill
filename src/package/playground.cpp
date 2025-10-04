@@ -601,89 +601,6 @@ public:
     }
 };
 
-Fsu0413JbdNashaCard::Fsu0413JbdNashaCard() = default;
-
-bool Fsu0413JbdNashaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    return targets.isEmpty() && to_select != Self && Self->inMyAttackRange(to_select);
-}
-
-void Fsu0413JbdNashaCard::onEffect(const CardEffectStruct &effect) const
-{
-    effect.to->gainMark("@Brid");
-}
-
-class Fsu0413JbdNasha : public OneCardViewAsSkill
-{
-public:
-    Fsu0413JbdNasha()
-        : OneCardViewAsSkill("fsu0413jbdnasha")
-    {
-    }
-
-    bool viewFilter(const Card *c) const override
-    {
-        return Self->canDiscard(Self, c->getId());
-    }
-
-    const Card *viewAs(const Card *originalCard) const override
-    {
-        Fsu0413JbdNashaCard *c = new Fsu0413JbdNashaCard;
-        c->addSubcard(originalCard);
-        return c;
-    }
-
-    bool isEnabledAtPlay(const Player *player) const override
-    {
-        return player->usedTimes("Fsu0413JbdNaShaCard") < 1000;
-    }
-};
-
-class Fsu0413JbdNashaT : public TriggerSkill
-{
-public:
-    Fsu0413JbdNashaT()
-        : TriggerSkill("fsu0413jbdnasha")
-    {
-        view_as_skill = new Fsu0413JbdNasha;
-        events << TurnStart;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
-    {
-        ServerPlayer *p = data.value<ServerPlayer *>();
-        ServerPlayer *jbd = nullptr;
-
-        foreach (ServerPlayer *ps, room->getAllPlayers()) {
-            if (ps->hasSkill(this)) {
-                jbd = ps;
-                break;
-            }
-        }
-
-        if (jbd != nullptr && p != nullptr && p->isAlive() && p->getMark("@Brid") > 0)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, jbd, jbd, p, true);
-
-        return {};
-    }
-
-    bool effect(TriggerEvent /*triggerEvent*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
-    {
-        invoke->targets.first()->loseAllMarks("@Brid");
-
-        QString choice = room->askForChoice(invoke->targets.first(), objectName(), "turn+disc");
-        if (choice == "turn")
-            invoke->targets.first()->turnOver();
-        else {
-            DummyCard c;
-            c.addSubcards(invoke->targets.first()->getCards("hsej"));
-            room->throwCard(&c, invoke->targets.first());
-        }
-
-        return false;
-    }
-};
-
 class BmMaoji : public FilterSkill
 {
 public:
@@ -1375,10 +1292,6 @@ PlaygroundPackage::PlaygroundPackage()
     General *otaku = new General(this, "otaku", "touhougod", 5, true);
     otaku->addSkill(new Fsu0413Fei2Zhai);
     otaku->addSkill(new Fsu0413Fei4Zhai);
-
-    General *kitsuhattyou = new General(this, "kitsuhattyou", "touhougod", 3, false, true, true);
-    kitsuhattyou->addSkill(new Fsu0413JbdNashaT);
-    addMetaObject<Fsu0413JbdNashaCard>();
 
     General *benmao = new General(this, "benmao", "touhougod", 5, true);
     benmao->addSkill(new BmMaoji);
