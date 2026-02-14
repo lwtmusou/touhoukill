@@ -5478,6 +5478,7 @@ void RoomScene::enterPerspectiveView(const QString &targetName, PerspectiveSourc
     updateTable();
     applyPerspectiveInputLock(lockInput);
     dashboard->revivePlayer();
+    dashboard->syncRemovedVisualState();
 
     hostPhoto->stopHuaShen();
     if (!selfHuashenGen.isEmpty() || !selfHuashenGen2.isEmpty())
@@ -5522,6 +5523,7 @@ void RoomScene::exitPerspectiveView()
         m_perspectiveProxyPhoto->syncCardAreasFromPlayer();
         if (target->isAlive()) {
             m_perspectiveProxyPhoto->revivePlayer();
+            m_perspectiveProxyPhoto->syncRemovedVisualState();
             // Restore role indicator to the target's actual role
             if (isHegemonyGameMode(ServerInfo.GameMode))
                 m_perspectiveProxyPhoto->getHegemonyRoleComboBox()->fix(target->getRole() == "careerist" ? "careerist" : target->getRole());
@@ -5529,6 +5531,7 @@ void RoomScene::exitPerspectiveView()
                 m_perspectiveProxyPhoto->getRoleComboBox()->fix(target->getRole());
         } else {
             m_perspectiveProxyPhoto->killPlayer();
+            m_perspectiveProxyPhoto->syncRemovedVisualState();
         }
         name2photo[target->objectName()] = m_perspectiveProxyPhoto;
     }
@@ -5557,6 +5560,7 @@ void RoomScene::exitPerspectiveView()
     updateTable();
     applyPerspectiveInputLock(false);
     dashboard->killPlayer();
+    dashboard->syncRemovedVisualState();
     dashboard->setDeathColor();
 }
 

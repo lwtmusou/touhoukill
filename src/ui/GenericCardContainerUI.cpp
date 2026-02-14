@@ -700,6 +700,7 @@ void PlayerCardContainer::repaintAll()
     _adjustComponentZValues();
     _initializeRemovedEffect();
     refresh();
+    syncRemovedVisualState();
 }
 
 void PlayerCardContainer::_createRoleComboBox()
@@ -766,6 +767,35 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
     }
     updateAvatar();
     refresh();
+    syncRemovedVisualState();
+}
+
+void PlayerCardContainer::syncRemovedVisualState()
+{
+    QAbstractAnimation *removedEffect = _getPlayerRemovedEffect();
+    if (removedEffect == nullptr)
+        return;
+
+    bool removed = (m_player != nullptr) && m_player->isRemoved();
+
+    // Stop any in-flight animation so we can jump to the correct end state.
+    removedEffect->stop();
+    removedEffect->setDirection(removed ? QAbstractAnimation::Forward : QAbstractAnimation::Backward);
+
+    // start() + pause() ensures the property animation actually writes its
+    // value when we call setCurrentTime(), even from a Stopped state.
+    int targetTime = 0;
+    if (removed) {
+        targetTime = removedEffect->totalDuration();
+        if (targetTime < 0)
+            targetTime = removedEffect->duration();
+        if (targetTime < 0)
+            targetTime = 0;
+    }
+    removedEffect->start();
+    removedEffect->pause();
+    removedEffect->setCurrentTime(targetTime);
+    removedEffect->stop();
 }
 
 void PlayerCardContainer::syncCardAreasFromPlayer()

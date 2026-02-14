@@ -77,6 +77,7 @@ public:
     }
 
     virtual void setPlayer(ClientPlayer *player);
+    void syncRemovedVisualState();
     void syncCardAreasFromPlayer();
     inline int getVotes()
     {
