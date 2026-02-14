@@ -16,6 +16,7 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 #include <QMessageBox>
 #include <QPainter>
@@ -240,6 +241,8 @@ void Photo::setFrame(FrameType type)
 void Photo::updatePhase()
 {
     PlayerCardContainer::updatePhase();
+    if (m_player == nullptr)
+        return;
     if (m_player->getPhase() != Player::NotActive)
         setFrame(S_FRAME_PLAYING);
     else
@@ -375,4 +378,20 @@ void Photo::playBattleArrayAnimations()
     _m_frameBorders[kingdom]->show();
     _m_frameBorders[kingdom]->start(true, 30);
     _m_roleBorders[kingdom]->preStart();
+}
+
+void Photo::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (Self != nullptr && m_player != nullptr && !Self->isAlive()) {
+        if (m_player->isAlive()) {
+            ClientInstance->requestSpectate(m_player->objectName());
+            return;
+        }
+        if (m_player == Self && RoomSceneInstance->isFirstPersonSpectating()) {
+            // 双击自己的代理 Photo 退出观战
+            ClientInstance->requestSpectate(QString());
+            return;
+        }
+    }
+    PlayerCardContainer::mouseDoubleClickEvent(event);
 }

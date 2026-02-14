@@ -54,6 +54,7 @@ Room::Room(QObject *parent, const QString &mode)
     , has_provided(false)
     , provider(nullptr)
     , m_fillAGWho(nullptr)
+    , m_spectateSyncSerial(0)
 {
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
@@ -105,6 +106,7 @@ void Room::initCallbacks()
     //Client request
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
     m_callbacks[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
+    m_callbacks[S_COMMAND_SPECTATE_REQUEST] = &Room::spectateCommand;
 }
 
 ServerPlayer *Room::getCurrent() const
@@ -304,6 +306,10 @@ ServerPlayer *Room::getCurrentDyingPlayer() const
 void Room::revivePlayer(ServerPlayer *player, bool initialize)
 {
     player->setAlive(true);
+
+    // 复活后不再允许观战
+    clearSpectateState(player);
+
     player->throwAllMarks(false);
     broadcastProperty(player, "alive");
 
@@ -402,6 +408,9 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
     }
 
     m_alivePlayers.removeOne(victim);
+
+    // 清除所有正在观战该死亡玩家的观战者
+    clearSpectatorsOfTarget(victim);
 
     thread->trigger(BeforeGameOverJudge, this, data);
     death = data.value<DeathStruct>();
@@ -4524,6 +4533,15 @@ void Room::marshal(ServerPlayer *player)
         QVariant discard = JsonUtils::toJsonArray(*m_discardPile);
         doNotify(player, S_COMMAND_SYNCHRONIZE_DISCARD_PILE, discard);
     }
+
+    // 重连时恢复观战状态
+    ServerPlayer *spectateTarget = getSpectateTarget(player);
+    if (spectateTarget != nullptr) {
+        if (spectateTarget->isAlive())
+            sendSpectateSync(player, spectateTarget);
+        else
+            clearSpectateState(player);
+    }
 }
 
 void Room::startGame()
@@ -5239,13 +5257,14 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         arg << moveId;
         for (int i = 0; i < cards_moves.size(); i++) {
             ServerPlayer *to = nullptr;
-            foreach (ServerPlayer *player, m_players) {
-                if (player->objectName() == cards_moves[i].to_player_name) {
-                    to = player;
-                    break;
-                }
+            ServerPlayer *from = nullptr;
+            foreach (ServerPlayer *p, m_players) {
+                if (p->objectName() == cards_moves[i].to_player_name)
+                    to = p;
+                if (p->objectName() == cards_moves[i].from_player_name)
+                    from = p;
             }
-            cards_moves[i].open = forceVisible
+            bool isOpen = forceVisible
                 || cards_moves[i].isRelevant(player)
                 // forceVisible will override cards to be visible
                 || cards_moves[i].to_place == Player::PlaceEquip || cards_moves[i].from_place == Player::PlaceEquip || cards_moves[i].to_place == Player::PlaceDelayedTrick
@@ -5259,6 +5278,15 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 || (cards_moves[i].to_place == Player::PlaceSpecial && (to != nullptr) && to->pileOpen(cards_moves[i].to_pile_name, player->objectName()))
                 // pile open to specific players
                 || player->hasFlag("Global_GongxinOperator");
+
+            // 观战者可见涉及观战目标的所有卡牌移动
+            if (!isOpen) {
+                ServerPlayer *spectateTarget = getSpectateTarget(player);
+                if (spectateTarget != nullptr && (from == spectateTarget || to == spectateTarget))
+                    isOpen = true;
+            }
+
+            cards_moves[i].open = isOpen;
             // the player put someone's cards to the drawpile
 
             arg << cards_moves[i].toVariant();
@@ -5266,6 +5294,101 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
     }
     return true;
+}
+
+void Room::spectateCommand(ServerPlayer *player, const QVariant &arg)
+{
+    if (player->isAlive())
+        return;
+
+    QString targetName = arg.toString();
+
+    if (targetName.isEmpty()) {
+        clearSpectateState(player);
+        return;
+    }
+
+    ServerPlayer *target = findPlayerByObjectName(targetName);
+    if (target == nullptr || !target->isAlive())
+        return;
+
+    if (m_spectateTargets.contains(player))
+        clearSpectateState(player);
+
+    m_spectateTargets[player] = target;
+    sendSpectateSync(player, target);
+}
+
+void Room::sendSpectateSync(ServerPlayer *watcher, ServerPlayer *target)
+{
+    m_spectateSyncSerial++;
+
+    JsonArray arg;
+    arg << m_spectateSyncSerial;
+    arg << target->objectName();
+    arg << JsonUtils::toJsonArray(target->handCards());
+
+    JsonObject pilesObj;
+    foreach (const QString &pileName, target->getPileNames())
+        pilesObj[pileName] = JsonUtils::toJsonArray(target->getPile(pileName));
+    arg << QVariant(pilesObj);
+
+    // 变身牌信息，复用 notifyUpdateCard 的序列化格式
+    JsonArray modifiedCards;
+    auto appendModified = [&](int cardId) {
+        Card *card = getCard(cardId);
+        if (card != nullptr && card->isModified()) {
+            JsonArray cardInfo;
+            cardInfo << cardId << card->getSuit() << card->getNumber() << card->getClassName() << card->getSkillName() << card->objectName()
+                     << JsonUtils::toJsonArray(card->getFlags());
+            modifiedCards << QVariant(cardInfo);
+        }
+    };
+    foreach (int cardId, target->handCards())
+        appendModified(cardId);
+    foreach (const QString &pileName, target->getPileNames()) {
+        foreach (int cardId, target->getPile(pileName))
+            appendModified(cardId);
+    }
+    arg << QVariant(modifiedCards);
+
+    doNotify(watcher, S_COMMAND_SPECTATE_SYNC, arg);
+}
+
+void Room::clearSpectateState(ServerPlayer *watcher)
+{
+    m_spectateTargets.remove(watcher);
+
+    m_spectateSyncSerial++;
+    JsonArray arg;
+    arg << m_spectateSyncSerial;
+    arg << QString();
+    arg << JsonUtils::toJsonArray(QList<int>());
+    arg << QVariant(JsonObject());
+    arg << QVariant(JsonArray());
+    doNotify(watcher, S_COMMAND_SPECTATE_SYNC, arg);
+}
+
+void Room::clearSpectatorsOfTarget(ServerPlayer *target)
+{
+    QList<ServerPlayer *> watchers = getSpectatorsOf(target);
+    foreach (ServerPlayer *watcher, watchers)
+        clearSpectateState(watcher);
+}
+
+QList<ServerPlayer *> Room::getSpectatorsOf(ServerPlayer *target) const
+{
+    QList<ServerPlayer *> result;
+    for (auto it = m_spectateTargets.constBegin(); it != m_spectateTargets.constEnd(); ++it) {
+        if (it.value() == target)
+            result << it.key();
+    }
+    return result;
+}
+
+ServerPlayer *Room::getSpectateTarget(ServerPlayer *watcher) const
+{
+    return m_spectateTargets.value(watcher, nullptr);
 }
 
 void Room::notifySkillInvoked(ServerPlayer *player, const QString &skill_name)

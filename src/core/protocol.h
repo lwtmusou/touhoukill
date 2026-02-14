@@ -149,7 +149,9 @@ enum CommandType
     S_COMMAND_SET_SHOWN_HIDDEN_GENERAL,
     S_COMMAND_HEARTBEAT,
     S_COMMAND_PRESHOW,
-    S_COMMAND_DISABLE_SHOW
+    S_COMMAND_DISABLE_SHOW,
+    S_COMMAND_SPECTATE_REQUEST, // 客户端 -> 服务端：请求观战某玩家（仅死亡玩家可用）
+    S_COMMAND_SPECTATE_SYNC // 服务端 -> 客户端：观战目标的完整可见状态快照
 };
 
 enum GameEventType

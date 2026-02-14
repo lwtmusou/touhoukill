@@ -385,7 +385,8 @@ bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
     }
 
     m_mutexCardItemsAnimationFinished.lock();
-    _m_cardItemsAnimationFinished << card_items;
+    foreach (CardItem *item, card_items)
+        _m_cardItemsAnimationFinished << QPointer<CardItem>(item);
     m_mutexCardItemsAnimationFinished.unlock();
 
     if (place == Player::PlaceEquip)
@@ -1574,7 +1575,7 @@ void Dashboard::updatePending()
     foreach (CardItem *item, m_handCards) {
         if (item->getFootnote() == Sanguosha->translate("shown_card"))
             item->hideFootnote();
-        if (Self->isShownHandcard(item->getCard()->getEffectiveId())) {
+        if (m_player != nullptr && m_player->isShownHandcard(item->getCard()->getEffectiveId())) {
             item->setFootnote(Sanguosha->translate("shown_card"));
             item->showFootnote();
         }
@@ -1849,9 +1850,162 @@ void Dashboard::updateRightHiddenMark()
 
 void Dashboard::setPlayer(ClientPlayer *player)
 {
+    if (m_player != nullptr && m_player != player) {
+        disconnect(m_player, &ClientPlayer::head_state_changed, this, &Dashboard::onHeadStateChanged);
+        disconnect(m_player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
+        disconnect(m_player, SIGNAL(chaoren_changed()), this, SLOT(updateChaoren()));
+        disconnect(m_player, SIGNAL(showncards_changed()), this, SLOT(updateShown()));
+        disconnect(m_player, SIGNAL(brokenEquips_changed()), this, SLOT(updateHandPile()));
+    }
+
     PlayerCardContainer::setPlayer(player);
-    connect(player, &ClientPlayer::head_state_changed, this, &Dashboard::onHeadStateChanged);
-    connect(player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
+
+    if (player != nullptr) {
+        connect(player, &ClientPlayer::head_state_changed, this, &Dashboard::onHeadStateChanged);
+        connect(player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
+        connect(player, SIGNAL(chaoren_changed()), this, SLOT(updateChaoren()));
+        connect(player, SIGNAL(showncards_changed()), this, SLOT(updateShown()));
+        connect(player, SIGNAL(brokenEquips_changed()), this, SLOT(updateHandPile()));
+    }
+}
+
+void Dashboard::syncContainerFromPlayer()
+{
+    selected = nullptr;
+    pendings.clear();
+    if (pending_card != nullptr && pending_card->parent() == nullptr && pending_card->isVirtualCard()) {
+        delete pending_card;
+    }
+    pending_card = nullptr;
+    _m_pile_expanded.clear();
+    _m_id_expanded.clear();
+
+    // 清除待完成动画引用，避免 deleteLater 后 UAF
+    m_mutexCardItemsAnimationFinished.lock();
+    _m_cardItemsAnimationFinished.clear();
+    m_mutexCardItemsAnimationFinished.unlock();
+
+    stopHuaShen();
+
+    foreach (CardItem *card, m_handCards) {
+        card->disconnect(this);
+        card->goBack(false, false);
+        card->setVisible(false);
+        card->deleteLater();
+    }
+    m_handCards.clear();
+
+    _mutexEquipAnim.lock();
+    for (int i = 0; i < 5; i++) {
+        if (_m_equipCards[i] != nullptr) {
+            _m_equipCards[i]->disconnect(this);
+            _m_equipCards[i]->goBack(false, false);
+            _m_equipCards[i]->setVisible(false);
+            _m_equipCards[i]->deleteLater();
+            _m_equipCards[i] = nullptr;
+        }
+        _m_equipAnim[i]->stop();
+        _m_equipAnim[i]->clear();
+        _m_equipRegions[i]->hide();
+        _m_isEquipsAnimOn[i] = false;
+        if (_m_equipBorders[i] != nullptr) {
+            _m_equipBorders[i]->hide();
+            _m_equipBorders[i]->stop();
+        }
+        // 仅置空引用；按钮由 RoomScene::m_skillButtons 管理，通过 detachSkill 清理
+        _m_equipSkillBtns[i] = nullptr;
+    }
+    _mutexEquipAnim.unlock();
+
+    foreach (CardItem *card, _m_judgeCards) {
+        card->disconnect(this);
+        card->goBack(false, false);
+        card->setVisible(false);
+        card->deleteLater();
+    }
+    _m_judgeCards.clear();
+    foreach (QGraphicsPixmapItem *icon, _m_judgeIcons) {
+        delete icon;
+    }
+    _m_judgeIcons.clear();
+
+    hidePile();
+    foreach (QGraphicsProxyWidget *widget, _m_privatePiles) {
+        delete widget;
+    }
+    _m_privatePiles.clear();
+
+    if (m_player == nullptr) {
+        adjustCards();
+        updateHandcardNum();
+        return;
+    }
+
+    QList<int> knownIds = m_player->getKnownHandCardIds();
+    foreach (int id, knownIds) {
+        CardItem *item = _createCard(id);
+        _addHandCard(item);
+    }
+
+    QList<const Card *> equips = m_player->getEquips();
+    foreach (const Card *equip, equips) {
+        const EquipCard *equipCard = qobject_cast<const EquipCard *>(equip->getRealCard());
+        if (equipCard == nullptr)
+            continue;
+        int index = static_cast<int>(equipCard->location());
+        if (index < 0 || index >= 5)
+            continue;
+        CardItem *cardItem = _createCard(equip->getEffectiveId());
+        _m_equipCards[index] = cardItem;
+        connect(cardItem, SIGNAL(mark_changed()), this, SLOT(_onEquipSelectChanged()));
+        cardItem->setHomeOpacity(0.0);
+        cardItem->setHomePos(_m_layout->m_equipAreas[index].center());
+        _m_equipRegions[index]->setToolTip(equipCard->getDescription());
+        QPixmap pixmap = _getEquipPixmap(equipCard);
+        _m_equipLabel[index]->setPixmap(pixmap);
+        _m_equipRegions[index]->setPos(_m_layout->m_equipAreas[index].topLeft());
+        _m_equipRegions[index]->setOpacity(255);
+        _m_equipRegions[index]->show();
+    }
+
+    QList<const Card *> judges = m_player->getJudgingArea();
+    foreach (const Card *judge, judges) {
+        CardItem *trick = _createCard(judge->getEffectiveId());
+        QGraphicsPixmapItem *icon = new QGraphicsPixmapItem(_getDelayedTrickParent());
+        QRect start = _m_layout->m_delayedTrickFirstRegion;
+        QPoint step = _m_layout->m_delayedTrickStep;
+        start.translate(step * _m_judgeCards.size());
+        _paintPixmap(icon, start, G_ROOM_SKIN.getCardJudgeIconPixmap(judge->objectName()));
+        trick->setHomeOpacity(0.0);
+        trick->setHomePos(start.center());
+        const Card *realCard = Sanguosha->getEngineCard(judge->getEffectiveId());
+        if (realCard != nullptr) {
+            QString toolTip = QString("<font color=#FFFF33><b>%1 [</b><img src='image/system/log/%2.png' height = 12/><b>%3]</b></font>")
+                                  .arg(Sanguosha->translate(realCard->objectName()))
+                                  .arg(realCard->getSuitString())
+                                  .arg(realCard->getNumberString());
+            icon->setToolTip(toolTip);
+        }
+        _m_judgeCards.append(trick);
+        _m_judgeIcons.append(icon);
+    }
+
+    foreach (const QString &pileName, m_player->getPileNames()) {
+        if (!m_player->getPile(pileName).isEmpty())
+            updatePile(pileName);
+    }
+    // "shown_card" 是特殊牌堆，不在 getPileNames() 中
+    if (!m_player->getShownHandcards().isEmpty())
+        updatePile("shown_card");
+
+    updatePending();
+    adjustCards();
+    updateHandcardNum();
+
+    updateHp();
+    updateDrankState();
+    updatePhase();
+    updateMarks();
 }
 
 void Dashboard::onHeadStateChanged()

@@ -381,6 +381,7 @@ public:
     void speakCommand(ServerPlayer *player, const QVariant &arg);
     void trustCommand(ServerPlayer *player, const QVariant &arg);
     void pauseCommand(ServerPlayer *player, const QVariant &arg);
+    void spectateCommand(ServerPlayer *player, const QVariant &arg);
     void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
     void addRobotCommand(ServerPlayer *player, const QVariant &arg);
     void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
@@ -544,6 +545,15 @@ private:
     volatile bool playerPropertySet;
 
     GeneralSelector *m_generalSelector;
+
+    // 自由观战
+    QMap<ServerPlayer *, ServerPlayer *> m_spectateTargets; // 观战者 -> 目标
+    int m_spectateSyncSerial;
+    QList<ServerPlayer *> getSpectatorsOf(ServerPlayer *target) const;
+    ServerPlayer *getSpectateTarget(ServerPlayer *watcher) const;
+    void sendSpectateSync(ServerPlayer *watcher, ServerPlayer *target);
+    void clearSpectateState(ServerPlayer *watcher);
+    void clearSpectatorsOfTarget(ServerPlayer *target);
 
     static QString generatePlayerName();
     void prepareForStart();

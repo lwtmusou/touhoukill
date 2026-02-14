@@ -185,6 +185,11 @@ public:
     void changeTableBg();
     void changeTableBg(const QString &tableBgImage_path);
 
+    bool isFirstPersonSpectating() const
+    {
+        return m_isFirstPersonSpectating;
+    }
+
     inline bool isCancelButtonEnabled() const
     {
         return cancel_button != nullptr && cancel_button->isEnabled();
@@ -290,6 +295,9 @@ private:
     QGraphicsItem *_m_last_front_item;
     double _m_last_front_ZValue;
     GenericCardContainer *_getGenericCardContainer(Player::Place place, Player *player);
+    const ClientPlayer *dashboardPlayer() const;
+    void refreshItem2PlayerMap();
+    void applySpectateUiLock(bool locked);
     QMap<int, QList<QList<CardItem *>>> _m_cardsMoveStash;
     Button *add_robot;
     Button *fill_robots;
@@ -319,6 +327,10 @@ private:
     QList<QGraphicsPixmapItem *> role_items;
     CardContainer *card_container;
     CardContainer *pileContainer;
+    Photo *m_spectateProxyPhoto = nullptr;
+    bool m_isFirstPersonSpectating = false;
+    QList<Photo *> m_originalPhotosOrder;
+    QString m_spectateTargetName;
 
     QList<QSanSkillButton *> m_skillButtons;
 
@@ -513,6 +525,12 @@ private slots:
 
     void trust();
     void skillInvalidityChange(ClientPlayer *player);
+
+    void onSpectateChanged(const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles);
+
+    // 第一人称观战视角
+    void enterFirstPersonSpectate(const QString &targetName);
+    void exitFirstPersonSpectate();
 
 signals:
     void restart();

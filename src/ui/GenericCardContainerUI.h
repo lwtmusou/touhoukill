@@ -77,6 +77,7 @@ public:
     }
 
     virtual void setPlayer(ClientPlayer *player);
+    void syncCardAreasFromPlayer();
     inline int getVotes()
     {
         return _m_votesGot;
@@ -106,6 +107,10 @@ public:
     virtual QGraphicsItem *getMouseClickReceiver() = 0;
     virtual void startHuaShen(QString generalName, QString skillName, QString general2Name, QString skill2Name);
     virtual void stopHuaShen();
+    QString huashenGeneralName() const { return _m_huashenGeneralName; }
+    QString huashenSkillName() const { return _m_huashenSkillName; }
+    QString huashenGeneral2Name() const { return _m_huashenGeneral2Name; }
+    QString huashenSkill2Name() const { return _m_huashenSkill2Name; }
     virtual void updateAvatarTooltip();
     virtual void setRoleShown(bool shown = false);
 

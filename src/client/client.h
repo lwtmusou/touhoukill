@@ -62,6 +62,7 @@ public:
 
     // other client requests
     void requestSurrender();
+    void requestSpectate(const QString &targetName);
 
     void disconnectFromHost();
     void replyToServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
@@ -126,6 +127,7 @@ public:
     void animate(const QVariant &animate_str);
     void cardLimitation(const QVariant &limit);
     void disableShow(const QVariant &args);
+    void spectateSync(const QVariant &arg);
     void setNullification(const QVariant &str);
     void enableSurrender(const QVariant &enabled);
     void exchangeKnownCards(const QVariant &players);
@@ -275,6 +277,11 @@ private:
     unsigned int _m_lastServerSerial;
     bool m_isObjectNameRecorded;
 
+    // 自由观战
+    QString m_spectateTargetName;
+    int m_lastSpectateSyncSerial;
+    QMap<QString, bool> m_savedPileOpenState; // true 表示观战同步前该牌堆已公开
+
     void updatePileNum();
     QString setPromptList(const QStringList &text);
     QString _processCardPattern(const QString &pattern);
@@ -346,6 +353,8 @@ signals:
 
     void move_cards_lost(int moveId, QList<CardsMoveStruct> moves);
     void move_cards_got(int moveId, QList<CardsMoveStruct> moves);
+
+    void spectate_changed(const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles);
 
     void skill_attached(const QString &skill_name, bool from_left);
     void skill_detached(const QString &skill_name, bool head = true);

@@ -7,6 +7,7 @@
 #include "pixmapanimation.h"
 #include "player.h"
 #include "protocol.h"
+#include "qsanbutton.h"
 #include "sprite.h"
 
 #include <QComboBox>
@@ -113,6 +114,7 @@ protected:
 
     void _adjustComponentZValues(bool killed = false) override;
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QPropertyAnimation *initializeBlurEffect(GraphicsPixmapHoverItem *icon);
