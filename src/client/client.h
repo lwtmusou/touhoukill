@@ -277,10 +277,10 @@ private:
     unsigned int _m_lastServerSerial;
     bool m_isObjectNameRecorded;
 
-    // 自由观战
+    // Free spectate
     QString m_spectateTargetName;
     int m_lastSpectateSyncSerial;
-    QMap<QString, bool> m_savedPileOpenState; // true 表示观战同步前该牌堆已公开
+    QMap<QString, bool> m_savedPileOpenState; // true if the pile was already open before spectate sync
 
     void updatePileNum();
     QString setPromptList(const QStringList &text);

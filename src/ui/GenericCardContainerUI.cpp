@@ -712,7 +712,7 @@ void PlayerCardContainer::_createRoleComboBox()
 
 void PlayerCardContainer::setPlayer(ClientPlayer *player)
 {
-    // 断开旧玩家信号，避免观战切换时重复绑定
+    // Disconnect old player signals to avoid duplicate bindings on spectate switch
     if (m_player != nullptr && m_player != player) {
         disconnect(m_player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
         disconnect(m_player, &ClientPlayer::general2_changed, this, &PlayerCardContainer::updateSmallAvatar);
@@ -855,7 +855,7 @@ void PlayerCardContainer::syncCardAreasFromPlayer()
         if (!m_player->getPile(pileName).isEmpty())
             updatePile(pileName);
     }
-    // "shown_card" 是特殊牌堆，不在 getPileNames() 中
+    // "shown_card" is a special pile not included in getPileNames()
     if (!m_player->getShownHandcards().isEmpty())
         updatePile("shown_card");
 

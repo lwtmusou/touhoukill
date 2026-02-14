@@ -2729,7 +2729,7 @@ void RoomScene::showPromptBox()
 
 void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 {
-    // 观战模式下不响应服务端操作请求
+    // Do not respond to server action requests while spectating
     if (m_isFirstPersonSpectating)
         return;
 
@@ -3800,7 +3800,7 @@ void RoomScene::killPlayer(const QString &who)
     const General *general = nullptr;
     m_roomMutex.lock();
 
-    // 观战目标死亡时先退出观战
+    // Exit spectate first when spectate target dies
     if (m_isFirstPersonSpectating && who == m_spectateTargetName)
         exitFirstPersonSpectate();
 
@@ -3838,7 +3838,7 @@ void RoomScene::killPlayer(const QString &who)
 
 void RoomScene::revivePlayer(const QString &who)
 {
-    // 自己复活时先退出观战
+    // Exit spectate first when self is revived
     if (m_isFirstPersonSpectating && who == Self->objectName())
         exitFirstPersonSpectate();
 
@@ -5395,7 +5395,7 @@ void RoomScene::onSpectateChanged(const QString &targetName, const QList<int> &h
     Q_UNUSED(handCardIds);
     Q_UNUSED(piles);
 
-    // 同一目标：增量刷新，避免退出+进入闪烁
+    // Same target: incremental refresh to avoid exit+enter flicker
     if (m_isFirstPersonSpectating && targetName == m_spectateTargetName && !targetName.isEmpty()) {
         QString targetHuashenGen = dashboard->huashenGeneralName();
         QString targetHuashenSkill = dashboard->huashenSkillName();
@@ -5444,7 +5444,7 @@ void RoomScene::enterFirstPersonSpectate(const QString &targetName)
     QString selfHuashenGen2 = dashboard->huashenGeneral2Name();
     QString selfHuashenSkill2 = dashboard->huashenSkill2Name();
 
-    // 交换玩家：Photo 显示 Self（已死亡），Dashboard 显示观战目标
+    // Swap players: Photo shows Self (dead), Dashboard shows spectate target
     name2photo.remove(targetName);
     hostPhoto->setPlayer(Self);
     hostPhoto->syncCardAreasFromPlayer();
@@ -5457,9 +5457,9 @@ void RoomScene::enterFirstPersonSpectate(const QString &targetName)
     dashboard->setPlayer(target);
     dashboard->syncContainerFromPlayer();
 
-    // 重排 photos 使观战目标的邻居正确分布在 Dashboard 两侧。
-    // 将目标从原位移至 Self 的隐含位置（环形末尾与开头之间），
-    // 然后从目标原位的下一个元素开始排列。
+    // Reorder photos so the spectate target's neighbors are correctly distributed around the Dashboard.
+    // Move the target from its original position to Self's implicit position (between ring end and start),
+    // then arrange starting from the next element after the target's original position.
     int pivotIndex = m_originalPhotosOrder.indexOf(hostPhoto);
     if (pivotIndex >= 0) {
         QList<Photo *> rotated;
@@ -5481,11 +5481,11 @@ void RoomScene::enterFirstPersonSpectate(const QString &targetName)
     hostPhoto->stopHuaShen();
     if (!selfHuashenGen.isEmpty() || !selfHuashenGen2.isEmpty())
         hostPhoto->startHuaShen(selfHuashenGen, selfHuashenSkill, selfHuashenGen2, selfHuashenSkill2);
-    // syncContainerFromPlayer 已调用 stopHuaShen
+    // syncContainerFromPlayer already called stopHuaShen
     if (!targetHuashenGen.isEmpty() || !targetHuashenGen2.isEmpty())
         dashboard->startHuaShen(targetHuashenGen, targetHuashenSkill, targetHuashenGen2, targetHuashenSkill2);
 
-    // 同步角色标识到观战目标（Self 死亡时 killPlayer 留下的是 Self 的角色）
+    // Sync role indicator to spectate target (killPlayer left Self's role when Self died)
     if (isHegemonyGameMode(ServerInfo.GameMode))
         dashboard->getHegemonyRoleComboBox()->fix(target->getRole() == "careerist" ? "careerist" : target->getRole());
     else
@@ -5521,7 +5521,7 @@ void RoomScene::exitFirstPersonSpectate()
         m_spectateProxyPhoto->syncCardAreasFromPlayer();
         if (target->isAlive()) {
             m_spectateProxyPhoto->revivePlayer();
-            // 还原角色标识到目标的实际角色
+            // Restore role indicator to the target's actual role
             if (isHegemonyGameMode(ServerInfo.GameMode))
                 m_spectateProxyPhoto->getHegemonyRoleComboBox()->fix(target->getRole() == "careerist" ? "careerist" : target->getRole());
             else
@@ -5540,7 +5540,7 @@ void RoomScene::exitFirstPersonSpectate()
         if (!targetHuashenGen.isEmpty() || !targetHuashenGen2.isEmpty())
             m_spectateProxyPhoto->startHuaShen(targetHuashenGen, targetHuashenSkill, targetHuashenGen2, targetHuashenSkill2);
     }
-    // syncContainerFromPlayer 已调用 stopHuaShen
+    // syncContainerFromPlayer already called stopHuaShen
     if (!selfHuashenGen.isEmpty() || !selfHuashenGen2.isEmpty())
         dashboard->startHuaShen(selfHuashenGen, selfHuashenSkill, selfHuashenGen2, selfHuashenSkill2);
 
@@ -5586,5 +5586,5 @@ void RoomScene::applySpectateUiLock(bool locked)
         cancel_button->setEnabled(false);
         discard_button->setEnabled(false);
     }
-    // 解锁时由 updateStatus 正常流程恢复控件状态
+    // On unlock, updateStatus normal flow restores widget states
 }

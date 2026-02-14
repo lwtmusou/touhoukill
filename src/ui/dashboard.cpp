@@ -1880,7 +1880,7 @@ void Dashboard::syncContainerFromPlayer()
     _m_pile_expanded.clear();
     _m_id_expanded.clear();
 
-    // 清除待完成动画引用，避免 deleteLater 后 UAF
+    // Clear pending animation refs to avoid UAF after deleteLater
     m_mutexCardItemsAnimationFinished.lock();
     _m_cardItemsAnimationFinished.clear();
     m_mutexCardItemsAnimationFinished.unlock();
@@ -1912,7 +1912,7 @@ void Dashboard::syncContainerFromPlayer()
             _m_equipBorders[i]->hide();
             _m_equipBorders[i]->stop();
         }
-        // 仅置空引用；按钮由 RoomScene::m_skillButtons 管理，通过 detachSkill 清理
+        // Only null the ref; buttons are managed by RoomScene::m_skillButtons via detachSkill
         _m_equipSkillBtns[i] = nullptr;
     }
     _mutexEquipAnim.unlock();
@@ -1994,7 +1994,7 @@ void Dashboard::syncContainerFromPlayer()
         if (!m_player->getPile(pileName).isEmpty())
             updatePile(pileName);
     }
-    // "shown_card" 是特殊牌堆，不在 getPileNames() 中
+    // "shown_card" is a special pile not included in getPileNames()
     if (!m_player->getShownHandcards().isEmpty())
         updatePile("shown_card");
 

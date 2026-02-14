@@ -388,7 +388,7 @@ void Photo::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
             return;
         }
         if (m_player == Self && RoomSceneInstance->isFirstPersonSpectating()) {
-            // 双击自己的代理 Photo 退出观战
+            // Double-click own proxy Photo to exit spectate
             ClientInstance->requestSpectate(QString());
             return;
         }

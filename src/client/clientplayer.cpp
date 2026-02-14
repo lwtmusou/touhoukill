@@ -153,8 +153,8 @@ QTextDocument *ClientPlayer::getMarkDoc() const
 
 void ClientPlayer::setPile(const QString &name, const QList<int> &card_ids)
 {
-    // 仅更新数据模型，不发出 pile_changed 信号。
-    // 调用方需在批量更新后自行触发 UI 刷新（如 syncContainerFromPlayer）。
+    // Only update the data model without emitting the pile_changed signal.
+    // Callers must trigger UI refresh (e.g. syncContainerFromPlayer) after batch updates.
     if (card_ids.isEmpty())
         piles.remove(name);
     else

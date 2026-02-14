@@ -528,7 +528,7 @@ private slots:
 
     void onSpectateChanged(const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles);
 
-    // 第一人称观战视角
+    // First-person spectate view
     void enterFirstPersonSpectate(const QString &targetName);
     void exitFirstPersonSpectate();
 

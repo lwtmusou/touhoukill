@@ -562,7 +562,7 @@ void Client::getCards(const QVariant &arg)
                 _getSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
         }
 
-        // 观战目标获得手牌时同步 known_cards
+        // Sync known_cards when spectate target gains hand cards
         if (!m_spectateTargetName.isEmpty() && move.to != nullptr && move.to->objectName() == m_spectateTargetName && dstPlace == Player::PlaceHand) {
             ClientPlayer *target = qobject_cast<ClientPlayer *>(move.to);
             if (target != nullptr) {
@@ -602,7 +602,7 @@ void Client::loseCards(const QVariant &arg)
                 _loseSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
         }
 
-        // 观战目标失去手牌时同步 known_cards
+        // Sync known_cards when spectate target loses hand cards
         if (!m_spectateTargetName.isEmpty() && move.from != nullptr && move.from->objectName() == m_spectateTargetName && srcPlace == Player::PlaceHand) {
             ClientPlayer *target = qobject_cast<ClientPlayer *>(move.from);
             if (target != nullptr) {
@@ -1351,15 +1351,15 @@ void Client::spectateSync(const QVariant &arg)
 
     QString targetName = args[1].toString();
 
-    // 还原旧观战目标的已知手牌和私有牌堆。
-    // 仅重置观战前本就不可见（含 -1）的牌堆，已公开的牌堆保持原状。
+    // Restore old spectate target's known hand cards and private piles.
+    // Only reset piles that were not visible (including -1) before spectating; keep already-open piles unchanged.
     if (!m_spectateTargetName.isEmpty()) {
         ClientPlayer *oldTarget = getPlayer(m_spectateTargetName);
         if (oldTarget != nullptr) {
             oldTarget->setCards(QList<int>());
             foreach (const QString &pileName, oldTarget->getPileNames()) {
                 if (m_savedPileOpenState.value(pileName, false))
-                    continue; // 观战前已公开的牌堆，保持原状
+                    continue; // Pile was already open before spectating, keep unchanged
                 int count = oldTarget->getPile(pileName).size();
                 QList<int> unknownIds;
                 for (int i = 0; i < count; ++i)
@@ -1381,7 +1381,7 @@ void Client::spectateSync(const QVariant &arg)
     if (target == nullptr)
         return;
 
-    // 先应用变身牌信息，复用 updateCard() 的 clone + WrappedCard 逻辑
+    // Apply modified card info first, reusing updateCard()'s clone + WrappedCard logic
     JsonArray modifiedCards = args[4].value<JsonArray>();
     foreach (const QVariant &mc, modifiedCards) {
         JsonArray cardInfo = mc.value<JsonArray>();
@@ -1402,7 +1402,7 @@ void Client::spectateSync(const QVariant &arg)
             cloned->setSkillName(skillName);
             cloned->setObjectName(objectName);
             WrappedCard *wrapped = Sanguosha->getWrappedCard(cardId);
-            // copyEverythingFrom 会接管 cloned 的所有权，不要 delete
+            // copyEverythingFrom takes ownership of cloned, do not delete
             if (wrapped != nullptr)
                 wrapped->copyEverythingFrom(cloned);
         }
@@ -1412,7 +1412,7 @@ void Client::spectateSync(const QVariant &arg)
     JsonUtils::tryParse(args[2], handCardIds);
     target->setCards(handCardIds);
 
-    // 记录牌堆在同步前的可见性（不含 -1 即为公开）
+    // Record pile visibility before sync (open if no -1 ids present)
     m_savedPileOpenState.clear();
     foreach (const QString &pileName, target->getPileNames()) {
         QList<int> ids = target->getPile(pileName);
@@ -1431,7 +1431,7 @@ void Client::spectateSync(const QVariant &arg)
         pilesMap[it.key()] = QVariant::fromValue(pileIds);
     }
 
-    // 清除同步快照中不存在的本地牌堆
+    // Clear local piles not present in the sync snapshot
     foreach (const QString &pileName, target->getPileNames()) {
         if (!syncedPileNames.contains(pileName))
             target->setPile(pileName, QList<int>());

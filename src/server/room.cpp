@@ -307,7 +307,7 @@ void Room::revivePlayer(ServerPlayer *player, bool initialize)
 {
     player->setAlive(true);
 
-    // 复活后不再允许观战
+    // Disallow spectating after revival
     clearSpectateState(player);
 
     player->throwAllMarks(false);
@@ -409,7 +409,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 
     m_alivePlayers.removeOne(victim);
 
-    // 清除所有正在观战该死亡玩家的观战者
+    // Clear all spectators watching this dying player
     clearSpectatorsOfTarget(victim);
 
     thread->trigger(BeforeGameOverJudge, this, data);
@@ -4534,7 +4534,7 @@ void Room::marshal(ServerPlayer *player)
         doNotify(player, S_COMMAND_SYNCHRONIZE_DISCARD_PILE, discard);
     }
 
-    // 重连时恢复观战状态
+    // Restore spectate state on reconnection
     ServerPlayer *spectateTarget = getSpectateTarget(player);
     if (spectateTarget != nullptr) {
         if (spectateTarget->isAlive())
@@ -5279,7 +5279,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 // pile open to specific players
                 || player->hasFlag("Global_GongxinOperator");
 
-            // 观战者可见涉及观战目标的所有卡牌移动
+            // Spectator can see all card moves involving the spectate target
             if (!isOpen) {
                 ServerPlayer *spectateTarget = getSpectateTarget(player);
                 if (spectateTarget != nullptr && (from == spectateTarget || to == spectateTarget))
@@ -5333,7 +5333,7 @@ void Room::sendSpectateSync(ServerPlayer *watcher, ServerPlayer *target)
         pilesObj[pileName] = JsonUtils::toJsonArray(target->getPile(pileName));
     arg << QVariant(pilesObj);
 
-    // 变身牌信息，复用 notifyUpdateCard 的序列化格式
+    // Modified card info, reusing notifyUpdateCard's serialization format
     JsonArray modifiedCards;
     auto appendModified = [&](int cardId) {
         Card *card = getCard(cardId);

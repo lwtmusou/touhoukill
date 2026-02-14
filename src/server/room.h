@@ -546,8 +546,8 @@ private:
 
     GeneralSelector *m_generalSelector;
 
-    // 自由观战
-    QMap<ServerPlayer *, ServerPlayer *> m_spectateTargets; // 观战者 -> 目标
+    // Free spectate
+    QMap<ServerPlayer *, ServerPlayer *> m_spectateTargets; // watcher -> target
     int m_spectateSyncSerial;
     QList<ServerPlayer *> getSpectatorsOf(ServerPlayer *target) const;
     ServerPlayer *getSpectateTarget(ServerPlayer *watcher) const;
