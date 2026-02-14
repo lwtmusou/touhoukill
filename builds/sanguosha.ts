@@ -2322,6 +2322,10 @@
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
+    <message>
+        <source>You cannot use free spectate while your character may still be revived.</source>
+        <translation>你的角色仍有可能复活，无法使用自由观战功能。</translation>
+    </message>
 </context>
 <context>
     <name>RoomScene</name>

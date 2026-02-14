@@ -443,6 +443,16 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 
     victim->detachAllSkills();
     thread->trigger(BuryVictim, this, data);
+
+    // Kick spectators who have become revivable after this death
+    QList<ServerPlayer *> revivableWatchers;
+    for (auto it = m_spectateTargets.constBegin(); it != m_spectateTargets.constEnd(); ++it) {
+        if (isDeadPlayerRevivable(it.key()))
+            revivableWatchers << it.key();
+    }
+    foreach (ServerPlayer *watcher, revivableWatchers)
+        clearSpectateState(watcher);
+
     if (!victim->isAlive() && Config.EnableAI && !victim->hasSkill("huanhun")) {
         bool expose_roles = true;
         foreach (ServerPlayer *player, m_alivePlayers) {
@@ -4537,7 +4547,9 @@ void Room::marshal(ServerPlayer *player)
     // Restore spectate state on reconnection
     ServerPlayer *spectateTarget = getSpectateTarget(player);
     if (spectateTarget != nullptr) {
-        if (spectateTarget->isAlive())
+        if (isDeadPlayerRevivable(player))
+            clearSpectateState(player);
+        else if (spectateTarget->isAlive())
             sendSpectateSync(player, spectateTarget);
         else
             clearSpectateState(player);
@@ -5308,6 +5320,17 @@ void Room::spectateCommand(ServerPlayer *player, const QVariant &arg)
         return;
     }
 
+    if (isDeadPlayerRevivable(player)) {
+        if (m_spectateTargets.contains(player))
+            clearSpectateState(player);
+
+        JsonArray body;
+        body << player->objectName();
+        body << QString(tr("You cannot use free spectate while your character may still be revived.").toUtf8().toBase64());
+        doNotify(player, S_COMMAND_SPEAK, body);
+        return;
+    }
+
     ServerPlayer *target = findPlayerByObjectName(targetName);
     if (target == nullptr || !target->isAlive())
         return;
@@ -5385,6 +5408,55 @@ QList<ServerPlayer *> Room::getSpectatorsOf(ServerPlayer *target) const
             result << it.key();
     }
     return result;
+}
+
+bool Room::isHuanhunDefinitelyImpossible(const ServerPlayer *player) const
+{
+    if (player == nullptr)
+        return true;
+
+    QString role = player->getRole();
+    if (role == "renegade")
+        return false; // renegade is always revivable via huanhun
+
+    int loyalist = 0, rebel = 0, renegade = 0;
+    foreach (ServerPlayer *p, m_alivePlayers) {
+        if (p->getRole() == "rebel")
+            rebel++;
+        else if (p->getRole() == "renegde")
+            renegade++;
+        else if (p->getRole() == "loyalist" || p->getRole() == "lord")
+            loyalist++;
+    }
+
+    if (role == "rebel")
+        return loyalist == 0 && renegade == 0;
+    else if (role == "loyalist" || role == "lord")
+        return rebel == 0 && renegade == 0;
+    else
+        return true; // unknown role, treat as non-revivable
+}
+
+bool Room::isDeadPlayerRevivable(const ServerPlayer *player) const
+{
+    if (player == nullptr || player->isAlive())
+        return false;
+
+    // Hulao Pass: non-lord dead players always revive via reforming
+    if (mode == "04_1v3" && !player->isLord())
+        return true;
+
+    // TailorFuzhong: player name in room tag means pending revival
+    if (getTag("tailorfuzhong").toStringList().contains(player->objectName()))
+        return true;
+
+    // Huanhun: strict check — only allow spectate when revival is
+    // absolutely impossible regardless of future death sequences.
+    // Relaxed when only 2 players remain alive (game is nearly over).
+    if (player->hasSkill("huanhun") && !isHuanhunDefinitelyImpossible(player) && m_alivePlayers.count() > 2)
+        return true;
+
+    return false;
 }
 
 ServerPlayer *Room::getSpectateTarget(ServerPlayer *watcher) const

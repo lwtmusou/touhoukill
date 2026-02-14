@@ -229,6 +229,9 @@ public:
     bool notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> move, bool forceVisible, QList<ServerPlayer *> players = QList<ServerPlayer *>());
     bool notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const QString &value = QString());
     QList<ServerPlayer *> getSpectatorsOf(ServerPlayer *target) const;
+
+    bool isHuanhunDefinitelyImpossible(const ServerPlayer *player) const;
+    bool isDeadPlayerRevivable(const ServerPlayer *player) const;
     bool notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard);
     bool broadcastUpdateCard(const QList<ServerPlayer *> &players, int cardId, const Card *newCard);
     bool notifyResetCard(ServerPlayer *player, int cardId);
