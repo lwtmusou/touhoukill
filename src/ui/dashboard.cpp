@@ -1384,7 +1384,7 @@ void Dashboard::expandSpecialCard()
         return;
     // then expand
     bool ok = false;
-    int id = Self->property("chaoren").toInt(&ok);
+    int id = m_player->property("chaoren").toInt(&ok);
     if (ok && id > -1) {
         _m_id_expanded << id;
 
@@ -2006,6 +2006,7 @@ void Dashboard::syncContainerFromPlayer()
     updateDrankState();
     updatePhase();
     updateMarks();
+    expandSpecialCard();
 }
 
 void Dashboard::onHeadStateChanged()

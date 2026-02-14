@@ -5352,6 +5352,7 @@ void Room::sendSpectateSync(ServerPlayer *watcher, ServerPlayer *target)
     }
     arg << QVariant(modifiedCards);
 
+    notifyProperty(watcher, target, "chaoren");
     doNotify(watcher, S_COMMAND_SPECTATE_SYNC, arg);
 }
 

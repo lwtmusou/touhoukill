@@ -2455,6 +2455,8 @@ public:
             if (notifyProperty) {
                 p->setProperty("chaoren", new_firstcardProperty);
                 room->notifyProperty(p, p, "chaoren");
+                foreach (ServerPlayer *watcher, room->getSpectatorsOf(p))
+                    room->notifyProperty(watcher, p, "chaoren");
             }
 
             if (!p->hasSkill(objectName()))
@@ -2484,7 +2486,10 @@ public:
                 l.type = "$chaorendrawpile";
                 l.card_str = IntList2StringList(watchlist).join("+");
 
-                room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, l.toJsonValue());
+                QVariant logValue = l.toJsonValue();
+                room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, logValue);
+                foreach (ServerPlayer *watcher, room->getSpectatorsOf(p))
+                    room->doNotify(watcher, QSanProtocol::S_COMMAND_LOG_SKILL, logValue);
             }
         }
     }
