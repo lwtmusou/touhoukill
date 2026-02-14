@@ -169,6 +169,13 @@ class RoomScene : public QGraphicsScene
     Q_OBJECT
 
 public:
+    // Perspective source types for UI layer
+    enum PerspectiveSource
+    {
+        PerspectiveSourceNone = 0,
+        PerspectiveSourceSpectate
+    };
+
     explicit RoomScene(QMainWindow *main_window);
     ~RoomScene() override;
     void changeTextEditBackground();
@@ -185,9 +192,14 @@ public:
     void changeTableBg();
     void changeTableBg(const QString &tableBgImage_path);
 
-    bool isFirstPersonSpectating() const
+    bool isPerspectiveSwitched() const
     {
-        return m_isFirstPersonSpectating;
+        return m_isPerspectiveSwitched;
+    }
+
+    bool isPerspectiveInputLocked() const
+    {
+        return m_perspectiveInputLocked;
     }
 
     inline bool isCancelButtonEnabled() const
@@ -297,7 +309,7 @@ private:
     GenericCardContainer *_getGenericCardContainer(Player::Place place, Player *player);
     const ClientPlayer *dashboardPlayer() const;
     void refreshItem2PlayerMap();
-    void applySpectateUiLock(bool locked);
+    void applyPerspectiveInputLock(bool locked);
     QMap<int, QList<QList<CardItem *>>> _m_cardsMoveStash;
     Button *add_robot;
     Button *fill_robots;
@@ -327,10 +339,12 @@ private:
     QList<QGraphicsPixmapItem *> role_items;
     CardContainer *card_container;
     CardContainer *pileContainer;
-    Photo *m_spectateProxyPhoto = nullptr;
-    bool m_isFirstPersonSpectating = false;
+    Photo *m_perspectiveProxyPhoto = nullptr;
+    bool m_isPerspectiveSwitched = false;
+    bool m_perspectiveInputLocked = false;
+    PerspectiveSource m_perspectiveSource = PerspectiveSourceNone;
     QList<Photo *> m_originalPhotosOrder;
-    QString m_spectateTargetName;
+    QString m_perspectiveTargetName;
 
     QList<QSanSkillButton *> m_skillButtons;
 
@@ -526,11 +540,11 @@ private slots:
     void trust();
     void skillInvalidityChange(ClientPlayer *player);
 
-    void onSpectateChanged(const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles);
+    void onPerspectiveChanged(const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles);
 
-    // First-person spectate view
-    void enterFirstPersonSpectate(const QString &targetName);
-    void exitFirstPersonSpectate();
+    // Perspective view
+    void enterPerspectiveView(const QString &targetName, PerspectiveSource source, bool lockInput);
+    void exitPerspectiveView();
 
 signals:
     void restart();

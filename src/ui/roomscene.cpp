@@ -153,7 +153,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(pile_reset()), this, SLOT(resetPiles()));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
-    connect(ClientInstance, &Client::spectate_changed, this, &RoomScene::onSpectateChanged);
+    connect(ClientInstance, &Client::perspective_changed, this, &RoomScene::onPerspectiveChanged);
     connect(ClientInstance, SIGNAL(dashboard_death(QString)), this, SLOT(setDashboardShadow(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString, int)), this, SLOT(showCard(QString, int)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>, QList<int>)));
@@ -1544,7 +1544,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         return;
     if (chat_edit->hasFocus())
         return;
-    if (m_isFirstPersonSpectating)
+    if (m_perspectiveInputLocked)
         return;
 
     bool control_is_down = ((event->modifiers() & Qt::ControlModifier) != 0u);
@@ -2729,8 +2729,8 @@ void RoomScene::showPromptBox()
 
 void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 {
-    // Do not respond to server action requests while spectating
-    if (m_isFirstPersonSpectating)
+    // Do not respond to server action requests while perspective input is locked
+    if (m_perspectiveInputLocked)
         return;
 
     foreach (QSanSkillButton *button, m_skillButtons) {
@@ -3800,9 +3800,9 @@ void RoomScene::killPlayer(const QString &who)
     const General *general = nullptr;
     m_roomMutex.lock();
 
-    // Exit spectate first when spectate target dies
-    if (m_isFirstPersonSpectating && who == m_spectateTargetName)
-        exitFirstPersonSpectate();
+    // Exit perspective view when spectate target dies (only for spectate mode)
+    if (m_perspectiveSource == PerspectiveSourceSpectate && who == m_perspectiveTargetName)
+        exitPerspectiveView();
 
     ClientPlayer *player = ClientInstance->getPlayer(who);
     if (player != nullptr) {
@@ -3838,9 +3838,9 @@ void RoomScene::killPlayer(const QString &who)
 
 void RoomScene::revivePlayer(const QString &who)
 {
-    // Exit spectate first when self is revived
-    if (m_isFirstPersonSpectating && who == Self->objectName())
-        exitFirstPersonSpectate();
+    // Exit perspective view when local player is revived (only for spectate mode)
+    if (m_perspectiveSource == PerspectiveSourceSpectate && who == Self->objectName())
+        exitPerspectiveView();
 
     if (who == Self->objectName()) {
         dashboard->revivePlayer();
@@ -4230,8 +4230,8 @@ void RoomScene::onGameStart()
 
 void RoomScene::freeze()
 {
-    if (m_isFirstPersonSpectating)
-        exitFirstPersonSpectate();
+    if (m_isPerspectiveSwitched)
+        exitPerspectiveView();
 
     dashboard->setEnabled(false);
     dashboard->stopHuaShen();
@@ -5390,13 +5390,13 @@ void RoomScene::addlog(const QStringList &log)
     log_box->appendLog(log);
 }
 
-void RoomScene::onSpectateChanged(const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles)
+void RoomScene::onPerspectiveChanged(const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles)
 {
     Q_UNUSED(handCardIds);
     Q_UNUSED(piles);
 
     // Same target: incremental refresh to avoid exit+enter flicker
-    if (m_isFirstPersonSpectating && targetName == m_spectateTargetName && !targetName.isEmpty()) {
+    if (m_isPerspectiveSwitched && targetName == m_perspectiveTargetName && !targetName.isEmpty()) {
         QString targetHuashenGen = dashboard->huashenGeneralName();
         QString targetHuashenSkill = dashboard->huashenSkillName();
         QString targetHuashenGen2 = dashboard->huashenGeneral2Name();
@@ -5410,16 +5410,16 @@ void RoomScene::onSpectateChanged(const QString &targetName, const QList<int> &h
         return;
     }
 
-    if (m_isFirstPersonSpectating)
-        exitFirstPersonSpectate();
+    if (m_isPerspectiveSwitched)
+        exitPerspectiveView();
 
     if (targetName.isEmpty())
         return;
 
-    enterFirstPersonSpectate(targetName);
+    enterPerspectiveView(targetName, PerspectiveSourceSpectate, true);
 }
 
-void RoomScene::enterFirstPersonSpectate(const QString &targetName)
+void RoomScene::enterPerspectiveView(const QString &targetName, PerspectiveSource source, bool lockInput)
 {
     ClientPlayer *target = ClientInstance->getPlayer(targetName);
     if (target == nullptr || !target->isAlive())
@@ -5430,9 +5430,10 @@ void RoomScene::enterFirstPersonSpectate(const QString &targetName)
         return;
 
     m_originalPhotosOrder = photos;
-    m_spectateTargetName = targetName;
-    m_isFirstPersonSpectating = true;
-    m_spectateProxyPhoto = hostPhoto;
+    m_perspectiveTargetName = targetName;
+    m_isPerspectiveSwitched = true;
+    m_perspectiveSource = source;
+    m_perspectiveProxyPhoto = hostPhoto;
 
     QString targetHuashenGen = hostPhoto->huashenGeneralName();
     QString targetHuashenSkill = hostPhoto->huashenSkillName();
@@ -5444,7 +5445,7 @@ void RoomScene::enterFirstPersonSpectate(const QString &targetName)
     QString selfHuashenGen2 = dashboard->huashenGeneral2Name();
     QString selfHuashenSkill2 = dashboard->huashenSkill2Name();
 
-    // Swap players: Photo shows Self (dead), Dashboard shows spectate target
+    // Swap players: Photo shows Self, Dashboard shows perspective target
     name2photo.remove(targetName);
     hostPhoto->setPlayer(Self);
     hostPhoto->syncCardAreasFromPlayer();
@@ -5457,7 +5458,7 @@ void RoomScene::enterFirstPersonSpectate(const QString &targetName)
     dashboard->setPlayer(target);
     dashboard->syncContainerFromPlayer();
 
-    // Reorder photos so the spectate target's neighbors are correctly distributed around the Dashboard.
+    // Reorder photos so the perspective target's neighbors are correctly distributed around the Dashboard.
     // Move the target from its original position to Self's implicit position (between ring end and start),
     // then arrange starting from the next element after the target's original position.
     int pivotIndex = m_originalPhotosOrder.indexOf(hostPhoto);
@@ -5475,7 +5476,7 @@ void RoomScene::enterFirstPersonSpectate(const QString &targetName)
 
     refreshItem2PlayerMap();
     updateTable();
-    applySpectateUiLock(true);
+    applyPerspectiveInputLock(lockInput);
     dashboard->revivePlayer();
 
     hostPhoto->stopHuaShen();
@@ -5485,19 +5486,19 @@ void RoomScene::enterFirstPersonSpectate(const QString &targetName)
     if (!targetHuashenGen.isEmpty() || !targetHuashenGen2.isEmpty())
         dashboard->startHuaShen(targetHuashenGen, targetHuashenSkill, targetHuashenGen2, targetHuashenSkill2);
 
-    // Sync role indicator to spectate target (killPlayer left Self's role when Self died)
+    // Sync role indicator to perspective target
     if (isHegemonyGameMode(ServerInfo.GameMode))
         dashboard->getHegemonyRoleComboBox()->fix(target->getRole() == "careerist" ? "careerist" : target->getRole());
     else
         dashboard->getRoleComboBox()->fix(target->getRole());
 }
 
-void RoomScene::exitFirstPersonSpectate()
+void RoomScene::exitPerspectiveView()
 {
-    if (!m_isFirstPersonSpectating || m_spectateTargetName.isEmpty())
+    if (!m_isPerspectiveSwitched || m_perspectiveTargetName.isEmpty())
         return;
 
-    ClientPlayer *target = ClientInstance->getPlayer(m_spectateTargetName);
+    ClientPlayer *target = ClientInstance->getPlayer(m_perspectiveTargetName);
 
     QString targetHuashenGen = dashboard->huashenGeneralName();
     QString targetHuashenSkill = dashboard->huashenSkillName();
@@ -5508,37 +5509,37 @@ void RoomScene::exitFirstPersonSpectate()
     QString selfHuashenSkill;
     QString selfHuashenGen2;
     QString selfHuashenSkill2;
-    if (m_spectateProxyPhoto != nullptr) {
-        selfHuashenGen = m_spectateProxyPhoto->huashenGeneralName();
-        selfHuashenSkill = m_spectateProxyPhoto->huashenSkillName();
-        selfHuashenGen2 = m_spectateProxyPhoto->huashenGeneral2Name();
-        selfHuashenSkill2 = m_spectateProxyPhoto->huashenSkill2Name();
+    if (m_perspectiveProxyPhoto != nullptr) {
+        selfHuashenGen = m_perspectiveProxyPhoto->huashenGeneralName();
+        selfHuashenSkill = m_perspectiveProxyPhoto->huashenSkillName();
+        selfHuashenGen2 = m_perspectiveProxyPhoto->huashenGeneral2Name();
+        selfHuashenSkill2 = m_perspectiveProxyPhoto->huashenSkill2Name();
     }
 
     name2photo.remove(Self->objectName());
-    if (target != nullptr && m_spectateProxyPhoto != nullptr) {
-        m_spectateProxyPhoto->setPlayer(target);
-        m_spectateProxyPhoto->syncCardAreasFromPlayer();
+    if (target != nullptr && m_perspectiveProxyPhoto != nullptr) {
+        m_perspectiveProxyPhoto->setPlayer(target);
+        m_perspectiveProxyPhoto->syncCardAreasFromPlayer();
         if (target->isAlive()) {
-            m_spectateProxyPhoto->revivePlayer();
+            m_perspectiveProxyPhoto->revivePlayer();
             // Restore role indicator to the target's actual role
             if (isHegemonyGameMode(ServerInfo.GameMode))
-                m_spectateProxyPhoto->getHegemonyRoleComboBox()->fix(target->getRole() == "careerist" ? "careerist" : target->getRole());
+                m_perspectiveProxyPhoto->getHegemonyRoleComboBox()->fix(target->getRole() == "careerist" ? "careerist" : target->getRole());
             else
-                m_spectateProxyPhoto->getRoleComboBox()->fix(target->getRole());
+                m_perspectiveProxyPhoto->getRoleComboBox()->fix(target->getRole());
         } else {
-            m_spectateProxyPhoto->killPlayer();
+            m_perspectiveProxyPhoto->killPlayer();
         }
-        name2photo[target->objectName()] = m_spectateProxyPhoto;
+        name2photo[target->objectName()] = m_perspectiveProxyPhoto;
     }
 
     dashboard->setPlayer(Self);
     dashboard->syncContainerFromPlayer();
 
-    if (m_spectateProxyPhoto != nullptr) {
-        m_spectateProxyPhoto->stopHuaShen();
+    if (m_perspectiveProxyPhoto != nullptr) {
+        m_perspectiveProxyPhoto->stopHuaShen();
         if (!targetHuashenGen.isEmpty() || !targetHuashenGen2.isEmpty())
-            m_spectateProxyPhoto->startHuaShen(targetHuashenGen, targetHuashenSkill, targetHuashenGen2, targetHuashenSkill2);
+            m_perspectiveProxyPhoto->startHuaShen(targetHuashenGen, targetHuashenSkill, targetHuashenGen2, targetHuashenSkill2);
     }
     // syncContainerFromPlayer already called stopHuaShen
     if (!selfHuashenGen.isEmpty() || !selfHuashenGen2.isEmpty())
@@ -5546,14 +5547,15 @@ void RoomScene::exitFirstPersonSpectate()
 
     photos = m_originalPhotosOrder;
 
-    m_spectateProxyPhoto = nullptr;
-    m_spectateTargetName.clear();
-    m_isFirstPersonSpectating = false;
+    m_perspectiveProxyPhoto = nullptr;
+    m_perspectiveTargetName.clear();
+    m_isPerspectiveSwitched = false;
+    m_perspectiveSource = PerspectiveSourceNone;
     m_originalPhotosOrder.clear();
 
     refreshItem2PlayerMap();
     updateTable();
-    applySpectateUiLock(false);
+    applyPerspectiveInputLock(false);
     dashboard->killPlayer();
     dashboard->setDeathColor();
 }
@@ -5576,8 +5578,9 @@ void RoomScene::refreshItem2PlayerMap()
     }
 }
 
-void RoomScene::applySpectateUiLock(bool locked)
+void RoomScene::applyPerspectiveInputLock(bool locked)
 {
+    m_perspectiveInputLocked = locked;
     if (locked) {
         dashboard->disableAllCards();
         foreach (QSanSkillButton *btn, m_skillButtons)

@@ -384,12 +384,12 @@ void Photo::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if (Self != nullptr && m_player != nullptr && !Self->isAlive()) {
         if (m_player->isAlive()) {
-            ClientInstance->requestSpectate(m_player->objectName());
+            ClientInstance->requestPerspectiveSwitch(m_player->objectName());
             return;
         }
-        if (m_player == Self && RoomSceneInstance->isFirstPersonSpectating()) {
-            // Double-click own proxy Photo to exit spectate
-            ClientInstance->requestSpectate(QString());
+        if (m_player == Self && RoomSceneInstance->isPerspectiveSwitched()) {
+            // Double-click own proxy Photo to exit perspective view
+            ClientInstance->requestPerspectiveSwitch(QString());
             return;
         }
     }

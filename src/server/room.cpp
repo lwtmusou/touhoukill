@@ -54,7 +54,7 @@ Room::Room(QObject *parent, const QString &mode)
     , has_provided(false)
     , provider(nullptr)
     , m_fillAGWho(nullptr)
-    , m_spectateSyncSerial(0)
+    , m_perspectiveSyncSerial(0)
 {
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
@@ -106,7 +106,7 @@ void Room::initCallbacks()
     //Client request
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
     m_callbacks[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
-    m_callbacks[S_COMMAND_SPECTATE_REQUEST] = &Room::spectateCommand;
+    m_callbacks[S_COMMAND_PERSPECTIVE_REQUEST] = &Room::spectateCommand;
 }
 
 ServerPlayer *Room::getCurrent() const
@@ -308,7 +308,7 @@ void Room::revivePlayer(ServerPlayer *player, bool initialize)
     player->setAlive(true);
 
     // Disallow spectating after revival
-    clearSpectateState(player);
+    clearPerspectiveViewer(player);
 
     player->throwAllMarks(false);
     broadcastProperty(player, "alive");
@@ -409,8 +409,8 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 
     m_alivePlayers.removeOne(victim);
 
-    // Clear all spectators watching this dying player
-    clearSpectatorsOfTarget(victim);
+    // Clear all perspective viewers watching this dying player
+    clearAllPerspectiveViewersOf(victim);
 
     thread->trigger(BeforeGameOverJudge, this, data);
     death = data.value<DeathStruct>();
@@ -444,14 +444,14 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
     victim->detachAllSkills();
     thread->trigger(BuryVictim, this, data);
 
-    // Kick spectators who have become revivable after this death
+    // Kick spectate viewers who have become revivable after this death
     QList<ServerPlayer *> revivableWatchers;
-    for (auto it = m_spectateTargets.constBegin(); it != m_spectateTargets.constEnd(); ++it) {
-        if (isDeadPlayerRevivable(it.key()))
+    for (auto it = m_perspectiveViewers.constBegin(); it != m_perspectiveViewers.constEnd(); ++it) {
+        if (it.value().source == PerspectiveSpectate && isDeadPlayerRevivable(it.key()))
             revivableWatchers << it.key();
     }
     foreach (ServerPlayer *watcher, revivableWatchers)
-        clearSpectateState(watcher);
+        clearPerspectiveViewer(watcher);
 
     if (!victim->isAlive() && Config.EnableAI && !victim->hasSkill("huanhun")) {
         bool expose_roles = true;
@@ -804,6 +804,10 @@ bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, co
         player->m_expectedReplyCommand = m_requestResponsePair[command];
     else
         player->m_expectedReplyCommand = command;
+
+    // [PERSPECTIVE EXTENSION POINT] Future: check getCommandProxy(player)
+    // If a proxy exists, redirect this request to the proxy player instead.
+    // The proxy's client will need to know it's acting on behalf of `player`.
 
     player->invoke(&packet);
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
@@ -3910,6 +3914,10 @@ void Room::processResponse(ServerPlayer *player, const Packet *packet)
     else
         success = true;
 
+    // [PERSPECTIVE EXTENSION POINT] Future: check getProxiedPlayer(player)
+    // If this player is a proxy, route the response to the proxied player's
+    // semaphore so that getResult() on the original player unblocks.
+
     if (!success) {
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
         return;
@@ -4544,15 +4552,16 @@ void Room::marshal(ServerPlayer *player)
         doNotify(player, S_COMMAND_SYNCHRONIZE_DISCARD_PILE, discard);
     }
 
-    // Restore spectate state on reconnection
-    ServerPlayer *spectateTarget = getSpectateTarget(player);
-    if (spectateTarget != nullptr) {
-        if (isDeadPlayerRevivable(player))
-            clearSpectateState(player);
-        else if (spectateTarget->isAlive())
-            sendSpectateSync(player, spectateTarget);
+    // Restore perspective state on reconnection
+    ServerPlayer *perspectiveTarget = getPerspectiveTarget(player);
+    PerspectiveSource perspectiveSource = getPerspectiveSource(player);
+    if (perspectiveTarget != nullptr) {
+        if (perspectiveSource == PerspectiveSpectate && isDeadPlayerRevivable(player))
+            clearPerspectiveViewer(player);
+        else if (perspectiveTarget->isAlive())
+            sendPerspectiveSync(player, perspectiveTarget);
         else
-            clearSpectateState(player);
+            clearPerspectiveViewer(player);
     }
 }
 
@@ -5291,10 +5300,10 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 // pile open to specific players
                 || player->hasFlag("Global_GongxinOperator");
 
-            // Spectator can see all card moves involving the spectate target
+            // Perspective viewer can see all card moves involving the perspective target
             if (!isOpen) {
-                ServerPlayer *spectateTarget = getSpectateTarget(player);
-                if (spectateTarget != nullptr && (from == spectateTarget || to == spectateTarget))
+                ServerPlayer *perspectiveTarget = getPerspectiveTarget(player);
+                if (perspectiveTarget != nullptr && (from == perspectiveTarget || to == perspectiveTarget))
                     isOpen = true;
             }
 
@@ -5316,13 +5325,13 @@ void Room::spectateCommand(ServerPlayer *player, const QVariant &arg)
     QString targetName = arg.toString();
 
     if (targetName.isEmpty()) {
-        clearSpectateState(player);
+        clearPerspectiveViewer(player);
         return;
     }
 
     if (isDeadPlayerRevivable(player)) {
-        if (m_spectateTargets.contains(player))
-            clearSpectateState(player);
+        if (m_perspectiveViewers.contains(player))
+            clearPerspectiveViewer(player);
 
         JsonArray body;
         body << player->objectName();
@@ -5335,19 +5344,31 @@ void Room::spectateCommand(ServerPlayer *player, const QVariant &arg)
     if (target == nullptr || !target->isAlive())
         return;
 
-    if (m_spectateTargets.contains(player))
-        clearSpectateState(player);
+    if (m_perspectiveViewers.contains(player))
+        clearPerspectiveViewer(player);
 
-    m_spectateTargets[player] = target;
-    sendSpectateSync(player, target);
+    addPerspectiveViewer(player, target, PerspectiveSpectate);
+    sendPerspectiveSync(player, target);
 }
 
-void Room::sendSpectateSync(ServerPlayer *watcher, ServerPlayer *target)
+void Room::addPerspectiveViewer(ServerPlayer *viewer, ServerPlayer *target, PerspectiveSource source)
 {
-    m_spectateSyncSerial++;
+    if (viewer == nullptr || target == nullptr)
+        return;
+    m_perspectiveViewers[viewer] = PerspectiveEntry(target, source);
+}
+
+Room::PerspectiveSource Room::getPerspectiveSource(ServerPlayer *viewer) const
+{
+    return m_perspectiveViewers.value(viewer).source;
+}
+
+void Room::sendPerspectiveSync(ServerPlayer *viewer, ServerPlayer *target)
+{
+    m_perspectiveSyncSerial++;
 
     JsonArray arg;
-    arg << m_spectateSyncSerial;
+    arg << m_perspectiveSyncSerial;
     arg << target->objectName();
     arg << JsonUtils::toJsonArray(target->handCards());
 
@@ -5375,36 +5396,36 @@ void Room::sendSpectateSync(ServerPlayer *watcher, ServerPlayer *target)
     }
     arg << QVariant(modifiedCards);
 
-    notifyProperty(watcher, target, "chaoren");
-    doNotify(watcher, S_COMMAND_SPECTATE_SYNC, arg);
+    notifyProperty(viewer, target, "chaoren");
+    doNotify(viewer, S_COMMAND_PERSPECTIVE_SYNC, arg);
 }
 
-void Room::clearSpectateState(ServerPlayer *watcher)
+void Room::clearPerspectiveViewer(ServerPlayer *viewer)
 {
-    m_spectateTargets.remove(watcher);
+    m_perspectiveViewers.remove(viewer);
 
-    m_spectateSyncSerial++;
+    m_perspectiveSyncSerial++;
     JsonArray arg;
-    arg << m_spectateSyncSerial;
+    arg << m_perspectiveSyncSerial;
     arg << QString();
     arg << JsonUtils::toJsonArray(QList<int>());
     arg << QVariant(JsonObject());
     arg << QVariant(JsonArray());
-    doNotify(watcher, S_COMMAND_SPECTATE_SYNC, arg);
+    doNotify(viewer, S_COMMAND_PERSPECTIVE_SYNC, arg);
 }
 
-void Room::clearSpectatorsOfTarget(ServerPlayer *target)
+void Room::clearAllPerspectiveViewersOf(ServerPlayer *target)
 {
-    QList<ServerPlayer *> watchers = getSpectatorsOf(target);
-    foreach (ServerPlayer *watcher, watchers)
-        clearSpectateState(watcher);
+    QList<ServerPlayer *> viewers = getPerspectiveViewersOf(target);
+    foreach (ServerPlayer *viewer, viewers)
+        clearPerspectiveViewer(viewer);
 }
 
-QList<ServerPlayer *> Room::getSpectatorsOf(ServerPlayer *target) const
+QList<ServerPlayer *> Room::getPerspectiveViewersOf(ServerPlayer *target) const
 {
     QList<ServerPlayer *> result;
-    for (auto it = m_spectateTargets.constBegin(); it != m_spectateTargets.constEnd(); ++it) {
-        if (it.value() == target)
+    for (auto it = m_perspectiveViewers.constBegin(); it != m_perspectiveViewers.constEnd(); ++it) {
+        if (it.value().target == target)
             result << it.key();
     }
     return result;
@@ -5459,9 +5480,24 @@ bool Room::isDeadPlayerRevivable(const ServerPlayer *player) const
     return false;
 }
 
-ServerPlayer *Room::getSpectateTarget(ServerPlayer *watcher) const
+ServerPlayer *Room::getPerspectiveTarget(ServerPlayer *viewer) const
 {
-    return m_spectateTargets.value(watcher, nullptr);
+    return m_perspectiveViewers.value(viewer).target;
+}
+
+ServerPlayer *Room::getCommandProxy(ServerPlayer *player) const
+{
+    // Future: when PerspectiveControl is active, return the controller.
+    // For now, always return nullptr (no proxy).
+    Q_UNUSED(player);
+    return nullptr;
+}
+
+ServerPlayer *Room::getProxiedPlayer(ServerPlayer *proxy) const
+{
+    // Future: reverse lookup of getCommandProxy.
+    Q_UNUSED(proxy);
+    return nullptr;
 }
 
 void Room::notifySkillInvoked(ServerPlayer *player, const QString &skill_name)

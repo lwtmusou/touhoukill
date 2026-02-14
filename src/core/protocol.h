@@ -150,8 +150,8 @@ enum CommandType
     S_COMMAND_HEARTBEAT,
     S_COMMAND_PRESHOW,
     S_COMMAND_DISABLE_SHOW,
-    S_COMMAND_SPECTATE_REQUEST, // Client -> Server: request to spectate a player (dead players only)
-    S_COMMAND_SPECTATE_SYNC // Server -> Client: full visible state snapshot of the spectate target
+    S_COMMAND_PERSPECTIVE_REQUEST, // Client -> Server: request to switch perspective (dead players only for spectate)
+    S_COMMAND_PERSPECTIVE_SYNC // Server -> Client: full visible state snapshot of the perspective target
 };
 
 enum GameEventType

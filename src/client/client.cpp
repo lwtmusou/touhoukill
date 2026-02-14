@@ -70,7 +70,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
     m_callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
     m_callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
-    m_callbacks[S_COMMAND_SPECTATE_SYNC] = &Client::spectateSync;
+    m_callbacks[S_COMMAND_PERSPECTIVE_SYNC] = &Client::perspectiveSync;
     m_callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
     m_callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     m_callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
@@ -137,7 +137,7 @@ Client::Client(QObject *parent, const QString &filename)
 
     m_noNullificationThisTime = false;
     m_noNullificationTrickName = ".";
-    m_lastSpectateSyncSerial = 0;
+    m_lastPerspectiveSyncSerial = 0;
 
     Self = new ClientPlayer(this);
     Self->setScreenName(Config.UserName);
@@ -563,7 +563,7 @@ void Client::getCards(const QVariant &arg)
         }
 
         // Sync known_cards when spectate target gains hand cards
-        if (!m_spectateTargetName.isEmpty() && move.to != nullptr && move.to->objectName() == m_spectateTargetName && dstPlace == Player::PlaceHand) {
+        if (!m_perspectiveTargetName.isEmpty() && move.to != nullptr && move.to->objectName() == m_perspectiveTargetName && dstPlace == Player::PlaceHand) {
             ClientPlayer *target = qobject_cast<ClientPlayer *>(move.to);
             if (target != nullptr) {
                 foreach (int card_id, move.card_ids) {
@@ -603,7 +603,7 @@ void Client::loseCards(const QVariant &arg)
         }
 
         // Sync known_cards when spectate target loses hand cards
-        if (!m_spectateTargetName.isEmpty() && move.from != nullptr && move.from->objectName() == m_spectateTargetName && srcPlace == Player::PlaceHand) {
+        if (!m_perspectiveTargetName.isEmpty() && move.from != nullptr && move.from->objectName() == m_perspectiveTargetName && srcPlace == Player::PlaceHand) {
             ClientPlayer *target = qobject_cast<ClientPlayer *>(move.from);
             if (target != nullptr) {
                 foreach (int card_id, move.card_ids)
@@ -1333,28 +1333,28 @@ void Client::requestSurrender()
     onPlayerResponseCard(new SurrenderCard);
 }
 
-void Client::requestSpectate(const QString &targetName)
+void Client::requestPerspectiveSwitch(const QString &targetName)
 {
-    notifyServer(S_COMMAND_SPECTATE_REQUEST, targetName);
+    notifyServer(S_COMMAND_PERSPECTIVE_REQUEST, targetName);
 }
 
-void Client::spectateSync(const QVariant &arg)
+void Client::perspectiveSync(const QVariant &arg)
 {
     JsonArray args = arg.value<JsonArray>();
     if (args.size() < 5)
         return;
 
     int syncSerial = args[0].toInt();
-    if (syncSerial <= m_lastSpectateSyncSerial)
+    if (syncSerial <= m_lastPerspectiveSyncSerial)
         return;
-    m_lastSpectateSyncSerial = syncSerial;
+    m_lastPerspectiveSyncSerial = syncSerial;
 
     QString targetName = args[1].toString();
 
-    // Restore old spectate target's known hand cards and private piles.
+    // Restore old perspective target's known hand cards and private piles.
     // Only reset piles that were not visible (including -1) before spectating; keep already-open piles unchanged.
-    if (!m_spectateTargetName.isEmpty()) {
-        ClientPlayer *oldTarget = getPlayer(m_spectateTargetName);
+    if (!m_perspectiveTargetName.isEmpty()) {
+        ClientPlayer *oldTarget = getPlayer(m_perspectiveTargetName);
         if (oldTarget != nullptr) {
             oldTarget->setCards(QList<int>());
             foreach (const QString &pileName, oldTarget->getPileNames()) {
@@ -1371,12 +1371,12 @@ void Client::spectateSync(const QVariant &arg)
     }
 
     if (targetName.isEmpty()) {
-        m_spectateTargetName.clear();
-        emit spectate_changed(QString(), QList<int>(), QVariantMap());
+        m_perspectiveTargetName.clear();
+        emit perspective_changed(QString(), QList<int>(), QVariantMap());
         return;
     }
 
-    m_spectateTargetName = targetName;
+    m_perspectiveTargetName = targetName;
     ClientPlayer *target = getPlayer(targetName);
     if (target == nullptr)
         return;
@@ -1437,7 +1437,7 @@ void Client::spectateSync(const QVariant &arg)
             target->setPile(pileName, QList<int>());
     }
 
-    emit spectate_changed(targetName, handCardIds, pilesMap);
+    emit perspective_changed(targetName, handCardIds, pilesMap);
 }
 
 void Client::speakToServer(const QString &text)
