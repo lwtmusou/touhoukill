@@ -36,6 +36,11 @@ bool Skill::isAttachedLordSkill() const
     return attached_lord_skill;
 }
 
+bool Skill::playerRevivable(const Player * /*player*/) const
+{
+    return false;
+}
+
 bool Skill::shouldBeVisible(const Player *Self) const
 {
     return Self != nullptr;

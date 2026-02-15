@@ -5431,33 +5431,6 @@ QList<ServerPlayer *> Room::getPerspectiveViewersOf(ServerPlayer *target) const
     return result;
 }
 
-bool Room::isHuanhunDefinitelyImpossible(const ServerPlayer *player) const
-{
-    if (player == nullptr)
-        return true;
-
-    QString role = player->getRole();
-    if (role == "renegade")
-        return false; // renegade is always revivable via huanhun
-
-    int loyalist = 0, rebel = 0, renegade = 0;
-    foreach (ServerPlayer *p, m_alivePlayers) {
-        if (p->getRole() == "rebel")
-            rebel++;
-        else if (p->getRole() == "renegde")
-            renegade++;
-        else if (p->getRole() == "loyalist" || p->getRole() == "lord")
-            loyalist++;
-    }
-
-    if (role == "rebel")
-        return loyalist == 0 && renegade == 0;
-    else if (role == "loyalist" || role == "lord")
-        return rebel == 0 && renegade == 0;
-    else
-        return true; // unknown role, treat as non-revivable
-}
-
 bool Room::isDeadPlayerRevivable(const ServerPlayer *player) const
 {
     if (player == nullptr || player->isAlive())
@@ -5467,15 +5440,10 @@ bool Room::isDeadPlayerRevivable(const ServerPlayer *player) const
     if (mode == "04_1v3" && !player->isLord())
         return true;
 
-    // TailorFuzhong: player name in room tag means pending revival
-    if (getTag("tailorfuzhong").toStringList().contains(player->objectName()))
-        return true;
-
-    // Huanhun: strict check — only allow spectate when revival is
-    // absolutely impossible regardless of future death sequences.
-    // Relaxed when only 2 players remain alive (game is nearly over).
-    if (player->hasSkill("huanhun") && !isHuanhunDefinitelyImpossible(player) && m_alivePlayers.count() > 2)
-        return true;
+    foreach (const Skill *skill, Sanguosha->getSkills()) {
+        if (skill->playerRevivable(player))
+            return true;
+    }
 
     return false;
 }

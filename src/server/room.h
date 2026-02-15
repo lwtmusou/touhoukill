@@ -258,7 +258,6 @@ public:
     bool notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const QString &value = QString());
     QList<ServerPlayer *> getPerspectiveViewersOf(ServerPlayer *target) const;
 
-    bool isHuanhunDefinitelyImpossible(const ServerPlayer *player) const;
     bool isDeadPlayerRevivable(const ServerPlayer *player) const;
     bool notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard);
     bool broadcastUpdateCard(const QList<ServerPlayer *> &players, int cardId, const Card *newCard);

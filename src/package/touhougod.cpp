@@ -4615,6 +4615,43 @@ public:
         return -1;
     }
 
+    bool playerRevivable(const Player *p) const override
+    {
+        if (p == nullptr || !p->hasSkill(this))
+            return false;
+
+        Room *room = Sanguosha->currentRoom();
+        if (room == nullptr)
+            return false;
+
+        QList<ServerPlayer *> alivePlayers = room->getAlivePlayers();
+        if (alivePlayers.count() <= 2)
+            return false;
+
+        QString role = p->getRole();
+        if (role == "renegade")
+            return true;
+
+        int loyalist = 0;
+        int rebel = 0;
+        int renegade = 0;
+        foreach (ServerPlayer *alive, alivePlayers) {
+            if (alive->getRole() == "rebel")
+                rebel++;
+            else if (alive->getRole() == "renegde")
+                renegade++;
+            else if (alive->getRole() == "loyalist" || alive->getRole() == "lord")
+                loyalist++;
+        }
+
+        if (role == "rebel")
+            return loyalist > 0 || renegade > 0;
+        else if (role == "loyalist" || role == "lord")
+            return rebel > 0 || renegade > 0;
+
+        return false;
+    }
+
     static bool canHuanhun(ServerPlayer *player)
     {
         QString role = player->getRole();

@@ -956,6 +956,18 @@ public:
         events = {EnterDying, Death};
     }
 
+    bool playerRevivable(const Player *p) const override
+    {
+        if (p == nullptr)
+            return false;
+
+        Room *room = Sanguosha->currentRoom();
+        if (room == nullptr)
+            return false;
+
+        return room->getTag(objectName()).toStringList().contains(p->objectName());
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
     {
         if (triggerEvent == EnterDying) {

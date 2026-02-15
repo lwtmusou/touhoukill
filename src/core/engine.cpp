@@ -1247,6 +1247,11 @@ QStringList Engine::getSkillNames() const
     return skills.keys();
 }
 
+QList<const Skill *> Engine::getSkills() const
+{
+    return skills.values();
+}
+
 const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const
 {
     const Skill *skill = getSkill(skill_name);
