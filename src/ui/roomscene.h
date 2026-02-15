@@ -448,6 +448,8 @@ private:
     // animation related functions
     typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);
     QGraphicsObject *getAnimationObject(const QString &name) const;
+    static const int S_DATA_PERSPECTIVE_ANIMATION = 9531;
+    void clearPerspectiveSensitiveAnimations();
 
     void doMovingAnimation(const QString &name, const QStringList &args);
     void doAppearingAnimation(const QString &name, const QStringList &args);

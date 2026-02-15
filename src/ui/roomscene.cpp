@@ -4352,9 +4352,29 @@ QGraphicsObject *RoomScene::getAnimationObject(const QString &name) const
         return name2photo.value(name);
 }
 
+void RoomScene::clearPerspectiveSensitiveAnimations()
+{
+    foreach (QGraphicsItem *item, items()) {
+        bool shouldClear = item->data(S_DATA_PERSPECTIVE_ANIMATION).toBool();
+        if (!shouldClear)
+            shouldClear = dynamic_cast<IndicatorItem *>(item) != nullptr;
+
+        if (!shouldClear)
+            continue;
+
+        removeItem(item);
+        QGraphicsObject *object = item->toGraphicsObject();
+        if (object != nullptr)
+            object->deleteLater();
+        else
+            delete item;
+    }
+}
+
 void RoomScene::doMovingAnimation(const QString &name, const QStringList &args)
 {
     QSanSelectableItem *item = new QSanSelectableItem(QString("image/system/animation/%1.png").arg(name));
+    item->setData(S_DATA_PERSPECTIVE_ANIMATION, true);
     item->setZValue(10086.0);
     addItem(item);
 
@@ -4394,6 +4414,7 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args)
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args)
 {
     QSanSelectableItem *item = new QSanSelectableItem(QString("image/system/animation/%1.png").arg(name));
+    item->setData(S_DATA_PERSPECTIVE_ANIMATION, true);
     addItem(item);
 
     QPointF from = getAnimationObject(args.at(0))->scenePos();
@@ -5429,6 +5450,8 @@ void RoomScene::enterPerspectiveView(const QString &targetName, PerspectiveSourc
     if (hostPhoto == nullptr)
         return;
 
+    clearPerspectiveSensitiveAnimations();
+
     m_originalPhotosOrder = photos;
     m_perspectiveTargetName = targetName;
     m_isPerspectiveSwitched = true;
@@ -5498,6 +5521,8 @@ void RoomScene::exitPerspectiveView()
 {
     if (!m_isPerspectiveSwitched || m_perspectiveTargetName.isEmpty())
         return;
+
+    clearPerspectiveSensitiveAnimations();
 
     ClientPlayer *target = ClientInstance->getPlayer(m_perspectiveTargetName);
 
