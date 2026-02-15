@@ -33,7 +33,7 @@ public:
     explicit Skill(const QString &name, Frequency frequent = NotFrequent, const QString &showType = "trigger");
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
-    virtual bool playerRevivable(const Player *player) const;
+    virtual bool playerRevivable(const Player *player, const Room *room) const;
     virtual bool shouldBeVisible(const Player *Self) const; // usually for attached skill
     QString getDescription(bool yellow = true, bool addHegemony = false) const;
     QString getNotice(int index) const;

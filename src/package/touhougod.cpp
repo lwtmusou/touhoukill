@@ -4615,12 +4615,11 @@ public:
         return -1;
     }
 
-    bool playerRevivable(const Player *p) const override
+    bool playerRevivable(const Player *p, const Room *room) const override
     {
         if (p == nullptr || !p->hasSkill(this))
             return false;
 
-        Room *room = Sanguosha->currentRoom();
         if (room == nullptr)
             return false;
 

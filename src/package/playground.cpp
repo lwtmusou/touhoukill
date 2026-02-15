@@ -956,13 +956,9 @@ public:
         events = {EnterDying, Death};
     }
 
-    bool playerRevivable(const Player *p) const override
+    bool playerRevivable(const Player *p, const Room *room) const override
     {
-        if (p == nullptr)
-            return false;
-
-        Room *room = Sanguosha->currentRoom();
-        if (room == nullptr)
+        if (p == nullptr || room == nullptr)
             return false;
 
         return room->getTag(objectName()).toStringList().contains(p->objectName());

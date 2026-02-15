@@ -36,7 +36,7 @@ bool Skill::isAttachedLordSkill() const
     return attached_lord_skill;
 }
 
-bool Skill::playerRevivable(const Player * /*player*/) const
+bool Skill::playerRevivable(const Player * /*player*/, const Room * /*room*/) const
 {
     return false;
 }

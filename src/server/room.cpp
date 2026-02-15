@@ -5441,7 +5441,7 @@ bool Room::isDeadPlayerRevivable(const ServerPlayer *player) const
         return true;
 
     foreach (const Skill *skill, Sanguosha->getSkills()) {
-        if (skill->playerRevivable(player))
+        if (skill->playerRevivable(player, this))
             return true;
     }
 
