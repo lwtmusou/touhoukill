@@ -36,7 +36,7 @@ QList<CardItem *> GenericCardContainer::_createCards(const QList<int> &card_ids)
 CardItem *GenericCardContainer::_createCard(int card_id)
 {
     const Card *card = Sanguosha->getCard(card_id);
-    if (card == nullptr) {
+    if (card == nullptr && card_id != Card::S_UNKNOWN_CARD_ID) {
         qWarning("GenericCardContainer::_createCard: invalid card id %d, falling back to placeholder", card_id);
         card = Sanguosha->getCard(0);
     }
