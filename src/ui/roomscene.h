@@ -410,7 +410,12 @@ private:
         }
         inline bool operator<(const _MoveCardsClassifier &other) const
         {
-            return m_card_ids.first() < other.m_card_ids.first();
+            int common = qMin(m_card_ids.size(), other.m_card_ids.size());
+            for (int i = 0; i < common; ++i) {
+                if (m_card_ids[i] != other.m_card_ids[i])
+                    return m_card_ids[i] < other.m_card_ids[i];
+            }
+            return m_card_ids.size() < other.m_card_ids.size();
         }
         QList<int> m_card_ids;
     };

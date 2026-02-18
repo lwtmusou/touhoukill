@@ -936,6 +936,10 @@ void PlayerCardContainer::updateDelayedTricks()
 void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks)
 {
     foreach (CardItem *trick, tricks) {
+        if (trick == nullptr || trick->getCard() == nullptr) {
+            qWarning("PlayerCardContainer::addDelayedTricks: null trick or card, skipping");
+            continue;
+        }
         QGraphicsPixmapItem *item = new QGraphicsPixmapItem(_getDelayedTrickParent());
         QRect start = _m_layout->m_delayedTrickFirstRegion;
         QPoint step = _m_layout->m_delayedTrickStep;
@@ -944,11 +948,13 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks)
         trick->setHomeOpacity(0.0);
         trick->setHomePos(start.center());
         const Card *card = Sanguosha->getEngineCard(trick->getCard()->getEffectiveId());
-        QString toolTip = QString("<font color=#FFFF33><b>%1 [</b><img src='image/system/log/%2.png' height = 12/><b>%3]</b></font>")
-                              .arg(Sanguosha->translate(card->objectName()))
-                              .arg(card->getSuitString())
-                              .arg(card->getNumberString());
-        item->setToolTip(toolTip);
+        if (card) {
+            QString toolTip = QString("<font color=#FFFF33><b>%1 [</b><img src='image/system/log/%2.png' height = 12/><b>%3]</b></font>")
+                                  .arg(Sanguosha->translate(card->objectName()))
+                                  .arg(card->getSuitString())
+                                  .arg(card->getNumberString());
+            item->setToolTip(toolTip);
+        }
         _m_judgeCards.append(trick);
         _m_judgeIcons.append(item);
     }

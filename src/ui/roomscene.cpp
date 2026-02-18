@@ -2362,7 +2362,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             else
                 type = "$PasteCard";
         }
-        if (!type.isNull()) {
+        if (!type.isNull() && !move.card_ids.isEmpty()) {
             QString from_general = move.from->objectName();
             QStringList tos;
             tos << move.to->objectName();
