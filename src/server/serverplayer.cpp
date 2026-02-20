@@ -1479,7 +1479,7 @@ void ServerPlayer::addToPile(const QString &pile_name, const QList<int> &card_id
     room->moveCardsAtomic(move, open);
 }
 
-void ServerPlayer::addToShownHandCards(const QList<int> &card_ids)
+void ServerPlayer::addToShownHandCards(const QList<int> &card_ids, ServerPlayer *source)
 {
     QList<int> add_ids;
     foreach (int id, card_ids) {
@@ -1504,6 +1504,8 @@ void ServerPlayer::addToShownHandCards(const QList<int> &card_ids)
     log.from = this;
     log.card_str = IntList2StringList(add_ids).join("+");
     room->sendLog(log);
+    foreach (int id, add_ids)
+        room->showCard(this, id, nullptr, source != nullptr ? source : this);
     room->getThread()->delay();
 
     ShownCardChangedStruct s;

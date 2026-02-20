@@ -4342,7 +4342,7 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
 
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName());
-        invoke->targets.first()->addToShownHandCards(QList<int>() << id);
+        invoke->targets.first()->addToShownHandCards(QList<int>() << id, invoke->invoker);
         return false;
     }
 };

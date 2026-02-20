@@ -2108,17 +2108,19 @@ void Client::alertFocus()
 void Client::showCard(const QVariant &show_str)
 {
     JsonArray show = show_str.value<JsonArray>();
-    if (show.size() != 2 || !JsonUtils::isString(show[0]) || !JsonUtils::isNumber(show[1]))
+    if ((show.size() != 2 && show.size() != 3) || !JsonUtils::isString(show[0]) || !JsonUtils::isNumber(show[1])
+        || (show.size() == 3 && !JsonUtils::isString(show[2])))
         return;
 
     QString player_name = show[0].toString();
     int card_id = show[1].toInt();
+    QString source_name = show.size() == 3 ? show[2].toString() : QString();
 
     ClientPlayer *player = getPlayer(player_name);
     if (player != Self)
         player->addKnownHandCard(Sanguosha->getCard(card_id));
 
-    emit card_shown(player_name, card_id);
+    emit card_shown(player_name, card_id, source_name);
 }
 
 void Client::attachSkill(const QVariant &skill)

@@ -2792,7 +2792,7 @@ public:
 
         int id = room->askForCardChosen(invoke->invoker, target, flag, objectName());
         if (flag == "h")
-            target->addToShownHandCards(QList<int>() << id);
+            target->addToShownHandCards(QList<int>() << id, invoke->invoker);
         else
             target->removeShownHandCards(QList<int>() << id);
 

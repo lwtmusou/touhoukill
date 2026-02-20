@@ -906,16 +906,21 @@ QList<CardItem *> PlayerCardContainer::removeDelayedTricks(const QList<int> &car
         if (item == nullptr)
             continue;
         int index = _m_judgeCards.indexOf(item);
+        if (index < 0 || index >= _m_judgeCards.size())
+            continue;
         QRect start = _m_layout->m_delayedTrickFirstRegion;
         QPoint step = _m_layout->m_delayedTrickStep;
         start.translate(step * index);
         item->setOpacity(0.0);
         item->setPos(start.center());
         _m_judgeCards.removeAt(index);
-        //delete _m_judgeIcons.takeAt(index);
-        QGraphicsPixmapItem *icon = _m_judgeIcons.takeAt(index);
-        icon->setOpacity(0.0);
-        delete icon;
+        if (index >= 0 && index < _m_judgeIcons.size()) {
+            QGraphicsPixmapItem *icon = _m_judgeIcons.takeAt(index);
+            if (icon != nullptr) {
+                icon->setOpacity(0.0);
+                delete icon;
+            }
+        }
         result.append(item);
     }
     updateDelayedTricks();

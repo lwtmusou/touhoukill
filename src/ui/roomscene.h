@@ -505,7 +505,7 @@ private slots:
     void resetPiles();
     void removeLightBox();
 
-    void showCard(const QString &player_name, int card_id);
+    void showCard(const QString &player_name, int card_id, const QString &source_name = QString());
     void viewDistance();
 
     void speak();
