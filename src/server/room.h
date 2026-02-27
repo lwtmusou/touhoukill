@@ -148,7 +148,7 @@ public:
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
     void sendLog(const QString &logtype, ServerPlayer *logfrom, const QString &logarg = {}, const QList<ServerPlayer *> &logto = {}, const QString &logarg2 = {});
-    void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = nullptr, ServerPlayer *source = nullptr);
+    void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = nullptr);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = nullptr);
     void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, const QString &skill_name, bool exchange = false);
 

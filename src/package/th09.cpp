@@ -3182,7 +3182,7 @@ public:
                 id = room->askForCardChosen(invoke->invoker, p, "hs", objectName());
             }
 
-            p->addToShownHandCards({id}, invoke->invoker);
+            p->addToShownHandCards({id});
         }
 
         return false;

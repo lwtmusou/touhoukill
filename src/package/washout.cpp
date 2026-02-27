@@ -54,7 +54,7 @@ void LightSlash::debuffEffect(const SlashEffectStruct &effect)
             break;
     }
 
-    effect.to->addToShownHandCards(ids, effect.from);
+    effect.to->addToShownHandCards(ids);
 }
 
 PowerSlash::PowerSlash(Suit suit, int number)
@@ -139,7 +139,7 @@ void LightJink::onEffect(const CardEffectStruct &effect) const
             break;
     }
 
-    effect.to->addToShownHandCards(ids, effect.from);
+    effect.to->addToShownHandCards(ids);
 }
 
 MagicAnaleptic::MagicAnaleptic(Card::Suit suit, int number)

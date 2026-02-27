@@ -2734,6 +2734,10 @@
         <source>Dead</source>
         <translation>阵亡</translation>
     </message>
+    <message>
+        <source>shown handcard %1</source>
+        <translation>%1明置</translation>
+    </message>
 </context>
 <context>
     <name>ScriptExecutor</name>

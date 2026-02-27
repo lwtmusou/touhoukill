@@ -332,7 +332,7 @@ signals:
     void player_killed(const QString &who);
     void player_revived(const QString &who);
     void dashboard_death(const QString &who);
-    void card_shown(const QString &player_name, int card_id, const QString &source_name);
+    void card_shown(const QString &player_name, int card_id);
     void log_received(const QStringList &log_str);
     void guanxing(const QList<int> &card_ids, bool single_side, QString skillName);
     void gongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids, QList<int> shownHandcard_ids);

@@ -1581,7 +1581,7 @@ public:
         if (triggerEvent == EventPhaseStart) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
             int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName());
-            invoke->targets.first()->addToShownHandCards(QList<int>() << id, invoke->invoker);
+            invoke->targets.first()->addToShownHandCards(QList<int>() << id);
         } else {
             DamageStruct damage = data.value<DamageStruct>();
             room->sendLog("#shaojie", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));

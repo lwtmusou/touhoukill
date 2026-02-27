@@ -6946,7 +6946,7 @@ void Room::sendLog(const LogMessage &log)
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 }
 
-void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer, ServerPlayer *source)
+void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer)
 {
     if (getCardOwner(card_id) != player)
         return;
@@ -6956,8 +6956,6 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
     JsonArray show_arg;
     show_arg << player->objectName();
     show_arg << card_id;
-    if (source != nullptr)
-        show_arg << source->objectName();
 
     WrappedCard *card = Sanguosha->getWrappedCard(card_id);
     bool modified = card->isModified();

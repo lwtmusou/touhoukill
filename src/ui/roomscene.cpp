@@ -155,7 +155,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, &Client::perspective_changed, this, &RoomScene::onPerspectiveChanged);
     connect(ClientInstance, SIGNAL(dashboard_death(QString)), this, SLOT(setDashboardShadow(QString)));
-    connect(ClientInstance, SIGNAL(card_shown(QString, int, QString)), this, SLOT(showCard(QString, int, QString)));
+    connect(ClientInstance, SIGNAL(card_shown(QString, int)), this, SLOT(showCard(QString, int)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>, QList<int>)));
     connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
     connect(ClientInstance, SIGNAL(emotion_set(QString, QString)), this, SLOT(setEmotion(QString, QString)));
@@ -2076,7 +2076,7 @@ bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost)
 void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
 {
     int count = 0;
-    QList<QList<CardItem *>> &stash = _m_cardsMoveStash[moveId];
+    QList<QList<CardItem *> > &stash = _m_cardsMoveStash[moveId];
     for (int i = 0; i < card_moves.size(); i++) {
         CardsMoveStruct &movement = card_moves[i];
         bool skipMove = _processCardsMove(movement, false);
@@ -3909,7 +3909,7 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_car
         delete copy;
 }
 
-void RoomScene::showCard(const QString &player_name, int card_id, const QString &source_name)
+void RoomScene::showCard(const QString &player_name, int card_id)
 {
     QList<int> card_ids;
     card_ids << card_id;
@@ -3924,18 +3924,8 @@ void RoomScene::showCard(const QString &player_name, int card_id, const QString 
     move.to_place = Player::PlaceTable;
     move.reason = reason;
 
-    if (!source_name.isEmpty()) {
-        QString playerName = Sanguosha->translate(player->getFootnoteName());
-        if (source_name == player_name) {
-            card_items[0]->setFootnote(Sanguosha->translate("shown handcard self").arg(playerName));
-        } else {
-            const ClientPlayer *sourcePlayer = ClientInstance->getPlayer(source_name);
-            QString sourceName = sourcePlayer ? Sanguosha->translate(sourcePlayer->getFootnoteName()) : source_name;
-            card_items[0]->setFootnote(Sanguosha->translate("shown handcard by").arg(sourceName, playerName));
-        }
-    } else {
-        card_items[0]->setFootnote(_translateMovement(move));
-    }
+    QString playerName = Sanguosha->translate(player->getFootnoteName());
+    card_items[0]->setFootnote(tr("shown handcard %1").arg(playerName));
     m_tablePile->addCardItems(card_items, move);
 
     QString card_str = QString::number(card_id);

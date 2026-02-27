@@ -107,7 +107,7 @@ public:
         bool ok = false;
         int id = invoke->tag.value(objectName()).toInt(&ok);
         if (ok)
-            invoke->targets.first()->addToShownHandCards({id}, invoke->invoker);
+            invoke->targets.first()->addToShownHandCards({id});
         return false;
     }
 };
@@ -702,7 +702,7 @@ public:
         }
         if (!ids.isEmpty()) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-            invoke->targets.first()->addToShownHandCards(ids, invoke->invoker);
+            invoke->targets.first()->addToShownHandCards(ids);
         }
 
         return false;
@@ -1085,7 +1085,7 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
         room->obtainCard(target, id1);
 
-        target->addToShownHandCards(QList<int>() << id1, invoke->invoker);
+        target->addToShownHandCards(QList<int>() << id1);
 
         ids.clear();
         foreach (int id, move.card_ids) {
@@ -1379,7 +1379,7 @@ public:
         apple->tag[objectName() + "_target"] = QVariant::fromValue(target);
 
         const Card *d = room->askForExchange(target, objectName(), 1, 1, false, "@chihou-show1:" + apple->objectName());
-        target->addToShownHandCards({d->getEffectiveId()}, apple);
+        target->addToShownHandCards({d->getEffectiveId()});
         const Card *c = room->askForExchange(apple, objectName(), 1, 1, false, "@chihou-show2:" + target->objectName());
         apple->addToShownHandCards({c->getEffectiveId()});
 

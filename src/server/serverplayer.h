@@ -118,7 +118,7 @@ public:
     void addToPile(const QString &pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     void addToPile(const QString &pile_name, const QList<int> &card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     void addToPile(const QString &pile_name, const QList<int> &card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    void addToShownHandCards(const QList<int> &card_ids, ServerPlayer *source = nullptr);
+    void addToShownHandCards(const QList<int> &card_ids);
     void removeShownHandCards(const QList<int> &card_ids, bool sendLog = false, bool moveFromHand = false);
     void addBrokenEquips(const QList<int> &card_ids);
     void removeBrokenEquips(const QList<int> &card_ids, bool sendLog = true, bool moveFromEquip = false);

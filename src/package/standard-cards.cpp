@@ -2323,7 +2323,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
             break;
     }
 
-    effect.to->addToShownHandCards(ids, effect.from);
+    effect.to->addToShownHandCards(ids);
 }
 
 void KnownBoth::use(Room *room, const CardUseStruct &card_use) const
