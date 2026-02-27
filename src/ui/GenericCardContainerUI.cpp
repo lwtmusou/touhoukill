@@ -953,7 +953,7 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks)
         trick->setHomeOpacity(0.0);
         trick->setHomePos(start.center());
         const Card *card = Sanguosha->getEngineCard(trick->getCard()->getEffectiveId());
-        if (card) {
+        if (card != nullptr) {
             QString toolTip = QString("<font color=#FFFF33><b>%1 [</b><img src='image/system/log/%2.png' height = 12/><b>%3]</b></font>")
                                   .arg(Sanguosha->translate(card->objectName()))
                                   .arg(card->getSuitString())
