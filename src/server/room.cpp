@@ -70,7 +70,10 @@ Room::Room(QObject *parent, const QString &mode)
     else
         DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ? "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
 
-    connect(this, SIGNAL(signalSetProperty(ServerPlayer *, const char *, QVariant)), this, SLOT(slotSetProperty(ServerPlayer *, const char *, QVariant)), Qt::QueuedConnection);
+    // BlockingQueuedConnection: RoomThread blocks until the main thread executes the slot.
+    // INVARIANT: never call setPlayerProperty while holding _m_semRoomMutex on RoomThread, or a deadlock occurs
+    // if the main thread is simultaneously blocked on _m_semRoomMutex.acquire() in processResponse.
+    connect(this, SIGNAL(signalSetProperty(ServerPlayer *, const char *, QVariant)), this, SLOT(slotSetProperty(ServerPlayer *, const char *, QVariant)), Qt::BlockingQueuedConnection);
 
     m_generalSelector = new GeneralSelector(this);
 }
@@ -2243,19 +2246,11 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag)
 
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
 {
-#if 0 // def QT_DEBUG
-    // following code was OK when Room inherits QThread but is currently not
-    if (currentThread() != player->thread()) {
-        playerPropertySet = false;
+    Q_ASSERT(player->thread() == QObject::thread());
+    if (QThread::currentThread() != QObject::thread())
         emit signalSetProperty(player, property_name, value);
-        while (!playerPropertySet) {
-        }
-    } else {
+    else
         player->setProperty(property_name, value);
-    }
-#else
-    player->setProperty(property_name, value);
-#endif
 
     broadcastProperty(player, property_name);
 
@@ -2306,7 +2301,6 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
 void Room::slotSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
 {
     player->setProperty(property_name, value);
-    playerPropertySet = true;
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value)

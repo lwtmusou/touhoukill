@@ -573,8 +573,6 @@ private:
     QWaitCondition m_waitCond;
     mutable QMutex m_mutex;
 
-    volatile bool playerPropertySet;
-
     GeneralSelector *m_generalSelector;
 
     // Perspective switching base layer

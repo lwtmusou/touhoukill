@@ -4341,21 +4341,36 @@ void RoomScene::removeLightBox()
     if (lightbox != nullptr) {
         removeItem(lightbox);
         lightbox->deleteLater();
-    } else {
-        PixmapAnimation *pma = qobject_cast<PixmapAnimation *>(sender());
-        if (pma != nullptr) {
-            removeItem(pma->parentItem());
-        } else {
-            QPropertyAnimation *animation = qobject_cast<QPropertyAnimation *>(sender());
-            QGraphicsTextItem *line = qobject_cast<QGraphicsTextItem *>(animation->targetObject());
-            if (line != nullptr) {
-                removeItem(line->parentItem());
-            } else {
-                QSanSelectableItem *line = qobject_cast<QSanSelectableItem *>(animation->targetObject());
-                removeItem(line->parentItem());
-            }
-        }
+        return;
     }
+
+    PixmapAnimation *pma = qobject_cast<PixmapAnimation *>(sender());
+    if (pma != nullptr) {
+        // anim= case: pma is child of a QGraphicsRectItem lightbox.
+        // pma already has its own deleteLater from GetPixmapAnimation.
+        QGraphicsItem *parent = pma->parentItem();
+        if (parent != nullptr) {
+            pma->setParentItem(nullptr);
+            removeItem(parent);
+            delete parent;
+        }
+        return;
+    }
+
+    // image= / text= cases: sender is QPropertyAnimation, target is child of lightbox
+    QPropertyAnimation *animation = qobject_cast<QPropertyAnimation *>(sender());
+    if (animation == nullptr)
+        return;
+    QGraphicsObject *target = qobject_cast<QGraphicsObject *>(animation->targetObject());
+    if (target == nullptr || target->parentItem() == nullptr)
+        return;
+
+    QGraphicsItem *parent = target->parentItem();
+    target->setParentItem(nullptr);
+    removeItem(parent);
+    delete parent;
+    // image= targets already have deleteLater; text= targets don't — deleteLater is safe for both
+    target->deleteLater();
 }
 
 QGraphicsObject *RoomScene::getAnimationObject(const QString &name) const
@@ -4369,6 +4384,10 @@ QGraphicsObject *RoomScene::getAnimationObject(const QString &name) const
 void RoomScene::clearPerspectiveSensitiveAnimations()
 {
     foreach (QGraphicsItem *item, items()) {
+        // Skip items already removed from scene by a prior removeItem(parent)
+        if (item->scene() != this)
+            continue;
+
         bool shouldClear = item->data(S_DATA_PERSPECTIVE_ANIMATION).toBool();
         if (!shouldClear)
             shouldClear = dynamic_cast<IndicatorItem *>(item) != nullptr;
