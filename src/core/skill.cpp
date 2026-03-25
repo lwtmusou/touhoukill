@@ -8,10 +8,15 @@
 
 #include <QFile>
 
-Skill::Skill(const QString &name, Frequency frequency, const QString &showType)
-    : frequency(frequency)
+Skill::Skill(const QString &name, const QString &showType)
+    : frequent(false)
+    , compulsory(false)
+    , limited(false)
+    , wake(false)
+    , eternal(false)
     , attached_lord_skill(false)
     , show_type(showType)
+    , equip_skill(false)
 {
     static QChar lord_symbol('$');
 
@@ -34,6 +39,31 @@ bool Skill::isLordSkill() const
 bool Skill::isAttachedLordSkill() const
 {
     return attached_lord_skill;
+}
+
+bool Skill::isFrequent() const
+{
+    return frequent;
+}
+
+bool Skill::isCompulsory() const
+{
+    return compulsory;
+}
+
+bool Skill::isLimited() const
+{
+    return limited;
+}
+
+bool Skill::isWake() const
+{
+    return wake;
+}
+
+bool Skill::isEternal() const
+{
+    return eternal;
 }
 
 bool Skill::playerRevivable(const Player * /*player*/, const Room * /*room*/) const
@@ -124,14 +154,34 @@ void Skill::playAudioEffect(int index) const
     }
 }
 
-Skill::Frequency Skill::getFrequency() const
-{
-    return frequency;
-}
-
 QString Skill::getShowType() const
 {
     return show_type;
+}
+
+void Skill::setFrequent(bool frequent)
+{
+    this->frequent = frequent;
+}
+
+void Skill::setCompulsory(bool compulsory)
+{
+    this->compulsory = compulsory;
+}
+
+void Skill::setLimited(bool limited)
+{
+    this->limited = limited;
+}
+
+void Skill::setWake(bool wake)
+{
+    this->wake = wake;
+}
+
+void Skill::setEternal(bool eternal)
+{
+    this->eternal = eternal;
 }
 
 QString Skill::getLimitMark() const
@@ -184,7 +234,7 @@ bool Skill::isEquipSkill() const
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name, Skill::NotFrequent, "viewas")
+    : Skill(name, "viewas")
     , response_or_use(false)
 {
 }
@@ -324,7 +374,7 @@ const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards) const
 FilterSkill::FilterSkill(const QString &name)
     : OneCardViewAsSkill(name)
 {
-    frequency = Compulsory;
+    setCompulsory();
     show_type = "static";
 }
 
@@ -362,7 +412,7 @@ QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent /*unused*/, cons
 bool TriggerSkill::cost(TriggerEvent /*unused*/, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
     if (invoke->isCompulsory) { //for hegemony_mode or reimu_god
-        if (invoke->owner == nullptr || invoke->owner != invoke->invoker || frequency == Eternal)
+        if (invoke->owner == nullptr || invoke->owner != invoke->invoker || isEternal())
             return true;
         if (invoke->invoker != nullptr) {
             if (!invoke->invoker->hasSkill(this, true))
@@ -443,13 +493,15 @@ int MaxCardsSkill::getFixed(const Player * /*unused*/) const
 }
 
 ProhibitSkill::ProhibitSkill(const QString &name)
-    : Skill(name, Skill::Compulsory)
+    : Skill(name)
 {
+    setCompulsory();
 }
 
 DistanceSkill::DistanceSkill(const QString &name)
-    : Skill(name, Skill::Compulsory, "static")
+    : Skill(name, "static")
 {
+    setCompulsory();
     view_as_skill = new ShowDistanceSkill(objectName());
 }
 
@@ -484,8 +536,9 @@ bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
 }
 
 MaxCardsSkill::MaxCardsSkill(const QString &name)
-    : Skill(name, Skill::Compulsory, "static")
+    : Skill(name, "static")
 {
+    setCompulsory();
     view_as_skill = new ShowDistanceSkill(objectName());
 }
 
@@ -495,8 +548,9 @@ const ViewAsSkill *MaxCardsSkill::getViewAsSkill() const
 }
 
 TargetModSkill::TargetModSkill(const QString &name)
-    : Skill(name, Skill::Compulsory)
+    : Skill(name)
 {
+    setCompulsory();
     pattern = "Slash";
 }
 
@@ -521,8 +575,9 @@ int TargetModSkill::getExtraTargetNum(const Player * /*unused*/, const Card * /*
 }
 
 AttackRangeSkill::AttackRangeSkill(const QString &name)
-    : Skill(name, Skill::Compulsory, "static")
+    : Skill(name, "static")
 {
+    setCompulsory();
     view_as_skill = new ShowDistanceSkill(objectName()); //alternative method: add ShowDistanceSkill to specific AttackRangeSkills.
 }
 
@@ -595,9 +650,10 @@ bool EquipSkill::equipAvailable(const Player *p, const EquipCard *card, const Pl
 }
 
 ViewHasSkill::ViewHasSkill(const QString &name)
-    : Skill(name, Skill::Compulsory)
+    : Skill(name)
     , global(false)
 {
+    setCompulsory();
 }
 
 BattleArraySkill::BattleArraySkill(const QString &name, const QString &type) //

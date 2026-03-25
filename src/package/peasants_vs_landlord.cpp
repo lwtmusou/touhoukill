@@ -14,7 +14,7 @@ public:
         : TriggerSkill("zhubing")
     {
         events << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     bool canPreshow() const override
@@ -112,7 +112,7 @@ public:
         : TriggerSkill("jili")
     {
         events << Death;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override

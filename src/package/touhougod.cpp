@@ -169,7 +169,7 @@ public:
         : TriggerSkill("zhouye")
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseStart << PreMarkChange << EventSkillInvalidityChange;
-        frequency = Compulsory;
+        setCompulsory();
         related_mark = "@ye";
     }
 
@@ -369,7 +369,7 @@ public:
         : TriggerSkill("yewang")
     {
         events << DamageInflicted;
-        frequency = Compulsory;
+        setCompulsory();
         related_mark = "@ye";
     }
 
@@ -400,7 +400,7 @@ public:
         : TriggerSkill("bingfeng")
     {
         events << Dying << DamageCaused << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
@@ -473,7 +473,7 @@ public:
         : TriggerSkill("wushen")
     {
         events << TargetSpecified;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
@@ -514,7 +514,7 @@ public:
         : TriggerSkill("shikong")
     {
         events << CardUsed;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -550,7 +550,7 @@ public:
         : TriggerSkill("ronghui")
     {
         events << DamageCaused;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -589,7 +589,7 @@ public:
         : TriggerSkill("jubian")
     {
         events << Damage << CardFinished;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     void record(TriggerEvent triggerEvent, Room * /*room*/, QVariant &data) const override
@@ -636,7 +636,7 @@ public:
         : TriggerSkill("hengxing")
     {
         events << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -662,7 +662,7 @@ public:
         : TriggerSkill("huanmeng")
     {
         events << GameStart << PreHpLost << EventPhaseStart << EventPhaseChanging;
-        frequency = Eternal;
+        setEternal();
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -725,7 +725,7 @@ public:
         : TriggerSkill("cuixiang")
     {
         events << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -799,7 +799,7 @@ public:
         : TriggerSkill("xuying")
     {
         events << SlashHit << SlashMissed;
-        frequency = Eternal;
+        setEternal();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
@@ -908,7 +908,7 @@ public:
         : TriggerSkill("jinguo")
     {
         events << EventPhaseEnd;
-        frequency = Compulsory;
+        setCompulsory();
         related_mark = "@kinki";
     }
 
@@ -961,7 +961,7 @@ public:
         : TriggerSkill("shicao")
     {
         events << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
         related_mark = "@clock";
     }
 
@@ -1033,7 +1033,7 @@ public:
         : TriggerSkill("huanzai")
     {
         events << EventPhaseStart;
-        frequency = Limited;
+        setLimited();
         limit_mark = "@huanzai";
     }
 
@@ -1064,7 +1064,7 @@ public:
         : TriggerSkill("shanghun")
     {
         events << Damaged;
-        frequency = Limited;
+        setLimited();
         limit_mark = "@shanghun";
     }
 
@@ -1094,7 +1094,7 @@ public:
         : TriggerSkill("banling")
     {
         events << GameStart << PreHpLost << DamageInflicted << PreHpRecover;
-        frequency = Eternal;
+        setEternal();
     }
 
     int getPriority() const override
@@ -1292,7 +1292,7 @@ public:
         : TriggerSkill("ningshi")
     {
         events << TargetSpecified;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1320,7 +1320,7 @@ public:
         : TriggerSkill("gaoao")
     {
         events = {BeforeCardsMove};
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -1496,7 +1496,7 @@ public:
         : TriggerSkill("yibian")
     {
         events << EventPhaseStart << GameStart;
-        frequency = Eternal;
+        setEternal();
         //global = true;
     }
 
@@ -1655,7 +1655,7 @@ public:
         : TriggerSkill("tongjie")
     {
         events << RoleShownChanged << EventPhaseStart << EventPhaseChanging;
-        frequency = Eternal;
+        setEternal();
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -1739,7 +1739,7 @@ public:
         : TriggerSkill("huanxiang")
     {
         events << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     static bool hasSameNumberRoles(Room *room)
@@ -1865,7 +1865,7 @@ public:
         : TriggerSkill("duanzui")
     {
         events << EventPhaseChanging << EventPhaseStart << Death << TurnStart;
-        frequency = Frequent;
+        setFrequent();
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -2253,7 +2253,7 @@ public:
         : TriggerSkill("qiannian")
     {
         events << GameStart << DrawNCards << DrawPileSwaped;
-        frequency = Compulsory;
+        setCompulsory();
         related_mark = "@qiannian";
     }
 
@@ -2534,7 +2534,7 @@ public:
         : TriggerSkill("renge")
     {
         events << GameStart << Revive << EventPhaseStart << Death << EventLoseSkill;
-        frequency = Eternal;
+        setEternal();
     }
 
     // todo: kill Same General Mode
@@ -2655,7 +2655,7 @@ class Benwo : public TriggerSkill
     static bool hasLimitedSkill(const Player *player)
     {
         foreach (const Skill *skill, player->getVisibleSkillList()) {
-            if (skill != nullptr && skill->getFrequency() == Limited && !skill->isEquipSkill())
+            if (skill != nullptr && skill->isLimited() && !skill->isEquipSkill())
                 return true;
         }
         return false;
@@ -2666,7 +2666,7 @@ public:
         : TriggerSkill("benwo")
     {
         events << EventPhaseStart << CardUsed;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     static QString usePattern;
@@ -2693,7 +2693,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             QString pattern = usePatternWithoutSlash;
             foreach (const Skill *skill, player->getVisibleSkillList()) {
-                if (skill != nullptr && skill->getFrequency() == Skill::Eternal && !skill->isEquipSkill()) {
+                if (skill != nullptr && skill->isEternal() && !skill->isEquipSkill()) {
                     pattern = usePattern;
                     break;
                 }
@@ -2833,7 +2833,7 @@ public:
             foreach (const Skill *skill, fromGeneral->getSkillList()) {
                 if (skill->isLordSkill() && !source->isLord())
                     continue;
-                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+                if (skill->isLimited() && !skill->getLimitMark().isEmpty())
                     room->setPlayerMark(source, skill->getLimitMark(), 0);
                 SkillAcquireDetachStruct s;
                 s.isAcquire = true;
@@ -2856,7 +2856,7 @@ public:
                     if (trigger->getTriggerEvents().contains(GameStart))
                         game_start = true;
                 }
-                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+                if (skill->isLimited() && !skill->getLimitMark().isEmpty())
                     room->setPlayerMark(source, skill->getLimitMark(), 1);
                 SkillAcquireDetachStruct s;
                 s.isAcquire = true;
@@ -2955,7 +2955,7 @@ public:
     Chaowo()
         : ZeroCardViewAsSkill("chaowo")
     {
-        frequency = Limited;
+        setLimited();
         limit_mark = "@chaowo";
     }
 
@@ -3199,7 +3199,7 @@ public:
         : TriggerSkill("shenhua")
     {
         events << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
         related_mark = "@xinyang";
     }
 
@@ -3273,7 +3273,7 @@ public:
     Junwei()
         : TriggerSkill("junwei")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << TargetConfirmed;
     }
 
@@ -3312,7 +3312,7 @@ public:
         : TriggerSkill("gaizong")
     {
         events << EventPhaseStart;
-        frequency = Wake;
+        setWake();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -4094,7 +4094,7 @@ public:
         : TriggerSkill("huanming")
     {
         events << DamageCaused;
-        frequency = Limited;
+        setLimited();
         limit_mark = "@huanming";
     }
 
@@ -4157,7 +4157,7 @@ public:
         : TriggerSkill("chuanwu")
     {
         events << HpChanged;
-        frequency = Compulsory;
+        setCompulsory();
         show_type = "static";
     }
 
@@ -4184,7 +4184,7 @@ public:
         : TriggerSkill("fanhun")
     {
         events << EventPhaseStart << Dying;
-        frequency = Eternal;
+        setEternal();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room * /*room*/, const QVariant &data) const override
@@ -4224,7 +4224,7 @@ public:
         : TriggerSkill("yousi")
     {
         events << PostHpReduced;
-        frequency = Compulsory;
+        setCompulsory();
         show_type = "static";
     }
 
@@ -4300,7 +4300,7 @@ public:
         : TriggerSkill("kuixin")
     {
         events << CardFinished;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -4607,7 +4607,7 @@ public:
         : TriggerSkill("huanhun")
     {
         events << BuryVictim;
-        frequency = Eternal;
+        setEternal();
     }
 
     int getPriority() const override
@@ -4700,7 +4700,7 @@ public:
         : TriggerSkill("tongling")
     {
         events << EventPhaseStart;
-        frequency = Limited;
+        setLimited();
         limit_mark = "@tongling";
     }
 
@@ -4736,7 +4736,7 @@ public:
             foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                 if (p->isDead() && p->getGeneral() != nullptr && p->getGeneralName() != "sujiang" && p->getGeneralName() != "sujiangf") {
                     foreach (const Skill *skill, p->getGeneral()->getVisibleSkillList()) {
-                        if (skill->isLordSkill() || skill->getFrequency() == Skill::Eternal || skill->getFrequency() == Skill::Wake || findSameSkill(skill, invoke->invoker))
+                        if (skill->isLordSkill() || skill->isEternal() || skill->isWake() || findSameSkill(skill, invoke->invoker))
                             continue;
                         if (!skill_names.contains(skill->objectName())) {
                             skill_names << skill->objectName();
@@ -4790,7 +4790,7 @@ public:
         QStringList skill_names;
 
         foreach (const Skill *skill, general->getVisibleSkillList()) {
-            if (skill->isLordSkill() || skill->getFrequency() == Skill::Eternal || skill->getFrequency() == Skill::Wake || findSameSkill(skill, invoke->invoker))
+            if (skill->isLordSkill() || skill->isEternal() || skill->isWake() || findSameSkill(skill, invoke->invoker))
                 continue;
             if (!skill_names.contains(skill->objectName()))
                 skill_names << skill->objectName();
@@ -4896,7 +4896,7 @@ public:
     Rumo()
         : ZeroCardViewAsSkill("rumo")
     {
-        frequency = Limited;
+        setLimited();
         limit_mark = "@rumo";
     }
 
@@ -5235,8 +5235,8 @@ public:
         foreach (const QString &name, generals) {
             const General *p = Sanguosha->getGeneral(name);
             foreach (const Skill *skill, p->getSkillList()) {
-                if (skill->getShowType() == "static" && !skill->isLordSkill() && !skill->isAttachedLordSkill() && skill->getFrequency() != Skill::Limited
-                    && skill->getFrequency() != Skill::Wake && skill->getFrequency() != Skill::Eternal)
+                if (skill->getShowType() == "static" && !skill->isLordSkill() && !skill->isAttachedLordSkill() && !skill->isLimited()
+                    && !skill->isWake() && !skill->isEternal())
                     show << skill;
             }
         }
@@ -5367,7 +5367,7 @@ public:
         : TriggerSkill("benzun")
     {
         events << EventPhaseChanging << GameStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     void record(TriggerEvent e, Room * /*room*/, QVariant &data) const override
@@ -6670,7 +6670,7 @@ public:
         : TriggerSkill("dimai")
     {
         events << NumOfEvents;
-        frequency = Eternal;
+        setEternal();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override

@@ -2762,7 +2762,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"));
         } else {
             const Skill *skill = button->getSkill();
-            if (skill->getFrequency() == Skill::Wake) {
+            if (skill->isWake()) {
                 button->setEnabled(Self->getMark(skill->objectName()) > 0);
             } else
                 button->setEnabled(false);
@@ -5267,7 +5267,7 @@ void RoomScene::highlightSkillButton(const QString &skill_name, bool highlight)
     foreach (QSanSkillButton *button, m_skillButtons) {
         QString button_name = button->getSkill()->objectName();
         if (button_name == skill_name || skill_name.startsWith(button_name)) {
-            if (button->getSkill()->getFrequency() != Skill::Wake) {
+            if (!button->getSkill()->isWake()) {
                 if (!button->isDown()) {
                     if (highlight)
                         button->setState(QSanButton::S_STATE_HOVER, true);

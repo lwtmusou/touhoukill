@@ -764,23 +764,23 @@ function sgs.getDynamicPlayerStrength(player, ishuashen)
 
 	if ishuashen then
 		for _, skill in sgs.qlist(g1:getVisibleSkillList()) do --true, player:inHeadSkills("huashen")
-			if skill:getFrequency() == sgs.Skill_Limited and skill:getLimitMark() ~= "" and player:getMark(skill:getLimitMark()) == 0 then
+			if skill:isLimited() and skill:getLimitMark() ~= "" and player:getMark(skill:getLimitMark()) == 0 then
 				current_value = current_value - 1
 			end
 		end
 		--[[for _, skill in sgs.qlist(g2:getVisibleSkillList(true, player:inHeadSkills("huashen"))) do
-			if skill:getFrequency() == sgs.Skill_Limited and skill:getLimitMark() ~= "" and player:getMark(skill:getLimitMark()) == 0 then
+			if skill:isLimited() and skill:getLimitMark() ~= "" and player:getMark(skill:getLimitMark()) == 0 then
 				current_value = current_value - 1
 			end
 		end]]
 	else
 		for _, skill in sgs.qlist(g1:getVisibleSkillList()) do --true, true
-			if skill:getFrequency() == sgs.Skill_Limited and skill:getLimitMark() ~= "" and player:getMark(skill:getLimitMark()) == 0 then
+			if skill:isLimited() and skill:getLimitMark() ~= "" and player:getMark(skill:getLimitMark()) == 0 then
 				current_value = current_value - 1
 			end
 		end
 		--[[for _, skill in sgs.qlist(g2:getVisibleSkillList(true, false)) do
-			if skill:getFrequency() == sgs.Skill_Limited and skill:getLimitMark() ~= "" and player:getMark(skill:getLimitMark()) == 0 then
+			if skill:isLimited() and skill:getLimitMark() ~= "" and player:getMark(skill:getLimitMark()) == 0 then
 				current_value = current_value - 1
 			end
 		end]]
@@ -2485,7 +2485,7 @@ function SmartAI:askForSkillInvoke(skill_name, data)
 		end
 	else
 		local skill = sgs.Sanguosha:getSkill(skill_name)
-		if skill and skill:getFrequency() == sgs.Skill_Frequent then
+		if skill and skill:isFrequent() then
 			return true
 		end
 	end
@@ -6724,7 +6724,7 @@ function SmartAI:touhouNeedToWake(player)
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
 		local s_name = askill:objectName()
 		--要求 已觉醒标记名 等于 技能名
-		if askill:getFrequency() == sgs.Skill_Wake and player:getMark(s_name)==0 then
+		if askill:isWake() and player:getMark(s_name)==0 then
 			local filter = sgs.ai_needToWake[s_name]
 			if filter and type(filter) == "function" then
 				wake_mode,wake_timing=filter(self,player)

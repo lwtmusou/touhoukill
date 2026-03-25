@@ -267,7 +267,7 @@ public:
         : TriggerSkill("pohuai")
     {
         events << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     bool canPreshow() const override
@@ -414,7 +414,7 @@ public:
         : TriggerSkill("shengyan")
     {
         events << Damage;
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1457,7 +1457,7 @@ public:
         : TriggerSkill("bingpo")
     {
         events << DamageInflicted;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1698,7 +1698,7 @@ public:
     Sishu()
         : ZeroCardViewAsSkill("sishu")
     {
-        frequency = Limited;
+        setLimited();
         limit_mark = "@sishu";
     }
 
@@ -1821,7 +1821,7 @@ public:
         : TriggerSkill("mizong")
     {
         events << EventPhaseStart << FinishJudge << EventPhaseChanging;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -2073,7 +2073,7 @@ public:
         : TriggerSkill("fenghua")
     {
         events << GameStart << CardsMoveOneTime << TargetConfirmed << Debut;
-        frequency = Compulsory;
+        setCompulsory();
         related_pile = "fenghua";
     }
 
@@ -2146,7 +2146,7 @@ public:
         : TriggerSkill("shixue")
     {
         events = {PreHpRecover, Damage, EventPhaseStart};
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
@@ -2198,7 +2198,7 @@ public:
         : TriggerSkill("ziye")
     {
         events << Dying; // << Death;
-        frequency = Wake;
+        setWake();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override

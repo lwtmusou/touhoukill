@@ -365,7 +365,7 @@ public:
         : TriggerSkill("diexing")
     {
         events << Damaged << CardsMoveOneTime;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
@@ -639,7 +639,7 @@ public:
         : TriggerSkill("xunfo")
     {
         events << CardsMoveOneTime << HpRecover;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override

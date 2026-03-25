@@ -14,7 +14,7 @@ public:
         : TriggerSkill("rexue")
     {
         events << EventPhaseChanging << TurnStart << Death;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant & /*data*/) const override
@@ -411,7 +411,7 @@ public:
         : TriggerSkill("sizhai")
     {
         events << EventPhaseStart << CardUsed << CardResponded;
-        frequency = Frequent;
+        setFrequent();
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -531,7 +531,7 @@ public:
         : TriggerSkill("shouxie")
     {
         events << EventPhaseChanging << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
@@ -919,7 +919,7 @@ public:
         : TriggerSkill("liangzi")
     {
         events << CardUsed << CardResponded;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override

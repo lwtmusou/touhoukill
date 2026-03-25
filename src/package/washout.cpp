@@ -219,7 +219,7 @@ public:
     {
         equip_skill = true;
         events << Damage;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -363,7 +363,7 @@ public:
     {
         equip_skill = true;
         events << PreCardUsed << EventPhaseChanging;
-        frequency = Compulsory;
+        setCompulsory();
         global = true;
     }
 
@@ -449,7 +449,7 @@ public:
     {
         equip_skill = true;
         events << PreCardUsed << EventPhaseChanging << Cancel;
-        frequency = Compulsory;
+        setCompulsory();
         global = true;
     }
 
@@ -518,7 +518,7 @@ public:
     {
         equip_skill = true;
         events << DamageInflicted << CardsMoveOneTime;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
@@ -576,7 +576,7 @@ public:
     {
         equip_skill = true;
         events << CardAsked;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override

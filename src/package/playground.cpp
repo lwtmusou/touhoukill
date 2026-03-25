@@ -89,7 +89,7 @@ public:
         QList<const Skill *> skills_canselect;
 
         foreach (const Skill *s, skills) {
-            if (!s->isLordSkill() && s->getFrequency() != Skill::Wake && s->getFrequency() != Skill::Eternal && !s->isAttachedLordSkill())
+            if (!s->isLordSkill() && !s->isWake() && !s->isEternal() && !s->isAttachedLordSkill())
                 skills_canselect << s;
         }
 
@@ -414,7 +414,7 @@ public:
         : TriggerSkill("fsu0413lese")
     {
         events << DrawNCards;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -466,7 +466,7 @@ public:
         : TriggerSkill("fsu0413fei2zhai")
     {
         events << EventPhaseChanging << CardsMoveOneTime;
-        frequency = Eternal;
+        setEternal();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
@@ -522,7 +522,7 @@ public:
         : TriggerSkill("fsu0413fei4zhai")
     {
         events << DamageCaused << EventPhaseChanging << DamageDone;
-        frequency = Eternal;
+        setEternal();
         global = true;
     }
 
@@ -573,7 +573,7 @@ public:
         : TriggerSkill("fsu0413fei4zhai")
     {
         events << PreHpRecover;
-        frequency = Eternal;
+        setEternal();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *r, const QVariant &data) const override
@@ -817,7 +817,7 @@ public:
     FtmFeitian()
         : TriggerSkill("ftmfeitian")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events = {CardUsed, CardResponded, EventPhaseStart};
     }
 
@@ -952,7 +952,7 @@ public:
     TailorFuzhong()
         : TriggerSkill("tailorfuzhong")
     {
-        frequency = Eternal;
+        setEternal();
         events = {EnterDying, Death};
     }
 
@@ -1033,7 +1033,7 @@ public:
     TailorChenglu()
         : TriggerSkill("tailorchenglu")
     {
-        frequency = Eternal;
+        setEternal();
         events = {Revive};
     }
 

@@ -47,7 +47,7 @@ public:
         : TriggerSkill("jiushu")
     {
         events << EventPhaseStart;
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -189,7 +189,7 @@ public:
     Weizhuang()
         : TriggerSkill("weizhuang")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << TargetConfirmed;
     }
 
@@ -732,7 +732,7 @@ public:
         : TriggerSkill("souji")
     {
         events << CardsMoveOneTime;
-        frequency = Frequent;
+        setFrequent();
     }
 
     //case1.1 while provideCard went to discar pile , like skill Tianren
@@ -870,7 +870,7 @@ public:
         : TriggerSkill("tansuo")
     {
         events << CardsMoveOneTime << EventPhaseEnd << EventPhaseChanging;
-        frequency = Frequent;
+        setFrequent();
     }
 
     void record(TriggerEvent triggerEvent, Room * /*room*/, QVariant &data) const override
@@ -918,7 +918,7 @@ public:
         : TriggerSkill("xunbao")
     {
         events << CardUsed << CardResponded;
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room * /*room*/, const QVariant &data) const override
