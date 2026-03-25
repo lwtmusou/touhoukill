@@ -194,7 +194,7 @@ public:
     Mingtu()
         : TriggerSkill("mingtu")
     {
-        frequency = Frequent;
+        setFrequent();
         events << EnterDying;
     }
 
@@ -221,7 +221,7 @@ public:
     Boming()
         : TriggerSkill("boming")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << DamageCaused;
     }
 
@@ -253,7 +253,7 @@ public:
     Weiya()
         : TriggerSkill("weiya")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << CardUsed << CardResponded;
     }
 
@@ -670,7 +670,7 @@ public:
         : TriggerSkill("qucai")
     {
         events << CardUsed << CardResponded << CardsMoveOneTime;
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
@@ -1876,7 +1876,7 @@ public:
     Shenmi()
         : TriggerSkill("shenmi")
     {
-        frequency = Frequent;
+        setFrequent();
         events << AfterDrawNCards;
     }
 
@@ -1903,7 +1903,7 @@ public:
     Chongshen()
         : TriggerSkill("chongshen$")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events = {NumOfEvents};
         show_type = "static";
     }
@@ -2040,7 +2040,7 @@ public:
     Yishen()
         : TriggerSkill("yishen$")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << TargetConfirmed;
     }
 
@@ -3277,7 +3277,7 @@ public:
         : TriggerSkill("zuimeng")
     {
         events = {EventPhaseChanging};
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override

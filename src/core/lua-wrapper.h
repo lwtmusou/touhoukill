@@ -12,7 +12,12 @@ class LuaTriggerSkill : public TriggerSkill
     Q_OBJECT
 
 public:
-    LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark);
+    LuaTriggerSkill(const char *name, const char *limit_mark);
+    using TriggerSkill::setCompulsory;
+    using TriggerSkill::setEternal;
+    using TriggerSkill::setFrequent;
+    using TriggerSkill::setLimited;
+    void setWake(bool wake = true);
     inline void addEvent(TriggerEvent triggerEvent)
     {
         events << triggerEvent;

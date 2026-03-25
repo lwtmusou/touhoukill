@@ -995,7 +995,7 @@ public:
         : TriggerSkill("fengsu")
     {
         events << HpChanged;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     void record(TriggerEvent /*triggerEvent*/, Room *room, QVariant &data) const override
@@ -1089,7 +1089,7 @@ public:
         : TriggerSkill("micai")
     {
         events << DamageInflicted;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1640,7 +1640,7 @@ public:
         : TriggerSkill("shouhuo")
     {
         events << TrickCardCanceling;
-        frequency = Compulsory;
+        setCompulsory();
         show_type = "static";
     }
 
@@ -1790,7 +1790,7 @@ public:
         : TriggerSkill("zhongyan")
     {
         events << DamageInflicted;
-        frequency = Limited;
+        setLimited();
         limit_mark = "@zhongyan";
     }
 

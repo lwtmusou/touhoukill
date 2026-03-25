@@ -1006,7 +1006,7 @@ end
 --[深秘] 暂无想法
 -- guanxing-ai.lua 里面有默认的代码，暂时先用着吧
 -- 主要是看自己要用杀还是用顺手。。。
--- frequency = Frequent 啥也不用写
+-- is_frequent = true 的技能默认会自动处理
 
 --密封梦魇堇子
 

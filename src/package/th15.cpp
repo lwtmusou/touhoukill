@@ -486,7 +486,7 @@ public:
         : TriggerSkill("santi")
     {
         events << EventPhaseStart;
-        frequency = Skill::Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
@@ -523,7 +523,7 @@ public:
     SantiEffect()
         : TriggerSkill("#santi")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << EventPhaseChanging << CardUsed << CardResponded;
     }
 
@@ -893,7 +893,7 @@ public:
         : TriggerSkill("#shehuo")
     {
         events << TrickCardCanceling;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override

@@ -325,7 +325,7 @@ bool CardUseStruct::isValid(const QString &pattern) const
                     validSkill = true;
                     break;
                 }
-            } else if (skill->getFrequency() == Skill::Wake) {
+            } else if (skill->isWake()) {
                 bool valid = (from->getMark(skill->objectName()) > 0);
                 if (!valid)
                     return false;

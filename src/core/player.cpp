@@ -692,7 +692,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
         if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name)
             && !canShowGeneral(inHeadSkills(skill_name) ? "h" : "d"))
             return false;
-        if (!include_lose && !hasEquipSkill(skill_name) && skill->getFrequency() != Skill::Eternal) {
+        if (!include_lose && !hasEquipSkill(skill_name) && !skill->isEternal()) {
             if (isSkillInvalid(skill_name))
                 return false;
         }
@@ -703,14 +703,14 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
     //Other modes
     //For skill "yibian" of reimu_god
     if (getMark("@disableShowRole") > 0 && !hasShownRole()) {
-        if (skill->getFrequency() != Skill::Eternal && !skill->isAttachedLordSkill() && !hasEquipSkill(skill_name))
+        if (!skill->isEternal() && !skill->isAttachedLordSkill() && !hasEquipSkill(skill_name))
             return false;
     }
 
     //prevent infinite recursion
     if (include_hidden && !isSkillInvalid("anyun")
         && (skills.contains("anyun") || skills2.contains("anyun") || acquired_skills.contains("anyun") || acquired_skills2.contains("anyun")) && !skill->isLordSkill()
-        && !skill->isAttachedLordSkill() && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake && skill->getFrequency() != Skill::Eternal
+        && !skill->isAttachedLordSkill() && !skill->isLimited() && !skill->isWake() && !skill->isEternal()
         && (skill->getShowType() != "static" || hasFlag("has_anyu_state"))) {
         QString shown = shown_hidden_general;
         if (shown == nullptr) {
@@ -722,7 +722,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
         }
     }
 
-    if (!include_lose && !hasEquipSkill(skill_name) && skill->getFrequency() != Skill::Eternal) {
+    if (!include_lose && !hasEquipSkill(skill_name) && !skill->isEternal()) {
         if (isSkillInvalid(skill_name))
             return false;
     }
@@ -812,7 +812,7 @@ bool Player::isSkillInvalid(const Skill *skill) const
     if (skill == nullptr)
         return isSkillInvalid("_ALL_SKILLS");
 
-    if (skill->getFrequency() == Skill::Eternal || skill->isAttachedLordSkill())
+    if (skill->isEternal() || skill->isAttachedLordSkill())
         return false;
 
     return isSkillInvalid(skill->objectName());
@@ -822,7 +822,7 @@ bool Player::isSkillInvalid(const QString &skill_name) const
 {
     if (skill_name != "_ALL_SKILLS") {
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if ((skill != nullptr) && (skill->getFrequency() == Skill::Eternal || skill->isAttachedLordSkill()))
+        if ((skill != nullptr) && (skill->isEternal() || skill->isAttachedLordSkill()))
             return false;
     }
 

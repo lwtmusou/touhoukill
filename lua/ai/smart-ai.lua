@@ -2699,7 +2699,7 @@ function SmartAI:askForSkillInvoke(skill_name, data)
 		return invoke(self, data)
 	else
 		local skill = sgs.Sanguosha:getSkill(skill_name)
-		return skill and skill:getFrequency() == sgs.Skill_Frequent
+		return skill and skill:isFrequent()
 	end
 end
 
@@ -6909,7 +6909,7 @@ function SmartAI:touhouNeedToWake(player)
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
 		local s_name = askill:objectName()
 		--要求 已觉醒标记名 等于 技能名
-		if askill:getFrequency() == sgs.Skill_Wake and player:getMark(s_name)==0 then
+		if askill:isWake() and player:getMark(s_name)==0 then
 			local filter = sgs.ai_needToWake[s_name]
 			if filter and type(filter) == "function" then
 				wake_mode,wake_timing=filter(self,player)

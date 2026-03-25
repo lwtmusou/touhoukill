@@ -17,7 +17,7 @@ public:
         : TriggerSkill("shengge")
     {
         events << EventPhaseStart;
-        frequency = Wake;
+        setWake();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -1307,7 +1307,7 @@ public:
         : TriggerSkill("songjing")
     {
         events << CardUsed;
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -1495,7 +1495,7 @@ public:
         : TriggerSkill("wushou")
     {
         events << TargetConfirmed;
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1775,7 +1775,7 @@ public:
         : TriggerSkill("guoke")
     {
         events << CardsMoveOneTime;
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override

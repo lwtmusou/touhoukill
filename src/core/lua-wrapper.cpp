@@ -2,16 +2,22 @@
 #include "th10.h"
 #include "util.h"
 
-LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark)
+LuaTriggerSkill::LuaTriggerSkill(const char *name, const char *limit_mark)
     : TriggerSkill(name)
     , on_record(0)
     , can_trigger(0)
     , on_cost(0)
     , on_effect(0)
 {
-    this->frequency = frequency;
     this->limit_mark = QString(limit_mark);
-    this->priority = (frequency == Skill::Wake) ? 3 : 2;
+    this->priority = 2;
+}
+
+void LuaTriggerSkill::setWake(bool wake)
+{
+    TriggerSkill::setWake(wake);
+    if (wake)
+        priority = 3;
 }
 
 LuaProhibitSkill::LuaProhibitSkill(const char *name)

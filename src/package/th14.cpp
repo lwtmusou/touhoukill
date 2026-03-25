@@ -62,7 +62,7 @@ public:
     Yicun()
         : TriggerSkill("yicun")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << TargetConfirmed;
     }
 
@@ -1190,7 +1190,7 @@ public:
         : TriggerSkill("duobao")
     {
         events << Damage << Damaged;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override

@@ -673,7 +673,7 @@ public:
     {
         equip_skill = true;
         events << TargetSpecified;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -918,7 +918,7 @@ public:
     HalberdSkill()
         : TargetModSkill("Halberd")
     {
-        frequency = NotCompulsory;
+        setCompulsory(false);
     }
 
     int getExtraTargetNum(const Player *from, const Card *card) const override
@@ -1095,7 +1095,7 @@ public:
     {
         equip_skill = true;
         events << DamageInflicted;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1819,7 +1819,7 @@ public:
     {
         equip_skill = true;
         events << SlashEffected;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1953,7 +1953,7 @@ public:
     {
         equip_skill = true;
         events << CardsMoveOneTime;
-        frequency = Compulsory;
+        setCompulsory();
         global = true;
     }
 
