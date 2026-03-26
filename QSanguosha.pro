@@ -8,6 +8,7 @@ TEMPLATE = app
 !macx: CONFIG += audio
 
 win32: QT += winextras
+win32:CONFIG(debug, debug|release): CONFIG += console
 
 !equals(QT_MAJOR_VERSION, "5") {
     error("QSanguosha requires Qt 5 after 5.6.")
