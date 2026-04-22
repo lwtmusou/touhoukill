@@ -16,8 +16,6 @@ LuaTriggerSkill::LuaTriggerSkill(const char *name, const char *limit_mark)
 void LuaTriggerSkill::setWake(bool wake)
 {
     TriggerSkill::setWake(wake);
-    if (wake)
-        priority = 3;
 }
 
 LuaProhibitSkill::LuaProhibitSkill(const char *name)
