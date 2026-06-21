@@ -5,6 +5,12 @@ import rocks.touhousatsu 1.0
 Item {
     id: rootItem
 
+    property Item currentScene: null
+
+    Component.onCompleted: {
+        currentScene = startSceneComponent.createObject(rootItem, {});
+    }
+
     Component {
         id: startSceneComponent
 
@@ -12,7 +18,6 @@ Item {
             anchors.fill: parent
         }
     }
-
     Component {
         id: roomSceneComponent
 
@@ -20,11 +25,7 @@ Item {
             anchors.fill: parent
         }
     }
-
-    property Item currentScene: null
-
     Connections {
-        target: MainWindowInstance
         function onQml_switchToRoomScene() {
             currentScene.destroy();
             currentScene = roomSceneComponent.createObject(rootItem, {});
@@ -33,9 +34,7 @@ Item {
             currentScene.destroy();
             currentScene = startSceneComponent.createObject(rootItem, {});
         }
-    }
 
-    Component.onCompleted: {
-        currentScene = startSceneComponent.createObject(rootItem, {});
+        target: MainWindowInstance
     }
 }

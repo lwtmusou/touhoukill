@@ -206,7 +206,8 @@ OTHER_FILES += \
     qml/HandcardNum.qml \
     qml/KingdomImage.qml \
     qml/PhaseItem.qml \
-    qml/SeatNumberItem.qml
+    qml/SeatNumberItem.qml \
+    qml/VerticalText.qml
 
 win32{
     CONFIG += skip_target_version_ext
@@ -396,4 +397,3 @@ QMAKE_EXTRA_COMPILERS += swig
 TRANSLATIONS += builds/sanguosha.ts
 
 #ANDROID_PACKAGE_SOURCE_DIR = $$_PRO_FILE_PWD_/resource/android
-

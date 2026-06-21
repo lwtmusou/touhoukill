@@ -5,14 +5,9 @@ import rocks.touhousatsu 1.0
 Image {
     id: magatama
 
-    width: 53
-    height: 44
-
-    fillMode: Image.PreserveAspectFit
-
-    property int n: 5
-    property bool lost: false
     property bool dyingThreshold: false
+    property bool lost: false
+    property int n: 5
 
     function refresh() {
         if (lost) {
@@ -28,9 +23,12 @@ Image {
         }
     }
 
-    onNChanged: refresh()
-    onLostChanged: refresh()
-    onDyingThresholdChanged: refresh()
+    fillMode: Image.PreserveAspectFit
+    height: 44
+    width: 53
 
     Component.onCompleted: refresh()
+    onDyingThresholdChanged: refresh()
+    onLostChanged: refresh()
+    onNChanged: refresh()
 }

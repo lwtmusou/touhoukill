@@ -4,146 +4,17 @@ import rocks.touhousatsu 1.0
 Item {
     id: cardItem
 
-    height: 256
-    width: 183
-    opacity: 0
-
-    // property set by CardContainer for goBack
+    property int cardId: -1
+    property string footnoteText
+    property string general
+    property real homeOpacity: 1
     property real homeX: 0
     property real homeY: 0
-    property real homeOpacity: 1
-
-    // property set by CardContainer to enable Drag
-    property bool enableDrag: false
-
-    // property for displaying
-    property int cardId: -1
-    property string general
-    property string footnoteText
 
     // property for recording its status
     // property bool selected
 
-    Item {
-        id: cardContent
-        anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
-
-        transformOrigin: Item.Center
-        scale: 1
-
-        Image {
-            id: cardImage
-
-            anchors.fill: parent
-
-            clip: true
-            fillMode: Image.PreserveAspectCrop
-        }
-
-        Image {
-            id: cardSuitImage
-
-            anchors.top: parent.top
-            anchors.left: parent.left
-
-            anchors.topMargin: 7
-            anchors.leftMargin: 2
-
-            height: 34
-            width: 42
-
-            fillMode: Image.PreserveAspectFit
-        }
-
-        Image {
-            id: cardNumberImage
-
-            anchors.top: cardSuitImage.bottom
-            anchors.left: parent.left
-            anchors.topMargin: -13
-            anchors.leftMargin: -2
-
-            height: 56
-            width: 54
-
-            fillMode: Image.PreserveAspectFit
-        }
-
-        Text {
-            id: cardFootNoteText
-
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: parent.height / 6
-
-            width: parent.width * 3 / 4
-
-            wrapMode: Text.Wrap
-
-            text: cardItem.footnoteText
-            font.pixelSize: 22
-            color: "#555500"
-
-            style: Text.Sunken
-            styleColor: "#AAAAFF"
-        }
-    }
-
-    MouseArea {
-        id: cardItemMouseArea
-
-        anchors.fill: parent
-
-        // set by onEnableDragChanged to enable draging programatically
-        // drag.target: cardItem
-        drag.axis: Drag.XAndYAxis
-        drag.threshold: 30
-        drag.smoothed: false
-    }
-
-    onEnableDragChanged: {
-        if (enableDrag)
-            cardItemMouseArea.drag.target = cardItem;
-        else
-            cardItemMouseArea.drag.target = undefined;
-    }
-
-    ParallelAnimation {
-        id: goBackAnimation
-        running: false
-
-        PropertyAnimation {
-            id: goBackXAmimation
-
-            target: cardItem
-            property: "x"
-            to: cardItem.homeX
-            easing.type: Easing.OutQuad
-            duration: 250
-        }
-
-        PropertyAnimation {
-            id: goBackYAnimation
-
-            target: cardItem
-            property: "y"
-            to: cardItem.homeY
-            easing.type: Easing.OutQuad
-            duration: 250
-        }
-
-        PropertyAnimation {
-            id: goBackOpacityAnimation
-
-            target: cardItem
-            property: "opacity"
-            to: cardItem.homeOpacity
-            easing.type: Easing.InSine
-            duration: 250
-        }
-    }
+    signal clicked
 
     function goBack() {
         goBackAnimation.stop();
@@ -154,7 +25,6 @@ Item {
 
         goBackAnimation.start();
     }
-
     function setUnknownCard() {
         cardId = -1;
         general = "";
@@ -163,6 +33,10 @@ Item {
         cardSuitImage.visible = false;
         cardNumberImage.visible = false;
     }
+
+    height: 256
+    opacity: 0
+    width: 183
 
     onCardIdChanged: {
         if (cardId == -1)
@@ -181,7 +55,6 @@ Item {
         cardSuitImage.visible = true;
         cardNumberImage.visible = true;
     }
-
     onGeneralChanged: {
         if (general == "")
             return;
@@ -190,5 +63,99 @@ Item {
         cardImage.source = G.getUrl("image/generals/card/" + general + ".jpg");
         cardSuitImage.visible = false;
         cardNumberImage.visible = false;
+    }
+
+    Item {
+        id: cardContent
+
+        anchors.centerIn: parent
+        height: parent.height
+        scale: 1
+        transformOrigin: Item.Center
+        width: parent.width
+
+        Image {
+            id: cardImage
+
+            anchors.fill: parent
+            clip: true
+            fillMode: Image.PreserveAspectCrop
+        }
+        Image {
+            id: cardSuitImage
+
+            anchors.left: parent.left
+            anchors.leftMargin: 2
+            anchors.top: parent.top
+            anchors.topMargin: 7
+            fillMode: Image.PreserveAspectFit
+            height: 34
+            width: 42
+        }
+        Image {
+            id: cardNumberImage
+
+            anchors.left: parent.left
+            anchors.leftMargin: -2
+            anchors.top: cardSuitImage.bottom
+            anchors.topMargin: -13
+            fillMode: Image.PreserveAspectFit
+            height: 56
+            width: 54
+        }
+        Text {
+            id: cardFootNoteText
+
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: parent.height / 6
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#555500"
+            font.pixelSize: 22
+            style: Text.Sunken
+            styleColor: "#AAAAFF"
+            text: cardItem.footnoteText
+            width: parent.width * 3 / 4
+            wrapMode: Text.Wrap
+        }
+    }
+    MouseArea {
+        id: cardItemMouseArea
+
+        anchors.fill: parent
+
+        onClicked: parent.clicked()
+    }
+    ParallelAnimation {
+        id: goBackAnimation
+
+        running: false
+
+        PropertyAnimation {
+            id: goBackXAmimation
+
+            duration: 250
+            easing.type: Easing.OutQuad
+            property: "x"
+            target: cardItem
+            to: cardItem.homeX
+        }
+        PropertyAnimation {
+            id: goBackYAnimation
+
+            duration: 250
+            easing.type: Easing.OutQuad
+            property: "y"
+            target: cardItem
+            to: cardItem.homeY
+        }
+        PropertyAnimation {
+            id: goBackOpacityAnimation
+
+            duration: 250
+            easing.type: Easing.InSine
+            property: "opacity"
+            target: cardItem
+            to: cardItem.homeOpacity
+        }
     }
 }

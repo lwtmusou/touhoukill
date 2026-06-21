@@ -4,9 +4,10 @@ import rocks.touhousatsu 1.0
 
 Image {
     id: startScene
-    source: G.getUrl(Config.BackgroundImage)
-    fillMode: Image.PreserveAspectCrop
+
     anchors.fill: parent
+    fillMode: Image.PreserveAspectCrop
+    source: G.getUrl(Config.BackgroundImage)
 
     Grid {
         id: btnGrid
@@ -14,11 +15,8 @@ Image {
         anchors.horizontalCenter: startScene.horizontalCenter
         anchors.top: startScene.top
         anchors.topMargin: (startScene.height * 5 - height * 4) / 8
-
-        width: parent.width / 2
-        height: parent.height / 2
-
         columns: 2
+        height: parent.height / 2
         spacing: {
             var values = Array(height / 100, width / 100, 5);
             var min = values[0];
@@ -29,148 +27,155 @@ Image {
 
             return min;
         }
+        width: parent.width / 2
 
         QSanButton {
-            width: (parent.width - parent.spacing) / 2
+            font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-
+            source: G.getUrl("image/system/button/button.png")
             text: qsTr("Start game")
+            width: (parent.width - parent.spacing) / 2
+
             onClicked: MainWindowInstance.on_actionStart_Game_triggered()
-            font.pixelSize: 53
-
-            source: G.getUrl("image/system/button/button.png")
         }
-
         QSanButton {
-            width: (parent.width - parent.spacing) / 2
+            font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-
+            source: G.getUrl("image/system/button/button.png")
             text: qsTr("General overview")
+            width: (parent.width - parent.spacing) / 2
+
             onClicked: MainWindowInstance.on_actionGeneral_Overview_triggered()
-            font.pixelSize: 53
-
-            source: G.getUrl("image/system/button/button.png")
         }
-
         QSanButton {
-            width: (parent.width - parent.spacing) / 2
+            font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-
+            source: G.getUrl("image/system/button/button.png")
             text: qsTr("Start server")
+            width: (parent.width - parent.spacing) / 2
+
             onClicked: MainWindowInstance.on_actionStart_Server_triggered()
-            font.pixelSize: 53
-
-            source: G.getUrl("image/system/button/button.png")
         }
-
         QSanButton {
-            width: (parent.width - parent.spacing) / 2
+            font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-
+            source: G.getUrl("image/system/button/button.png")
             text: qsTr("Card overview")
+            width: (parent.width - parent.spacing) / 2
+
             onClicked: MainWindowInstance.on_actionCard_Overview_triggered()
-            font.pixelSize: 53
-
-            source: G.getUrl("image/system/button/button.png")
         }
-
         QSanButton {
-            width: (parent.width - parent.spacing) / 2
+            font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-
+            source: G.getUrl("image/system/button/button.png")
             text: qsTr("PC Console Start")
+            width: (parent.width - parent.spacing) / 2
+
             onClicked: MainWindowInstance.on_actionPC_Console_Start_triggered()
-            font.pixelSize: 53
-
-            source: G.getUrl("image/system/button/button.png")
         }
-
         QSanButton {
-            width: (parent.width - parent.spacing) / 2
+            font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-
+            source: G.getUrl("image/system/button/button.png")
             text: qsTr("Configure")
+            width: (parent.width - parent.spacing) / 2
+
             onClicked: MainWindowInstance.on_actionConfigure_triggered()
-            font.pixelSize: 53
-
-            source: G.getUrl("image/system/button/button.png")
         }
-
         QSanButton {
-            width: (parent.width - parent.spacing) / 2
+            font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-
+            source: G.getUrl("image/system/button/button.png")
             text: qsTr("Replay")
-            onClicked: MainWindowInstance.on_actionReplay_triggered()
-            font.pixelSize: 53
-
-            source: G.getUrl("image/system/button/button.png")
-        }
-
-        QSanButton {
             width: (parent.width - parent.spacing) / 2
-            height: (parent.height - parent.spacing * 3) / 4
 
-            text: qsTr("About Us")
-            onClicked: MainWindowInstance.on_actionAbout_Us_triggered()
+            onClicked: MainWindowInstance.on_actionReplay_triggered()
+        }
+        QSanButton {
             font.pixelSize: 53
-
+            height: (parent.height - parent.spacing * 3) / 4
             source: G.getUrl("image/system/button/button.png")
+            text: qsTr("About Us")
+            width: (parent.width - parent.spacing) / 2
+
+            onClicked: MainWindowInstance.on_actionAbout_Us_triggered()
         }
     }
-
     Image {
         id: logo
+
         clip: true
         fillMode: Image.PreserveAspectFit
-        x: 0
-
         source: G.getUrl("image/logo/logo.png")
-
-        Binding on width {
-            id: logoWidthBinding
-            when: true
-            value: parent.width
-        }
+        x: 0
 
         Binding on height {
             id: logoHeightBinding
-            when: true
-            value: btnGrid.y / 2
-        }
 
+            value: btnGrid.y / 2
+            when: true
+        }
+        Binding on width {
+            id: logoWidthBinding
+
+            value: parent.width
+            when: true
+        }
         Binding on y {
             id: logoYBinding
-            when: true
+
             value: btnGrid.y / 4
+            when: true
         }
     }
-
     Text {
         id: groupText
 
-        anchors.top: btnGrid.bottom
         anchors.horizontalCenter: btnGrid.right
-
-        font.pixelSize: 26
+        anchors.top: btnGrid.bottom
         color: "white"
-
+        font.pixelSize: 26
         text: qsTr("TouhouSatsu QQ Qun: 384318315")
     }
-
     Rectangle {
         id: serverTextBorder
-        visible: false
+
         color: Qt.rgba(0.1, 0.1, 0.1, 0.5)
+        visible: false
+
+        Binding on height {
+            id: serverTextHightBinding
+
+            value: (parent.height - 144) * 0.8
+            when: false
+        }
+        Binding on width {
+            id: serverTextWidthBinding
+
+            value: parent.width * 0.8
+            when: false
+        }
+        Binding on x {
+            id: serverTextXBinding
+
+            value: parent.width * 0.1
+            when: false
+        }
+        Binding on y {
+            id: serverTextYBinding
+
+            value: 144 + (parent.height - 144) * 0.1
+            when: false
+        }
 
         Flickable {
             id: flickable
+
             anchors.fill: parent
-
             clip: true
-            contentWidth: width
             contentHeight: serverText.contentHeight
-
+            contentWidth: width
             contentY: {
                 if (contentHeight < height)
                     return 0;
@@ -180,114 +185,87 @@ Image {
 
             TextEdit {
                 id: serverText
-                width: flickable.width
 
-                readOnly: true
-
-                enabled: false
-                visible: true
-
-                font.pixelSize: 20
                 color: "white"
+                enabled: false
+                font.pixelSize: 20
+                readOnly: true
+                visible: true
+                width: flickable.width
                 wrapMode: TextEdit.Wrap
             }
         }
-
-        Binding on x {
-            id: serverTextXBinding
-            when: false
-            value: parent.width * 0.1
-        }
-
-        Binding on width {
-            id: serverTextWidthBinding
-            when: false
-            value: parent.width * 0.8
-        }
-
-        Binding on y {
-            id: serverTextYBinding
-            when: false
-            value: 144 + (parent.height - 144) * 0.1
-        }
-
-        Binding on height {
-            id: serverTextHightBinding
-            when: false
-            value: (parent.height - 144) * 0.8
-        }
     }
-
     ParallelAnimation {
         id: serverTextAnimation
-        running: false
 
-        PropertyAnimation {
-            id: logoYAnimation
-            target: logo
-            property: "y"
-            to: 0
-            duration: 400
-        }
-        PropertyAnimation {
-            target: logo
-            property: "height"
-            from: btnGrid.y / 2
-            to: 144
-            duration: 400
-        }
-        PropertyAnimation {
-            target: logo
-            property: "width"
-            from: startScene.width
-            to: 360
-            duration: 400
-        }
-        PropertyAnimation {
-            target: serverTextBorder
-            property: "x"
-            from: startScene.width / 2
-            to: startScene.width * 0.1
-            duration: 400
-        }
-        PropertyAnimation {
-            target: serverTextBorder
-            property: "y"
-            from: (startScene.height + 144) / 2
-            to: 144 + (startScene.height - 144) * 0.1
-            duration: 400
-        }
-        PropertyAnimation {
-            target: serverTextBorder
-            property: "width"
-            from: 0
-            to: startScene.width * 0.8
-            duration: 400
-        }
-        PropertyAnimation {
-            target: serverTextBorder
-            property: "height"
-            from: 0
-            to: (startScene.height - 144) * 0.8
-            duration: 400
-        }
-        PropertyAnimation {
-            target: serverTextBorder
-            property: "opacity"
-            from: 0
-            to: 1.0
-            duration: 400
-        }
+        running: false
 
         onFinished: {
             serverTextXBinding.when = true;
             serverTextWidthBinding.when = true;
             serverTextHightBinding.when = true;
         }
-    }
 
+        PropertyAnimation {
+            id: logoYAnimation
+
+            duration: 400
+            property: "y"
+            target: logo
+            to: 0
+        }
+        PropertyAnimation {
+            duration: 400
+            from: btnGrid.y / 2
+            property: "height"
+            target: logo
+            to: 144
+        }
+        PropertyAnimation {
+            duration: 400
+            from: startScene.width
+            property: "width"
+            target: logo
+            to: 360
+        }
+        PropertyAnimation {
+            duration: 400
+            from: startScene.width / 2
+            property: "x"
+            target: serverTextBorder
+            to: startScene.width * 0.1
+        }
+        PropertyAnimation {
+            duration: 400
+            from: (startScene.height + 144) / 2
+            property: "y"
+            target: serverTextBorder
+            to: 144 + (startScene.height - 144) * 0.1
+        }
+        PropertyAnimation {
+            duration: 400
+            from: 0
+            property: "width"
+            target: serverTextBorder
+            to: startScene.width * 0.8
+        }
+        PropertyAnimation {
+            duration: 400
+            from: 0
+            property: "height"
+            target: serverTextBorder
+            to: (startScene.height - 144) * 0.8
+        }
+        PropertyAnimation {
+            duration: 400
+            from: 0
+            property: "opacity"
+            target: serverTextBorder
+            to: 1.0
+        }
+    }
     Connections {
-        target: MainWindowInstance
         function onQml_switchToServerScene(server: QtObject) {
             btnGrid.visible = false;
             groupText.visible = false;
@@ -305,5 +283,7 @@ Image {
 
             MainWindowInstance.configureServerText(server, serverText);
         }
+
+        target: MainWindowInstance
     }
 }

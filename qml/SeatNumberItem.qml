@@ -4,9 +4,8 @@ import rocks.touhousatsu 1.0
 Image {
     property int seat: 0
 
-    fillMode: Image.PreserveAspectCrop
     clip: true
-
+    fillMode: Image.PreserveAspectCrop
     width: height * 23 / 16
 
     onSeatChanged: {

@@ -8,67 +8,62 @@ CppRoomScene {
     signal spaceClicked
 
     Image {
-        source: G.getUrl(Config.TableBgImage)
-        fillMode: Image.PreserveAspectCrop
-
         anchors.fill: parent
+        fillMode: Image.PreserveAspectCrop
+        source: G.getUrl(Config.TableBgImage)
 
         MouseArea {
             anchors.fill: parent
+
             onClicked: roomScene.spaceClicked()
         }
-
         QSanButton {
             id: startSceneButton
 
             anchors.centerIn: parent
-            width: parent.width / 4
-            height: parent.height / 4
-
-            text: "return to start scene"
             font.pixelSize: 50
-
+            height: parent.height / 4
             source: G.getUrl("image/system/button/button.png")
+            text: "return to start scene"
+            width: parent.width / 4
 
             onClicked: MainWindowInstance.gotoStartScene()
         }
-
         Rectangle {
-            anchors.top: startSceneButton.bottom
+            anchors.bottom: startSceneButton.top
             anchors.horizontalCenter: parent.horizontalCenter
-
+            anchors.top: parent.top
             color: Qt.rgba(0, 0, 0, 0.9)
-            width: roomScene.width
             height: roomScene.height
+            width: roomScene.width
 
             Row {
                 anchors.fill: parent
 
                 HandcardNum {
-                    num: 1
                     kingdom: "touhougod"
+                    num: 1
                 }
                 HandcardNum {
-                    num: 1
                     kingdom: "zhan"
-                }
-                HandcardNum {
                     num: 1
+                }
+                HandcardNum {
                     kingdom: "hmx"
+                    num: 1
                 }
                 HandcardNum {
-                    num: 3
                     kingdom: "yym"
+                    num: 3
                 }
                 HandcardNum {
-                    num: 5
                     kingdom: "pc98"
+                    num: 5
                 }
                 HandcardNum {
-                    num: 7
                     kingdom: "tkz"
+                    num: 7
                 }
-
                 KingdomImage {
                     kingdom: "hzc"
                 }
@@ -78,21 +73,40 @@ CppRoomScene {
                 KingdomImage {
                     kingdom: "pc98"
                 }
-
                 Photo {
+                    gameStarted: true
                     general: "luize"
                     kingdom: "pc98"
                     phase: Player.Start
                     seat: 3
                 }
-
                 Photo {
+                    gameStarted: true
                     general: "yingyingguai"
-                    kingdom: "touhougod"
+                    general2: "yingyingguai"
                     huashenGeneral: "sujiangf"
+                    huashenGeneral2: "sujiang"
+                    kingdom: "hmx"
+                    maxhp: 600
                     seat: 5
                 }
-
+                Photo {
+                    banling: true
+                    general: "youmu_god"
+                    hp: 10
+                    kingdom: "touhougod"
+                    linghp: 20
+                    maxhp: 30
+                    seat: 7
+                }
+                CardItem {
+                    cardId: 0
+                    opacity: 1
+                }
+                CardItem {
+                    general: "remilia"
+                    opacity: 1
+                }
                 Column {
                     PhaseItem {
                         phase: Player.Start

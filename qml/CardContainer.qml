@@ -1,17 +1,23 @@
 import QtQuick 6.5
 
 Item {
-    property list<CardItem> cardItems
-
-    property int lastAlign: Qt.AlignLeft
     property bool autoBack: false
+    property list<CardItem> cardItems
+    property int lastAlign: Qt.AlignLeft
 
-    Component {
-        id: cardItemComponent
+    function createItem(cardId: int): CardItem {
+        var item = cardItemComponent.createObject(this, {
+            cardId: cardId,
+            visible: true,
+            opacity: 0
+        });
+        cardItems.push(item);
 
-        CardItem {}
+        return item;
     }
-
+    function insertItem(item: CardItem) {
+        cardItems.push(item);
+    }
     function lay(align: int, useHomePos: bool, goBack: bool) {
         if (cardItems.length === 0)
             return;
@@ -45,33 +51,11 @@ Item {
 
         lastAlign = align;
     }
-
-    onWidthChanged: {
-        if (autoBack)
-            lay(lastAlign, true, true);
-    }
-
-    function createItem(cardId: int): CardItem {
-        var item = cardItemComponent.createObject(this, {
-            cardId: cardId,
-            visible: true,
-            opacity: 0
-        });
-        cardItems.push(item);
-
-        return item;
-    }
-
-    function insertItem(item: CardItem) {
-        cardItems.push(item);
-    }
-
     function takeItem(item: CardItem) {
         var index = cardItems.indexOf(item);
         if (index !== -1)
             cardItems.splice(index, 1);
     }
-
     function takeItemAt(index: int): CardItem {
         if (index >= 0 && index < cardItems.length) {
             var item = cardItems[index];
@@ -80,5 +64,17 @@ Item {
         }
 
         return null;
+    }
+
+    onWidthChanged: {
+        if (autoBack)
+            lay(lastAlign, true, true);
+    }
+
+    Component {
+        id: cardItemComponent
+
+        CardItem {
+        }
     }
 }

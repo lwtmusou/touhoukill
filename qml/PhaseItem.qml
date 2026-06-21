@@ -4,11 +4,10 @@ import rocks.touhousatsu 1.0
 Image {
     property int phase: Player.NotActive
 
-    fillMode: Image.PreserveAspectCrop
     clip: true
-
-    width: 209
+    fillMode: Image.PreserveAspectCrop
     height: 20
+    width: 209
 
     onPhaseChanged: {
         if (G.isPlayerMainPhase(phase)) {

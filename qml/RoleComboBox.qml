@@ -5,163 +5,69 @@ import rocks.touhousatsu 1.0
 Item {
     id: roleComboBox
 
-    width: 50
-    height: 52
-
-    property bool roleShown: false
+    property bool expandFinish: false
     property bool fixed: false
     property string role: "unknown"
+    property bool roleShown: false
 
-    property bool expandFinish: false
+    height: 52
+    width: 50
+
+    onFixedChanged: {
+        if (fixed)
+            expandArea.visible = false;
+    }
+    onRoleChanged: {
+        var pngname = role;
+        if (role !== "unknown")
+            pngname = pngname + "-1";
+
+        displayArea.source = G.getUrl("image/system/roles/" + pngname + ".png");
+    }
+    onRoleShownChanged: {
+        if (roleShown)
+            fixed = true;
+    }
 
     Image {
         id: displayArea
 
         anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-
         source: G.getUrl("image/system/roles/unknown.png")
 
         MouseArea {
             anchors.fill: parent
+
             onClicked: {
                 if (!fixed)
                     expandArea.visible = true;
             }
         }
     }
-
     Image {
         anchors.centerIn: parent
-        width: parent.width * 1.3
-        height: parent.height * 1.3
-
-        visible: roleComboBox.roleShown
         fillMode: Image.PreserveAspectFit
-
+        height: parent.height * 1.3
         source: G.getUrl("image/system/role_shown_icon.png")
+        visible: roleComboBox.roleShown
+        width: parent.width * 1.3
     }
-
     Column {
         id: expandArea
 
-        spacing: 3
-
-        visible: false
-        opacity: 0
-
-        anchors.top: displayArea.top
         anchors.horizontalCenter: displayArea.horizontalCenter
-
+        anchors.top: displayArea.top
+        opacity: 0
+        spacing: 3
+        transformOrigin: Item.TopLeft
+        visible: false
         width: roleComboBox.width
 
-        transformOrigin: Item.TopLeft
         transform: Scale {
             id: expandYScale
+
             yScale: 0.5
-        }
-
-        ParallelAnimation {
-            id: appearAnimation
-
-            running: false
-
-            PropertyAnimation {
-                target: expandArea
-                property: "opacity"
-                from: 0
-                to: 1
-                easing.type: Easing.Linear
-                duration: 200
-            }
-
-            PropertyAnimation {
-                target: expandYScale
-                property: "yScale"
-                from: 0.5
-                to: 1
-                easing.type: Easing.Linear
-                duration: 200
-            }
-
-            onFinished: expandFinish = true
-        }
-
-        Image {
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            width: roleComboBox.width
-            height: roleComboBox.height
-
-            fillMode: Image.PreserveAspectFit
-
-            source: G.getUrl("image/system/roles/unknown.png")
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if (expandFinish) {
-                        expandArea.visible = false;
-                        roleComboBox.role = "unknown";
-                    }
-                }
-            }
-        }
-        Image {
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            width: roleComboBox.width
-            height: roleComboBox.height
-
-            fillMode: Image.PreserveAspectFit
-
-            source: G.getUrl("image/system/roles/loyalist-1.png")
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if (expandFinish) {
-                        expandArea.visible = false;
-                        roleComboBox.role = "loyalist";
-                    }
-                }
-            }
-        }
-        Image {
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            width: roleComboBox.width
-            height: roleComboBox.height
-
-            fillMode: Image.PreserveAspectFit
-
-            source: G.getUrl("image/system/roles/rebel-1.png")
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if (expandFinish) {
-                        expandArea.visible = false;
-                        roleComboBox.role = "rebel";
-                    }
-                }
-            }
-        }
-        Image {
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            width: roleComboBox.width
-            height: roleComboBox.height
-
-            fillMode: Image.PreserveAspectFit
-
-            source: G.getUrl("image/system/roles/renegade-1.png")
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if (expandFinish) {
-                        expandArea.visible = false;
-                        roleComboBox.role = "renegade";
-                    }
-                }
-            }
         }
 
         onVisibleChanged: {
@@ -174,30 +80,68 @@ Item {
                 expandYScale.yScale = 0.5;
             }
         }
+
+        ParallelAnimation {
+            id: appearAnimation
+
+            running: false
+
+            onFinished: expandFinish = true
+
+            PropertyAnimation {
+                duration: 200
+                easing.type: Easing.Linear
+                from: 0
+                property: "opacity"
+                target: expandArea
+                to: 1
+            }
+            PropertyAnimation {
+                duration: 200
+                easing.type: Easing.Linear
+                from: 0.5
+                property: "yScale"
+                target: expandYScale
+                to: 1
+            }
+        }
+        Repeater {
+            model: ["unknown", "loyalist", "rebel", "renegade"]
+
+            Image {
+                required property string modelData
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                fillMode: Image.PreserveAspectFit
+                height: roleComboBox.height
+                source: {
+                    if (modelData == "unknown")
+                        return G.getUrl("image/system/roles/unknown.png");
+
+                    return G.getUrl("image/system/roles/" + modelData + "-1.png");
+                }
+                width: roleComboBox.width
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked: {
+                        expandArea.visible = false;
+                        roleComboBox.role = modelData;
+                    }
+                    onPressed: {
+                        if (!expandFinish)
+                            mouse.accepted = false;
+                    }
+                }
+            }
+        }
     }
-
-    onRoleShownChanged: {
-        if (roleShown)
-            fixed = true;
-    }
-
-    onRoleChanged: {
-        var pngname = role;
-        if (role !== "unknown")
-            pngname = pngname + "-1";
-
-        displayArea.source = G.getUrl("image/system/roles/" + pngname + ".png");
-    }
-
-    onFixedChanged: {
-        if (fixed)
-            expandArea.visible = false;
-    }
-
     Connections {
-        target: roomScene
         function onSpaceClicked() {
             expandArea.visible = false;
         }
+
+        target: roomScene
     }
 }

@@ -5,266 +5,43 @@ import rocks.touhousatsu 1.0
 Item {
     id: photo
 
-    width: 336
-    height: 407
-
-    property string kingdom
+    property bool banling: false
+    property int dyingThreshold: 0
+    property bool gameStarted: false
     property string general: ""
-    property string huashenGeneral: ""
     property string general2: ""
+    property int hp: 5
+    property string huashenGeneral: ""
     property string huashenGeneral2: ""
+    property string kingdom
+    property int linghp: 5
+    property int maxhp: 5
+    property int phase: Player.NotActive
+    property var privatePile: ({})
     property string role: ""
     property bool roleShown: false
-    property int hp: 5
-    property int maxhp: 5
-    property int dyingThreshold: 0
-    property int phase: Player.NotActive
-    property int seat
-    property var privatePile: ({})
     property string screenName: "东方杀"
+    property int seat
 
+    height: 407
+    width: 336
 
-    Image {
-        id: generalImage
-        cache: false
-        fillMode: Image.PreserveAspectCrop
-        clip: true
+    Component.onCompleted: {
+        if (G.isHegemonyGameMode(ServerInfo.GameMode)) {
+            hegRoleComboBox.visible = true;
+            seatNumber.visible = true;
+        } else if (G.isNormalGameMode(ServerInfo.GameMode)) {
+            roleComboBox.visible = true;
+            kingdomImage.visible = true;
+        }
 
-        anchors.top: photo.top
-        anchors.left: photo.left
-
-        height: photo.height
-        width: photo.width
-
-        source: G.getUrl("image/fullskin/generals/full/yingyingguai.png")
-
-        Image {
-            id: huashenImage
-            cache: false
-            fillMode: Image.PreserveAspectCrop
-            clip: true
-
-            anchors.fill: parent
-            visible: false
-            opacity: 0
-
-            SequentialAnimation {
-                id: huashenImageAnimation
-                loops: Animation.Infinite
-
-                PropertyAnimation {
-                    target: huashenImage
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    duration: 500
-                }
-
-                PauseAnimation {
-                    duration: 4000
-                }
-
-                PropertyAnimation {
-                    target: huashenImage
-                    property: "opacity"
-                    from: 1
-                    to: 0
-                    duration: 500
-                }
-
-                PauseAnimation {
-                    duration: 1000
-                }
-            }
-
-            onVisibleChanged: {
-                if (visible)
-                    huashenImageAnimation.start();
-                else
-                    huashenImageAnimation.stop();
-            }
+        // patch for specifying general2 initially
+        if (general2 != "") {
+            generalImage.width = Qt.binding(function () {
+                return photo.width / 2;
+            });
         }
     }
-
-    Image {
-        id: general2Image
-        visible: false
-        cache: false
-        fillMode: Image.PreserveAspectCrop
-        clip: true
-
-        anchors.top: photo.top
-        anchors.right: photo.right
-        height: photo.height
-        width: photo.width / 2.
-
-        Image {
-            id: huashen2Image
-            cache: false
-            fillMode: Image.PreserveAspectCrop
-            clip: true
-
-            anchors.fill: parent
-            visible: false
-            opacity: 0
-
-            SequentialAnimation {
-                id: huashen2ImageAnimation
-                loops: Animation.Infinite
-
-                PropertyAnimation {
-                    target: huashen2Image
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    duration: 500
-                }
-
-                PauseAnimation {
-                    duration: 4000
-                }
-
-                PropertyAnimation {
-                    target: huashen2Image
-                    property: "opacity"
-                    from: 1
-                    to: 0
-                    duration: 500
-                }
-
-                PauseAnimation {
-                    duration: 1000
-                }
-            }
-
-            onVisibleChanged: {
-                if (visible)
-                    huashen2ImageAnimation.start();
-                else
-                    huashen2ImageAnimation.stop();
-            }
-        }
-    }
-
-    Rectangle {
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: rightRect.left
-        height: photo.height / 12
-
-        color: Qt.rgba(0, 0, 0, 0.5)
-
-        Text {
-            anchors.centerIn: parent
-            height: parent.height / 1.2
-            font.pixelSize: 50
-            fontSizeMode: Text.Fit
-            horizontalAlignment: Qt.AlignHCenter
-            verticalAlignment: Qt.AlignVCenter
-            text: screenName
-        }
-
-        SeatNumberItem {
-            id: seatNumber
-
-            visible: false
-
-            height: parent.height
-            seat: photo.seat
-            anchors.left: parent
-            anchors.top: parent
-        }
-    }
-
-    KingdomImage {
-        id: kingdomImage
-
-        visible: false
-
-        anchors.horizontalCenter: photo.left
-        anchors.verticalCenter: photo.top
-
-        kingdom: photo.kingdom
-    }
-
-    Rectangle {
-        id: rightRect
-
-        color: Qt.rgba(0.1, 0.1, 0.1, 0.8)
-        width: photo.width / 6.34
-        height: photo.height
-        anchors.right: photo.right
-        anchors.top: photo.top
-
-        Magatamas {
-            id: magatamas
-            width: parent.width
-
-            visible: false
-
-            anchors.fill: parent
-            hp: photo.hp
-            maxhp: photo.maxhp
-            dyingThreshold: photo.dyingThreshold
-        }
-
-        HandcardNum {
-            id: handcardNum
-
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-
-            // visible: false
-            kingdom: photo.kingdom
-        }
-
-        RoleComboBox {
-            id: roleComboBox
-
-            visible: false
-
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            roleShown: photo.roleShown
-        }
-
-        HegRoleComboBox {
-            id: hegRoleComboBox
-
-            visible: false
-
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            roleShown: photo.roleShown
-        }
-    }
-
-    PhaseItem {
-        phase: photo.phase
-
-        anchors.top: photo.bottom
-        anchors.horizontalCenter: photo.horizontalCenter
-    }
-
-    onGeneralChanged: {
-        if (general === "") {
-            general = "yingyingguai";
-            return;
-        }
-
-        generalImage.source = G.getUrl("image/fullskin/generals/full/" + general + ".png");
-    }
-
-    onHuashenGeneralChanged: {
-        if (huashenGeneral === "") {
-            huashenImage.visible = false;
-        } else {
-            huashenImage.source = G.getUrl("image/fullskin/generals/full/" + huashenGeneral + ".png");
-            huashenImage.visible = true;
-        }
-    }
-
     onGeneral2Changed: {
         if (general2 === "") {
             general2Image.visible = false;
@@ -279,7 +56,14 @@ Item {
         general2Image.visible = true;
         general2Image.source = G.getUrl("image/fullskin/generals/full/" + general2 + ".png");
     }
+    onGeneralChanged: {
+        if (general === "") {
+            general = "yingyingguai";
+            return;
+        }
 
+        generalImage.source = G.getUrl("image/fullskin/generals/full/" + general + ".png");
+    }
     onHuashenGeneral2Changed: {
         if (huashenGeneral2 === "") {
             huashen2Image.visible = false;
@@ -288,7 +72,14 @@ Item {
             huashen2Image.visible = true;
         }
     }
-
+    onHuashenGeneralChanged: {
+        if (huashenGeneral === "") {
+            huashenImage.visible = false;
+        } else {
+            huashenImage.source = G.getUrl("image/fullskin/generals/full/" + huashenGeneral + ".png");
+            huashenImage.visible = true;
+        }
+    }
     onRoleChanged: {
         if (role !== "") {
             roleComboBox.role = role;
@@ -298,13 +89,251 @@ Item {
         }
     }
 
-    Component.onCompleted: {
-        if (G.isHegemonyGameMode(ServerInfo.GameMode)) {
-            hegRoleComboBox.visible = true;
-            seatNumber.visible = true;
-        } else if (G.isNormalGameMode(ServerInfo.GameMode)) {
-            roleComboBox.visible = true;
-            kingdomImage.visible = true;
+    Image {
+        id: generalImage
+
+        anchors.left: photo.left
+        anchors.top: photo.top
+        cache: false
+        clip: true
+        fillMode: Image.PreserveAspectCrop
+        height: photo.height
+        source: G.getUrl("image/fullskin/generals/full/yingyingguai.png")
+        width: photo.width
+
+        Image {
+            id: huashenImage
+
+            anchors.fill: parent
+            cache: false
+            clip: true
+            fillMode: Image.PreserveAspectCrop
+            opacity: 0
+            visible: false
+
+            onVisibleChanged: {
+                if (visible)
+                    huashenImageAnimation.start();
+                else
+                    huashenImageAnimation.stop();
+            }
+
+            SequentialAnimation {
+                id: huashenImageAnimation
+
+                loops: Animation.Infinite
+
+                PropertyAnimation {
+                    duration: 500
+                    from: 0
+                    property: "opacity"
+                    target: huashenImage
+                    to: 1
+                }
+                PauseAnimation {
+                    duration: 4000
+                }
+                PropertyAnimation {
+                    duration: 500
+                    from: 1
+                    property: "opacity"
+                    target: huashenImage
+                    to: 0
+                }
+                PauseAnimation {
+                    duration: 1000
+                }
+            }
         }
+        Image {
+            id: generalName
+
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.topMargin: banner.height - 8
+            height: 196
+            source: G.getUrl("image/kingdom/frame/" + kingdom + ".png")
+            visible: photo.gameStarted
+            width: 72
+
+            VerticalText {
+                anchors.centerIn: parent
+                font.pixelSize: 72
+                fontSizeMode: Text.Fit
+                height: 140
+                horizontalAlignment: Text.AlignHCenter
+                minimumPixelSize: 1
+                verticalAlignment: Text.AlignVCenter
+                verticalText: {
+                    var toTranslate = "&" + photo.general;
+                    var r = Sanguosha.translate(toTranslate);
+
+                    if (r == toTranslate)
+                        r = Sanguosha.translate(photo.general);
+
+                    return r;
+                }
+                width: 36
+            }
+        }
+    }
+    Image {
+        id: general2Image
+
+        anchors.right: photo.right
+        anchors.top: photo.top
+        cache: false
+        clip: true
+        fillMode: Image.PreserveAspectCrop
+        height: photo.height
+        visible: false
+        width: photo.width / 2.
+
+        Image {
+            id: huashen2Image
+
+            anchors.fill: parent
+            cache: false
+            clip: true
+            fillMode: Image.PreserveAspectCrop
+            opacity: 0
+            visible: false
+
+            onVisibleChanged: {
+                if (visible)
+                    huashen2ImageAnimation.start();
+                else
+                    huashen2ImageAnimation.stop();
+            }
+
+            SequentialAnimation {
+                id: huashen2ImageAnimation
+
+                loops: Animation.Infinite
+
+                PropertyAnimation {
+                    duration: 500
+                    from: 0
+                    property: "opacity"
+                    target: huashen2Image
+                    to: 1
+                }
+                PauseAnimation {
+                    duration: 4000
+                }
+                PropertyAnimation {
+                    duration: 500
+                    from: 1
+                    property: "opacity"
+                    target: huashen2Image
+                    to: 0
+                }
+                PauseAnimation {
+                    duration: 1000
+                }
+            }
+        }
+    }
+    Rectangle {
+        id: banner
+
+        anchors.left: parent.left
+        anchors.right: rightRect.left
+        anchors.top: parent.top
+        color: Qt.rgba(0, 0, 0, 0.5)
+        height: photo.height / 12
+
+        Text {
+            anchors.centerIn: parent
+            font.pixelSize: 50
+            fontSizeMode: Text.Fit
+            height: parent.height / 1.2
+            horizontalAlignment: Qt.AlignHCenter
+            text: screenName
+            verticalAlignment: Qt.AlignVCenter
+        }
+        Item {
+            id: seatNumberOrKingdomImageItem
+
+            anchors.fill: parent
+            visible: photo.gameStarted
+
+            SeatNumberItem {
+                id: seatNumber
+
+                anchors.left: parent.left
+                anchors.top: parent.top
+                height: parent.height
+                seat: photo.seat
+                visible: false
+            }
+            KingdomImage {
+                id: kingdomImage
+
+                anchors.left: parent.left
+                anchors.top: parent.top
+                kingdom: photo.kingdom
+                visible: false
+            }
+        }
+    }
+    Rectangle {
+        id: rightRect
+
+        anchors.right: photo.right
+        anchors.top: photo.top
+        color: Qt.rgba(0.1, 0.1, 0.1, 0.8)
+        height: photo.height
+        width: photo.width / 6.34
+
+        Magatamas {
+            id: magatamas
+
+            anchors.fill: parent
+            banling: photo.banling
+            dyingThreshold: photo.dyingThreshold
+            hp: photo.hp
+            linghp: photo.linghp
+            maxhp: photo.maxhp
+            visible: photo.gameStarted
+            width: parent.width
+        }
+        HandcardNum {
+            id: handcardNum
+
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            kingdom: photo.kingdom
+            visible: photo.gameStarted
+        }
+        Item {
+            id: roleComboBoxItem
+
+            anchors.fill: parent
+            visible: photo.gameStarted
+
+            RoleComboBox {
+                id: roleComboBox
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                roleShown: photo.roleShown
+                visible: false
+            }
+            HegRoleComboBox {
+                id: hegRoleComboBox
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                roleShown: photo.roleShown
+                visible: false
+            }
+        }
+    }
+    PhaseItem {
+        anchors.horizontalCenter: photo.horizontalCenter
+        anchors.top: photo.bottom
+        phase: photo.phase
+        visible: photo.gameStarted
     }
 }

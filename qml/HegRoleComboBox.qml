@@ -5,84 +5,28 @@ import rocks.touhousatsu 1.0
 Item {
     id: roleComboBox
 
-    width: 50
-    height: 50
-
-    property bool roleShown: false
-    property bool fixed: false
-    property string role: "unknown"
-
-    property bool expandStart: false
-    property bool expandFinish: false
-
     property real childwh: 24.5
     property int column: 2
+    property bool expandFinish: false
+    property bool expandStart: false
+    property bool fixed: false
+    property string role: "unknown"
+    property bool roleShown: false
 
+    height: 50
     transformOrigin: Item.TopRight
+    width: 50
 
     PropertyAnimation on scale {
         id: appearAnimation
-        running: false
-        from: 1
-        to: column
-        easing.type: Easing.Linear
+
         duration: 200
+        easing.type: Easing.Linear
+        from: 1
+        running: false
+        to: column
 
         onFinished: expandFinish = true
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            if (!expandStart && !fixed) {
-                expandStart = true;
-                appearAnimation.start();
-            }
-        }
-    }
-
-    Grid {
-        id: itemGrid
-
-        anchors.fill: parent
-        columns: column
-        spacing: 1
-        visible: true
-    }
-
-    Component {
-        id: subItemComponent
-
-        Rectangle {
-            property bool selected: true
-            property color kingdomColor
-
-            MouseArea {
-                anchors.fill: parent
-                onPressed: {
-                    if (!expandFinish)
-                        mouse.accepted = false;
-                }
-                onClicked: selected = !selected
-            }
-
-            function refresh() {
-                if (selected)
-                    color = kingdomColor;
-                else
-                    color = "black";
-            }
-
-            onSelectedChanged: refresh()
-        }
-    }
-
-    Image {
-        id: fixedImage
-
-        visible: false
-        anchors.fill: parent
-        fillMode: Image.PreserveAspectFit
     }
 
     Component.onCompleted: {
@@ -108,16 +52,6 @@ Item {
             created.visible = true;
         }
     }
-
-    onRoleShownChanged: {
-        if (roleShown)
-            fixed = true;
-    }
-
-    onRoleChanged: {
-        fixedImage.source = G.getUrl("image/system/roles/" + role + ".png");
-    }
-
     onFixedChanged: {
         if (fixed) {
             appearAnimation.stop();
@@ -128,14 +62,74 @@ Item {
             fixedImage.visible = true;
         }
     }
+    onRoleChanged: {
+        fixedImage.source = G.getUrl("image/system/roles/" + role + ".png");
+    }
+    onRoleShownChanged: {
+        if (roleShown)
+            fixed = true;
+    }
 
+    MouseArea {
+        anchors.fill: parent
+
+        onClicked: {
+            if (!expandStart && !fixed) {
+                expandStart = true;
+                appearAnimation.start();
+            }
+        }
+    }
+    Grid {
+        id: itemGrid
+
+        anchors.fill: parent
+        columns: column
+        spacing: 1
+        visible: true
+    }
+    Component {
+        id: subItemComponent
+
+        Rectangle {
+            property color kingdomColor
+            property bool selected: true
+
+            function refresh() {
+                if (selected)
+                    color = kingdomColor;
+                else
+                    color = "black";
+            }
+
+            onSelectedChanged: refresh()
+
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: selected = !selected
+                onPressed: {
+                    if (!expandFinish)
+                        mouse.accepted = false;
+                }
+            }
+        }
+    }
+    Image {
+        id: fixedImage
+
+        anchors.fill: parent
+        fillMode: Image.PreserveAspectFit
+        visible: false
+    }
     Connections {
-        target: roomScene
         function onSpaceClicked() {
             appearAnimation.stop();
             expandStart = false;
             expandFinish = false;
             roleComboBox.scale = 1;
         }
+
+        target: roomScene
     }
 }
