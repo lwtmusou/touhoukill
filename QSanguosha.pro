@@ -8,6 +8,7 @@ TEMPLATE = app
 !macx: CONFIG += audio
 
 CONFIG += c++17
+win32:CONFIG(debug, debug|release): CONFIG += console
 CONFIG += lua
 
 VERSION = 0.10.11

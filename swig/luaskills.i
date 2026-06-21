@@ -1,6 +1,11 @@
 class LuaTriggerSkill: public TriggerSkill {
 public:
-    LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark);
+    LuaTriggerSkill(const char *name, const char *limit_mark);
+    void setFrequent(bool frequent = true);
+    void setCompulsory(bool compulsory = true);
+    void setLimited(bool limited = true);
+    void setWake(bool wake = true);
+    void setEternal(bool eternal = true);
     void addEvent(TriggerEvent event);
     void setViewAsSkill(ViewAsSkill *view_as_skill);
     void setGlobal(bool global);

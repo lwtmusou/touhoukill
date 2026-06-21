@@ -3,16 +3,24 @@
 -- trigger skills
 function sgs.CreateTriggerSkill(spec)
 	assert(type(spec.name) == "string")
-	if spec.frequency then assert(type(spec.frequency) == "number") end
+	if spec.is_frequent ~= nil then assert(type(spec.is_frequent) == "boolean") end
+	if spec.is_compulsory ~= nil then assert(type(spec.is_compulsory) == "boolean") end
+	if spec.is_limited ~= nil then assert(type(spec.is_limited) == "boolean") end
+	if spec.is_wake ~= nil then assert(type(spec.is_wake) == "boolean") end
+	if spec.is_eternal ~= nil then assert(type(spec.is_eternal) == "boolean") end
 	if spec.limit_mark then assert(type(spec.limit_mark) == "string") end
 	if spec.on_record then assert(type(spec.on_record) == "function") end
 	if spec.can_trigger then assert(type(spec.can_trigger) == "function") end
 	if spec.on_cost then assert(type(spec.on_cost) == "function") end
 	if spec.on_effect then assert(type(spec.on_effect) == "function") end
 
-	local frequency = spec.frequency or sgs.Skill_NotFrequent
 	local limit_mark = spec.limit_mark or ""
-	local skill = sgs.LuaTriggerSkill(spec.name, frequency, limit_mark)
+	local skill = sgs.LuaTriggerSkill(spec.name, limit_mark)
+	if spec.is_frequent then skill:setFrequent() end
+	if spec.is_compulsory then skill:setCompulsory() end
+	if spec.is_limited then skill:setLimited() end
+	if spec.is_wake then skill:setWake() end
+	if spec.is_eternal then skill:setEternal() end
 
 	if type(spec.events) == "number" then
 		skill:addEvent(spec.events)
@@ -182,39 +190,6 @@ function sgs.CreateGameStartSkill(spec)
 
 	return sgs.CreateTriggerSkill(spec)
 end
-
-function sgs.CreateFakeMoveSkill(spec)
-	assert((type(spec) == "string") or ((type(spec) == "table") and (type(spec.skillname) == "string")))
-	local skillname
-	if (type(spec) == "string") then
-		skillname = spec
-	else
-		skillname = spec.skillname
-	end
-
-	local fakemove = sgs.LuaTriggerSkill("#" .. skillname .. "-fake-move", sgs.Skill_NotFrequent, "")
-	fakemove:addEvent(sgs.BeforeCardsMove)
-	fakemove:addEvent(sgs.CardsMoveOneTime)
-	fakemove.priority = 10
-	function fakemove.can_trigger(skill, player)
-		return player
-	end
-	function fakemove.on_trigger(skill, event, player, data)
-		local room = player:getRoom()
-		local flag = skillname .. "_InTempMoving"
-
-		for _, p in sgs.qlist(room:getAllPlayers()) do
-			if p:hasFlag(flag) then return true end
-		end
-
-		return false
-	end
-
-	return fakemove
-
-end
-
-
 
 --------------------------------------------
 

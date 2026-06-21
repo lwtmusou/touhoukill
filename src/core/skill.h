@@ -16,28 +16,21 @@ class QDialog;
 class Skill : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Frequency frequency READ getFrequency)
     Q_PROPERTY(QString limitMark READ getLimitMark)
     Q_PROPERTY(bool lord READ isLordSkill)
     Q_PROPERTY(bool attachedLord READ isAttachedLordSkill)
     Q_PROPERTY(bool visible READ isVisible)
 
 public:
-    enum Frequency
-    {
-        Frequent,
-        NotFrequent,
-        Compulsory,
-        NotCompulsory,
-        Limited,
-        Wake,
-        Eternal
-    };
-    Q_ENUM(Frequency)
-
-    explicit Skill(const QString &name, Frequency frequent = NotFrequent, const QString &showType = "trigger");
+    explicit Skill(const QString &name, const QString &showType = "trigger");
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
+    bool isFrequent() const;
+    bool isCompulsory() const;
+    bool isLimited() const;
+    bool isWake() const;
+    bool isEternal() const;
+    virtual bool playerRevivable(const Player *player, const Room *room) const;
     virtual bool shouldBeVisible(const Player *Self) const; // usually for attached skill
     QString getDescription(bool yellow = true, bool addHegemony = false) const;
     QString getNotice(int index) const;
@@ -50,7 +43,6 @@ public:
     void initMediaSource() const;
     void playAudioEffect(int index = -1) const;
 
-    Frequency getFrequency() const;
     QString getLimitMark() const;
     QString getRelatedMark() const;
     QString getRelatedPileName() const;
@@ -65,7 +57,17 @@ public:
     bool isEquipSkill() const;
 
 protected:
-    Frequency frequency;
+    void setFrequent(bool frequent = true);
+    void setCompulsory(bool compulsory = true);
+    void setLimited(bool limited = true);
+    void setWake(bool wake = true);
+    void setEternal(bool eternal = true);
+
+    bool frequent;
+    bool compulsory;
+    bool limited;
+    bool wake;
+    bool eternal;
     QString limit_mark;
     QString related_mark; //while changing hero, this will be removed
     QString related_pile;

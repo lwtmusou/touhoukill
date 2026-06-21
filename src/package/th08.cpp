@@ -14,7 +14,7 @@ public:
         : TriggerSkill("yongheng")
     {
         events << EventPhaseChanging << CardsMoveOneTime;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     static void adjustHandcardNum(ServerPlayer *player, int card_num, const QString &reason)
@@ -1655,7 +1655,7 @@ public:
     Jinxi()
         : ZeroCardViewAsSkill("jinxi")
     {
-        frequency = Limited;
+        setLimited();
         limit_mark = "@jinxi";
     }
 
@@ -1677,7 +1677,7 @@ public:
         : TriggerSkill("yemang")
     {
         events << EventPhaseChanging << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override

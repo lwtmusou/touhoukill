@@ -45,7 +45,7 @@ public:
         : TriggerSkill("zaozu")
     {
         events << EventPhaseChanging << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
@@ -690,7 +690,7 @@ public:
         : TriggerSkill("mengxian")
     {
         events << EventPhaseStart;
-        frequency = Wake;
+        setWake();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -959,7 +959,7 @@ public:
         : TriggerSkill("yueshi")
     {
         events << EventPhaseStart;
-        frequency = Wake;
+        setWake();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1034,8 +1034,8 @@ public:
             return {};
 
         foreach (const Skill *skill, target->getVisibleSkillList()) {
-            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake
-                || skill->getFrequency() == Skill::Eternal)
+            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->isLimited() || skill->isWake()
+                || skill->isEternal())
                 continue;
             if (!yori->hasSkill(skill, true) && target->hasSkill(skill))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, nullptr, false, target);
@@ -1051,8 +1051,8 @@ public:
         QStringList skill_names;
 
         foreach (const Skill *skill, invoke->preferredTarget->getVisibleSkillList()) {
-            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake
-                || skill->getFrequency() == Skill::Eternal)
+            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->isLimited() || skill->isWake()
+                || skill->isEternal())
                 continue;
 
             if (!yori->hasSkill(skill, true) && invoke->preferredTarget->hasSkill(skill))
@@ -1870,7 +1870,7 @@ public:
         : TriggerSkill("xunshi")
     {
         events << TargetSpecifying;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -2157,7 +2157,7 @@ public:
         : TriggerSkill("sixiang")
     {
         events << EventPhaseStart;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -2419,7 +2419,7 @@ public:
     Wanshen()
         : TriggerSkill("wanshen")
     {
-        frequency = Wake;
+        setWake();
         events << EventPhaseStart;
     }
 

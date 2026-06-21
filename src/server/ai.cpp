@@ -276,7 +276,7 @@ QString TrustAI::askForKingdom()
 bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant & /*data*/)
 {
     const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
-    return skill != nullptr && skill->getFrequency() == Skill::Frequent;
+    return skill != nullptr && skill->isFrequent();
     //    return false;
 }
 

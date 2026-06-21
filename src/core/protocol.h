@@ -149,7 +149,9 @@ enum CommandType
     S_COMMAND_SET_SHOWN_HIDDEN_GENERAL,
     S_COMMAND_HEARTBEAT,
     S_COMMAND_PRESHOW,
-    S_COMMAND_DISABLE_SHOW
+    S_COMMAND_DISABLE_SHOW,
+    S_COMMAND_PERSPECTIVE_REQUEST, // Client -> Server: request to switch perspective (dead players only for spectate)
+    S_COMMAND_PERSPECTIVE_SYNC // Server -> Client: full visible state snapshot of the perspective target
 };
 
 enum GameEventType

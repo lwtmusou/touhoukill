@@ -271,37 +271,18 @@ void QSanSkillButton::setSkill(const Skill *skill)
     if (skill == nullptr)
         skill = _m_skill;
 
-    Skill::Frequency freq = skill->getFrequency();
+    const bool is_optional_trigger = skill->inherits("TriggerSkill") && !skill->isEquipSkill() && _m_viewAsSkill == nullptr && !skill->isCompulsory()
+        && !skill->isLimited() && !skill->isWake() && !skill->isEternal();
+    const bool is_passive_modifier = skill->inherits("ProhibitSkill") || skill->inherits("DistanceSkill") || skill->inherits("MaxCardsSkill")
+        || skill->inherits("TargetModSkill") || skill->inherits("AttackRangeSkill") || skill->inherits("ViewHasSkill");
+
     if (skill->inherits("BattleArraySkill")) {
         setStyle(QSanButton::S_STYLE_TOGGLE);
         setState(QSanButton::S_STATE_DISABLED);
         _setSkillType(QSanInvokeSkillButton::S_SKILL_ARRAY);
         _m_emitActivateSignal = true;
         _m_emitDeactivateSignal = true;
-    } else if (freq == Skill::Frequent || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->isEquipSkill() && _m_viewAsSkill == nullptr)) {
-        setStyle(QSanButton::S_STYLE_TOGGLE);
-        setState(freq == Skill::Frequent ? QSanButton::S_STATE_DOWN : QSanButton::S_STATE_UP);
-        _setSkillType(QSanInvokeSkillButton::S_SKILL_FREQUENT);
-        _m_emitActivateSignal = false;
-        _m_emitDeactivateSignal = false;
-        _m_canEnable = true;
-        _m_canDisable = false;
-    } else if (freq == Skill::Limited || freq == Skill::NotFrequent) {
-        setState(QSanButton::S_STATE_DISABLED);
-        if (skill->isAttachedLordSkill())
-            _setSkillType(QSanInvokeSkillButton::S_SKILL_ATTACHEDLORD);
-        else if (freq == Skill::Limited)
-            _setSkillType(QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL);
-        else
-            _setSkillType(QSanInvokeSkillButton::S_SKILL_PROACTIVE);
-
-        setStyle(QSanButton::S_STYLE_TOGGLE);
-
-        _m_emitDeactivateSignal = true;
-        _m_emitActivateSignal = true;
-        _m_canEnable = true;
-        _m_canDisable = true;
-    } else if (freq == Skill::Wake) {
+    } else if (skill->isWake()) {
         setState(QSanButton::S_STATE_DISABLED);
         setStyle(QSanButton::S_STYLE_PUSH);
         _setSkillType(QSanInvokeSkillButton::S_SKILL_AWAKEN);
@@ -309,7 +290,28 @@ void QSanSkillButton::setSkill(const Skill *skill)
         _m_emitDeactivateSignal = false;
         _m_canEnable = true;
         _m_canDisable = true;
-    } else if (freq == Skill::Compulsory || freq == Skill::Eternal || freq == Skill::NotCompulsory) { //  we have to set it in such way for WeiDi
+    } else if (skill->isLimited()) {
+        setState(QSanButton::S_STATE_DISABLED);
+        if (skill->isAttachedLordSkill())
+            _setSkillType(QSanInvokeSkillButton::S_SKILL_ATTACHEDLORD);
+        else
+            _setSkillType(QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL);
+
+        setStyle(QSanButton::S_STYLE_TOGGLE);
+
+        _m_emitDeactivateSignal = true;
+        _m_emitActivateSignal = true;
+        _m_canEnable = true;
+        _m_canDisable = true;
+    } else if (skill->isFrequent() || is_optional_trigger) {
+        setStyle(QSanButton::S_STYLE_TOGGLE);
+        setState(skill->isFrequent() ? QSanButton::S_STATE_DOWN : QSanButton::S_STATE_UP);
+        _setSkillType(QSanInvokeSkillButton::S_SKILL_FREQUENT);
+        _m_emitActivateSignal = false;
+        _m_emitDeactivateSignal = false;
+        _m_canEnable = true;
+        _m_canDisable = false;
+    } else if (skill->isCompulsory() || skill->isEternal() || is_passive_modifier) { //  we have to set it in such way for WeiDi
         if (isHegemonyGameMode(ServerInfo.GameMode))
             setState(QSanButton::S_STATE_DISABLED);
         else
@@ -320,8 +322,20 @@ void QSanSkillButton::setSkill(const Skill *skill)
         _m_emitDeactivateSignal = false;
         _m_canEnable = true;
         _m_canDisable = true;
-    } else
-        Q_ASSERT(false);
+    } else {
+        setState(QSanButton::S_STATE_DISABLED);
+        if (skill->isAttachedLordSkill())
+            _setSkillType(QSanInvokeSkillButton::S_SKILL_ATTACHEDLORD);
+        else
+            _setSkillType(QSanInvokeSkillButton::S_SKILL_PROACTIVE);
+
+        setStyle(QSanButton::S_STYLE_TOGGLE);
+
+        _m_emitDeactivateSignal = true;
+        _m_emitActivateSignal = true;
+        _m_canEnable = true;
+        _m_canDisable = true;
+    }
     setToolTip(skill->getDescription(true, isHegemonyGameMode(ServerInfo.GameMode)));
 
     if (isHegemonyGameMode(ServerInfo.GameMode)) {

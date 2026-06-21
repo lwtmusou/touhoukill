@@ -154,6 +154,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(pile_reset()), this, SLOT(resetPiles()));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
+    connect(ClientInstance, &Client::perspective_changed, this, &RoomScene::onPerspectiveChanged);
     connect(ClientInstance, SIGNAL(dashboard_death(QString)), this, SLOT(setDashboardShadow(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString, int)), this, SLOT(showCard(QString, int)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>, QList<int>)));
@@ -429,6 +430,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
     case S_GAME_EVENT_PLAYER_DYING: {
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+        if (container == nullptr)
+            break;
         container->setSaveMeIcon(true);
         Photo *photo = qobject_cast<Photo *>(container);
         if (photo != nullptr)
@@ -438,6 +441,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
     case S_GAME_EVENT_PLAYER_QUITDYING: {
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+        if (container == nullptr)
+            break;
         container->setSaveMeIcon(false);
         Photo *photo = qobject_cast<Photo *>(container);
         if (photo != nullptr)
@@ -452,6 +457,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString huashenSkill2 = arg[5].toString();
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+        if (container == nullptr)
+            break;
         if (huashenGeneral.isEmpty() && huashenGeneral2.isEmpty())
             container->stopHuaShen();
         else
@@ -488,7 +495,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
             detachSkill(skill_name, head);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        if (container != nullptr)
+            container->updateAvatarTooltip();
         break;
     }
     case S_GAME_EVENT_ACQUIRE_SKILL: {
@@ -500,10 +508,12 @@ void RoomScene::handleGameEvent(const QVariant &args)
         acquireSkill(player, skill_name, head_skill);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        if (container != nullptr) {
+            container->updateAvatarTooltip();
+            if (skill_name == "banling")
+                container->updateHp();
+        }
         dashboard->expandSpecialCard(); //for chaoren
-        if (skill_name == "banling")
-            container->updateHp();
         break;
     }
     case S_GAME_EVENT_ADD_SKILL: {
@@ -515,10 +525,12 @@ void RoomScene::handleGameEvent(const QVariant &args)
         player->addSkill(skill_name, head_skill);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        if (container != nullptr) {
+            container->updateAvatarTooltip();
+            if (skill_name == "banling")
+                container->updateHp();
+        }
         dashboard->expandSpecialCard(); //for chaoren
-        if (skill_name == "banling")
-            container->updateHp();
         break;
     }
     case S_GAME_EVENT_LOSE_SKILL: {
@@ -529,10 +541,12 @@ void RoomScene::handleGameEvent(const QVariant &args)
         player->loseSkill(skill_name, head);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        if (container != nullptr) {
+            container->updateAvatarTooltip();
+            if (skill_name == "banling")
+                container->updateHp();
+        }
         dashboard->expandSpecialCard(); //for chaoren
-        if (skill_name == "banling")
-            container->updateHp();
         break;
     }
     case S_GAME_EVENT_PREPARE_SKILL:
@@ -565,7 +579,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
         player->setGender(gender);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatar(); // For Lu Boyan
+        if (container != nullptr)
+            container->updateAvatar(); // For Lu Boyan
         break;
     }
     case S_GAME_EVENT_CHANGE_HERO: {
@@ -621,7 +636,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
     case S_GAME_EVENT_PLAYER_REFORM: {
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateReformState();
+        if (container != nullptr)
+            container->updateReformState();
         break;
     }
     case S_GAME_EVENT_SKILL_INVOKED: {
@@ -1201,16 +1217,16 @@ void RoomScene::updateTable()
     int *seatToRegion = nullptr;
     bool pkMode = false;
     if (ServerInfo.GameMode == "04_1v3" && game_started) {
-        seatToRegion = hulaoSeatIndex[Self->getSeat() - 1];
+        seatToRegion = hulaoSeatIndex[dashboardPlayer()->getSeat() - 1];
         pkMode = true;
     } else if (ServerInfo.GameMode == "06_3v3" && game_started) {
-        seatToRegion = kof3v3SeatIndex[(Self->getSeat() - 1) % 3];
+        seatToRegion = kof3v3SeatIndex[(dashboardPlayer()->getSeat() - 1) % 3];
         pkMode = true;
     } else if (ServerInfo.GameMode == "03_1v2" && game_started) {
-        seatToRegion = pvlSeatIndex[Self->getSeat() - 1];
+        seatToRegion = pvlSeatIndex[dashboardPlayer()->getSeat() - 1];
         pkMode = true;
     } else if (ServerInfo.GameMode == "04_2v2" && game_started) {
-        seatToRegion = happy2v2SeatIndex[(Self->getSeat() - 1) % 2];
+        seatToRegion = happy2v2SeatIndex[(dashboardPlayer()->getSeat() - 1) % 2];
         pkMode = true;
     } else {
         seatToRegion = regularSeatIndex[photos.length() - 1];
@@ -1266,7 +1282,7 @@ void RoomScene::addPlayer(ClientPlayer *player)
 
 void RoomScene::removePlayer(const QString &player_name)
 {
-    Photo *photo = name2photo[player_name];
+    Photo *photo = name2photo.value(player_name, nullptr);
     if (photo != nullptr) {
         photo->setPlayer(nullptr);
         name2photo.remove(player_name);
@@ -1529,6 +1545,8 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         return;
     if (chat_edit->hasFocus())
         return;
+    if (m_perspectiveInputLocked)
+        return;
 
     bool control_is_down = ((event->modifiers() & Qt::ControlModifier) != 0u);
     bool alt_is_down = ((event->modifiers() & Qt::AltModifier) != 0u);
@@ -1695,6 +1713,8 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         bool enabled = false;
         foreach (PlayerCardContainer *container, item2player.keys()) {
             const ClientPlayer *player = item2player.value(container, nullptr);
+            if (player == nullptr)
+                continue;
             QStringList piles = player->getPileNames();
             if (!piles.isEmpty()) {
                 foreach (QString pile_name, piles) {
@@ -1722,7 +1742,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
             foreach (PlayerCardContainer *container, item2player.keys()) {
                 const ClientPlayer *player = item2player.value(container, nullptr);
-                if (player == Self)
+                if (player == nullptr || player == Self)
                     continue;
                 QList<const Card *> known = player->getHandcards();
                 if (known.isEmpty()) {
@@ -2009,7 +2029,7 @@ GenericCardContainer *RoomScene::_getGenericCardContainer(Player::Place place, P
     else if (player == nullptr && place == Player::PlaceSpecial)
         return pileContainer;
     //return card_container;
-    else if (player == Self)
+    else if (player == dashboardPlayer())
         return dashboard;
     else if (player != nullptr)
         return name2photo.value(player->objectName(), nullptr);
@@ -2057,6 +2077,7 @@ bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost)
 void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
 {
     int count = 0;
+    QList<QList<CardItem *> > &stash = _m_cardsMoveStash[moveId];
     for (int i = 0; i < card_moves.size(); i++) {
         CardsMoveStruct &movement = card_moves[i];
         bool skipMove = _processCardsMove(movement, false);
@@ -2066,8 +2087,17 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
             continue;
         card_container->m_currentPlayer = (ClientPlayer *)movement.to;
         GenericCardContainer *to_container = _getGenericCardContainer(movement.to_place, movement.to);
-        QList<CardItem *> cards = _m_cardsMoveStash[moveId][count];
+        if (count >= stash.size()) {
+            qWarning("RoomScene::getCards: stash underflow (moveId=%d, count=%d, stash=%d)", moveId, count, stash.size());
+            continue;
+        }
+        QList<CardItem *> cards = stash[count];
         count++;
+        if (to_container == nullptr) {
+            foreach (CardItem *card, cards)
+                card->deleteLater();
+            continue;
+        }
         for (int j = 0; j < cards.size(); j++) {
             CardItem *card = cards[j];
             card->setFlag(QGraphicsItem::ItemIsMovable, false);
@@ -2097,7 +2127,11 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
         to_container->addCardItems(cards, movement);
         keepGetCardLog(movement);
     }
-    _m_cardsMoveStash[moveId].clear();
+    for (int i = count; i < stash.size(); i++) {
+        foreach (CardItem *card, stash[i])
+            card->deleteLater();
+    }
+    _m_cardsMoveStash.remove(moveId);
 }
 
 void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
@@ -2111,6 +2145,10 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
             continue;
         card_container->m_currentPlayer = (ClientPlayer *)movement.to;
         GenericCardContainer *from_container = _getGenericCardContainer(movement.from_place, movement.from);
+        if (from_container == nullptr) {
+            _m_cardsMoveStash[moveId].append(QList<CardItem *>());
+            continue;
+        }
         QList<CardItem *> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
         foreach (CardItem *card, cards)
             card->setEnabled(false);
@@ -2126,20 +2164,21 @@ QString RoomScene::_translateMovement(const CardsMoveStruct &move)
     if (reason.m_reason == CardMoveReason::S_REASON_UNKNOWN)
         return QString();
 
-    Photo *srcPhoto = name2photo[reason.m_playerId];
-    Photo *dstPhoto = name2photo[reason.m_targetId];
+    Photo *srcPhoto = name2photo.value(reason.m_playerId, nullptr);
+    Photo *dstPhoto = name2photo.value(reason.m_targetId, nullptr);
     QString playerName;
     QString targetName;
+    const ClientPlayer *dp = dashboardPlayer();
 
     if (srcPhoto != nullptr)
         playerName = Sanguosha->translate(srcPhoto->getPlayer()->getFootnoteName());
-    else if (reason.m_playerId == Self->objectName())
-        playerName = QString("%1(%2)").arg(Sanguosha->translate(Self->getFootnoteName())).arg(Sanguosha->translate("yourself"));
+    else if (reason.m_playerId == dp->objectName())
+        playerName = QString("%1(%2)").arg(Sanguosha->translate(dp->getFootnoteName())).arg(Sanguosha->translate("yourself"));
 
     if (dstPhoto != nullptr)
         targetName = Sanguosha->translate("use upon").append(Sanguosha->translate(dstPhoto->getPlayer()->getFootnoteName()));
-    else if (reason.m_targetId == Self->objectName())
-        targetName = QString("%1%2(%3)").arg(Sanguosha->translate("use upon")).arg(Sanguosha->translate(Self->getFootnoteName())).arg(Sanguosha->translate("yourself"));
+    else if (reason.m_targetId == dp->objectName())
+        targetName = QString("%1%2(%3)").arg(Sanguosha->translate("use upon")).arg(Sanguosha->translate(dp->getFootnoteName())).arg(Sanguosha->translate("yourself"));
 
     QString result(playerName + targetName);
     result.append(Sanguosha->translate(reason.m_eventName));
@@ -2336,7 +2375,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             else
                 type = "$PasteCard";
         }
-        if (!type.isNull()) {
+        if (!type.isNull() && !move.card_ids.isEmpty()) {
             QString from_general = move.from->objectName();
             QStringList tos;
             tos << move.to->objectName();
@@ -2703,6 +2742,10 @@ void RoomScene::showPromptBox()
 
 void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 {
+    // Do not respond to server action requests while perspective input is locked
+    if (m_perspectiveInputLocked)
+        return;
+
     foreach (QSanSkillButton *button, m_skillButtons) {
         Q_ASSERT(button != nullptr);
         const ViewAsSkill *vsSkill = button->getViewAsSkill();
@@ -2720,7 +2763,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"));
         } else {
             const Skill *skill = button->getSkill();
-            if (skill->getFrequency() == Skill::Wake) {
+            if (skill->isWake()) {
                 button->setEnabled(Self->getMark(skill->objectName()) > 0);
             } else
                 button->setEnabled(false);
@@ -3770,10 +3813,15 @@ void RoomScene::killPlayer(const QString &who)
     const General *general = nullptr;
     m_roomMutex.lock();
 
+    // Exit perspective view when spectate target dies (only for spectate mode)
+    if (m_perspectiveSource == PerspectiveSourceSpectate && who == m_perspectiveTargetName)
+        exitPerspectiveView();
+
     ClientPlayer *player = ClientInstance->getPlayer(who);
     if (player != nullptr) {
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->stopHuaShen();
+        if (container != nullptr)
+            container->stopHuaShen();
     }
 
     if (who == Self->objectName()) {
@@ -3781,34 +3829,42 @@ void RoomScene::killPlayer(const QString &who)
         dashboard->update();
         general = Self->getGeneral();
         item2player.remove(dashboard);
-        if (ServerInfo.GameMode == "02_1v1")
+        if (ServerInfo.GameMode == "02_1v1" && general != nullptr)
             self_box->killPlayer(general->objectName());
     } else {
-        Photo *photo = name2photo[who];
-        photo->killPlayer();
-        photo->setFrame(Photo::S_FRAME_NO_FRAME);
-        photo->update();
-        item2player.remove(photo);
-        general = photo->getPlayer()->getGeneral();
-        if (ServerInfo.GameMode == "02_1v1")
-            enemy_box->killPlayer(general->objectName());
+        Photo *photo = name2photo.value(who, nullptr);
+        if (photo != nullptr && photo->getPlayer() != nullptr) {
+            photo->killPlayer();
+            photo->setFrame(Photo::S_FRAME_NO_FRAME);
+            photo->update();
+            item2player.remove(photo);
+            general = photo->getPlayer()->getGeneral();
+            if (ServerInfo.GameMode == "02_1v1" && general != nullptr)
+                enemy_box->killPlayer(general->objectName());
+        }
     }
 
-    if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag("marshalling"))
+    if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag("marshalling") && general != nullptr)
         general->lastWord();
     m_roomMutex.unlock();
 }
 
 void RoomScene::revivePlayer(const QString &who)
 {
+    // Exit perspective view when local player is revived (only for spectate mode)
+    if (m_perspectiveSource == PerspectiveSourceSpectate && who == Self->objectName())
+        exitPerspectiveView();
+
     if (who == Self->objectName()) {
         dashboard->revivePlayer();
         item2player.insert(dashboard, Self);
         updateSkillButtons();
     } else {
-        Photo *photo = name2photo[who];
-        photo->revivePlayer();
-        item2player.insert(photo, photo->getPlayer());
+        Photo *photo = name2photo.value(who, nullptr);
+        if (photo != nullptr && photo->getPlayer() != nullptr) {
+            photo->revivePlayer();
+            item2player.insert(photo, photo->getPlayer());
+        }
     }
 }
 
@@ -3868,7 +3924,9 @@ void RoomScene::showCard(const QString &player_name, int card_id)
     move.from_place = Player::PlaceHand;
     move.to_place = Player::PlaceTable;
     move.reason = reason;
-    card_items[0]->setFootnote(_translateMovement(move));
+
+    QString playerName = Sanguosha->translate(player->getFootnoteName());
+    card_items[0]->setFootnote(tr("shown handcard %1").arg(playerName));
     m_tablePile->addCardItems(card_items, move);
 
     QString card_str = QString::number(card_id);
@@ -4187,6 +4245,9 @@ void RoomScene::onGameStart()
 
 void RoomScene::freeze()
 {
+    if (m_isPerspectiveSwitched)
+        exitPerspectiveView();
+
     dashboard->setEnabled(false);
     dashboard->stopHuaShen();
     foreach (Photo *photo, photos) {
@@ -4216,9 +4277,9 @@ void RoomScene::moveFocus(const QStringList &players, Countdown countdown)
 {
     _cancelAllFocus();
     foreach (QString player, players) {
-        Photo *photo = name2photo[player];
+        Photo *photo = name2photo.value(player, nullptr);
         if (photo == nullptr) {
-            Q_ASSERT(player == Self->objectName());
+            Q_ASSERT(player == Self->objectName() || player == dashboardPlayer()->objectName());
             continue;
         }
 
@@ -4245,7 +4306,7 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion, bool perm
         QString name = emotion.split("/").last();
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(name, QString("equip"), -1));
     }
-    Photo *photo = name2photo[who];
+    Photo *photo = name2photo.value(who, nullptr);
     if (photo != nullptr) {
         photo->setEmotion(emotion, permanent);
     } else {
@@ -4281,39 +4342,83 @@ void RoomScene::removeLightBox()
     if (lightbox != nullptr) {
         removeItem(lightbox);
         lightbox->deleteLater();
-    } else {
-        PixmapAnimation *pma = qobject_cast<PixmapAnimation *>(sender());
-        if (pma != nullptr) {
-            removeItem(pma->parentItem());
-        } else {
-            QPropertyAnimation *animation = qobject_cast<QPropertyAnimation *>(sender());
-            QGraphicsTextItem *line = qobject_cast<QGraphicsTextItem *>(animation->targetObject());
-            if (line != nullptr) {
-                removeItem(line->parentItem());
-            } else {
-                QSanSelectableItem *line = qobject_cast<QSanSelectableItem *>(animation->targetObject());
-                removeItem(line->parentItem());
-            }
-        }
+        return;
     }
+
+    PixmapAnimation *pma = qobject_cast<PixmapAnimation *>(sender());
+    if (pma != nullptr) {
+        // anim= case: pma is child of a QGraphicsRectItem lightbox.
+        // pma already has its own deleteLater from GetPixmapAnimation.
+        QGraphicsItem *parent = pma->parentItem();
+        if (parent != nullptr) {
+            pma->setParentItem(nullptr);
+            removeItem(parent);
+            delete parent;
+        }
+        return;
+    }
+
+    // image= / text= cases: sender is QPropertyAnimation, target is child of lightbox
+    QPropertyAnimation *animation = qobject_cast<QPropertyAnimation *>(sender());
+    if (animation == nullptr)
+        return;
+    QGraphicsObject *target = qobject_cast<QGraphicsObject *>(animation->targetObject());
+    if (target == nullptr || target->parentItem() == nullptr)
+        return;
+
+    QGraphicsItem *parent = target->parentItem();
+    target->setParentItem(nullptr);
+    removeItem(parent);
+    delete parent;
+    // image= targets already have deleteLater; text= targets don't — deleteLater is safe for both
+    target->deleteLater();
 }
 
 QGraphicsObject *RoomScene::getAnimationObject(const QString &name) const
 {
-    if (name == Self->objectName())
+    if (name == dashboardPlayer()->objectName())
         return dashboard;
     else
         return name2photo.value(name);
 }
 
+void RoomScene::clearPerspectiveSensitiveAnimations()
+{
+    foreach (QGraphicsItem *item, items()) {
+        // Skip items already removed from scene by a prior removeItem(parent)
+        if (item->scene() != this)
+            continue;
+
+        bool shouldClear = item->data(S_DATA_PERSPECTIVE_ANIMATION).toBool();
+        if (!shouldClear)
+            shouldClear = dynamic_cast<IndicatorItem *>(item) != nullptr;
+
+        if (!shouldClear)
+            continue;
+
+        removeItem(item);
+        QGraphicsObject *object = item->toGraphicsObject();
+        if (object != nullptr)
+            object->deleteLater();
+        else
+            delete item;
+    }
+}
+
 void RoomScene::doMovingAnimation(const QString &name, const QStringList &args)
 {
     QSanSelectableItem *item = new QSanSelectableItem(QString("image/system/animation/%1.png").arg(name));
+    item->setData(S_DATA_PERSPECTIVE_ANIMATION, true);
     item->setZValue(10086.0);
     addItem(item);
 
     QGraphicsObject *fromItem = getAnimationObject(args.at(0));
     QGraphicsObject *toItem = getAnimationObject(args.at(1));
+
+    if (fromItem == nullptr || toItem == nullptr) {
+        delete item;
+        return;
+    }
 
     QPointF from = fromItem->scenePos();
     QPointF to = toItem->scenePos();
@@ -4343,6 +4448,7 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args)
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args)
 {
     QSanSelectableItem *item = new QSanSelectableItem(QString("image/system/animation/%1.png").arg(name));
+    item->setData(S_DATA_PERSPECTIVE_ANIMATION, true);
     addItem(item);
 
     QPointF from = getAnimationObject(args.at(0))->scenePos();
@@ -4507,7 +4613,7 @@ void RoomScene::doIndicate(const QString & /*unused*/, const QStringList &args)
 void RoomScene::doBattleArray(const QString & /*unused*/, const QStringList &args)
 {
     QStringList names = args.last().split("+");
-    if (names.contains(Self->objectName()))
+    if (names.contains(dashboardPlayer()->objectName()))
         dashboard->playBattleArrayAnimations();
     foreach (Photo *p, photos) {
         const ClientPlayer *target = p->getPlayer();
@@ -5162,7 +5268,7 @@ void RoomScene::highlightSkillButton(const QString &skill_name, bool highlight)
     foreach (QSanSkillButton *button, m_skillButtons) {
         QString button_name = button->getSkill()->objectName();
         if (button_name == skill_name || skill_name.startsWith(button_name)) {
-            if (button->getSkill()->getFrequency() != Skill::Wake) {
+            if (!button->getSkill()->isWake()) {
                 if (!button->isDown()) {
                     if (highlight)
                         button->setState(QSanButton::S_STATE_HOVER, true);
@@ -5337,4 +5443,214 @@ void RoomScene::anyunSelectSkill()
 void RoomScene::addlog(const QStringList &log)
 {
     log_box->appendLog(log);
+}
+
+void RoomScene::onPerspectiveChanged(const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles)
+{
+    Q_UNUSED(handCardIds);
+    Q_UNUSED(piles);
+
+    // Same target: incremental refresh to avoid exit+enter flicker
+    if (m_isPerspectiveSwitched && targetName == m_perspectiveTargetName && !targetName.isEmpty()) {
+        QString targetHuashenGen = dashboard->huashenGeneralName();
+        QString targetHuashenSkill = dashboard->huashenSkillName();
+        QString targetHuashenGen2 = dashboard->huashenGeneral2Name();
+        QString targetHuashenSkill2 = dashboard->huashenSkill2Name();
+
+        dashboard->syncContainerFromPlayer();
+
+        if (!targetHuashenGen.isEmpty() || !targetHuashenGen2.isEmpty())
+            dashboard->startHuaShen(targetHuashenGen, targetHuashenSkill, targetHuashenGen2, targetHuashenSkill2);
+
+        return;
+    }
+
+    if (m_isPerspectiveSwitched)
+        exitPerspectiveView();
+
+    if (targetName.isEmpty())
+        return;
+
+    enterPerspectiveView(targetName, PerspectiveSourceSpectate, true);
+}
+
+void RoomScene::enterPerspectiveView(const QString &targetName, PerspectiveSource source, bool lockInput)
+{
+    ClientPlayer *target = ClientInstance->getPlayer(targetName);
+    if (target == nullptr || !target->isAlive())
+        return;
+
+    Photo *hostPhoto = name2photo.value(targetName, nullptr);
+    if (hostPhoto == nullptr)
+        return;
+
+    clearPerspectiveSensitiveAnimations();
+
+    m_originalPhotosOrder = photos;
+    m_perspectiveTargetName = targetName;
+    m_isPerspectiveSwitched = true;
+    m_perspectiveSource = source;
+    m_perspectiveProxyPhoto = hostPhoto;
+
+    QString targetHuashenGen = hostPhoto->huashenGeneralName();
+    QString targetHuashenSkill = hostPhoto->huashenSkillName();
+    QString targetHuashenGen2 = hostPhoto->huashenGeneral2Name();
+    QString targetHuashenSkill2 = hostPhoto->huashenSkill2Name();
+
+    QString selfHuashenGen = dashboard->huashenGeneralName();
+    QString selfHuashenSkill = dashboard->huashenSkillName();
+    QString selfHuashenGen2 = dashboard->huashenGeneral2Name();
+    QString selfHuashenSkill2 = dashboard->huashenSkill2Name();
+
+    // Swap players: Photo shows Self, Dashboard shows perspective target
+    name2photo.remove(targetName);
+    hostPhoto->setPlayer(Self);
+    hostPhoto->syncCardAreasFromPlayer();
+    if (Self->isAlive())
+        hostPhoto->revivePlayer();
+    else
+        hostPhoto->killPlayer();
+    name2photo[Self->objectName()] = hostPhoto;
+
+    dashboard->setPlayer(target);
+    dashboard->syncContainerFromPlayer();
+
+    // Reorder photos so the perspective target's neighbors are correctly distributed around the Dashboard.
+    // Move the target from its original position to Self's implicit position (between ring end and start),
+    // then arrange starting from the next element after the target's original position.
+    int pivotIndex = m_originalPhotosOrder.indexOf(hostPhoto);
+    if (pivotIndex >= 0) {
+        QList<Photo *> rotated;
+        for (int i = pivotIndex + 1; i < photos.size(); i++)
+            rotated.append(photos[i]);
+        rotated.append(hostPhoto);
+        for (int i = 0; i < pivotIndex; i++)
+            rotated.append(photos[i]);
+
+        if (rotated.size() == photos.size())
+            photos = rotated;
+    }
+
+    refreshItem2PlayerMap();
+    updateTable();
+    applyPerspectiveInputLock(lockInput);
+    dashboard->revivePlayer();
+    dashboard->syncRemovedVisualState();
+
+    hostPhoto->stopHuaShen();
+    if (!selfHuashenGen.isEmpty() || !selfHuashenGen2.isEmpty())
+        hostPhoto->startHuaShen(selfHuashenGen, selfHuashenSkill, selfHuashenGen2, selfHuashenSkill2);
+    // syncContainerFromPlayer already called stopHuaShen
+    if (!targetHuashenGen.isEmpty() || !targetHuashenGen2.isEmpty())
+        dashboard->startHuaShen(targetHuashenGen, targetHuashenSkill, targetHuashenGen2, targetHuashenSkill2);
+
+    // Sync role indicator to perspective target
+    if (isHegemonyGameMode(ServerInfo.GameMode))
+        dashboard->getHegemonyRoleComboBox()->fix(target->getRole() == "careerist" ? "careerist" : target->getRole());
+    else
+        dashboard->getRoleComboBox()->fix(target->getRole());
+}
+
+void RoomScene::exitPerspectiveView()
+{
+    if (!m_isPerspectiveSwitched || m_perspectiveTargetName.isEmpty())
+        return;
+
+    clearPerspectiveSensitiveAnimations();
+
+    ClientPlayer *target = ClientInstance->getPlayer(m_perspectiveTargetName);
+
+    QString targetHuashenGen = dashboard->huashenGeneralName();
+    QString targetHuashenSkill = dashboard->huashenSkillName();
+    QString targetHuashenGen2 = dashboard->huashenGeneral2Name();
+    QString targetHuashenSkill2 = dashboard->huashenSkill2Name();
+
+    QString selfHuashenGen;
+    QString selfHuashenSkill;
+    QString selfHuashenGen2;
+    QString selfHuashenSkill2;
+    if (m_perspectiveProxyPhoto != nullptr) {
+        selfHuashenGen = m_perspectiveProxyPhoto->huashenGeneralName();
+        selfHuashenSkill = m_perspectiveProxyPhoto->huashenSkillName();
+        selfHuashenGen2 = m_perspectiveProxyPhoto->huashenGeneral2Name();
+        selfHuashenSkill2 = m_perspectiveProxyPhoto->huashenSkill2Name();
+    }
+
+    name2photo.remove(Self->objectName());
+    if (target != nullptr && m_perspectiveProxyPhoto != nullptr) {
+        m_perspectiveProxyPhoto->setPlayer(target);
+        m_perspectiveProxyPhoto->syncCardAreasFromPlayer();
+        if (target->isAlive()) {
+            m_perspectiveProxyPhoto->revivePlayer();
+            m_perspectiveProxyPhoto->syncRemovedVisualState();
+            // Restore role indicator to the target's actual role
+            if (isHegemonyGameMode(ServerInfo.GameMode))
+                m_perspectiveProxyPhoto->getHegemonyRoleComboBox()->fix(target->getRole() == "careerist" ? "careerist" : target->getRole());
+            else
+                m_perspectiveProxyPhoto->getRoleComboBox()->fix(target->getRole());
+        } else {
+            m_perspectiveProxyPhoto->killPlayer();
+            m_perspectiveProxyPhoto->syncRemovedVisualState();
+        }
+        name2photo[target->objectName()] = m_perspectiveProxyPhoto;
+    }
+
+    dashboard->setPlayer(Self);
+    dashboard->syncContainerFromPlayer();
+
+    if (m_perspectiveProxyPhoto != nullptr) {
+        m_perspectiveProxyPhoto->stopHuaShen();
+        if (!targetHuashenGen.isEmpty() || !targetHuashenGen2.isEmpty())
+            m_perspectiveProxyPhoto->startHuaShen(targetHuashenGen, targetHuashenSkill, targetHuashenGen2, targetHuashenSkill2);
+    }
+    // syncContainerFromPlayer already called stopHuaShen
+    if (!selfHuashenGen.isEmpty() || !selfHuashenGen2.isEmpty())
+        dashboard->startHuaShen(selfHuashenGen, selfHuashenSkill, selfHuashenGen2, selfHuashenSkill2);
+
+    photos = m_originalPhotosOrder;
+
+    m_perspectiveProxyPhoto = nullptr;
+    m_perspectiveTargetName.clear();
+    m_isPerspectiveSwitched = false;
+    m_perspectiveSource = PerspectiveSourceNone;
+    m_originalPhotosOrder.clear();
+
+    refreshItem2PlayerMap();
+    updateTable();
+    applyPerspectiveInputLock(false);
+    dashboard->killPlayer();
+    dashboard->syncRemovedVisualState();
+    dashboard->setDeathColor();
+}
+
+const ClientPlayer *RoomScene::dashboardPlayer() const
+{
+    if (dashboard != nullptr && dashboard->getPlayer() != nullptr)
+        return dashboard->getPlayer();
+    return Self;
+}
+
+void RoomScene::refreshItem2PlayerMap()
+{
+    item2player.clear();
+    item2player.insert(dashboard, dashboardPlayer());
+    foreach (Photo *photo, photos) {
+        const ClientPlayer *p = photo->getPlayer();
+        if (p != nullptr)
+            item2player.insert(photo, p);
+    }
+}
+
+void RoomScene::applyPerspectiveInputLock(bool locked)
+{
+    m_perspectiveInputLocked = locked;
+    if (locked) {
+        dashboard->disableAllCards();
+        foreach (QSanSkillButton *btn, m_skillButtons)
+            btn->setEnabled(false);
+        ok_button->setEnabled(false);
+        cancel_button->setEnabled(false);
+        discard_button->setEnabled(false);
+    }
+    // On unlock, updateStatus normal flow restores widget states
 }

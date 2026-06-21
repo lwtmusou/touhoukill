@@ -1287,11 +1287,14 @@ extern Engine *const Sanguosha;
 
 class Skill: public QObject {
 public:
-    enum Frequency { Frequent, NotFrequent, Compulsory, NotCompulsory,Limited, Wake, Eternal};
-
-    explicit Skill(const char *name, Frequency frequent = NotFrequent);
+    explicit Skill(const char *name, const char *showType = "trigger");
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
+    bool isFrequent() const;
+    bool isCompulsory() const;
+    bool isLimited() const;
+    bool isWake() const;
+    bool isEternal() const;
     QString getDescription(bool yellow = true, bool addHegemony = false) const;
     bool isVisible() const;
 
@@ -1299,7 +1302,6 @@ public:
     virtual QDialog *getDialog() const;
 
     void playAudioEffect(int index = -1) const;
-    Frequency getFrequency() const;
     QStringList getSources() const;
 	QString getLimitMark() const;
 

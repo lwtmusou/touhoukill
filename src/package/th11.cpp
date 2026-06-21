@@ -261,7 +261,7 @@ public:
         : TriggerSkill("wunian")
     {
         events << Predamage << TargetConfirming;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room * /*room*/, const QVariant &data) const override
@@ -388,7 +388,7 @@ public:
         : TriggerSkill("here")
     {
         events << TargetConfirming << TargetSpecifying;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
@@ -771,7 +771,7 @@ public:
         : TriggerSkill("chuanran")
     {
         events = {EventPhaseStart, Damage};
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
@@ -1247,13 +1247,23 @@ public:
     }
 };
 
+class StaticCompulsorySkill : public Skill
+{
+public:
+    explicit StaticCompulsorySkill(const QString &name)
+        : Skill(name, "static")
+    {
+        setCompulsory();
+    }
+};
+
 TH11Package::TH11Package()
     : Package("th11")
 {
     General *satori = new General(this, "satori$", "dld", 3);
     satori->addSkill(new Xiangqi);
     //Room::askForCardChosen
-    satori->addSkill(new Skill("duxin", Skill::Compulsory, "static"));
+    satori->addSkill(new StaticCompulsorySkill("duxin"));
     satori->addSkill(new Zhushi);
 
     General *koishi = new General(this, "koishi", "dld", 3);

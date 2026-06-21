@@ -18,6 +18,7 @@ public:
     void setCards(const QList<int> &card_ids);
     void changePile(const QString &name, bool add, const QList<int> &card_ids);
     [[nodiscard]] QString getDeathPixmapPath() const;
+    void setPile(const QString &name, const QList<int> &card_ids);
     void setHandcardNum(int n);
     [[nodiscard]] QString getGameMode() const override;
 
@@ -27,6 +28,8 @@ public:
     void removeCard(const Card *card, Place place) override;
     void addCard(const Card *card, Place place) override;
     virtual void addKnownHandCard(const Card *card);
+    virtual void removeKnownHandCard(int card_id);
+    QList<int> getKnownHandCardIds() const;
     bool isLastHandCard(const Card *card, bool contain = false) const override;
     void setMark(const QString &mark, int value) override;
 

@@ -557,7 +557,7 @@ public:
     Zhenli()
         : TriggerSkill("zhenli")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << CardsMoveOneTime << AfterDrawInitialCards;
         related_pile = "zhenli";
     }
@@ -836,7 +836,7 @@ public:
         : TriggerSkill("lubiao")
     {
         events << DamageInflicted;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -876,7 +876,7 @@ public:
         : TriggerSkill("yeyan")
     {
         events << TargetSpecified;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1127,7 +1127,7 @@ public:
         : TriggerSkill("mengyan")
     {
         events << Damaged;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -1420,7 +1420,7 @@ public:
     LianmuTargetMod()
         : TargetModSkill("#lianmu_mod")
     {
-        frequency = NotFrequent;
+        setCompulsory(false);
         pattern = "Slash";
     }
 
@@ -1448,7 +1448,7 @@ public:
         : TriggerSkill("#huanwei")
     {
         events << EventAcquireSkill << EventLoseSkill << GameStart << EventSkillInvalidityChange << EventPhaseStart << DamageCaused;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -1676,7 +1676,7 @@ public:
     Shenwei()
         : TriggerSkill("shenwei$")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << CardResponded;
     }
 
@@ -2172,7 +2172,7 @@ public:
     Moyan()
         : ZeroCardViewAsSkill("moyan")
     {
-        frequency = Limited;
+        setLimited();
         limit_mark = "@moyan";
     }
 
@@ -2291,7 +2291,7 @@ public:
         : TriggerSkill("xingyou")
     {
         events = {Damage, Damaged};
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override

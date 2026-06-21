@@ -142,7 +142,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
                 if (isHegemonyGameMode(room->getMode())) {
                     foreach (const Skill *skill, player->getVisibleSkillList()) {
-                        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
+                        if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
                             JsonArray arg;
                             arg << player->objectName();
                             arg << skill->getLimitMark();
@@ -153,7 +153,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     }
                 } else {
                     foreach (const Skill *skill, player->getVisibleSkillList()) {
-                        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
+                        if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
                             room->setPlayerMark(player, skill->getLimitMark(), 1);
                     }
                 }

@@ -334,7 +334,7 @@ public:
         : TriggerSkill("qinmian")
     {
         events = {CardsMoveOneTime};
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -966,7 +966,7 @@ public:
     Zhize()
         : TriggerSkill("zhize")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << DrawNCards << AfterDrawNCards;
     }
 
@@ -1376,7 +1376,7 @@ public:
     BllmSeyu()
         : TargetModSkill("#bllmseyu")
     {
-        frequency = NotFrequent;
+        setCompulsory(false);
         pattern = "Slash";
     }
 
@@ -1918,7 +1918,7 @@ public:
         : TriggerSkill("hpymsiyu")
     {
         events << EnterDying << EventPhaseChanging; //<< PostHpReduced
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override
@@ -2011,7 +2011,7 @@ public:
         : TriggerSkill("juhe")
     {
         events << DrawNCards << AfterDrawNCards;
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override

@@ -63,6 +63,26 @@ void ClientPlayer::addKnownHandCard(const Card *card)
         known_cards << card;
 }
 
+void ClientPlayer::removeKnownHandCard(int card_id)
+{
+    for (int i = known_cards.size() - 1; i >= 0; --i) {
+        if (known_cards[i]->getId() == card_id) {
+            known_cards.removeAt(i);
+            return;
+        }
+    }
+}
+
+QList<int> ClientPlayer::getKnownHandCardIds() const
+{
+    QList<int> ids;
+    foreach (const Card *card, known_cards) {
+        if (card != nullptr)
+            ids << card->getId();
+    }
+    return ids;
+}
+
 bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
 {
     if (!card->isVirtualCard()) {
@@ -118,8 +138,21 @@ QList<const Card *> ClientPlayer::getHandcards() const
 void ClientPlayer::setCards(const QList<int> &card_ids)
 {
     known_cards.clear();
-    foreach (int cardId, card_ids)
-        known_cards.append(Sanguosha->getCard(cardId));
+    foreach (int cardId, card_ids) {
+        const Card *card = Sanguosha->getCard(cardId);
+        if (card != nullptr)
+            known_cards.append(card);
+    }
+}
+
+void ClientPlayer::setPile(const QString &name, const QList<int> &card_ids)
+{
+    // Only update the data model without emitting the pile_changed signal.
+    // Callers must trigger UI refresh (e.g. syncContainerFromPlayer) after batch updates.
+    if (card_ids.isEmpty())
+        piles.remove(name);
+    else
+        piles[name] = card_ids;
 }
 
 void ClientPlayer::changePile(const QString &name, bool add, const QList<int> &card_ids)

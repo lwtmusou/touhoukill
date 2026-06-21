@@ -521,7 +521,7 @@ public:
         : TriggerSkill("tongjie_hegemony")
     {
         events << GeneralShown << GeneralHidden << GeneralRemoved << EventPhaseStart << Death << EventAcquireSkill << EventLoseSkill;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     void doTongjie(Room *room, ServerPlayer *reimu, bool set) const
@@ -865,7 +865,7 @@ public:
     YunshangHegemony()
         : TriggerSkill("yunshang_hegemony")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << TargetConfirmed;
     }
 
@@ -1788,7 +1788,7 @@ public:
         : TriggerSkill("xuyu_hegemony")
     {
         events << CardsMoveOneTime;
-        frequency = Compulsory;
+        setCompulsory();
         relate_to_place = "head";
     }
 
@@ -2429,7 +2429,7 @@ public:
             QStringList skill_names;
 
             foreach (const Skill *skill, general->getVisibleSkillList()) {
-                if (skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->relateToPlace(true) || skill->relateToPlace(false))
+                if (skill->isAttachedLordSkill() || skill->isLimited() || skill->relateToPlace(true) || skill->relateToPlace(false))
                     continue;
 
                 skill_names << skill->objectName();
@@ -2450,7 +2450,7 @@ public:
             QStringList skill_names;
 
             foreach (const Skill *skill, general->getVisibleSkillList()) {
-                if (skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->relateToPlace(true) || skill->relateToPlace(false))
+                if (skill->isAttachedLordSkill() || skill->isLimited() || skill->relateToPlace(true) || skill->relateToPlace(false))
                     continue;
 
                 skill_names << skill->objectName();
@@ -2978,7 +2978,7 @@ public:
         : TriggerSkill("duxin_hegemony")
     {
         events << TargetConfirmed;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -3023,7 +3023,7 @@ public:
         : TriggerSkill("wunian_hegemony")
     {
         events << Predamage << TargetConfirming;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room * /*room*/, const QVariant &data) const override
@@ -3090,7 +3090,7 @@ public:
         : TriggerSkill("chuanran_hegemony")
     {
         events << Damaged;
-        //frequency = Compulsory;
+        //setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -3592,7 +3592,7 @@ public:
         : TriggerSkill("jianling_hegemony")
     {
         events << DrawNCards;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room *room, const QVariant &data) const override
@@ -3635,7 +3635,7 @@ public:
         : TriggerSkill("baochun_hegemony")
     {
         events << Damaged << HpRecover;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
@@ -3965,7 +3965,7 @@ public:
         : TriggerSkill("hanbo_hegemony")
     {
         events << DamageCaused;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -4051,7 +4051,7 @@ public:
         : ZeroCardViewAsSkill("dongzhi_hegemony")
     {
         limit_mark = "@dongzhi";
-        frequency = Limited;
+        setLimited();
     }
 
     bool isEnabledAtPlay(const Player *player) const override
@@ -4106,7 +4106,7 @@ public:
         : TriggerSkill("bingpo_hegemony")
     {
         events << Dying;
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -4134,7 +4134,7 @@ public:
         : TriggerSkill("juxian_hegemony")
     {
         events << Dying;
-        frequency = Limited;
+        setLimited();
         limit_mark = "@juxian";
     }
 

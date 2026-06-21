@@ -882,7 +882,7 @@ public:
         : TriggerSkill("zhixiao")
     {
         events = {EventPhaseStart};
-        frequency = Compulsory;
+        setCompulsory();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -2080,7 +2080,7 @@ public:
         : TriggerSkill("miji")
     {
         events = {CardsMoveOneTime, EventPhaseStart};
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room * /*room*/, const QVariant &data) const override

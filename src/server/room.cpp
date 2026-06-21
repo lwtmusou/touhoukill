@@ -54,6 +54,7 @@ Room::Room(QObject *parent, const QString &mode)
     , has_provided(false)
     , provider(nullptr)
     , m_fillAGWho(nullptr)
+    , m_perspectiveSyncSerial(0)
 {
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
@@ -69,7 +70,10 @@ Room::Room(QObject *parent, const QString &mode)
     else
         DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ? "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
 
-    connect(this, SIGNAL(signalSetProperty(ServerPlayer *, const char *, QVariant)), this, SLOT(slotSetProperty(ServerPlayer *, const char *, QVariant)), Qt::QueuedConnection);
+    // BlockingQueuedConnection: RoomThread blocks until the main thread executes the slot.
+    // INVARIANT: never call setPlayerProperty while holding _m_semRoomMutex on RoomThread, or a deadlock occurs
+    // if the main thread is simultaneously blocked on _m_semRoomMutex.acquire() in processResponse.
+    connect(this, SIGNAL(signalSetProperty(ServerPlayer *, const char *, QVariant)), this, SLOT(slotSetProperty(ServerPlayer *, const char *, QVariant)), Qt::BlockingQueuedConnection);
 
     m_generalSelector = new GeneralSelector(this);
 }
@@ -105,6 +109,7 @@ void Room::initCallbacks()
     //Client request
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
     m_callbacks[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
+    m_callbacks[S_COMMAND_PERSPECTIVE_REQUEST] = &Room::spectateCommand;
 }
 
 ServerPlayer *Room::getCurrent() const
@@ -304,6 +309,10 @@ ServerPlayer *Room::getCurrentDyingPlayer() const
 void Room::revivePlayer(ServerPlayer *player, bool initialize)
 {
     player->setAlive(true);
+
+    // Disallow spectating after revival
+    clearPerspectiveViewer(player);
+
     player->throwAllMarks(false);
     broadcastProperty(player, "alive");
 
@@ -314,7 +323,7 @@ void Room::revivePlayer(ServerPlayer *player, bool initialize)
         sendLog("#Revive", player);
 
         foreach (const Skill *skill, player->getVisibleSkillList()) {
-            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
+            if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
                 setPlayerMark(player, skill->getLimitMark(), 1);
         }
 
@@ -403,6 +412,9 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 
     m_alivePlayers.removeOne(victim);
 
+    // Clear all perspective viewers watching this dying player
+    clearAllPerspectiveViewersOf(victim);
+
     thread->trigger(BeforeGameOverJudge, this, data);
     death = data.value<DeathStruct>();
 
@@ -434,6 +446,16 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 
     victim->detachAllSkills();
     thread->trigger(BuryVictim, this, data);
+
+    // Kick spectate viewers who have become revivable after this death
+    QList<ServerPlayer *> revivableWatchers;
+    for (auto it = m_perspectiveViewers.constBegin(); it != m_perspectiveViewers.constEnd(); ++it) {
+        if (it.value().source == PerspectiveSpectate && isDeadPlayerRevivable(it.key()))
+            revivableWatchers << it.key();
+    }
+    foreach (ServerPlayer *watcher, revivableWatchers)
+        clearPerspectiveViewer(watcher);
+
     if (!victim->isAlive() && Config.EnableAI && !victim->hasSkill("huanhun")) {
         bool expose_roles = true;
         foreach (ServerPlayer *player, m_alivePlayers) {
@@ -618,7 +640,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
 {
     if (!isHegemonyGameMode(mode) && !player->hasSkill(skill_name, true))
         return;
-    if ((Sanguosha->getSkill(skill_name) != nullptr) && Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Eternal)
+    if ((Sanguosha->getSkill(skill_name) != nullptr) && Sanguosha->getSkill(skill_name)->isEternal())
         return;
     //if (player->getAcquiredSkills(head ? "head" : "deputy").contains(skill_name))
     if (player->getAcquiredSkills().contains(skill_name))
@@ -683,7 +705,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                     continue;
             }
 
-            if ((Sanguosha->getSkill(actual_skill) != nullptr) && Sanguosha->getSkill(actual_skill)->getFrequency() == Skill::Eternal)
+            if ((Sanguosha->getSkill(actual_skill) != nullptr) && Sanguosha->getSkill(actual_skill)->isEternal())
                 continue;
 
             if (player->getAcquiredSkills().contains(actual_skill))
@@ -729,7 +751,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
                 thread->addTriggerSkill(trigger_skill);
             }
-            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+            if (skill->isLimited() && !skill->getLimitMark().isEmpty())
                 //addPlayerMark(player, skill->getLimitMark());
                 setPlayerMark(player, skill->getLimitMark(), 1);
             if (skill->isVisible()) {
@@ -785,6 +807,10 @@ bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, co
         player->m_expectedReplyCommand = m_requestResponsePair[command];
     else
         player->m_expectedReplyCommand = command;
+
+    // [PERSPECTIVE EXTENSION POINT] Future: check getCommandProxy(player)
+    // If a proxy exists, redirect this request to the proxy player instead.
+    // The proxy's client will need to know it's acting on behalf of `player`.
 
     player->invoke(&packet);
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
@@ -1023,7 +1049,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     if (ai != nullptr) {
         invoked = ai->askForSkillInvoke(skill_name, data);
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (invoked && ((skill == nullptr) || skill->getFrequency() != Skill::Frequent))
+        if (invoked && ((skill == nullptr) || !skill->isFrequent()))
             thread->delay();
     } else {
         JsonArray skillCommand;
@@ -2220,19 +2246,11 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag)
 
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
 {
-#if 0 // def QT_DEBUG
-    // following code was OK when Room inherits QThread but is currently not
-    if (currentThread() != player->thread()) {
-        playerPropertySet = false;
+    Q_ASSERT(player->thread() == QObject::thread());
+    if (QThread::currentThread() != QObject::thread())
         emit signalSetProperty(player, property_name, value);
-        while (!playerPropertySet) {
-        }
-    } else {
+    else
         player->setProperty(property_name, value);
-    }
-#else
-    player->setProperty(property_name, value);
-#endif
 
     broadcastProperty(player, property_name);
 
@@ -2283,7 +2301,6 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
 void Room::slotSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
 {
     player->setProperty(property_name, value);
-    playerPropertySet = true;
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value)
@@ -2641,7 +2658,7 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
                 if (invokeStart && trigger->getTriggerEvents().contains(GameStart))
                     game_start = true;
             }
-            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+            if (skill->isLimited() && !skill->getLimitMark().isEmpty())
                 setPlayerMark(player, skill->getLimitMark(), 1);
             SkillAcquireDetachStruct s;
             s.isAcquire = true;
@@ -3891,6 +3908,10 @@ void Room::processResponse(ServerPlayer *player, const Packet *packet)
     else
         success = true;
 
+    // [PERSPECTIVE EXTENSION POINT] Future: check getProxiedPlayer(player)
+    // If this player is a proxy, route the response to the proxied player's
+    // semaphore so that getResult() on the original player unblocks.
+
     if (!success) {
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
         return;
@@ -4523,6 +4544,18 @@ void Room::marshal(ServerPlayer *player)
 
         QVariant discard = JsonUtils::toJsonArray(*m_discardPile);
         doNotify(player, S_COMMAND_SYNCHRONIZE_DISCARD_PILE, discard);
+    }
+
+    // Restore perspective state on reconnection
+    ServerPlayer *perspectiveTarget = getPerspectiveTarget(player);
+    PerspectiveSource perspectiveSource = getPerspectiveSource(player);
+    if (perspectiveTarget != nullptr) {
+        if (perspectiveSource == PerspectiveSpectate && isDeadPlayerRevivable(player))
+            clearPerspectiveViewer(player);
+        else if (perspectiveTarget->isAlive())
+            sendPerspectiveSync(player, perspectiveTarget);
+        else
+            clearPerspectiveViewer(player);
     }
 }
 
@@ -5239,13 +5272,14 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         arg << moveId;
         for (int i = 0; i < cards_moves.size(); i++) {
             ServerPlayer *to = nullptr;
-            foreach (ServerPlayer *player, m_players) {
-                if (player->objectName() == cards_moves[i].to_player_name) {
-                    to = player;
-                    break;
-                }
+            ServerPlayer *from = nullptr;
+            foreach (ServerPlayer *p, m_players) {
+                if (p->objectName() == cards_moves[i].to_player_name)
+                    to = p;
+                if (p->objectName() == cards_moves[i].from_player_name)
+                    from = p;
             }
-            cards_moves[i].open = forceVisible
+            bool isOpen = forceVisible
                 || cards_moves[i].isRelevant(player)
                 // forceVisible will override cards to be visible
                 || cards_moves[i].to_place == Player::PlaceEquip || cards_moves[i].from_place == Player::PlaceEquip || cards_moves[i].to_place == Player::PlaceDelayedTrick
@@ -5259,6 +5293,15 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 || (cards_moves[i].to_place == Player::PlaceSpecial && (to != nullptr) && to->pileOpen(cards_moves[i].to_pile_name, player->objectName()))
                 // pile open to specific players
                 || player->hasFlag("Global_GongxinOperator");
+
+            // Perspective viewer can see all card moves involving the perspective target
+            if (!isOpen) {
+                ServerPlayer *perspectiveTarget = getPerspectiveTarget(player);
+                if (perspectiveTarget != nullptr && (from == perspectiveTarget || to == perspectiveTarget))
+                    isOpen = true;
+            }
+
+            cards_moves[i].open = isOpen;
             // the player put someone's cards to the drawpile
 
             arg << cards_moves[i].toVariant();
@@ -5266,6 +5309,157 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
     }
     return true;
+}
+
+void Room::spectateCommand(ServerPlayer *player, const QVariant &arg)
+{
+    if (player->isAlive())
+        return;
+
+    QString targetName = arg.toString();
+
+    if (targetName.isEmpty()) {
+        clearPerspectiveViewer(player);
+        return;
+    }
+
+    if (isDeadPlayerRevivable(player)) {
+        if (m_perspectiveViewers.contains(player))
+            clearPerspectiveViewer(player);
+
+        JsonArray body;
+        body << player->objectName();
+        body << QString(tr("You cannot use free spectate while your character may still be revived.").toUtf8().toBase64());
+        doNotify(player, S_COMMAND_SPEAK, body);
+        return;
+    }
+
+    ServerPlayer *target = findPlayerByObjectName(targetName);
+    if (target == nullptr || !target->isAlive())
+        return;
+
+    if (m_perspectiveViewers.contains(player))
+        clearPerspectiveViewer(player);
+
+    addPerspectiveViewer(player, target, PerspectiveSpectate);
+    sendPerspectiveSync(player, target);
+}
+
+void Room::addPerspectiveViewer(ServerPlayer *viewer, ServerPlayer *target, PerspectiveSource source)
+{
+    if (viewer == nullptr || target == nullptr)
+        return;
+    m_perspectiveViewers[viewer] = PerspectiveEntry(target, source);
+}
+
+Room::PerspectiveSource Room::getPerspectiveSource(ServerPlayer *viewer) const
+{
+    return m_perspectiveViewers.value(viewer).source;
+}
+
+void Room::sendPerspectiveSync(ServerPlayer *viewer, ServerPlayer *target)
+{
+    m_perspectiveSyncSerial++;
+
+    JsonArray arg;
+    arg << m_perspectiveSyncSerial;
+    arg << target->objectName();
+    arg << JsonUtils::toJsonArray(target->handCards());
+
+    JsonObject pilesObj;
+    foreach (const QString &pileName, target->getPileNames())
+        pilesObj[pileName] = JsonUtils::toJsonArray(target->getPile(pileName));
+    arg << QVariant(pilesObj);
+
+    // Modified card info, reusing notifyUpdateCard's serialization format
+    JsonArray modifiedCards;
+    auto appendModified = [&](int cardId) {
+        Card *card = getCard(cardId);
+        if (card != nullptr && card->isModified()) {
+            JsonArray cardInfo;
+            cardInfo << cardId << card->getSuit() << card->getNumber() << card->getClassName() << card->getSkillName() << card->objectName()
+                     << JsonUtils::toJsonArray(card->getFlags());
+            modifiedCards << QVariant(cardInfo);
+        }
+    };
+    foreach (int cardId, target->handCards())
+        appendModified(cardId);
+    foreach (const QString &pileName, target->getPileNames()) {
+        foreach (int cardId, target->getPile(pileName))
+            appendModified(cardId);
+    }
+    arg << QVariant(modifiedCards);
+
+    notifyProperty(viewer, target, "chaoren");
+    doNotify(viewer, S_COMMAND_PERSPECTIVE_SYNC, arg);
+}
+
+void Room::clearPerspectiveViewer(ServerPlayer *viewer)
+{
+    m_perspectiveViewers.remove(viewer);
+
+    m_perspectiveSyncSerial++;
+    JsonArray arg;
+    arg << m_perspectiveSyncSerial;
+    arg << QString();
+    arg << JsonUtils::toJsonArray(QList<int>());
+    arg << QVariant(JsonObject());
+    arg << QVariant(JsonArray());
+    doNotify(viewer, S_COMMAND_PERSPECTIVE_SYNC, arg);
+}
+
+void Room::clearAllPerspectiveViewersOf(ServerPlayer *target)
+{
+    QList<ServerPlayer *> viewers = getPerspectiveViewersOf(target);
+    foreach (ServerPlayer *viewer, viewers)
+        clearPerspectiveViewer(viewer);
+}
+
+QList<ServerPlayer *> Room::getPerspectiveViewersOf(ServerPlayer *target) const
+{
+    QList<ServerPlayer *> result;
+    for (auto it = m_perspectiveViewers.constBegin(); it != m_perspectiveViewers.constEnd(); ++it) {
+        if (it.value().target == target)
+            result << it.key();
+    }
+    return result;
+}
+
+bool Room::isDeadPlayerRevivable(const ServerPlayer *player) const
+{
+    if (player == nullptr || player->isAlive())
+        return false;
+
+    // Hulao Pass: non-lord dead players always revive via reforming
+    if (mode == "04_1v3" && !player->isLord())
+        return true;
+
+    foreach (const Skill *skill, Sanguosha->getSkills()) {
+        if (skill->playerRevivable(player, this))
+            return true;
+    }
+
+    return false;
+}
+
+ServerPlayer *Room::getPerspectiveTarget(ServerPlayer *viewer) const
+{
+    return m_perspectiveViewers.value(viewer).target;
+}
+
+ServerPlayer *Room::getCommandProxy(ServerPlayer *player) const
+{
+    // Future: when PerspectiveControl is active, return the controller.
+    // For now, always return nullptr (no proxy).
+    Q_UNUSED(player);
+    return nullptr;
+}
+
+ServerPlayer *Room::getProxiedPlayer(ServerPlayer *proxy) const
+{
+    // Future: reverse lookup of getCommandProxy.
+    Q_UNUSED(proxy);
+    return nullptr;
 }
 
 void Room::notifySkillInvoked(ServerPlayer *player, const QString &skill_name)
@@ -5543,7 +5737,7 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, boo
         const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
         thread->addTriggerSkill(trigger_skill);
     }
-    if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+    if (skill->isLimited() && !skill->getLimitMark().isEmpty())
         setPlayerMark(player, skill->getLimitMark(), 1);
 
     if (skill->isVisible()) {
@@ -7399,7 +7593,7 @@ void Room::transformGeneral(ServerPlayer *player, const QString &general_name, i
     setTag(player->objectName(), names);
 
     foreach (const Skill *skill, Sanguosha->getGeneral(general_name)->getSkillList(true, head)) {
-        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()) {
+        if (skill->isLimited() && !skill->getLimitMark().isEmpty()) {
             player->setMark(skill->getLimitMark(), 1);
             JsonArray arg;
             arg << player->objectName();

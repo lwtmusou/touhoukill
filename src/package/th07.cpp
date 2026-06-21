@@ -511,7 +511,7 @@ public:
     Jingjie()
         : TriggerSkill("jingjie")
     {
-        frequency = Frequent;
+        setFrequent();
         events << Damaged << AfterDrawNCards;
         related_pile = "jingjie";
     }
@@ -1084,7 +1084,7 @@ public:
         : TriggerSkill("hesheng")
     {
         events << EventPhaseStart << CardsMoveOneTime << EventPhaseChanging;
-        frequency = Frequent;
+        setFrequent();
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const override
@@ -1545,7 +1545,7 @@ public:
     Chunmian()
         : TriggerSkill("chunmian")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << EventPhaseStart;
     }
 
@@ -1608,7 +1608,7 @@ public:
     Chunyi()
         : TriggerSkill("chunyi")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events << EventPhaseStart;
     }
     QList<SkillInvokeDetail> triggerable(TriggerEvent /*triggerEvent*/, const Room * /*room*/, const QVariant &data) const override
@@ -1722,7 +1722,7 @@ public:
     Youqu()
         : TriggerSkill("youqu")
     {
-        frequency = Compulsory;
+        setCompulsory();
         events = {EventPhaseStart, AfterDrawInitialCards};
     }
 
@@ -2328,7 +2328,7 @@ public:
         : TriggerSkill("huanling")
     {
         events << CardUsed << CardResponded;
-        frequency = Frequent;
+        setFrequent();
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
@@ -2424,7 +2424,7 @@ TH07Package::TH07Package()
 
     General *ran_sp = new General(this, "ran_sp", "yym", 4);
     ran_sp->addSkill(new Shizhao);
-    ran_sp->addSkill(new Skill("jixiong", Skill::NotFrequent));
+    ran_sp->addSkill(new Skill("jixiong"));
     ran_sp->addSkill(new Jixiong1);
     ran_sp->addSkill(new Jixiong2);
     related_skills.insert("jixiong", "#jixiong1");

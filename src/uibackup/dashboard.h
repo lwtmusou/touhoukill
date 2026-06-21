@@ -12,6 +12,8 @@
 #include "skill.h"
 #include "sprite.h"
 
+#include <QPointer>
+
 #include <QComboBox>
 #include <QGraphicsLinearLayout>
 #include <QLineEdit>
@@ -57,6 +59,7 @@ public:
     void showControlButtons();
 
     void setPlayer(ClientPlayer *player) override; //hegemony
+    void syncContainerFromPlayer();
     void showSeat() override; //hegemony
 
     void showProgressBar(QSanProtocol::Countdown countdown) override;
@@ -302,7 +305,7 @@ protected:
     QMenu *_m_sort_menu;
     //QMenu *_m_carditem_context_menu;
 
-    QList<CardItem *> _m_cardItemsAnimationFinished;
+    QList<QPointer<CardItem>> _m_cardItemsAnimationFinished;
     QMutex m_mutexCardItemsAnimationFinished;
 
 #ifdef Q_OS_WIN

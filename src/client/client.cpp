@@ -69,6 +69,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
     m_callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
     m_callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
+    m_callbacks[S_COMMAND_PERSPECTIVE_SYNC] = &Client::perspectiveSync;
     m_callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
     m_callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     m_callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
@@ -135,6 +136,7 @@ Client::Client(QObject *parent, const QString &filename)
 
     m_noNullificationThisTime = false;
     m_noNullificationTrickName = ".";
+    m_lastPerspectiveSyncSerial = 0;
 
     Self = new ClientPlayer(this);
     Self->setScreenName(Config.UserName);
@@ -558,6 +560,21 @@ void Client::getCards(const QVariant &arg)
             foreach (int card_id, move.card_ids)
                 _getSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
         }
+
+        // Sync known_cards when spectate target gains hand cards
+        if (!m_perspectiveTargetName.isEmpty() && move.to != nullptr && move.to->objectName() == m_perspectiveTargetName && dstPlace == Player::PlaceHand) {
+            ClientPlayer *target = qobject_cast<ClientPlayer *>(move.to);
+            if (target != nullptr) {
+                foreach (int card_id, move.card_ids) {
+                    if (card_id != Card::S_UNKNOWN_CARD_ID) {
+                        const Card *card = Sanguosha->getCard(card_id);
+                        if (card != nullptr)
+                            target->addKnownHandCard(card);
+                    }
+                }
+            }
+        }
+
         moves.append(move);
     }
     updatePileNum();
@@ -583,6 +600,16 @@ void Client::loseCards(const QVariant &arg)
             foreach (int card_id, move.card_ids)
                 _loseSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
         }
+
+        // Sync known_cards when spectate target loses hand cards
+        if (!m_perspectiveTargetName.isEmpty() && move.from != nullptr && move.from->objectName() == m_perspectiveTargetName && srcPlace == Player::PlaceHand) {
+            ClientPlayer *target = qobject_cast<ClientPlayer *>(move.from);
+            if (target != nullptr) {
+                foreach (int card_id, move.card_ids)
+                    target->removeKnownHandCard(card_id);
+            }
+        }
+
         moves.append(move);
     }
     updatePileNum();
@@ -1297,6 +1324,113 @@ void Client::requestSurrender()
         return;
 
     onPlayerResponseCard(new SurrenderCard);
+}
+
+void Client::requestPerspectiveSwitch(const QString &targetName)
+{
+    notifyServer(S_COMMAND_PERSPECTIVE_REQUEST, targetName);
+}
+
+void Client::perspectiveSync(const QVariant &arg)
+{
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() < 5)
+        return;
+
+    int syncSerial = args[0].toInt();
+    if (syncSerial <= m_lastPerspectiveSyncSerial)
+        return;
+    m_lastPerspectiveSyncSerial = syncSerial;
+
+    QString targetName = args[1].toString();
+
+    // Restore old perspective target's known hand cards and private piles.
+    // Only reset piles that were not visible (including -1) before spectating; keep already-open piles unchanged.
+    if (!m_perspectiveTargetName.isEmpty()) {
+        ClientPlayer *oldTarget = getPlayer(m_perspectiveTargetName);
+        if (oldTarget != nullptr) {
+            oldTarget->setCards(QList<int>());
+            foreach (const QString &pileName, oldTarget->getPileNames()) {
+                if (m_savedPileOpenState.value(pileName, false))
+                    continue; // Pile was already open before spectating, keep unchanged
+                int count = oldTarget->getPile(pileName).size();
+                QList<int> unknownIds;
+                for (int i = 0; i < count; ++i)
+                    unknownIds << Card::S_UNKNOWN_CARD_ID;
+                oldTarget->setPile(pileName, unknownIds);
+            }
+        }
+        m_savedPileOpenState.clear();
+    }
+
+    if (targetName.isEmpty()) {
+        m_perspectiveTargetName.clear();
+        emit perspective_changed(QString(), QList<int>(), QVariantMap());
+        return;
+    }
+
+    m_perspectiveTargetName = targetName;
+    ClientPlayer *target = getPlayer(targetName);
+    if (target == nullptr)
+        return;
+
+    // Apply modified card info first, reusing updateCard()'s clone + WrappedCard logic
+    JsonArray modifiedCards = args[4].value<JsonArray>();
+    foreach (const QVariant &mc, modifiedCards) {
+        JsonArray cardInfo = mc.value<JsonArray>();
+        if (cardInfo.size() >= 7) {
+            int cardId = cardInfo[0].toInt();
+            Card::Suit suit = static_cast<Card::Suit>(cardInfo[1].toInt());
+            int number = cardInfo[2].toInt();
+            QString cardName = cardInfo[3].toString();
+            QString skillName = cardInfo[4].toString();
+            QString objectName = cardInfo[5].toString();
+            QStringList flags;
+            JsonUtils::tryParse(cardInfo[6], flags);
+
+            Card *cloned = Sanguosha->cloneCard(cardName, suit, number, flags);
+            if (cloned == nullptr)
+                continue;
+            cloned->setId(cardId);
+            cloned->setSkillName(skillName);
+            cloned->setObjectName(objectName);
+            WrappedCard *wrapped = Sanguosha->getWrappedCard(cardId);
+            // copyEverythingFrom takes ownership of cloned, do not delete
+            if (wrapped != nullptr)
+                wrapped->copyEverythingFrom(cloned);
+        }
+    }
+
+    QList<int> handCardIds;
+    JsonUtils::tryParse(args[2], handCardIds);
+    target->setCards(handCardIds);
+
+    // Record pile visibility before sync (open if no -1 ids present)
+    m_savedPileOpenState.clear();
+    foreach (const QString &pileName, target->getPileNames()) {
+        QList<int> ids = target->getPile(pileName);
+        bool isOpen = !ids.isEmpty() && !ids.contains(Card::S_UNKNOWN_CARD_ID);
+        m_savedPileOpenState[pileName] = isOpen;
+    }
+
+    QVariantMap pilesMap;
+    QStringList syncedPileNames;
+    JsonObject pilesObj = args[3].value<JsonObject>();
+    for (auto it = pilesObj.constBegin(); it != pilesObj.constEnd(); ++it) {
+        QList<int> pileIds;
+        JsonUtils::tryParse(it.value(), pileIds);
+        target->setPile(it.key(), pileIds);
+        syncedPileNames << it.key();
+        pilesMap[it.key()] = QVariant::fromValue(pileIds);
+    }
+
+    // Clear local piles not present in the sync snapshot
+    foreach (const QString &pileName, target->getPileNames()) {
+        if (!syncedPileNames.contains(pileName))
+            target->setPile(pileName, QList<int>());
+    }
+
+    emit perspective_changed(targetName, handCardIds, pilesMap);
 }
 
 void Client::speakToServer(const QString &text)

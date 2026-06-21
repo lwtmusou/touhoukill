@@ -32,6 +32,34 @@ public:
         GuanxingDownOnly = -1
     };
 
+    // Perspective source types - why is this viewer watching this target?
+    enum PerspectiveSource
+    {
+        PerspectiveNone = 0,
+        PerspectiveSpectate, // Dead player watching alive player (view only, input locked)
+        PerspectiveControl, // Future: controlling another player (view + interact)
+        PerspectiveAssist // Future: AI substitution
+    };
+
+    // Per-viewer state entry
+    struct PerspectiveEntry
+    {
+        PerspectiveEntry()
+            : target(nullptr)
+            , source(PerspectiveNone)
+        {
+        }
+
+        PerspectiveEntry(ServerPlayer *target, PerspectiveSource source)
+            : target(target)
+            , source(source)
+        {
+        }
+
+        ServerPlayer *target;
+        PerspectiveSource source;
+    };
+
     friend class RoomThread;
     friend class RoomThread3v3;
     friend class RoomThreadXMode;
@@ -228,6 +256,9 @@ public:
     //        relevant or not.
     bool notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> move, bool forceVisible, QList<ServerPlayer *> players = QList<ServerPlayer *>());
     bool notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const QString &value = QString());
+    QList<ServerPlayer *> getPerspectiveViewersOf(ServerPlayer *target) const;
+
+    bool isDeadPlayerRevivable(const ServerPlayer *player) const;
     bool notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard);
     bool broadcastUpdateCard(const QList<ServerPlayer *> &players, int cardId, const Card *newCard);
     bool notifyResetCard(ServerPlayer *player, int cardId);
@@ -381,6 +412,7 @@ public:
     void speakCommand(ServerPlayer *player, const QVariant &arg);
     void trustCommand(ServerPlayer *player, const QVariant &arg);
     void pauseCommand(ServerPlayer *player, const QVariant &arg);
+    void spectateCommand(ServerPlayer *player, const QVariant &arg);
     void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
     void addRobotCommand(ServerPlayer *player, const QVariant &arg);
     void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
@@ -541,9 +573,21 @@ private:
     QWaitCondition m_waitCond;
     mutable QMutex m_mutex;
 
-    volatile bool playerPropertySet;
-
     GeneralSelector *m_generalSelector;
+
+    // Perspective switching base layer
+    QMap<ServerPlayer *, PerspectiveEntry> m_perspectiveViewers; // viewer -> (target, source)
+    int m_perspectiveSyncSerial;
+    void addPerspectiveViewer(ServerPlayer *viewer, ServerPlayer *target, PerspectiveSource source);
+    PerspectiveSource getPerspectiveSource(ServerPlayer *viewer) const;
+    ServerPlayer *getPerspectiveTarget(ServerPlayer *viewer) const;
+    void sendPerspectiveSync(ServerPlayer *viewer, ServerPlayer *target);
+    void clearPerspectiveViewer(ServerPlayer *viewer);
+    void clearAllPerspectiveViewersOf(ServerPlayer *target);
+
+    // Command proxy interface (skeleton for future Control mode)
+    ServerPlayer *getCommandProxy(ServerPlayer *player) const;
+    ServerPlayer *getProxiedPlayer(ServerPlayer *proxy) const;
 
     static QString generatePlayerName();
     void prepareForStart();

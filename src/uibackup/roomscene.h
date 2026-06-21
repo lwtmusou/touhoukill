@@ -169,6 +169,13 @@ class RoomScene : public QGraphicsScene
     Q_OBJECT
 
 public:
+    // Perspective source types for UI layer
+    enum PerspectiveSource
+    {
+        PerspectiveSourceNone = 0,
+        PerspectiveSourceSpectate
+    };
+
     explicit RoomScene(QMainWindow *main_window);
     ~RoomScene() override;
     void changeTextEditBackground();
@@ -184,6 +191,16 @@ public:
 
     void changeTableBg();
     void changeTableBg(const QString &tableBgImage_path);
+
+    bool isPerspectiveSwitched() const
+    {
+        return m_isPerspectiveSwitched;
+    }
+
+    bool isPerspectiveInputLocked() const
+    {
+        return m_perspectiveInputLocked;
+    }
 
     inline bool isCancelButtonEnabled() const
     {
@@ -290,6 +307,9 @@ private:
     QGraphicsItem *_m_last_front_item;
     double _m_last_front_ZValue;
     GenericCardContainer *_getGenericCardContainer(Player::Place place, Player *player);
+    const ClientPlayer *dashboardPlayer() const;
+    void refreshItem2PlayerMap();
+    void applyPerspectiveInputLock(bool locked);
     QMap<int, QList<QList<CardItem *>>> _m_cardsMoveStash;
     Button *add_robot;
     Button *fill_robots;
@@ -319,6 +339,12 @@ private:
     QList<QGraphicsPixmapItem *> role_items;
     CardContainer *card_container;
     CardContainer *pileContainer;
+    Photo *m_perspectiveProxyPhoto = nullptr;
+    bool m_isPerspectiveSwitched = false;
+    bool m_perspectiveInputLocked = false;
+    PerspectiveSource m_perspectiveSource = PerspectiveSourceNone;
+    QList<Photo *> m_originalPhotosOrder;
+    QString m_perspectiveTargetName;
 
     QList<QSanSkillButton *> m_skillButtons;
 
@@ -384,7 +410,12 @@ private:
         }
         inline bool operator<(const _MoveCardsClassifier &other) const
         {
-            return m_card_ids.first() < other.m_card_ids.first();
+            int common = qMin(m_card_ids.size(), other.m_card_ids.size());
+            for (int i = 0; i < common; ++i) {
+                if (m_card_ids[i] != other.m_card_ids[i])
+                    return m_card_ids[i] < other.m_card_ids[i];
+            }
+            return m_card_ids.size() < other.m_card_ids.size();
         }
         QList<int> m_card_ids;
     };
@@ -422,6 +453,8 @@ private:
     // animation related functions
     typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);
     QGraphicsObject *getAnimationObject(const QString &name) const;
+    static const int S_DATA_PERSPECTIVE_ANIMATION = 9531;
+    void clearPerspectiveSensitiveAnimations();
 
     void doMovingAnimation(const QString &name, const QStringList &args);
     void doAppearingAnimation(const QString &name, const QStringList &args);
@@ -513,6 +546,12 @@ private slots:
 
     void trust();
     void skillInvalidityChange(ClientPlayer *player);
+
+    void onPerspectiveChanged(const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles);
+
+    // Perspective view
+    void enterPerspectiveView(const QString &targetName, PerspectiveSource source, bool lockInput);
+    void exitPerspectiveView();
 
 signals:
     void restart();
