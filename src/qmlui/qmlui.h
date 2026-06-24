@@ -11,6 +11,7 @@ class TouhouKillQmlUiGlobal : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString ButtonFontFace READ buttonFontFace STORED false)
+    Q_PROPERTY(QString SkillButtonFontFace READ skillButtonFontFace STORED false)
 
 public:
     Q_INVOKABLE QUrl getUrl(const QString &path) const;
@@ -20,6 +21,7 @@ public:
     Q_INVOKABLE QString playerPhaseToString(Player::Phase phase) const;
 
     QString buttonFontFace() const;
+    QString skillButtonFontFace() const;
 };
 
 class TouhouKillServerInfoStruct : public QObject

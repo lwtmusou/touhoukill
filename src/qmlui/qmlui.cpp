@@ -36,22 +36,31 @@ QString TouhouKillQmlUiGlobal::playerPhaseToString(Player::Phase phase) const
     return Player::getPhaseString(phase);
 }
 
+namespace {
+struct FontFaceRecorder
+{
+    QString fontFace;
+
+    explicit FontFaceRecorder(const QString &fontPath)
+    {
+        int id = QFontDatabase::addApplicationFont(QDir::currentPath() + fontPath);
+        fontFace = QApplication::font().family();
+
+        if (id != -1)
+            fontFace = QFontDatabase::applicationFontFamilies(id).constFirst();
+    }
+};
+} // namespace
+
 QString TouhouKillQmlUiGlobal::buttonFontFace() const
 {
-    static const struct FontFaceRecorder
-    {
-        QString fontFace;
+    static const FontFaceRecorder fontFaceRecorder("/font/budingti.ttf");
+    return fontFaceRecorder.fontFace;
+}
 
-        FontFaceRecorder()
-        {
-            int id = QFontDatabase::addApplicationFont(QDir::currentPath() + "/font/budingti.ttf");
-            fontFace = QApplication::font().family();
-
-            if (id != -1)
-                fontFace = QFontDatabase::applicationFontFamilies(id).constFirst();
-        }
-    } fontFaceRecorder;
-
+QString TouhouKillQmlUiGlobal::skillButtonFontFace() const
+{
+    static const FontFaceRecorder fontFaceRecorder("/font/fzktf.ttf");
     return fontFaceRecorder.fontFace;
 }
 
