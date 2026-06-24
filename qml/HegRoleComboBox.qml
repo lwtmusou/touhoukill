@@ -80,6 +80,7 @@ Item {
             }
         }
     }
+
     Grid {
         id: itemGrid
 
@@ -88,6 +89,7 @@ Item {
         spacing: 1
         visible: true
     }
+
     Component {
         id: subItemComponent
 
@@ -115,6 +117,7 @@ Item {
             }
         }
     }
+
     Image {
         id: fixedImage
 
@@ -122,6 +125,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         visible: false
     }
+
     Connections {
         function onSpaceClicked() {
             appearAnimation.stop();

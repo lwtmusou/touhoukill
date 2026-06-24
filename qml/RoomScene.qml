@@ -17,6 +17,23 @@ CppRoomScene {
 
             onClicked: roomScene.spaceClicked()
         }
+
+        Dashboard {
+            id: dashboard
+
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            width: parent.width - 336 // Change Photo's width when this changes!
+        }
+
+        Photo {
+            id: selfPhoto
+
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            general: "luize"
+        }
+
         QSanButton {
             id: startSceneButton
 
@@ -29,6 +46,7 @@ CppRoomScene {
 
             onClicked: MainWindowInstance.gotoStartScene()
         }
+
         Rectangle {
             anchors.bottom: startSceneButton.top
             anchors.horizontalCenter: parent.horizontalCenter
@@ -40,39 +58,6 @@ CppRoomScene {
             Row {
                 anchors.fill: parent
 
-                HandcardNum {
-                    kingdom: "touhougod"
-                    num: 1
-                }
-                HandcardNum {
-                    kingdom: "zhan"
-                    num: 1
-                }
-                HandcardNum {
-                    kingdom: "hmx"
-                    num: 1
-                }
-                HandcardNum {
-                    kingdom: "yym"
-                    num: 3
-                }
-                HandcardNum {
-                    kingdom: "pc98"
-                    num: 5
-                }
-                HandcardNum {
-                    kingdom: "tkz"
-                    num: 7
-                }
-                KingdomImage {
-                    kingdom: "hzc"
-                }
-                KingdomImage {
-                    kingdom: "hmx"
-                }
-                KingdomImage {
-                    kingdom: "pc98"
-                }
                 Photo {
                     gameStarted: true
                     general: "luize"
@@ -80,6 +65,7 @@ CppRoomScene {
                     phase: Player.Start
                     seat: 3
                 }
+
                 Photo {
                     gameStarted: true
                     general: "yingyingguai"
@@ -90,6 +76,7 @@ CppRoomScene {
                     maxhp: 600
                     seat: 5
                 }
+
                 Photo {
                     banling: true
                     general: "youmu_god"
@@ -99,24 +86,30 @@ CppRoomScene {
                     maxhp: 30
                     seat: 7
                 }
+
                 CardItem {
                     cardId: 0
                     opacity: 1
                 }
+
                 CardItem {
                     general: "remilia"
                     opacity: 1
                 }
+
                 Column {
                     PhaseItem {
                         phase: Player.Start
                     }
+
                     PhaseItem {
                         phase: Player.RoundStart
                     }
+
                     PhaseItem {
                         phase: Player.NotActive
                     }
+
                     PhaseItem {
                         phase: Player.Play
                     }

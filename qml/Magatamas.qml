@@ -63,6 +63,7 @@ Item {
             }
         }
     }
+
     function refresh() {
         var displayHp = hp;
         if (hp === maxhp)
@@ -177,27 +178,32 @@ Item {
 
             anchors.horizontalCenter: parent.horizontalCenter
         }
+
         Magatama {
             id: magatama2
 
             anchors.horizontalCenter: parent.horizontalCenter
         }
+
         Magatama {
             id: magatama3
 
             anchors.horizontalCenter: parent.horizontalCenter
         }
+
         Magatama {
             id: magatama4
 
             anchors.horizontalCenter: parent.horizontalCenter
         }
+
         Magatama {
             id: magatama5
 
             anchors.horizontalCenter: parent.horizontalCenter
         }
     }
+
     Column {
         id: magatamasGe6
 
@@ -210,6 +216,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             visible: true
         }
+
         Text {
             id: hpText6
 
@@ -223,6 +230,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
         }
+
         Text {
             id: hpSlash6
 
@@ -237,6 +245,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
         }
+
         Text {
             id: maxHpText6
 
@@ -250,6 +259,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
         }
+
         Text {
             id: dyingThresholdText6
 
@@ -264,6 +274,7 @@ Item {
             wrapMode: Text.NoWrap
         }
     }
+
     Column {
         id: magatamasBanling
 
@@ -276,6 +287,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             visible: true
         }
+
         Text {
             id: renTextBanling
 
@@ -289,6 +301,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
         }
+
         Text {
             id: rlCommaBanling
 
@@ -303,6 +316,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
         }
+
         Text {
             id: lingTextBanling
 
@@ -316,6 +330,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
         }
+
         Text {
             id: hpSlashBanling
 
@@ -330,6 +345,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
         }
+
         Text {
             id: maxHpTextBanling
 
@@ -343,6 +359,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
         }
+
         Text {
             id: dyingThresholdTextBanling
 
@@ -357,6 +374,7 @@ Item {
             wrapMode: Text.NoWrap
         }
     }
+
     Component {
         id: magatamaComponent
 
@@ -380,6 +398,7 @@ Item {
                     target: createdMagatama
                     to: 4
                 }
+
                 PropertyAnimation {
                     duration: 500
                     from: 1

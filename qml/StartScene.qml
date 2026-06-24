@@ -38,6 +38,7 @@ Image {
 
             onClicked: MainWindowInstance.on_actionStart_Game_triggered()
         }
+
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
@@ -47,6 +48,7 @@ Image {
 
             onClicked: MainWindowInstance.on_actionGeneral_Overview_triggered()
         }
+
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
@@ -56,6 +58,7 @@ Image {
 
             onClicked: MainWindowInstance.on_actionStart_Server_triggered()
         }
+
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
@@ -65,6 +68,7 @@ Image {
 
             onClicked: MainWindowInstance.on_actionCard_Overview_triggered()
         }
+
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
@@ -74,6 +78,7 @@ Image {
 
             onClicked: MainWindowInstance.on_actionPC_Console_Start_triggered()
         }
+
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
@@ -83,6 +88,7 @@ Image {
 
             onClicked: MainWindowInstance.on_actionConfigure_triggered()
         }
+
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
@@ -92,6 +98,7 @@ Image {
 
             onClicked: MainWindowInstance.on_actionReplay_triggered()
         }
+
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
@@ -102,6 +109,7 @@ Image {
             onClicked: MainWindowInstance.on_actionAbout_Us_triggered()
         }
     }
+
     Image {
         id: logo
 
@@ -129,6 +137,7 @@ Image {
             when: true
         }
     }
+
     Text {
         id: groupText
 
@@ -138,6 +147,7 @@ Image {
         font.pixelSize: 26
         text: qsTr("TouhouSatsu QQ Qun: 384318315")
     }
+
     Rectangle {
         id: serverTextBorder
 
@@ -196,6 +206,7 @@ Image {
             }
         }
     }
+
     ParallelAnimation {
         id: serverTextAnimation
 
@@ -215,6 +226,7 @@ Image {
             target: logo
             to: 0
         }
+
         PropertyAnimation {
             duration: 400
             from: btnGrid.y / 2
@@ -222,6 +234,7 @@ Image {
             target: logo
             to: 144
         }
+
         PropertyAnimation {
             duration: 400
             from: startScene.width
@@ -229,6 +242,7 @@ Image {
             target: logo
             to: 360
         }
+
         PropertyAnimation {
             duration: 400
             from: startScene.width / 2
@@ -236,6 +250,7 @@ Image {
             target: serverTextBorder
             to: startScene.width * 0.1
         }
+
         PropertyAnimation {
             duration: 400
             from: (startScene.height + 144) / 2
@@ -243,6 +258,7 @@ Image {
             target: serverTextBorder
             to: 144 + (startScene.height - 144) * 0.1
         }
+
         PropertyAnimation {
             duration: 400
             from: 0
@@ -250,6 +266,7 @@ Image {
             target: serverTextBorder
             to: startScene.width * 0.8
         }
+
         PropertyAnimation {
             duration: 400
             from: 0
@@ -257,6 +274,7 @@ Image {
             target: serverTextBorder
             to: (startScene.height - 144) * 0.8
         }
+
         PropertyAnimation {
             duration: 400
             from: 0
@@ -265,6 +283,7 @@ Image {
             to: 1.0
         }
     }
+
     Connections {
         function onQml_switchToServerScene(server: QtObject) {
             btnGrid.visible = false;

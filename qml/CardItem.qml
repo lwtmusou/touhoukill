@@ -25,6 +25,7 @@ Item {
 
         goBackAnimation.start();
     }
+
     function setUnknownCard() {
         cardId = -1;
         general = "";
@@ -81,6 +82,7 @@ Item {
             clip: true
             fillMode: Image.PreserveAspectCrop
         }
+
         Image {
             id: cardSuitImage
 
@@ -92,6 +94,7 @@ Item {
             height: 34
             width: 42
         }
+
         Image {
             id: cardNumberImage
 
@@ -103,6 +106,7 @@ Item {
             height: 56
             width: 54
         }
+
         Text {
             id: cardFootNoteText
 
@@ -118,6 +122,7 @@ Item {
             wrapMode: Text.Wrap
         }
     }
+
     MouseArea {
         id: cardItemMouseArea
 
@@ -125,6 +130,7 @@ Item {
 
         onClicked: parent.clicked()
     }
+
     ParallelAnimation {
         id: goBackAnimation
 
@@ -139,6 +145,7 @@ Item {
             target: cardItem
             to: cardItem.homeX
         }
+
         PropertyAnimation {
             id: goBackYAnimation
 
@@ -148,6 +155,7 @@ Item {
             target: cardItem
             to: cardItem.homeY
         }
+
         PropertyAnimation {
             id: goBackOpacityAnimation
 

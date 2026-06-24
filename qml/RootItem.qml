@@ -18,6 +18,7 @@ Item {
             anchors.fill: parent
         }
     }
+
     Component {
         id: roomSceneComponent
 
@@ -25,11 +26,13 @@ Item {
             anchors.fill: parent
         }
     }
+
     Connections {
         function onQml_switchToRoomScene() {
             currentScene.destroy();
             currentScene = roomSceneComponent.createObject(rootItem, {});
         }
+
         function onQml_switchToStartScene() {
             currentScene.destroy();
             currentScene = startSceneComponent.createObject(rootItem, {});

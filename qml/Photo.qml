@@ -24,7 +24,7 @@ Item {
     property int seat
 
     height: 407
-    width: 336
+    width: 336 // Change Dashboard's width in RoomScene when this changes!
 
     Component.onCompleted: {
         if (G.isHegemonyGameMode(ServerInfo.GameMode)) {
@@ -130,9 +130,11 @@ Item {
                     target: huashenImage
                     to: 1
                 }
+
                 PauseAnimation {
                     duration: 4000
                 }
+
                 PropertyAnimation {
                     duration: 500
                     from: 1
@@ -140,11 +142,13 @@ Item {
                     target: huashenImage
                     to: 0
                 }
+
                 PauseAnimation {
                     duration: 1000
                 }
             }
         }
+
         Image {
             id: generalName
 
@@ -177,6 +181,7 @@ Item {
             }
         }
     }
+
     Image {
         id: general2Image
 
@@ -218,9 +223,11 @@ Item {
                     target: huashen2Image
                     to: 1
                 }
+
                 PauseAnimation {
                     duration: 4000
                 }
+
                 PropertyAnimation {
                     duration: 500
                     from: 1
@@ -228,12 +235,14 @@ Item {
                     target: huashen2Image
                     to: 0
                 }
+
                 PauseAnimation {
                     duration: 1000
                 }
             }
         }
     }
+
     Rectangle {
         id: banner
 
@@ -252,6 +261,7 @@ Item {
             text: screenName
             verticalAlignment: Qt.AlignVCenter
         }
+
         Item {
             id: seatNumberOrKingdomImageItem
 
@@ -267,6 +277,7 @@ Item {
                 seat: photo.seat
                 visible: false
             }
+
             KingdomImage {
                 id: kingdomImage
 
@@ -277,6 +288,7 @@ Item {
             }
         }
     }
+
     Rectangle {
         id: rightRect
 
@@ -298,6 +310,7 @@ Item {
             visible: photo.gameStarted
             width: parent.width
         }
+
         HandcardNum {
             id: handcardNum
 
@@ -306,6 +319,7 @@ Item {
             kingdom: photo.kingdom
             visible: photo.gameStarted
         }
+
         Item {
             id: roleComboBoxItem
 
@@ -320,6 +334,7 @@ Item {
                 roleShown: photo.roleShown
                 visible: false
             }
+
             HegRoleComboBox {
                 id: hegRoleComboBox
 
@@ -330,6 +345,7 @@ Item {
             }
         }
     }
+
     PhaseItem {
         anchors.horizontalCenter: photo.horizontalCenter
         anchors.top: photo.bottom

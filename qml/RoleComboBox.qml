@@ -45,6 +45,7 @@ Item {
             }
         }
     }
+
     Image {
         anchors.centerIn: parent
         fillMode: Image.PreserveAspectFit
@@ -53,6 +54,7 @@ Item {
         visible: roleComboBox.roleShown
         width: parent.width * 1.3
     }
+
     Column {
         id: expandArea
 
@@ -96,6 +98,7 @@ Item {
                 target: expandArea
                 to: 1
             }
+
             PropertyAnimation {
                 duration: 200
                 easing.type: Easing.Linear
@@ -105,6 +108,7 @@ Item {
                 to: 1
             }
         }
+
         Repeater {
             model: ["unknown", "loyalist", "rebel", "renegade"]
 
@@ -137,6 +141,7 @@ Item {
             }
         }
     }
+
     Connections {
         function onSpaceClicked() {
             expandArea.visible = false;

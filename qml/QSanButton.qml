@@ -78,6 +78,7 @@ Image {
         color: Qt.rgba(1, 1, 1, .25)
         visible: false
     }
+
     Text {
         anchors.fill: parent
         font: parent.font
@@ -87,6 +88,7 @@ Image {
         textFormat: Text.PlainText
         verticalAlignment: Text.AlignVCenter
     }
+
     MouseArea {
         id: qSanButtonMouseArea
 
