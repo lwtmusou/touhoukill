@@ -61,7 +61,7 @@ public:
 
     QMap<QString, QString> getAvailableModes() const;
     QString getModeName(const QString &mode) const;
-    int getPlayerCount(const QString &mode) const;
+    Q_INVOKABLE int getPlayerCount(const QString &mode) const;
     QString getRoles(const QString &mode) const;
     QStringList getRoleList(const QString &mode) const;
     int getRoleIndex() const;

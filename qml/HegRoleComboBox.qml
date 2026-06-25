@@ -110,7 +110,7 @@ Item {
                 anchors.fill: parent
 
                 onClicked: selected = !selected
-                onPressed: {
+                onPressed: mouse => {
                     if (!expandFinish)
                         mouse.accepted = false;
                 }

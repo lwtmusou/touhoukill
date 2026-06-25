@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QtQml>
 
+RoomScene::~RoomScene() = default;
+
 namespace {
 void registerRoomScene()
 {

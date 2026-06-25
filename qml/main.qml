@@ -9,6 +9,8 @@ Item {
         transformOrigin: Item.TopLeft
         visible: true
         width: Math.max(1920, parent.width * 1440 / Math.max(0.1, parent.height))
+        x: 0
+        y: 0
 
         RootItem {
             anchors.fill: parent

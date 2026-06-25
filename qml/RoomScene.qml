@@ -5,7 +5,30 @@ import rocks.touhousatsu 1.0
 CppRoomScene {
     id: roomScene
 
+    property list<Photo> otherPhotos
+
     signal spaceClicked
+
+    function lay() {
+        for (var photo of otherPhotos) {
+            photo.y = startSceneButton.y + startSceneButton.height;
+            photo.x = (photo.seat - 2) * 336;
+            photo.visible = true;
+        }
+    }
+
+    Component.onCompleted: {
+        var playercount = Sanguosha.getPlayerCount(ServerInfo.GameMode);
+
+        for (var i = 1; i < playercount; ++i) {
+            var photo = photoComponent.createObject(this, {
+                                                        seat: i + 1
+                                                    });
+            otherPhotos.push(photo);
+        }
+
+        lay();
+    }
 
     Image {
         anchors.fill: parent
@@ -17,104 +40,113 @@ CppRoomScene {
 
             onClicked: roomScene.spaceClicked()
         }
+    }
 
-        Dashboard {
-            id: dashboard
+    Dashboard {
+        id: dashboard
 
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            width: parent.width - 336 // Change Photo's width when this changes!
-        }
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        width: parent.width - 336 // Change Photo's width when this changes!
+    }
 
-        Photo {
-            id: selfPhoto
+    Photo {
+        id: selfPhoto
 
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            general: "luize"
-        }
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        general: "luize"
+        seat: 1
+    }
 
-        QSanButton {
-            id: startSceneButton
+    QSanButton {
+        id: startSceneButton
 
-            anchors.centerIn: parent
-            font.pixelSize: 50
-            height: parent.height / 4
-            source: G.getUrl("image/system/button/button.png")
-            text: "return to start scene"
-            width: parent.width / 4
+        anchors.centerIn: parent
+        font.pixelSize: 50
+        height: parent.height / 4
+        source: G.getUrl("image/system/button/button.png")
+        text: "return to start scene"
+        width: parent.width / 4
 
-            onClicked: MainWindowInstance.gotoStartScene()
-        }
+        onClicked: MainWindowInstance.gotoStartScene()
+    }
 
-        Rectangle {
-            anchors.bottom: startSceneButton.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            color: Qt.rgba(0, 0, 0, 0.9)
-            height: roomScene.height
-            width: roomScene.width
+    Rectangle {
+        anchors.bottom: startSceneButton.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        color: Qt.rgba(0, 0, 0, 0.9)
+        height: roomScene.height
+        width: roomScene.width
 
-            Row {
-                anchors.fill: parent
+        Row {
+            anchors.fill: parent
 
-                Photo {
-                    gameStarted: true
-                    general: "luize"
-                    kingdom: "pc98"
+            Photo {
+                gameStarted: true
+                general: "luize"
+                kingdom: "pc98"
+                phase: Player.Start
+                seat: 3
+            }
+
+            Photo {
+                gameStarted: true
+                general: "yingyingguai"
+                general2: "yingyingguai"
+                huashenGeneral: "sujiangf"
+                huashenGeneral2: "sujiang"
+                kingdom: "hmx"
+                maxhp: 600
+                seat: 5
+            }
+
+            Photo {
+                banling: true
+                general: "youmu_god"
+                hp: 10
+                kingdom: "touhougod"
+                linghp: 20
+                maxhp: 30
+                seat: 7
+            }
+
+            CardItem {
+                cardId: 0
+                opacity: 1
+            }
+
+            CardItem {
+                general: "remilia"
+                opacity: 1
+            }
+
+            Column {
+                PhaseItem {
                     phase: Player.Start
-                    seat: 3
                 }
 
-                Photo {
-                    gameStarted: true
-                    general: "yingyingguai"
-                    general2: "yingyingguai"
-                    huashenGeneral: "sujiangf"
-                    huashenGeneral2: "sujiang"
-                    kingdom: "hmx"
-                    maxhp: 600
-                    seat: 5
+                PhaseItem {
+                    phase: Player.RoundStart
                 }
 
-                Photo {
-                    banling: true
-                    general: "youmu_god"
-                    hp: 10
-                    kingdom: "touhougod"
-                    linghp: 20
-                    maxhp: 30
-                    seat: 7
+                PhaseItem {
+                    phase: Player.NotActive
                 }
 
-                CardItem {
-                    cardId: 0
-                    opacity: 1
-                }
-
-                CardItem {
-                    general: "remilia"
-                    opacity: 1
-                }
-
-                Column {
-                    PhaseItem {
-                        phase: Player.Start
-                    }
-
-                    PhaseItem {
-                        phase: Player.RoundStart
-                    }
-
-                    PhaseItem {
-                        phase: Player.NotActive
-                    }
-
-                    PhaseItem {
-                        phase: Player.Play
-                    }
+                PhaseItem {
+                    phase: Player.Play
                 }
             }
+        }
+    }
+
+    Component {
+        id: photoComponent
+
+        Photo {
+            seat: 0
         }
     }
 }

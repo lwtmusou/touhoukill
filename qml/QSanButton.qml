@@ -125,7 +125,7 @@ Image {
                     parent.state = "downExited";
             }
         }
-        onPressed: {
+        onPressed: mouse => {
             if (parent.enabled) {
                 parent.state = "downEntered";
             } else {

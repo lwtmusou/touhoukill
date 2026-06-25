@@ -64,6 +64,12 @@ QString TouhouKillQmlUiGlobal::skillButtonFontFace() const
     return fontFaceRecorder.fontFace;
 }
 
+QString TouhouKillQmlUiGlobal::gameFontFace() const
+{
+    static const FontFaceRecorder fontFaceRecorder("/font/simli.ttf");
+    return fontFaceRecorder.fontFace;
+}
+
 namespace {
 void registerCore()
 {

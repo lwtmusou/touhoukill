@@ -10,7 +10,7 @@ class QTextDocument;
 class ClientPlayer : public Player
 {
     Q_OBJECT
-    Q_PROPERTY(int handcard READ getHandcardNum WRITE setHandcardNum)
+    Q_PROPERTY(int handcard READ getHandcardNum WRITE setHandcardNum NOTIFY handcardChanged)
 
 public:
     explicit ClientPlayer(Client *client);
@@ -43,6 +43,8 @@ signals:
     void action_taken();
     void duozhi_changed();
     void mark_changed();
+
+    void handcardChanged();
 };
 
 extern ClientPlayer *Self;

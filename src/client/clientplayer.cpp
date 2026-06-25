@@ -89,14 +89,16 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
         if (known_cards.length() != 1)
             return false;
         return known_cards.first()->getId() == card->getEffectiveId();
-    } else if (card->getSubcards().length() > 0) {
+    }
+    if (card->getSubcards().length() > 0) {
         if (!contain) {
             foreach (int card_id, card->getSubcards()) {
                 if (!known_cards.contains(Sanguosha->getCard(card_id)))
                     return false;
             }
             return known_cards.length() == card->getSubcards().length();
-        } else {
+        }
+        {
             foreach (const Card *ncard, known_cards) {
                 if (!card->getSubcards().contains(ncard->getEffectiveId()))
                     return false;
@@ -199,7 +201,10 @@ QString ClientPlayer::getDeathPixmapPath() const
 
 void ClientPlayer::setHandcardNum(int n)
 {
-    handcard_num = n;
+    if (n != handcard_num) {
+        handcard_num = n;
+        emit handcardChanged();
+    }
 }
 
 QString ClientPlayer::getGameMode() const

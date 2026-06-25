@@ -133,7 +133,7 @@ Item {
                         expandArea.visible = false;
                         roleComboBox.role = modelData;
                     }
-                    onPressed: {
+                    onPressed: mouse => {
                         if (!expandFinish)
                             mouse.accepted = false;
                     }

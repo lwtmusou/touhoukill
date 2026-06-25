@@ -19,6 +19,11 @@ class Skill : public QObject
     Q_PROPERTY(QString limitMark READ getLimitMark)
     Q_PROPERTY(bool lord READ isLordSkill)
     Q_PROPERTY(bool attachedLord READ isAttachedLordSkill)
+    Q_PROPERTY(bool frequent READ isFrequent)
+    Q_PROPERTY(bool compulsory READ isCompulsory)
+    Q_PROPERTY(bool limited READ isLimited)
+    Q_PROPERTY(bool wake READ isWake)
+    Q_PROPERTY(bool eternal READ isEternal)
     Q_PROPERTY(bool visible READ isVisible)
 
 public:
@@ -212,8 +217,7 @@ public:
     explicit ProhibitSkill(const QString &name);
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>(),
-                              bool include_hidden = false) const
-        = 0;
+                              bool include_hidden = false) const = 0;
 };
 
 class DistanceSkill : public Skill

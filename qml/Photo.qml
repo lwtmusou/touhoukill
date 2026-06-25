@@ -8,20 +8,24 @@ Item {
     property bool banling: false
     property int dyingThreshold: 0
     property bool gameStarted: false
-    property string general: ""
-    property string general2: ""
+    property string general
+    property string general2
     property int hp: 5
-    property string huashenGeneral: ""
-    property string huashenGeneral2: ""
+    property string huashenGeneral
+    property string huashenGeneral2
+    property string huashenSkillName
+    property string huashenSkillName2
     property string kingdom
     property int linghp: 5
     property int maxhp: 5
     property int phase: Player.NotActive
+    property string playerName
     property var privatePile: ({})
-    property string role: ""
+    property string role
     property bool roleShown: false
-    property string screenName: "东方杀"
-    property int seat
+    property string screenName
+    required property int seat
+    property bool selfPhoto: false
 
     height: 407
     width: 336 // Change Dashboard's width in RoomScene when this changes!
@@ -162,11 +166,15 @@ Item {
 
             VerticalText {
                 anchors.centerIn: parent
+                color: "#000000"
+                font.family: G.GameFontFace
                 font.pixelSize: 72
                 fontSizeMode: Text.Fit
                 height: 140
                 horizontalAlignment: Text.AlignHCenter
                 minimumPixelSize: 1
+                style: Text.Outline
+                styleColor: "#BBBBBB"
                 verticalAlignment: Text.AlignVCenter
                 verticalText: {
                     var toTranslate = "&" + photo.general;
@@ -177,7 +185,7 @@ Item {
 
                     return r;
                 }
-                width: 36
+                width: 45
             }
         }
     }

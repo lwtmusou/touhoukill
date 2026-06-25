@@ -9,6 +9,9 @@ class RoomScene : public QQuickItem
 
 public:
     using QQuickItem::QQuickItem;
+    ~RoomScene() override;
+
+    Q_DISABLE_COPY_MOVE(RoomScene)
 };
 
 #endif
