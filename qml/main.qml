@@ -5,6 +5,7 @@ Image {
 
     anchors.fill: parent
     fillMode: Image.PreserveAspectCrop
+    cache: false
 
     // left source property set by RootItem
 

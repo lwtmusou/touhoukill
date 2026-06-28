@@ -40,8 +40,9 @@ CppRoomScene {
                                 , [2, 3, 0], // seat mod 3 = 2 (seat = 2 or 5)
               ];
 
+        var playerCount = Sanguosha.getPlayerCount(ServerInfo.GameMode);
         var verticalAlignment = Qt.AlignVCenter;
-        var arrangement = arrangementRegular[Sanguosha.getPlayerCount(ServerInfo.GameMode) - 2];
+        var arrangement = arrangementRegular[playerCount - 2];
 
         if (!G.isNormalGameMode(ServerInfo.GameMode) && !G.isHegemonyGameMode(ServerInfo.GameMode))
             verticalAlignment = Qt.AlignBottom;
@@ -66,13 +67,14 @@ CppRoomScene {
         var verticalSpacing;
         var horizontalSpacing;
 
-        for (var photo of otherPhotos) {
+        var photo;
+
+        for (photo of otherPhotos) {
             // photo.seat can't be equal to selfPhoto.seat so following effectiveSeat can't be 0
-            effectiveSeat = (photo.seat - selfPhoto.seat + Sanguosha.getPlayerCount(ServerInfo.GameMode)) % Sanguosha.getPlayerCount(ServerInfo.GameMode);
+            effectiveSeat = (photo.seat - selfPhoto.seat + playerCount) % playerCount;
             inRight = (arrangement[0] >= effectiveSeat);
             if (inRight) {
                 rightPosition = arrangement[0] - effectiveSeat;
-                rightPosition = -rightPosition + arrangement[0] - 1;
                 photo.originalX = roomScene.width - photo.width - roomScene.layBorderMargin;
 
                 if (verticalAlignment === Qt.AlignVCenter) {
@@ -89,7 +91,7 @@ CppRoomScene {
             inTop = (arrangement[1] >= (effectiveSeat - arrangement[0]));
             if (inTop) {
                 topPosition = arrangement[1] - (effectiveSeat - arrangement[0]);
-                topPosition = -topPosition + arrangement[1];
+                topPosition += 1;
                 photo.originalY = roomScene.layBorderMargin;
 
                 horizontalSpacing = (roomScene.width - 2 * roomScene.layBorderMargin - (arrangement[1] + 2) * photo.width) / (arrangement[1] + 1);
@@ -101,6 +103,7 @@ CppRoomScene {
             inLeft = (arrangement[2] >= (effectiveSeat - arrangement[0] - arrangement[1]));
             if (inLeft) {
                 leftPosition = arrangement[2] - (effectiveSeat - arrangement[0] - arrangement[1]);
+                leftPosition = -leftPosition + arrangement[2] - 1;
                 photo.originalX = roomScene.layBorderMargin;
 
                 if (verticalAlignment === Qt.AlignVCenter) {
@@ -117,7 +120,7 @@ CppRoomScene {
 
             // unreachable!
             console.log("unreachable - RoomScene.qml - lay()" + ", effectiveSeat = " + effectiveSeat + ", photo.seat = " + photo.seat + ", selfPhoto.seat = " + selfPhoto.seat
-                        + ", ServerInfo.GameMode = " + ServerInfo.GameMode + ", Sanguosha.getPlayerCount(ServerInfo.GameMode) = " + Sanguosha.getPlayerCount(ServerInfo.GameMode));
+                        + ", ServerInfo.GameMode = " + ServerInfo.GameMode + ", playerCount = " + playerCount);
         }
 
         for (photo of otherPhotos) {
@@ -134,7 +137,8 @@ CppRoomScene {
 
         for (var i = 1; i < playercount; ++i) {
             var photo = photoComponent.createObject(this, {
-                                                        seat: i + 1
+                                                        seat: i + 1,
+                                                        gameStarted: Qt.binding(function() {return roomScene.gameStarted;})
                                                     });
             otherPhotos.push(photo);
         }
@@ -164,6 +168,8 @@ CppRoomScene {
         anchors.right: parent.right
         general: "luize"
         seat: 1
+        gameStarted: roomScene.gameStarted
+        selfPhoto: true
     }
 
     QSanButton {
@@ -247,6 +253,15 @@ CppRoomScene {
                 PhaseItem {
                     phase: Player.Play
                 }
+            }
+
+            QSanButton {
+                source: G.getUrl("image/system/button/button.png")
+                text: "toggle"
+                height: 100
+                width: 100
+
+                onClicked: roomScene.gameStarted = !roomScene.gameStarted
             }
         }
     }

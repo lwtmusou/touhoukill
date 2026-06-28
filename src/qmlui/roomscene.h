@@ -6,12 +6,19 @@
 class RoomScene : public QQuickItem
 {
     Q_OBJECT
+    Q_PROPERTY(bool gameStarted MEMBER gameStarted NOTIFY gameStartedChanged)
 
 public:
-    using QQuickItem::QQuickItem;
+    explicit RoomScene(QQuickItem *parent = nullptr);
     ~RoomScene() override;
 
     Q_DISABLE_COPY_MOVE(RoomScene)
+
+signals:
+    void gameStartedChanged(bool newGameStarted);
+
+private:
+    bool gameStarted;
 };
 
 #endif

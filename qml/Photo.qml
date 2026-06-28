@@ -156,8 +156,6 @@ Item {
         }
 
         Image {
-            id: generalName
-
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.topMargin: banner.height - 8

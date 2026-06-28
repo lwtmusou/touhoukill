@@ -3,6 +3,12 @@
 #include <QApplication>
 #include <QtQml>
 
+RoomScene::RoomScene(QQuickItem *parent)
+    : QQuickItem(parent)
+    , gameStarted(false)
+{
+}
+
 RoomScene::~RoomScene() = default;
 
 namespace {

@@ -165,6 +165,8 @@ Item {
     onDyingThresholdChanged: refresh()
     onHpChanged: refresh()
     onMaxhpChanged: refresh()
+    onLinghpChanged: refresh()
+    onBanlingChanged: refresh()
 
     // one of following display method is selected based on maxhp / banling
     Column {
