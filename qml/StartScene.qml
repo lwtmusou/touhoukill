@@ -2,12 +2,12 @@ import QtQuick 6.5
 
 import rocks.touhousatsu 1.0
 
-Image {
+Item {
     id: startScene
 
     anchors.fill: parent
-    fillMode: Image.PreserveAspectCrop
-    source: G.getUrl(Config.BackgroundImage)
+
+    Component.onCompleted: backgroundImage.source = G.getUrl(Config.BackgroundImage)
 
     Grid {
         id: btnGrid
@@ -155,7 +155,7 @@ Image {
         visible: false
 
         Binding on height {
-            id: serverTextHightBinding
+            id: serverTextHeightBinding
 
             value: (parent.height - 144) * 0.8
             when: false
@@ -214,8 +214,9 @@ Image {
 
         onFinished: {
             serverTextXBinding.when = true;
+            serverTextYBinding.when = true;
             serverTextWidthBinding.when = true;
-            serverTextHightBinding.when = true;
+            serverTextHeightBinding.when = true;
         }
 
         PropertyAnimation {

@@ -29,6 +29,7 @@ private slots:
     void on_resetRecordPathButton_clicked();
     void on_browseRecordPathButton_clicked();
     void saveConfig();
+    void on_leftMarginSlider_valueChanged(int value);
 };
 
 #endif

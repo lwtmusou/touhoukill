@@ -24,9 +24,9 @@ Item {
         easing.type: Easing.Linear
         from: 1
         running: false
-        to: column
+        to: roleComboBox.column
 
-        onFinished: expandFinish = true
+        onFinished: roleComboBox.expandFinish = true
     }
 
     Component.onCompleted: {
@@ -74,8 +74,8 @@ Item {
         anchors.fill: parent
 
         onClicked: {
-            if (!expandStart && !fixed) {
-                expandStart = true;
+            if (!roleComboBox.expandStart && !roleComboBox.fixed) {
+                roleComboBox.expandStart = true;
                 appearAnimation.start();
             }
         }
@@ -85,7 +85,7 @@ Item {
         id: itemGrid
 
         anchors.fill: parent
-        columns: column
+        columns: roleComboBox.column
         spacing: 1
         visible: true
     }
@@ -129,8 +129,8 @@ Item {
     Connections {
         function onSpaceClicked() {
             appearAnimation.stop();
-            expandStart = false;
-            expandFinish = false;
+            roleComboBox.expandStart = false;
+            roleComboBox.expandFinish = false;
             roleComboBox.scale = 1;
         }
 

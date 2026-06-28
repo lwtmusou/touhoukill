@@ -222,3 +222,8 @@ void ConfigDialog::on_setTextEditColorButton_clicked()
         ui->textEditFontLineEdit->setPalette(palette);
     }
 }
+
+void ConfigDialog::on_leftMarginSlider_valueChanged(int value)
+{
+    parent()->setProperty("leftMargin", (double)value);
+}

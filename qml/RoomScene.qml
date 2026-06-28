@@ -5,19 +5,131 @@ import rocks.touhousatsu 1.0
 CppRoomScene {
     id: roomScene
 
+    property int layBorderMargin: 20
     property list<Photo> otherPhotos
 
     signal spaceClicked
 
     function lay() {
+        // TODO: replace following with static variable (Does QML support static variable?)
+        // [0: right, 1: top, 2: left]
+        const arrangementRegular = [[0, 1, 0] //
+                                    , [1, 0, 1] //
+                                    , [1, 1, 1] //
+                                    , [1, 2, 1] //
+                                    , [1, 3, 1] //
+                                    , [2, 2, 2] //
+                                    , [2, 3, 2] //
+                                    , [2, 4, 2] //
+                                    , [2, 5, 2], //
+              ];
+        const arrangement2v2 = [[0, 2, 1] // seat mod 2 = 0 (seat = 2 or 4)
+                                , [1, 2, 0], // seat mod 2 = 1 (seat = 1 or 3)
+              ];
+        const arrangement1v2 = [[0, 2, 0]//
+                                , [1, 1, 0]//
+                                , [0, 1, 1],//
+              ];
+        const arrangement1v3 = [[0, 3, 0]//
+                                , [2, 1, 0]//
+                                , [1, 1, 1]//
+                                , [0, 1, 2],//
+              ];
+        const arrangement3v3 = [[0, 3, 2]// seat mod 3 = 0 (seat = 3 or 6)
+                                , [1, 3, 1]// seat mod 3 = 1 (seat = 1 or 4)
+                                , [2, 3, 0], // seat mod 3 = 2 (seat = 2 or 5)
+              ];
+
+        var verticalAlignment = Qt.AlignVCenter;
+        var arrangement = arrangementRegular[Sanguosha.getPlayerCount(ServerInfo.GameMode) - 2];
+
+        if (!G.isNormalGameMode(ServerInfo.GameMode) && !G.isHegemonyGameMode(ServerInfo.GameMode))
+            verticalAlignment = Qt.AlignBottom;
+
+        if (ServerInfo.GameMode == "04_2v2")
+            arrangement = arrangement2v2[selfPhoto.seat % 2];
+        else if (ServerInfo.GameMode == "03_1v2")
+            arrangement = arrangement1v2[selfPhoto.seat - 1];
+        else if (ServerInfo.GameMode == "04_1v3")
+            arrangement = arrangement1v3[selfPhoto.seat - 1];
+        else if (ServerInfo.GameMode == "06_3v3")
+            arrangement = arrangement3v3[selfPhoto.seat % 3];
+
+        var effectiveSeat;
+        var inRight;
+        var inTop;
+        var inLeft;
+        var rightPosition;
+        var topPosition;
+        var leftPosition;
+        var verticalTopMargin;
+        var verticalSpacing;
+        var horizontalSpacing;
+
         for (var photo of otherPhotos) {
-            photo.y = startSceneButton.y + startSceneButton.height;
-            photo.x = (photo.seat - 2) * 336;
+            // photo.seat can't be equal to selfPhoto.seat so following effectiveSeat can't be 0
+            effectiveSeat = (photo.seat - selfPhoto.seat + Sanguosha.getPlayerCount(ServerInfo.GameMode)) % Sanguosha.getPlayerCount(ServerInfo.GameMode);
+            inRight = (arrangement[0] >= effectiveSeat);
+            if (inRight) {
+                rightPosition = arrangement[0] - effectiveSeat;
+                rightPosition = -rightPosition + arrangement[0] - 1;
+                photo.originalX = roomScene.width - photo.width - roomScene.layBorderMargin;
+
+                if (verticalAlignment === Qt.AlignVCenter) {
+                    verticalSpacing = (roomScene.height / (arrangement[0] + 1)) - photo.height;
+                    photo.originalY = verticalSpacing * (rightPosition + 1) + photo.height * rightPosition;
+                } else {
+                    verticalSpacing = 40;
+                    verticalTopMargin = roomScene.height - arrangement[0] * verticalSpacing - (arrangement[0] + 1) * photo.height;
+                    photo.originalY = verticalTopMargin + (verticalSpacing + photo.height) * rightPosition;
+                }
+                continue;
+            }
+
+            inTop = (arrangement[1] >= (effectiveSeat - arrangement[0]));
+            if (inTop) {
+                topPosition = arrangement[1] - (effectiveSeat - arrangement[0]);
+                topPosition = -topPosition + arrangement[1];
+                photo.originalY = roomScene.layBorderMargin;
+
+                horizontalSpacing = (roomScene.width - 2 * roomScene.layBorderMargin - (arrangement[1] + 2) * photo.width) / (arrangement[1] + 1);
+                photo.originalX = roomScene.layBorderMargin + (horizontalSpacing + photo.width) * topPosition;
+
+                continue;
+            }
+
+            inLeft = (arrangement[2] >= (effectiveSeat - arrangement[0] - arrangement[1]));
+            if (inLeft) {
+                leftPosition = arrangement[2] - (effectiveSeat - arrangement[0] - arrangement[1]);
+                photo.originalX = roomScene.layBorderMargin;
+
+                if (verticalAlignment === Qt.AlignVCenter) {
+                    verticalSpacing = (roomScene.height / (arrangement[2] + 1)) - photo.height;
+                    photo.originalY = verticalSpacing * (leftPosition + 1) + photo.height * leftPosition;
+                } else {
+                    verticalSpacing = 40;
+                    verticalTopMargin = roomScene.height - arrangement[2] * verticalSpacing - (arrangement[2] + 1) * photo.height;
+                    photo.originalY = verticalTopMargin + (verticalSpacing + photo.height) * leftPosition;
+                }
+
+                continue;
+            }
+
+            // unreachable!
+            console.log("unreachable - RoomScene.qml - lay()" + ", effectiveSeat = " + effectiveSeat + ", photo.seat = " + photo.seat + ", selfPhoto.seat = " + selfPhoto.seat
+                        + ", ServerInfo.GameMode = " + ServerInfo.GameMode + ", Sanguosha.getPlayerCount(ServerInfo.GameMode) = " + Sanguosha.getPlayerCount(ServerInfo.GameMode));
+        }
+
+        for (photo of otherPhotos) {
+            photo.x = photo.originalX;
+            photo.y = photo.originalY;
             photo.visible = true;
         }
     }
 
     Component.onCompleted: {
+        backgroundImage.source = G.getUrl(Config.TableBgImage);
+
         var playercount = Sanguosha.getPlayerCount(ServerInfo.GameMode);
 
         for (var i = 1; i < playercount; ++i) {
@@ -29,17 +141,12 @@ CppRoomScene {
 
         lay();
     }
+    onWidthChanged: lay()
 
-    Image {
+    MouseArea {
         anchors.fill: parent
-        fillMode: Image.PreserveAspectCrop
-        source: G.getUrl(Config.TableBgImage)
 
-        MouseArea {
-            anchors.fill: parent
-
-            onClicked: roomScene.spaceClicked()
-        }
+        onClicked: roomScene.spaceClicked()
     }
 
     Dashboard {
@@ -47,7 +154,7 @@ CppRoomScene {
 
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        width: parent.width - 336 // Change Photo's width when this changes!
+        width: parent.width - selfPhoto.width
     }
 
     Photo {
@@ -73,11 +180,13 @@ CppRoomScene {
     }
 
     Rectangle {
+        id: testItemToBeRemovedAfterTest
+
         anchors.bottom: startSceneButton.top
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         color: Qt.rgba(0, 0, 0, 0.9)
-        height: roomScene.height
+        visible: false
         width: roomScene.width
 
         Row {

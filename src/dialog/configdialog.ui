@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>509</width>
-    <height>588</height>
+    <height>627</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -54,6 +54,24 @@
                <widget class="QCheckBox" name="noEquipAnimCheckBox">
                 <property name="text">
                  <string>No equip anim</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>leftMargin</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="leftMarginSlider">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                </widget>
               </item>

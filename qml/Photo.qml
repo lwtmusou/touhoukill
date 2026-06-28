@@ -18,6 +18,8 @@ Item {
     property string kingdom
     property int linghp: 5
     property int maxhp: 5
+    property real originalX
+    property real originalY
     property int phase: Player.NotActive
     property string playerName
     property var privatePile: ({})
@@ -28,7 +30,7 @@ Item {
     property bool selfPhoto: false
 
     height: 407
-    width: 336 // Change Dashboard's width in RoomScene when this changes!
+    width: 336
 
     Component.onCompleted: {
         if (G.isHegemonyGameMode(ServerInfo.GameMode)) {
@@ -160,7 +162,7 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: banner.height - 8
             height: 196
-            source: G.getUrl("image/kingdom/frame/" + kingdom + ".png")
+            source: G.getUrl("image/kingdom/frame/" + photo.kingdom + ".png")
             visible: photo.gameStarted
             width: 72
 
@@ -266,7 +268,7 @@ Item {
             fontSizeMode: Text.Fit
             height: parent.height / 1.2
             horizontalAlignment: Qt.AlignHCenter
-            text: screenName
+            text: photo.screenName
             verticalAlignment: Qt.AlignVCenter
         }
 

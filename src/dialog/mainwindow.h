@@ -42,6 +42,13 @@ private:
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    Q_PROPERTY(double leftMargin MEMBER leftMargin NOTIFY leftMarginChanged)
+
+private:
+    double leftMargin;
+
+signals:
+    void leftMarginChanged(double newLeftMargin);
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);

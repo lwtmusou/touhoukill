@@ -29,13 +29,13 @@ Item {
 
     Connections {
         function onQml_switchToRoomScene() {
-            currentScene.destroy();
-            currentScene = roomSceneComponent.createObject(rootItem, {});
+            rootItem.currentScene.destroy();
+            rootItem.currentScene = roomSceneComponent.createObject(rootItem, {});
         }
 
         function onQml_switchToStartScene() {
-            currentScene.destroy();
-            currentScene = startSceneComponent.createObject(rootItem, {});
+            rootItem.currentScene.destroy();
+            rootItem.currentScene = startSceneComponent.createObject(rootItem, {});
         }
 
         target: MainWindowInstance
