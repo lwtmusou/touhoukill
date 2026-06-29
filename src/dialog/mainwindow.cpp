@@ -285,6 +285,8 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
 void MainWindow::startConnection()
 {
+    delete ClientInstance.data();
+
     Client *client = new Client(this);
 
     connect(client, SIGNAL(version_checked(QString, QString)), SLOT(checkVersion(QString, QString)));
@@ -306,6 +308,8 @@ void MainWindow::on_actionReplay_triggered()
     QFileInfo file_info(filename);
     last_dir = file_info.absoluteDir().path();
     Config.setValue("LastReplayDir", last_dir);
+
+    delete ClientInstance.data();
 
     Client *client = new Client(this, filename);
     connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
@@ -420,14 +424,8 @@ void MainWindow::gotoStartScene()
 
     delete systray;
     systray = nullptr;
-    if (ClientInstance != nullptr) {
-        if (Self != nullptr) {
-            delete Self;
-            Self = nullptr;
-        }
-        delete ClientInstance;
-        ClientInstance = nullptr;
-    }
+
+    delete ClientInstance.data();
 }
 
 void MainWindow::startGameInAnotherInstance()

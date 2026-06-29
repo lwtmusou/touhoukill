@@ -4,6 +4,8 @@
 #include "clientstruct.h"
 #include "player.h"
 
+#include <QPointer>
+
 class Client;
 class QTextDocument;
 
@@ -46,6 +48,6 @@ signals:
     void duozhi_changed();
 };
 
-extern ClientPlayer *Self;
+extern QPointer<ClientPlayer> Self;
 
 #endif

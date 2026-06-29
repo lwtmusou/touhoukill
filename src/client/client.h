@@ -8,6 +8,8 @@
 #include "skill.h"
 #include "socket.h"
 
+#include <QPointer>
+
 class Recorder;
 class Replayer;
 class QTextDocument;
@@ -386,6 +388,6 @@ signals:
     void deputy_preshowed(); //hegemony
 };
 
-extern Client *ClientInstance;
+extern QPointer<Client> ClientInstance;
 
 #endif
