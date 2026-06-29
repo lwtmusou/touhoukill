@@ -2158,7 +2158,7 @@ public:
         }
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *p = data.value<ServerPlayer *>();
-            if (p->getPhase() == Player::Start)
+            if (p->hasSkill(this) && p->isAlive() && p->getPhase() == Player::Start)
                 return {SkillInvokeDetail(this, p, p, nullptr, true)};
         }
         if (triggerEvent == Damage) {

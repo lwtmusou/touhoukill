@@ -845,7 +845,12 @@ public:
     bool cost(TriggerEvent /*triggerEvent*/, Room * /*room*/, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        QString prompt = "target:" + use.from->objectName() + ":" + use.to.first()->objectName() + ":" + use.card->objectName();
+        QString fromObjectName;
+
+        if (use.from != nullptr)
+            fromObjectName = use.from->objectName();
+
+        QString prompt = "target:" + fromObjectName + ":" + use.to.first()->objectName() + ":" + use.card->objectName();
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
 
