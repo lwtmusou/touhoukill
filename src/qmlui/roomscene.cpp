@@ -6,6 +6,7 @@
 RoomScene::RoomScene(QQuickItem *parent)
     : QQuickItem(parent)
     , gameStarted(false)
+    , gameOver(false)
 {
 }
 

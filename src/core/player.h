@@ -41,7 +41,7 @@ class Player : public QObject
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
     Q_PROPERTY(bool removed READ isRemoved WRITE setRemoved)
-    Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
+    Q_PROPERTY(bool owner READ isOwner WRITE setOwner NOTIFY owner_changed)
     Q_PROPERTY(bool role_shown READ hasShownRole WRITE setShownRole)
 
     Q_PROPERTY(bool general_showed READ hasShownGeneral WRITE setGeneralShowed)

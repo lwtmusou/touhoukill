@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
     if (Config.EnableAutoUpdate)
         update_dialog->checkForUpdate();
 
-    QQuickWidget *qw = new QQuickWidget(this);
+    qw = new QQuickWidget(this);
 
     qw->setResizeMode(QQuickWidget::SizeViewToRootObject);
     qw->rootContext()->setContextProperty(QStringLiteral("MainWindowInstance"), this);
@@ -237,6 +237,15 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
 void MainWindow::startConnection()
 {
+    if (ClientInstance != nullptr) {
+        if (Self != nullptr) {
+            delete Self;
+            Self = nullptr;
+        }
+
+        delete ClientInstance;
+    }
+
     Client *client = new Client(this);
 
     connect(client, SIGNAL(version_checked(QString, QString)), SLOT(checkVersion(QString, QString)));
@@ -258,6 +267,15 @@ void MainWindow::on_actionReplay_triggered()
     QFileInfo file_info(filename);
     last_dir = file_info.absoluteDir().path();
     Config.setValue("LastReplayDir", last_dir);
+
+    if (ClientInstance != nullptr) {
+        if (Self != nullptr) {
+            delete Self;
+            Self = nullptr;
+        }
+
+        delete ClientInstance;
+    }
 
     Client *client = new Client(this, filename);
     connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));

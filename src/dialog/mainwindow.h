@@ -15,7 +15,7 @@ class Server;
 class QTextEdit;
 class QToolButton;
 class QGroupBox;
-class RoomItem;
+class QQuickWidget;
 class QProgressBar;
 class QLabel;
 class QWinTaskbarButton;
@@ -63,6 +63,7 @@ private:
     ConfigDialog *config_dialog;
     UpdateDialog *update_dialog;
     QSystemTrayIcon *systray;
+    QQuickWidget *qw;
 
     void restoreFromConfig();
 

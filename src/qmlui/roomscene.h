@@ -7,6 +7,7 @@ class RoomScene : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(bool gameStarted MEMBER gameStarted NOTIFY gameStartedChanged)
+    Q_PROPERTY(bool gameOver MEMBER gameOver NOTIFY gameOverChanged)
 
 public:
     explicit RoomScene(QQuickItem *parent = nullptr);
@@ -16,9 +17,11 @@ public:
 
 signals:
     void gameStartedChanged(bool newGameStarted);
+    void gameOverChanged(bool newGameOver);
 
 private:
     bool gameStarted;
+    bool gameOver;
 };
 
 #endif

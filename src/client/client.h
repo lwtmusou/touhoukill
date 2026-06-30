@@ -385,6 +385,11 @@ signals:
     void deputy_preshowed(); //hegemony
 };
 
+/*
+ * TODO: Client should ABSOLUTELY NOT be a singleton.
+ * The current design makes it is impossible to make something like AI agents to client.
+ * Currently server side AI is the only solution.
+ */
 extern Client *ClientInstance;
 
 #endif
