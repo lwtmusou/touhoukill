@@ -237,14 +237,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
 void MainWindow::startConnection()
 {
-    if (ClientInstance != nullptr) {
-        if (Self != nullptr) {
-            delete Self;
-            Self = nullptr;
-        }
-
-        delete ClientInstance;
-    }
+    delete ClientInstance.data();
 
     Client *client = new Client(this);
 
@@ -268,14 +261,7 @@ void MainWindow::on_actionReplay_triggered()
     last_dir = file_info.absoluteDir().path();
     Config.setValue("LastReplayDir", last_dir);
 
-    if (ClientInstance != nullptr) {
-        if (Self != nullptr) {
-            delete Self;
-            Self = nullptr;
-        }
-
-        delete ClientInstance;
-    }
+    delete ClientInstance.data();
 
     Client *client = new Client(this, filename);
     connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
@@ -367,15 +353,8 @@ void MainWindow::gotoStartScene()
 
     delete systray;
     systray = nullptr;
-    if (ClientInstance != nullptr) {
-        if (Self != nullptr) {
-            delete Self;
-            Self = nullptr;
-        }
-        delete ClientInstance;
-        ClientInstance = nullptr;
-    }
 
+    delete ClientInstance.data();
     emit qml_switchToStartScene();
 }
 

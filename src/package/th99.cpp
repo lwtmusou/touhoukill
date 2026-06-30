@@ -1034,8 +1034,7 @@ public:
             return {};
 
         foreach (const Skill *skill, target->getVisibleSkillList()) {
-            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->isLimited() || skill->isWake()
-                || skill->isEternal())
+            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->isLimited() || skill->isWake() || skill->isEternal())
                 continue;
             if (!yori->hasSkill(skill, true) && target->hasSkill(skill))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, nullptr, false, target);
@@ -1051,8 +1050,7 @@ public:
         QStringList skill_names;
 
         foreach (const Skill *skill, invoke->preferredTarget->getVisibleSkillList()) {
-            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->isLimited() || skill->isWake()
-                || skill->isEternal())
+            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->isLimited() || skill->isWake() || skill->isEternal())
                 continue;
 
             if (!yori->hasSkill(skill, true) && invoke->preferredTarget->hasSkill(skill))
@@ -1760,7 +1758,7 @@ public:
         QList<ServerPlayer *> targets;
         use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *q, room->getOtherPlayers(invoke->invoker)) {
-            if (use.from != q && !use.to.contains(q) && use.from->canSlash(q, use.card, false))
+            if (use.from != q && !use.to.contains(q) && use.from != nullptr && use.from->canSlash(q, use.card, false))
                 targets << q;
         }
         use.card->setFlags("-IgnoreFailed");

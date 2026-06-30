@@ -441,7 +441,7 @@ public:
     virtual void setMark(const char *mark, int value);
 };
 
-extern ClientPlayer *Self;
+extern ClientPlayer *const Self;
 
 class CardMoveReason {
 public:

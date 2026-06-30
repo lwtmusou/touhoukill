@@ -7,7 +7,7 @@
 #include <QTextDocument>
 #include <QTextOption>
 
-ClientPlayer *Self = nullptr;
+QPointer<ClientPlayer> Self = nullptr;
 
 ClientPlayer::ClientPlayer(Client *client)
     : Player(client)

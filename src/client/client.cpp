@@ -21,7 +21,7 @@
 using namespace QSanProtocol;
 using namespace JsonUtils;
 
-Client *ClientInstance = nullptr;
+QPointer<Client> ClientInstance = nullptr;
 
 Client::Client(QObject *parent, const QString &filename)
     : QObject(parent)

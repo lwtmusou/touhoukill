@@ -8,6 +8,8 @@
 #include "skill.h"
 #include "socket.h"
 
+#include <QPointer>
+
 class Recorder;
 class Replayer;
 class QTextDocument;
@@ -390,6 +392,6 @@ signals:
  * The current design makes it is impossible to make something like AI agents to client.
  * Currently server side AI is the only solution.
  */
-extern Client *ClientInstance;
+extern QPointer<Client> ClientInstance;
 
 #endif
