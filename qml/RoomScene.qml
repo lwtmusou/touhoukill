@@ -176,11 +176,13 @@ CppRoomScene {
         id: startSceneButton
 
         anchors.centerIn: parent
+        anchors.topMargin: 407
         font.pixelSize: 50
-        height: parent.height / 4
+        height: parent.height / 8
         source: G.getUrl("image/system/button/button.png")
-        text: "return to start scene"
+        text: qsTr("Return to main menu")
         width: parent.width / 4
+        visible: !roomScene.gameStarted && !roomScene.gameOver
 
         onClicked: MainWindowInstance.gotoStartScene()
     }
@@ -192,7 +194,7 @@ CppRoomScene {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         color: Qt.rgba(0, 0, 0, 0.9)
-        visible: false
+        visible: true
         width: roomScene.width
 
         Row {
