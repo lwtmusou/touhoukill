@@ -20,32 +20,33 @@ class Player : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
-    Q_PROPERTY(int hp READ getHp WRITE setHp)
-    Q_PROPERTY(int renhp READ getRenHp WRITE setRenHp)
-    Q_PROPERTY(int linghp READ getLingHp WRITE setLingHp)
-    Q_PROPERTY(int dyingFactor READ getDyingFactor WRITE setDyingFactor)
-    Q_PROPERTY(int maxhp READ getMaxHp WRITE setMaxHp)
-    Q_PROPERTY(int chaoren READ getChaoren WRITE setChaoren)
+    Q_PROPERTY(QString avatar MEMBER m_avatar NOTIFY avatar_changed)
+    Q_PROPERTY(int hp READ getHp WRITE setHp NOTIFY hp_changed)
+    Q_PROPERTY(int renhp READ getRenHp WRITE setRenHp NOTIFY hp_changed)
+    Q_PROPERTY(int linghp READ getLingHp WRITE setLingHp NOTIFY hp_changed)
+    Q_PROPERTY(int dyingFactor READ getDyingFactor WRITE setDyingFactor NOTIFY hp_changed)
+    Q_PROPERTY(int maxhp READ getMaxHp WRITE setMaxHp NOTIFY hp_changed)
+    Q_PROPERTY(int chaoren READ getChaoren WRITE setChaoren NOTIFY chaoren_changed)
 
-    Q_PROPERTY(QString kingdom READ getKingdom WRITE setKingdom)
-    Q_PROPERTY(bool wounded READ isWounded STORED false)
-    Q_PROPERTY(QString role READ getRole WRITE setRole)
-    Q_PROPERTY(QString general READ getGeneralName WRITE setGeneralName)
-    Q_PROPERTY(QString general2 READ getGeneral2Name WRITE setGeneral2Name)
-    Q_PROPERTY(QString state READ getState WRITE setState)
+    Q_PROPERTY(QString kingdom READ getKingdom WRITE setKingdom NOTIFY kingdom_changed)
+    Q_PROPERTY(bool wounded READ isWounded STORED false NOTIFY hp_changed)
+    Q_PROPERTY(QString role READ getRole WRITE setRole NOTIFY role_changed)
+    Q_PROPERTY(QString general READ getGeneralName WRITE setGeneralName NOTIFY general_changed)
+    Q_PROPERTY(QString general2 READ getGeneral2Name WRITE setGeneral2Name NOTIFY general2_changed)
+    Q_PROPERTY(QString state READ getState WRITE setState NOTIFY state_changed)
     Q_PROPERTY(int handcard_num READ getHandcardNum STORED false)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
     Q_PROPERTY(int inital_seat READ getInitialSeat WRITE setInitialSeat)
-    Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
-    Q_PROPERTY(bool faceup READ faceUp WRITE setFaceUp)
-    Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
-    Q_PROPERTY(bool chained READ isChained WRITE setChained)
-    Q_PROPERTY(bool removed READ isRemoved WRITE setRemoved)
+    Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString NOTIFY phase_changed)
+    Q_PROPERTY(bool faceup READ faceUp WRITE setFaceUp NOTIFY faceupchanged)
+    Q_PROPERTY(bool alive READ isAlive WRITE setAlive NOTIFY alive_changed)
+    Q_PROPERTY(bool chained READ isChained WRITE setChained NOTIFY chainedchanged)
+    Q_PROPERTY(bool removed READ isRemoved WRITE setRemoved NOTIFY removedChanged)
     Q_PROPERTY(bool owner READ isOwner WRITE setOwner NOTIFY owner_changed)
     Q_PROPERTY(bool role_shown READ hasShownRole WRITE setShownRole)
 
-    Q_PROPERTY(bool general_showed READ hasShownGeneral WRITE setGeneralShowed)
-    Q_PROPERTY(bool general2_showed READ hasShownGeneral2 WRITE setGeneral2Showed)
+    Q_PROPERTY(bool general_showed READ hasShownGeneral WRITE setGeneralShowed NOTIFY head_state_changed)
+    Q_PROPERTY(bool general2_showed READ hasShownGeneral2 WRITE setGeneral2Showed NOTIFY deputy_state_changed)
 
     Q_PROPERTY(QString next READ getNextName WRITE setNext)
 
@@ -424,22 +425,29 @@ private:
 
     void updateYingyingguai();
 
-signals:
-    void general_changed();
-    void general2_changed();
-    void role_changed(const QString &new_role);
-    void state_changed();
-    void hp_changed();
-    void kingdom_changed(const QString &new_kingdom);
-    void phase_changed();
-    void owner_changed(bool owner);
-    void chaoren_changed();
-    void showncards_changed();
-    void removedChanged();
-    void brokenEquips_changed();
+    QString m_avatar;
 
+signals:
+    void avatar_changed(const QString &new_avatar);
+    void hp_changed();
+    void chaoren_changed();
+
+    void kingdom_changed(const QString &new_kingdom);
+    void role_changed(const QString &new_role);
+    void general_changed(const QString &general_name);
+    void general2_changed(const QString &general2_name);
+    void state_changed(const QString &new_state);
+    void phase_changed();
+    void faceupchanged(bool faceup);
+    void alive_changed();
+    void chainedchanged(bool chained);
+    void removedChanged();
+    void owner_changed(bool owner);
     void head_state_changed();
-    void deputy_state_changed(); //hegemony
+    void deputy_state_changed();
+
+    void showncards_changed();
+    void brokenEquips_changed();
     void disable_show_changed();
 };
 

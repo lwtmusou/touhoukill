@@ -166,41 +166,95 @@ CppRoomScene {
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        general: "luize"
-        seat: 1
         gameStarted: roomScene.gameStarted
-        selfPhoto: true
+        player: roomScene.Self
+        seat: 1
     }
 
-    QSanButton {
-        id: startSceneButton
 
+    Column {
+        spacing: roomScene.height * 0.01
         anchors.centerIn: parent
-        anchors.topMargin: 407
-        font.pixelSize: 50
-        height: parent.height / 8
-        source: G.getUrl("image/system/button/button.png")
-        text: qsTr("Return to main menu")
-        width: parent.width / 4
         visible: !roomScene.gameStarted && !roomScene.gameOver
 
-        onClicked: MainWindowInstance.gotoStartScene()
+        Item {
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: roomScene.height / 15
+            width: roomScene.width / 6
+
+            QSanButton {
+                id: addRobotButton
+
+                anchors.fill: parent
+                font.pixelSize: 50
+                source: G.getUrl("image/system/button/button.png")
+                text: qsTr("Add Robot")
+
+                visible: !roomScene.gameStarted && roomScene.Self.owner
+
+                // onClicked: roomScene.addRobot() // not implemented
+            }
+        }
+
+        Item {
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: roomScene.height / 15
+            width: roomScene.width / 6
+
+            QSanButton {
+                id: fillRobotsButton
+
+                anchors.fill: parent
+                font.pixelSize: 50
+                source: G.getUrl("image/system/button/button.png")
+                text: qsTr("Fill Robot")
+
+                visible: !roomScene.gameStarted && roomScene.Self.owner
+
+                // onClicked: roomScene.addRobot() // not implemented
+            }
+        }
+
+        Item {
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: roomScene.height / 30
+            width: roomScene.width / 6
+        }
+
+        Item {
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: roomScene.height / 15
+            width: roomScene.width / 6
+
+            QSanButton {
+                id: startSceneButton
+
+                anchors.fill: parent
+                font.pixelSize: 50
+                source: G.getUrl("image/system/button/button.png")
+                text: qsTr("Return to main menu")
+                visible: !roomScene.gameStarted && !roomScene.gameOver
+
+                onClicked: MainWindowInstance.gotoStartScene()
+            }
+        }
     }
 
     Rectangle {
         id: testItemToBeRemovedAfterTest
 
-        anchors.bottom: startSceneButton.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
+        anchors.centerIn: parent
+
         color: Qt.rgba(0, 0, 0, 0.9)
         visible: true
-        width: roomScene.width
+        width: parent.width-2*336-2*20
+        height: 600
 
         Row {
             anchors.fill: parent
 
             Photo {
+                banling: false
                 gameStarted: true
                 general: "luize"
                 kingdom: "pc98"
@@ -220,7 +274,6 @@ CppRoomScene {
             }
 
             Photo {
-                banling: true
                 general: "youmu_god"
                 hp: 10
                 kingdom: "touhougod"

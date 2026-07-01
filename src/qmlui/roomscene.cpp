@@ -1,5 +1,8 @@
 #include "roomscene.h"
 
+#include "client.h"
+#include "clientplayer.h"
+
 #include <QApplication>
 #include <QtQml>
 
@@ -11,6 +14,16 @@ RoomScene::RoomScene(QQuickItem *parent)
 }
 
 RoomScene::~RoomScene() = default;
+
+QObject *RoomScene::selfHelper() const
+{
+    return Self;
+}
+
+QObject *RoomScene::clientHelper() const
+{
+    return ClientInstance;
+}
 
 namespace {
 void registerRoomScene()

@@ -3,11 +3,11 @@ import QtQuick 6.5
 Item {
     id: magatamas
 
-    property bool banling: false
+    property bool banling: linghp !== -2147483647 - 1
     readonly property list<color> displayHpColorList: ["#E90000", "#E92222", "#E97422", "#C3C322", "#8DC322", "#42AE22"]
     property int dyingThreshold: 0
     property int hp: 5 // renhp when banling is true
-    property int linghp: 5
+    property int linghp: -2147483647 - 1
     property int maxhp: 5
 
     function playLostHpAnimation(from: int, to: int) {

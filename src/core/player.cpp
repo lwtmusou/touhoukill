@@ -13,8 +13,8 @@ Player::Player(QObject *parent)
     , m_gender(General::Sexless)
     , hp(-1)
     , max_hp(-1)
-    , renhp(-1)
-    , linghp(-1)
+    , renhp(-2147483647 - 1)
+    , linghp(-2147483647 - 1)
     , dyingFactor(0)
     , chaoren(-1)
     , role_shown(false)
@@ -129,9 +129,10 @@ void Player::setLingHp(int linghp)
 
 void Player::setDyingFactor(int dyingFactor)
 {
-    if (this->dyingFactor != dyingFactor)
+    if (this->dyingFactor != dyingFactor) {
         this->dyingFactor = dyingFactor;
-    emit hp_changed();
+        emit hp_changed();
+    }
 }
 
 int Player::getRenHp() const
@@ -338,7 +339,10 @@ bool Player::isDead() const
 
 void Player::setAlive(bool alive)
 {
-    this->alive = alive;
+    if (this->alive != alive) {
+        this->alive = alive;
+        emit alive_changed();
+    }
 }
 
 QString Player::getFlags() const
@@ -528,7 +532,7 @@ void Player::setGeneral(const General *new_general)
         if ((new_general != nullptr) && kingdom.isEmpty())
             setKingdom(new_general->getKingdom());
 
-        emit general_changed();
+        emit general_changed(new_general->objectName());
     }
 }
 
@@ -553,7 +557,7 @@ void Player::setGeneral2Name(const QString &general_name)
     if (general2 != new_general) {
         general2 = new_general;
 
-        emit general2_changed();
+        emit general2_changed(general_name);
     }
 }
 
@@ -604,7 +608,7 @@ void Player::setState(const QString &state)
 {
     if (this->state != state) {
         this->state = state;
-        emit state_changed();
+        emit state_changed(state);
     }
 }
 
@@ -710,8 +714,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
     //prevent infinite recursion
     if (include_hidden && !isSkillInvalid("anyun")
         && (skills.contains("anyun") || skills2.contains("anyun") || acquired_skills.contains("anyun") || acquired_skills2.contains("anyun")) && !skill->isLordSkill()
-        && !skill->isAttachedLordSkill() && !skill->isLimited() && !skill->isWake() && !skill->isEternal()
-        && (skill->getShowType() != "static" || hasFlag("has_anyu_state"))) {
+        && !skill->isAttachedLordSkill() && !skill->isLimited() && !skill->isWake() && !skill->isEternal() && (skill->getShowType() != "static" || hasFlag("has_anyu_state"))) {
         QString shown = shown_hidden_general;
         if (shown == nullptr) {
             foreach (QString hidden, hidden_generals) {
@@ -1149,8 +1152,10 @@ Player::Phase Player::getPhase() const
 
 void Player::setPhase(Phase phase)
 {
-    this->phase = phase;
-    emit phase_changed();
+    if (this->phase != phase) {
+        this->phase = phase;
+        emit phase_changed();
+    }
 }
 
 bool Player::isInMainPhase() const
@@ -1172,7 +1177,7 @@ void Player::setFaceUp(bool face_up)
 {
     if (this->face_up != face_up) {
         this->face_up = face_up;
-        emit state_changed();
+        emit faceupchanged(face_up);
     }
 }
 
@@ -1326,9 +1331,9 @@ bool Player::isDebuffStatus() const
 void Player::setChained(bool chained)
 {
     if (this->chained != chained) {
-        Sanguosha->playSystemAudioEffect("chained");
+        Sanguosha->playSystemAudioEffect("chained"); // TODO: remove this
         this->chained = chained;
-        emit state_changed();
+        emit chainedchanged(chained);
     }
 }
 
