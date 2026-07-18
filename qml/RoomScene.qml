@@ -431,9 +431,9 @@ CppRoomScene {
                 font.pixelSize: 50
                 source: G.getUrl("image/system/button/button.png")
                 text: qsTr("Add Robot")
-                visible: !roomScene.gameStarted && roomScene.Self.owner
+                visible: !roomScene.gameStarted && roomScene.Self.owner && ServerInfo.EnableAI
 
-                // onClicked: roomScene.addRobot() // not implemented
+                onClicked: roomScene.ClientInstance.addRobot()
             }
         }
 
@@ -449,9 +449,9 @@ CppRoomScene {
                 font.pixelSize: 50
                 source: G.getUrl("image/system/button/button.png")
                 text: qsTr("Fill Robot")
-                visible: !roomScene.gameStarted && roomScene.Self.owner
+                visible: !roomScene.gameStarted && roomScene.Self.owner && ServerInfo.EnableAI
 
-                // onClicked: roomScene.addRobot() // not implemented
+                onClicked: roomScene.ClientInstance.fillRobots()
             }
         }
 
