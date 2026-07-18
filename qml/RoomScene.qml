@@ -138,7 +138,9 @@ CppRoomScene {
         for (var i = 1; i < playercount; ++i) {
             var photo = photoComponent.createObject(this, {
                                                         seat: i + 1,
-                                                        gameStarted: Qt.binding(function() {return roomScene.gameStarted;})
+                                                        gameStarted: Qt.binding(function () {
+                                                            return roomScene.gameStarted;
+                                                        })
                                                     });
             otherPhotos.push(photo);
         }
@@ -171,10 +173,9 @@ CppRoomScene {
         seat: 1
     }
 
-
     Column {
-        spacing: roomScene.height * 0.01
         anchors.centerIn: parent
+        spacing: roomScene.height * 0.01
         visible: !roomScene.gameStarted && !roomScene.gameOver
 
         Item {
@@ -189,7 +190,6 @@ CppRoomScene {
                 font.pixelSize: 50
                 source: G.getUrl("image/system/button/button.png")
                 text: qsTr("Add Robot")
-
                 visible: !roomScene.gameStarted && roomScene.Self.owner
 
                 // onClicked: roomScene.addRobot() // not implemented
@@ -208,7 +208,6 @@ CppRoomScene {
                 font.pixelSize: 50
                 source: G.getUrl("image/system/button/button.png")
                 text: qsTr("Fill Robot")
-
                 visible: !roomScene.gameStarted && roomScene.Self.owner
 
                 // onClicked: roomScene.addRobot() // not implemented
@@ -244,11 +243,10 @@ CppRoomScene {
         id: testItemToBeRemovedAfterTest
 
         anchors.centerIn: parent
-
         color: Qt.rgba(0, 0, 0, 0.9)
-        visible: true
-        width: parent.width-2*336-2*20
         height: 600
+        visible: true
+        width: parent.width - 2 * 336 - 2 * 20
 
         Row {
             anchors.fill: parent
@@ -311,9 +309,9 @@ CppRoomScene {
             }
 
             QSanButton {
+                height: 100
                 source: G.getUrl("image/system/button/button.png")
                 text: "toggle"
-                height: 100
                 width: 100
 
                 onClicked: roomScene.gameStarted = !roomScene.gameStarted

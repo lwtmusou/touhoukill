@@ -5,14 +5,24 @@ import rocks.touhousatsu 1.0
 Item {
     id: photo
 
-    property QtObject player
-
     property bool banling: player.linghp !== -2147483647 - 1
     property int dyingThreshold: player.dyingFactor
     property bool gameStarted: false
-    property string general: { if (gameStarted) return player.general; return player.avatar; }
-    property string general2: { if (gameStarted) return player.general2; return ""; }
-    property int hp: { if (banling) return player.renhp; return player.hp; }
+    property string general: {
+        if (gameStarted)
+            return player.general;
+        return player.avatar;
+    }
+    property string general2: {
+        if (gameStarted)
+            return player.general2;
+        return "";
+    }
+    property int hp: {
+        if (banling)
+            return player.renhp;
+        return player.hp;
+    }
     property string huashenGeneral
     property string huashenGeneral2
     property string huashenSkillName
@@ -23,12 +33,13 @@ Item {
     property real originalX
     property real originalY
     property int phase: Player.NotActive
+    property Player player
     property string playerName
     property var privatePile: ({})
     property string role: player.role
     property bool roleShown: player.role_shown
     property string screenName: player.screenname
-    required property int seat // TODO: use real seat!
+    required property int seat
     property bool selfPhoto: false
 
     height: 407
@@ -270,6 +281,7 @@ Item {
             horizontalAlignment: Qt.AlignHCenter
             text: photo.screenName
             verticalAlignment: Qt.AlignVCenter
+            color: Qt.rgba(255, 255, 255, 1)
         }
 
         Item {

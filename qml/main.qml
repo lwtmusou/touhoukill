@@ -4,8 +4,8 @@ Image {
     id: backgroundImage
 
     anchors.fill: parent
-    fillMode: Image.PreserveAspectCrop
     cache: false
+    fillMode: Image.PreserveAspectCrop
 
     // left source property set by RootItem
 

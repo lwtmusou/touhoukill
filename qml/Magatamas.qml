@@ -162,11 +162,11 @@ Item {
     }
 
     Component.onCompleted: refresh()
+    onBanlingChanged: refresh()
     onDyingThresholdChanged: refresh()
     onHpChanged: refresh()
-    onMaxhpChanged: refresh()
     onLinghpChanged: refresh()
-    onBanlingChanged: refresh()
+    onMaxhpChanged: refresh()
 
     // one of following display method is selected based on maxhp / banling
     Column {

@@ -7,7 +7,6 @@ Image {
 
     property bool checkable: false
     property bool checked: false
-    property bool enabled: true
     property font font
     property string text
 
@@ -22,40 +21,35 @@ Image {
             name: "exited"
 
             PropertyChanges {
-                target: hover
-                visible: false
+                hover.visible: false
             }
         },
         State {
             name: "entered"
 
             PropertyChanges {
-                target: hover
-                visible: true
+                hover.visible: true
             }
         },
         State {
             name: "downEntered"
 
             PropertyChanges {
-                target: hover
-                visible: true
+                hover.visible: true
             }
         },
         State {
             name: "downExited"
 
             PropertyChanges {
-                target: hover
-                visible: true
+                hover.visible: true
             }
         },
         State {
             name: "disabled"
 
             PropertyChanges {
-                target: hover
-                visible: true
+                hover.visible: true
             }
         }
     ]

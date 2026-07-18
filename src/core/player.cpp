@@ -5,6 +5,8 @@
 #include "settings.h"
 #include "standard.h"
 
+#include <limits>
+
 Player::Player(QObject *parent)
     : QObject(parent)
     , owner(false)
@@ -13,8 +15,8 @@ Player::Player(QObject *parent)
     , m_gender(General::Sexless)
     , hp(-1)
     , max_hp(-1)
-    , renhp(-2147483647 - 1)
-    , linghp(-2147483647 - 1)
+    , renhp(std::numeric_limits<int>::min())
+    , linghp(std::numeric_limits<int>::min())
     , dyingFactor(0)
     , chaoren(-1)
     , role_shown(false)
