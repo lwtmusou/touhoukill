@@ -15,6 +15,24 @@ class CardItem;
 struct CardEffectStruct;
 struct CardUseStruct;
 
+/*
+ * TODO: Currently the Card class has 2 different meanings:
+ * 1. Represents a playing card in the game with properties like suit, number, and type.
+ * 2. Serves as a base class for various card effects and interactions.
+ *
+ * The 2nd meaning should be separated from the 1st meaning and refactored into a separate class.
+ * 
+ * The reason is that a card can be generated, converted or overriden by some skills.
+ * All of above makes the card different from the original one, and the original one should not be modified.
+ * Especially, the overridden card may sometimes modify the card effect, which is impossible for this class.
+ * WrappedCard (see WrappedCard.h) which inherits this class does the job, but it is not a good solution.
+ * 
+ * Currently in the game, all actual card are WrappedCard, to support card effect overriding.
+ *
+ * ... I'm not sure why this Card class is in this shape after a few time after I am working on this code.
+ * Player and General are already separate classes and already serve different but similar meaning.
+ * Perhaps Card is born with effects while Player must select its General to play.
+ */
 class Card : public QObject
 {
     Q_OBJECT

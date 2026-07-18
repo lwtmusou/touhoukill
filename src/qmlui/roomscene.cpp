@@ -22,6 +22,8 @@ QObject *RoomScene::selfHelper() const
 
 QObject *RoomScene::clientHelper() const
 {
+    // TODO: consider how to get this after Client is no longer global singleton.
+    // This RoomScene class is created by QML and can only have default constructor.
     return ClientInstance;
 }
 

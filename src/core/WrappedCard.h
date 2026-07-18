@@ -18,6 +18,8 @@
 //
 // WrappedCard should never have any subcard!!! It's a concrete, single piece card in the room no matter when.
 
+// TODO: refactor and remove this class after card effect and card data are separated.
+
 class WrappedCard : public Card
 {
     Q_OBJECT

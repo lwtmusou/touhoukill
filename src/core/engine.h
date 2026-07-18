@@ -107,6 +107,7 @@ public:
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
 
+    // TODO: remove following 3 functions, move to UI
     void playSystemAudioEffect(const QString &name) const;
     void playAudioEffect(const QString &filename) const;
     void playSkillAudioEffect(const QString &skill_name, int index) const;

@@ -5,41 +5,45 @@ import rocks.touhousatsu 1.0
 CppRoomScene {
     id: roomScene
 
+    // arrangementXXX: [0: right, 1: top, 2: left]
+
+    readonly property var arrangement1v2: [//
+        [0, 2, 0]//
+        , [1, 1, 0]//
+        , [0, 1, 1],//
+    ]
+    readonly property var arrangement1v3: [//
+        [0, 3, 0]//
+        , [2, 1, 0]//
+        , [1, 1, 1]//
+        , [0, 1, 2],//
+    ]
+    readonly property var arrangement2v2: [//
+        [0, 2, 1] // seat mod 2 = 0 (seat = 2 or 4)
+        , [1, 2, 0], // seat mod 2 = 1 (seat = 1 or 3)
+    ]
+    readonly property var arrangement3v3: [//
+        [0, 3, 2]// seat mod 3 = 0 (seat = 3 or 6)
+        , [1, 3, 1]// seat mod 3 = 1 (seat = 1 or 4)
+        , [2, 3, 0], // seat mod 3 = 2 (seat = 2 or 5)
+    ]
+    readonly property var arrangementRegular: [//
+        [0, 1, 0]//
+        , [1, 0, 1]//
+        , [1, 1, 1]//
+        , [1, 2, 1]//
+        , [1, 3, 1]//
+        , [2, 2, 2]//
+        , [2, 3, 2]//
+        , [2, 4, 2]//
+        , [2, 5, 2],//
+    ]
     property int layBorderMargin: 20
     property list<Photo> otherPhotos
 
     signal spaceClicked
 
     function lay() {
-        // TODO: replace following with static variable (Does QML support static variable?)
-        // [0: right, 1: top, 2: left]
-        const arrangementRegular = [[0, 1, 0] //
-                                    , [1, 0, 1] //
-                                    , [1, 1, 1] //
-                                    , [1, 2, 1] //
-                                    , [1, 3, 1] //
-                                    , [2, 2, 2] //
-                                    , [2, 3, 2] //
-                                    , [2, 4, 2] //
-                                    , [2, 5, 2], //
-              ];
-        const arrangement2v2 = [[0, 2, 1] // seat mod 2 = 0 (seat = 2 or 4)
-                                , [1, 2, 0], // seat mod 2 = 1 (seat = 1 or 3)
-              ];
-        const arrangement1v2 = [[0, 2, 0]//
-                                , [1, 1, 0]//
-                                , [0, 1, 1],//
-              ];
-        const arrangement1v3 = [[0, 3, 0]//
-                                , [2, 1, 0]//
-                                , [1, 1, 1]//
-                                , [0, 1, 2],//
-              ];
-        const arrangement3v3 = [[0, 3, 2]// seat mod 3 = 0 (seat = 3 or 6)
-                                , [1, 3, 1]// seat mod 3 = 1 (seat = 1 or 4)
-                                , [2, 3, 0], // seat mod 3 = 2 (seat = 2 or 5)
-              ];
-
         var playerCount = Sanguosha.getPlayerCount(ServerInfo.GameMode);
         var verticalAlignment = Qt.AlignVCenter;
         var arrangement = arrangementRegular[playerCount - 2];
@@ -75,13 +79,13 @@ CppRoomScene {
             inRight = (arrangement[0] >= effectiveSeat);
             if (inRight) {
                 rightPosition = arrangement[0] - effectiveSeat;
-                photo.originalX = roomScene.width - photo.width - roomScene.layBorderMargin;
+                photo.originalX = roomScene.width - photo.width - layBorderMargin;
 
                 if (verticalAlignment === Qt.AlignVCenter) {
                     verticalSpacing = (roomScene.height / (arrangement[0] + 1)) - photo.height;
                     photo.originalY = verticalSpacing * (rightPosition + 1) + photo.height * rightPosition;
                 } else {
-                    verticalSpacing = 40;
+                    verticalSpacing = 2 * layBorderMargin;
                     verticalTopMargin = roomScene.height - arrangement[0] * verticalSpacing - (arrangement[0] + 1) * photo.height;
                     photo.originalY = verticalTopMargin + (verticalSpacing + photo.height) * rightPosition;
                 }
@@ -92,10 +96,10 @@ CppRoomScene {
             if (inTop) {
                 topPosition = arrangement[1] - (effectiveSeat - arrangement[0]);
                 topPosition += 1;
-                photo.originalY = roomScene.layBorderMargin;
+                photo.originalY = layBorderMargin;
 
-                horizontalSpacing = (roomScene.width - 2 * roomScene.layBorderMargin - (arrangement[1] + 2) * photo.width) / (arrangement[1] + 1);
-                photo.originalX = roomScene.layBorderMargin + (horizontalSpacing + photo.width) * topPosition;
+                horizontalSpacing = (roomScene.width - 2 * layBorderMargin - (arrangement[1] + 2) * photo.width) / (arrangement[1] + 1);
+                photo.originalX = layBorderMargin + (horizontalSpacing + photo.width) * topPosition;
 
                 continue;
             }
@@ -104,13 +108,13 @@ CppRoomScene {
             if (inLeft) {
                 leftPosition = arrangement[2] - (effectiveSeat - arrangement[0] - arrangement[1]);
                 leftPosition = -leftPosition + arrangement[2] - 1;
-                photo.originalX = roomScene.layBorderMargin;
+                photo.originalX = layBorderMargin;
 
                 if (verticalAlignment === Qt.AlignVCenter) {
                     verticalSpacing = (roomScene.height / (arrangement[2] + 1)) - photo.height;
                     photo.originalY = verticalSpacing * (leftPosition + 1) + photo.height * leftPosition;
                 } else {
-                    verticalSpacing = 40;
+                    verticalSpacing = 2 * layBorderMargin;
                     verticalTopMargin = roomScene.height - arrangement[2] * verticalSpacing - (arrangement[2] + 1) * photo.height;
                     photo.originalY = verticalTopMargin + (verticalSpacing + photo.height) * leftPosition;
                 }

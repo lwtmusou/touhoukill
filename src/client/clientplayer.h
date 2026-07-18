@@ -49,6 +49,9 @@ signals:
     void handcardChanged();
 };
 
+/*
+ * TODO: Self should be get from Client. Refactor this when Client is no longer singleton.
+ */
 extern QPointer<ClientPlayer> Self;
 
 #endif

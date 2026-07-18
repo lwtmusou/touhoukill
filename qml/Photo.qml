@@ -275,13 +275,13 @@ Item {
 
         Text {
             anchors.centerIn: parent
+            color: Qt.rgba(255, 255, 255, 1)
             font.pixelSize: 50
             fontSizeMode: Text.Fit
             height: parent.height / 1.2
             horizontalAlignment: Qt.AlignHCenter
             text: photo.screenName
             verticalAlignment: Qt.AlignVCenter
-            color: Qt.rgba(255, 255, 255, 1)
         }
 
         Item {

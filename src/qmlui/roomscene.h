@@ -17,8 +17,9 @@ public:
 
     Q_DISABLE_COPY_MOVE(RoomScene)
 
-    QObject *selfHelper() const;
-    QObject *clientHelper() const;
+    // These function exists since it is needed to refactor Self and ClientInstance from singleton
+    [[nodiscard]] QObject *selfHelper() const;
+    [[nodiscard]] QObject *clientHelper() const;
 
 signals:
     void gameStartedChanged(bool newGameStarted);

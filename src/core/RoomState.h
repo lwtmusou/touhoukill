@@ -9,6 +9,9 @@
 // generals, cards in the Engine). Each room or roomscene should have one and only one
 // associated RoomState.
 
+// TODO: remove this class after refactor out of WrappedCard.
+// CurrentCardUsePattern / CurrentCardUseReason should be in Room.
+
 class RoomState
 {
 public:
