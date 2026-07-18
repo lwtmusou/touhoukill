@@ -18,7 +18,6 @@ class Client : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus)
-    Q_ENUMS(Status)
 
 public:
     enum Status
@@ -50,6 +49,7 @@ public:
 
         ClientStatusBasicMask = 0x00FF
     };
+    Q_ENUM(Status)
 
     explicit Client(QObject *parent, const QString &filename = QString());
     ~Client() override;
@@ -65,8 +65,14 @@ public:
     // other client requests
     void requestSurrender();
     void requestPerspectiveSwitch(const QString &targetName);
-    QString perspectiveTargetName() const { return m_perspectiveTargetName; }
-    bool isPerspectiveActive() const { return !m_perspectiveTargetName.isEmpty(); }
+    QString perspectiveTargetName() const
+    {
+        return m_perspectiveTargetName;
+    }
+    bool isPerspectiveActive() const
+    {
+        return !m_perspectiveTargetName.isEmpty();
+    }
 
     void disconnectFromHost();
     void replyToServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());

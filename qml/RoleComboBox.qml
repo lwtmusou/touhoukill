@@ -38,6 +38,7 @@ Item {
 
         MouseArea {
             anchors.fill: parent
+            enabled: !fixed
 
             onClicked: {
                 if (!fixed)

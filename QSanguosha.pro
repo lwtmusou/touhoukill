@@ -190,7 +190,6 @@ INCLUDEPATH += src/util
 INCLUDEPATH += src/qmlui
 
 OTHER_FILES += \
-    qml/CardFace.qml \
     qml/CardItem.qml \
     qml/Dashboard.qml \
     qml/main.qml \

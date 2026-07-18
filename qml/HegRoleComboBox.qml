@@ -72,6 +72,7 @@ Item {
 
     MouseArea {
         anchors.fill: parent
+        enabled: !roleComboBox.fixed
 
         onClicked: {
             if (!roleComboBox.expandStart && !roleComboBox.fixed) {

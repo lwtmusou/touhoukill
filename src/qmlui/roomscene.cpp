@@ -6,11 +6,14 @@
 #include <QApplication>
 #include <QtQml>
 
+QPointer<RoomScene> RoomSceneInstance;
+
 RoomScene::RoomScene(QQuickItem *parent)
     : QQuickItem(parent)
     , gameStarted(false)
     , gameOver(false)
 {
+    RoomSceneInstance = this;
 }
 
 RoomScene::~RoomScene() = default;

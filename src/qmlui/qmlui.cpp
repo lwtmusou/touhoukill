@@ -1,6 +1,7 @@
 #include "qmlui.h"
 
 #include "card.h"
+#include "client.h"
 #include "clientplayer.h"
 #include "player.h"
 #include "skill.h"
@@ -103,6 +104,13 @@ void registerCore()
 
         if (ret == -1)
             qDebug() << "Failed to register Player to Qml";
+    }
+
+    {
+        int ret = qmlRegisterUncreatableType<Client>("rocks.touhousatsu", 1, 0, "Client", "It is currently not supported to create a client in QML.");
+
+        if (ret == -1)
+            qDebug() << "Failed to register Client to Qml";
     }
 
     {

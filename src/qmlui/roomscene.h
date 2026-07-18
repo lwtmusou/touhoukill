@@ -1,6 +1,7 @@
 #ifndef TOUHOUKILL_ROOMSCENE_H_
 #define TOUHOUKILL_ROOMSCENE_H_
 
+#include <QPointer>
 #include <QQuickItem>
 
 class RoomScene : public QQuickItem
@@ -29,5 +30,7 @@ private:
     bool gameStarted;
     bool gameOver;
 };
+
+extern QPointer<RoomScene> RoomSceneInstance;
 
 #endif

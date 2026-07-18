@@ -39,6 +39,8 @@ CppRoomScene {
         , [2, 5, 2],//
     ]
     property int layBorderMargin: 20
+
+    // QTBUG-147713: remove this property before running qmlformat, add it back afterwards
     property list<Photo> otherPhotos
 
     signal spaceClicked
