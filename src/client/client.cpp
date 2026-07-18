@@ -805,19 +805,7 @@ void Client::arrangeSeats(const QVariant &seats_arr)
         players << player;
     }
 
-    QList<const ClientPlayer *> seats;
-    int self_index = players.indexOf(Self);
-
-    Q_ASSERT(self_index != -1);
-
-    for (int i = self_index + 1; i < players.length(); i++)
-        seats.append(players.at(i));
-    for (int i = 0; i < self_index; i++)
-        seats.append(players.at(i));
-
-    Q_ASSERT(seats.length() == players.length() - 1);
-
-    emit seats_arranged(seats);
+    emit seats_arranged();
 }
 
 void Client::notifyRoleChange(const QString &new_role)

@@ -16,6 +16,10 @@ RoomScene::RoomScene(QQuickItem *parent)
     , gameOver(false)
     , m_clientConnected(false)
 {
+    // ???
+    if (RoomSceneInstance != nullptr)
+        qFatal("RoomScene should be singleton");
+
     RoomSceneInstance = this;
 
     // RoomScene is created by QML when entering room scene, at which point
@@ -25,12 +29,12 @@ RoomScene::RoomScene(QQuickItem *parent)
 
 RoomScene::~RoomScene() = default;
 
-QObject *RoomScene::selfHelper() const
+ClientPlayer *RoomScene::selfHelper() const
 {
     return Self;
 }
 
-QObject *RoomScene::clientHelper() const
+Client *RoomScene::clientHelper() const
 {
     // TODO: consider how to get this after Client is no longer global singleton.
     // This RoomScene class is created by QML and can only have default constructor.
@@ -188,8 +192,8 @@ void RoomScene::connectClientSignals()
     connect(client, &Client::player_removed, this, [this](const QString &player_name) {
         emit notifyPlayerRemoved(player_name);
     });
-    connect(client, &Client::seats_arranged, this, [this](const QList<const ClientPlayer *> &) {
-        // Seats list is not forwarded: QML can query ClientInstance.getPlayers() directly.
+    connect(client, &Client::seats_arranged, this, [this]() {
+        // Seat is assigned by arrangeSeats; QML reads photo.player.seat directly.
         emit notifySeatsArranged();
     });
     connect(client, &Client::status_changed, this, [this](Client::Status oldStatus, Client::Status newStatus) {

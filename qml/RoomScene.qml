@@ -293,7 +293,13 @@ CppRoomScene {
         }
 
         function onNotifyPlayerAdded(newPlayer) {
-            console.log("[bridge->qml] notifyPlayerAdded");
+            console.log("[bridge->qml] notifyPlayerAdded", newPlayer.screenname);
+            for (var i = 0; i < otherPhotos.length; ++i) {
+                if (otherPhotos[i].player === null) {
+                    otherPhotos[i].player = newPlayer;
+                    break;
+                }
+            }
         }
 
         function onNotifyPlayerKilled(who) {
@@ -302,6 +308,13 @@ CppRoomScene {
 
         function onNotifyPlayerRemoved(playerName) {
             console.log("[bridge->qml] notifyPlayerRemoved", playerName);
+            for (var i = 0; i < otherPhotos.length; ++i) {
+                var p = otherPhotos[i].player;
+                if (p !== null && p.objectName === playerName) {
+                    otherPhotos[i].player = null;
+                    break;
+                }
+            }
         }
 
         function onNotifyPlayerRevived(who) {
@@ -322,6 +335,14 @@ CppRoomScene {
 
         function onNotifySeatsArranged() {
             console.log("[bridge->qml] notifySeatsArranged");
+            // Seat is assigned by arrangeSeats; read it back from each bound Photo.player.
+            for (var i = 0; i < otherPhotos.length; ++i) {
+                if (otherPhotos[i].player !== null)
+                    otherPhotos[i].seat = otherPhotos[i].player.seat;
+            }
+            if (roomScene.Self !== null)
+                selfPhoto.seat = roomScene.Self.seat;
+            roomScene.lay();
         }
 
         function onNotifySkillAcquired(player, skillName, head) {

@@ -87,7 +87,7 @@ public:
     void onPlayerReplyYiji(const Card *card, const Player *to);
     void onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
     void onPlayerAssignRole(const QList<QString> &names, const QList<QString> &roles);
-    QList<ClientPlayer *> getPlayers() const;
+    Q_INVOKABLE QList<ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);
     ClientPlayer *getPlayer(const QString &name);
     bool save(const QString &filename) const;
@@ -330,7 +330,7 @@ signals:
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
     void triggers_got(const QVariantList &options, bool optional);
 
-    void seats_arranged(const QList<const ClientPlayer *> &seats);
+    void seats_arranged();
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void maxhp_changed(const QString &who, int delta);
     void status_changed(Client::Status oldStatus, Client::Status newStatus);

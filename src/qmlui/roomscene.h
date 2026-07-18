@@ -1,6 +1,9 @@
 #ifndef TOUHOUKILL_ROOMSCENE_H_
 #define TOUHOUKILL_ROOMSCENE_H_
 
+#include "client.h"
+#include "clientplayer.h"
+
 #include <QPointer>
 #include <QQuickItem>
 
@@ -9,8 +12,8 @@ class RoomScene : public QQuickItem
     Q_OBJECT
     Q_PROPERTY(bool gameStarted MEMBER gameStarted NOTIFY gameStartedChanged)
     Q_PROPERTY(bool gameOver MEMBER gameOver NOTIFY gameOverChanged)
-    Q_PROPERTY(QObject *Self READ selfHelper STORED false)
-    Q_PROPERTY(QObject *ClientInstance READ clientHelper STORED false)
+    Q_PROPERTY(ClientPlayer *Self READ selfHelper STORED false)
+    Q_PROPERTY(Client *ClientInstance READ clientHelper STORED false)
 
 public:
     explicit RoomScene(QQuickItem *parent = nullptr);
@@ -19,8 +22,8 @@ public:
     Q_DISABLE_COPY_MOVE(RoomScene)
 
     // These function exists since it is needed to refactor Self and ClientInstance from singleton
-    [[nodiscard]] QObject *selfHelper() const;
-    [[nodiscard]] QObject *clientHelper() const;
+    [[nodiscard]] ClientPlayer *selfHelper() const;
+    [[nodiscard]] Client *clientHelper() const;
 
     // Bridge entry: connect Client's askFor*/show*/*_got signals to QML notify* signals.
     // Safe to call multiple times; idempotent via QPointer tracking.
@@ -41,7 +44,7 @@ signals:
     void notifyKingdomsGot(const QStringList &kingdoms);
     void notifySuitsGot(const QStringList &suits);
     void notifyOptionsGot(const QString &skillName, const QStringList &options);
-    void notifyCardsGot(QObject *player, const QString &flags, const QString &reason, bool handcardVisible, int method, const QVariantList &disabledIds, bool enableEmptyCard);
+    void notifyCardsGot(ClientPlayer *player, const QString &flags, const QString &reason, bool handcardVisible, int method, const QVariantList &disabledIds, bool enableEmptyCard);
     void notifyRolesGot(const QString &scheme, const QStringList &roles);
     void notifyDirectionsGot();
     void notifyOrdersGot(int reason);
@@ -49,7 +52,7 @@ signals:
     void notifyGuanxing(const QVariantList &cardIds, bool singleSide, const QString &skillName);
     void notifyGongxin(const QVariantList &cardIds, bool enableHeart, const QVariantList &enabledIds, const QVariantList &shownHandcardIds);
     void notifyAgFilled(const QVariantList &cardIds, const QVariantList &disabledIds, const QVariantList &shownHandcardIds);
-    void notifyAgTaken(QObject *taker, int cardId, bool moveCards);
+    void notifyAgTaken(ClientPlayer *taker, int cardId, bool moveCards);
     void notifyAgCleared();
     void notifyGeneralsFilled(const QStringList &generalNames);
     void notifyGeneralTaken(const QString &who, const QString &name, const QString &rule);
@@ -74,7 +77,7 @@ signals:
     void notifyGameStarted();
     void notifyGameOver();
     void notifyStandoff();
-    void notifyPlayerAdded(QObject *newPlayer);
+    void notifyPlayerAdded(ClientPlayer *newPlayer);
     void notifyPlayerRemoved(const QString &playerName);
     void notifySeatsArranged();
     void notifyStatusChanged(int oldStatus, int newStatus);
@@ -84,8 +87,8 @@ signals:
     void notifyCardShown(const QString &playerName, int cardId);
     void notifyNullificationAsked(bool asked);
     void notifySurrenderEnabled(bool enabled);
-    void notifySkillAcquired(QObject *player, const QString &skillName, bool head);
-    void notifySkillInvalidityChanged(QObject *player);
+    void notifySkillAcquired(ClientPlayer *player, const QString &skillName, bool head);
+    void notifySkillInvalidityChanged(ClientPlayer *player);
     void notifySkillAttached(const QString &skillName, bool fromLeft);
     void notifySkillDetached(const QString &skillName, bool head);
     void notifyPerspectiveChanged(const QString &targetName, const QVariantList &handCardIds, const QVariantMap &piles);
