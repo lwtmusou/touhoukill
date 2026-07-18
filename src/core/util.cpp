@@ -86,9 +86,15 @@ void DoLuaScript(lua_State *L, const char *script)
     }
 }
 
+// Initially no reserve() function call was implemented in *List2*List
+// reserve() was introduced in Qt 4.7 which explains why
+// the code was written in y2010 when Qt 4.7 was not widely distributed
+
 QStringList IntList2StringList(const QList<int> &intlist)
 {
     QStringList stringlist;
+
+    stringlist.reserve(intlist.size());
     for (int i = 0; i < intlist.size(); i++)
         stringlist.append(QString::number(intlist.at(i)));
     return stringlist;
@@ -97,6 +103,8 @@ QStringList IntList2StringList(const QList<int> &intlist)
 QList<int> StringList2IntList(const QStringList &stringlist)
 {
     QList<int> intlist;
+
+    intlist.reserve(stringlist.size());
     for (int i = 0; i < stringlist.size(); i++) {
         const QString &n = stringlist.at(i);
         bool ok = false;
@@ -110,6 +118,8 @@ QList<int> StringList2IntList(const QStringList &stringlist)
 QVariantList IntList2VariantList(const QList<int> &intlist)
 {
     QVariantList variantlist;
+
+    variantlist.reserve(intlist.size());
     for (int i = 0; i < intlist.size(); i++)
         variantlist.append(QVariant(intlist.at(i)));
     return variantlist;
@@ -118,6 +128,8 @@ QVariantList IntList2VariantList(const QList<int> &intlist)
 QList<int> VariantList2IntList(const QVariantList &variantlist)
 {
     QList<int> intlist;
+
+    intlist.reserve(variantlist.size());
     for (int i = 0; i < variantlist.size(); i++) {
         const QVariant &n = variantlist.at(i);
         bool ok = false;
