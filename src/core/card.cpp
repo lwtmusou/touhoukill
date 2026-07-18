@@ -459,16 +459,24 @@ const Card *Card::Parse(const QString &str)
 
         if (QRegularExpressionMatch m = pattern.match(str); m.hasMatch()) {
             texts = m.capturedTexts();
-            card_name = texts.at(1);
-            subcard_str = texts.at(2);
-            user_string = texts.at(3);
+            if (texts.size() > 1)
+                card_name = texts.at(1);
+            if (texts.size() > 2)
+                subcard_str = texts.at(2);
+            if (texts.size() > 3)
+                user_string = texts.at(3);
         } else if (QRegularExpressionMatch m = ex_pattern.match(str); m.hasMatch()) {
             texts = m.capturedTexts();
-            card_name = texts.at(1);
-            card_suit = texts.at(2);
-            card_number = texts.at(3);
-            subcard_str = texts.at(4);
-            user_string = texts.at(5);
+            if (texts.size() > 1)
+                card_name = texts.at(1);
+            if (texts.size() > 2)
+                card_suit = texts.at(2);
+            if (texts.size() > 3)
+                card_number = texts.at(3);
+            if (texts.size() > 4)
+                subcard_str = texts.at(4);
+            if (texts.size() > 5)
+                user_string = texts.at(5);
         } else
             return nullptr;
 
