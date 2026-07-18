@@ -5,6 +5,7 @@
 
 #include <QDialog>
 #include <QMainWindow>
+#include <QPointer>
 
 namespace Ui {
 class MainWindow;
@@ -111,5 +112,7 @@ signals:
     void qml_switchToRoomScene();
     void qml_switchToServerScene(QObject *server);
 };
+
+extern QPointer<MainWindow> MainWindowInstance;
 
 #endif

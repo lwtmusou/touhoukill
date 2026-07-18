@@ -17,7 +17,7 @@ class QTextDocument;
 class Client : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus)
+    Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus NOTIFY status_changed)
 
 public:
     enum Status

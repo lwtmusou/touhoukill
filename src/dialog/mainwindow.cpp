@@ -60,11 +60,14 @@
 #include <QWinTaskbarProgress>
 #endif
 
+QPointer<MainWindow> MainWindowInstance;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , leftMargin(0)
 {
+    MainWindowInstance = this;
     ui->setupUi(this);
     // scene = nullptr;
 

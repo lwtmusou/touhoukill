@@ -2,6 +2,8 @@
 
 #include "client.h"
 #include "clientplayer.h"
+#include "choosegeneraldialog.h"
+#include "mainwindow.h"
 #include "protocol.h"
 #include "util.h"
 
@@ -260,6 +262,17 @@ void RoomScene::notifyServer(int commandType, const QVariant &data)
         return;
     }
     client->notifyServer(static_cast<QSanProtocol::CommandType>(commandType), data);
+}
+
+QString RoomScene::freeChooseGeneral()
+{
+    FreeChooseDialog dialog(MainWindowInstance);
+    QString chosen;
+    connect(&dialog, &FreeChooseDialog::general_chosen, [&chosen](const QString &name) {
+        chosen = name;
+    });
+    dialog.exec();
+    return chosen;
 }
 
 namespace {

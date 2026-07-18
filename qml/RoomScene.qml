@@ -42,6 +42,8 @@ CppRoomScene {
 
     // QTBUG-147713: remove this property before running qmlformat, add it back afterwards
     property list<Photo> otherPhotos
+    // Currently active ChooseGeneralBox instance (null when none); Dashboard OK button confirms it.
+    property var activeChooseGeneralBox: null
 
     signal spaceClicked
 
@@ -246,6 +248,14 @@ CppRoomScene {
 
         function onNotifyGeneralsGot(generals, singleResult, canConvert) {
             console.log("[bridge->qml] notifyGeneralsGot", generals.length, singleResult, canConvert);
+            var box = chooseGeneralBoxComponent.createObject(roomScene, {
+                                                                  "generals": generals,
+                                                                  "singleResult": singleResult
+                                                              });
+            roomScene.activeChooseGeneralBox = box;
+            box.generalChosen.connect(function (name) {
+                roomScene.ClientInstance.onPlayerChooseGeneral(name);
+            });
         }
 
         function onNotifyGeneralsViewed(reason, names) {
@@ -565,6 +575,13 @@ CppRoomScene {
 
         Photo {
             seat: 0
+        }
+    }
+
+    Component {
+        id: chooseGeneralBoxComponent
+
+        ChooseGeneralBox {
         }
     }
 }

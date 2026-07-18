@@ -15,6 +15,7 @@ Item {
     // property bool selected
 
     signal clicked
+    signal rightClicked
 
     function goBack() {
         goBackAnimation.stop();
@@ -126,9 +127,15 @@ Item {
     MouseArea {
         id: cardItemMouseArea
 
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         anchors.fill: parent
 
-        onClicked: parent.clicked()
+        onClicked: {
+            if (mouse.button === Qt.RightButton)
+                parent.rightClicked();
+            else
+                parent.clicked();
+        }
     }
 
     ParallelAnimation {

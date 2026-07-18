@@ -7,7 +7,7 @@
 ## 项目结构（代码阅读发现）
 
 ### C++ 侧
-- `src/dialog/mainwindow.cpp`：构造 `QQuickWidget`，`setContextProperty` 暴露 `MainWindowInstance`/`Sanguosha`/`Config`，`setSource("qml/main.qml")`。提供 `qml_switchToRoomScene()` 信号供 QML 切场景。
+- `src/dialog/mainwindow.cpp`：构造 `QQuickWidget`，`setContextProperty` 暴露 `MainWindowInstance`/`Sanguosha`/`Config`，`setSource("qml/main.qml")`。提供 `qml_switchToRoomScene()` 信号供 QML 切场景。全局 `QPointer<MainWindow> MainWindowInstance`（仿 `RoomSceneInstance`），构造函数赋值，C++ 侧可访问。
 - `src/qmlui/qmlui.cpp`：`Q_COREAPP_STARTUP_FUNCTION(registerCore)` 自动注册 QML 类型。
   - 单例：`G`（`TouhouKillQmlUiGlobal`，字体/游戏模式判断）、`ServerInfo`（`TouhouKillServerInfoStruct`，含 `EnableAI`/`GameMode` 等）。
   - 可创建：`CppRoomScene`（`RoomScene`，`QQuickItem` 桥接宿主）。
@@ -35,7 +35,7 @@
 ## 核心待办（剩余功能）
 - [x] 建立 C++ 桥接层，将 `Client` 约 50 个信号连接到 QML `notify*` 并提供回传入口
 - [x] RoomScene addRobot/fillRobots、notifyPlayerAdded/Removed/SeatsArranged
-- 选将/分将弹窗：askForGeneral、askForGeneral3v3、askForAssign、askForRole3v3
+- [x] 选将弹窗 askForGeneral 单将选择已实现（ChooseGeneralBox）；askForGeneral3v3、askForAssign、askForRole3v3、KnownBoth 分将待做
 - 选项/触发顺序弹窗：askForChoice、askForOrder、askForDirection、askForSuit、askForKingdom、askForTriggerOrder
 - 玩家牌展示/桌面牌堆：showAllCards、showCard、askForGongxin、askForYiji、askForGuanxing
 - 聊天与日志（chatwidget、bubblechatbox、clientlogbox）
@@ -100,8 +100,9 @@ flowchart TD
 ```
 qml/
 ├── CardFace.qml              # [待建] .pro 曾引用但缺失，需补建或移出
+├── GraphicsBox.qml           # [NEW] 图片背景可拖拽容器基类（无标题/无操作按钮），供各弹窗复用
 ├── Popup.qml                 # [搁置] 通用弹窗基类与整体设计不符已删，弹窗容器后续按需设计
-├── ChooseGeneralBox.qml      # [NEW] 选将/分将弹窗
+├── ChooseGeneralBox.qml      # [已完成] 单将选择（generals_got→onPlayerChooseGeneral）；KnownBoth/分将待实现
 ├── ChooseOptionsBox.qml      # [NEW] 选项弹窗
 ├── ChooseTriggerOrderBox.qml # [NEW] 触发顺序弹窗
 ├── PlayerCardBox.qml         # [NEW] 玩家手牌/装备展示
@@ -111,7 +112,7 @@ qml/
 ├── BubbleChatBox.qml         # [NEW] 气泡聊天
 ├── ClientLogBox.qml          # [NEW] 日志框
 ├── QSanSkillButton.qml       # [NEW] 技能按钮，Dashboard.qml TODO 引用
-├── Dashboard.qml             # [MODIFY] 接入技能按钮与装备区
+├── Dashboard.qml             # [MODIFY] 操作按钮已加（Trust 完整，OK/Cancel/Discard 待卡牌选择）；技能按钮/装备区待接入
 ├── RoomScene.qml             # [MODIFY] 移除 testItemToBeRemovedAfterTest
 └── main.qml                  # [MODIFY] 宽度过小提示
 
@@ -137,6 +138,28 @@ src/uibackup/                 # [DELETE] 确认无引用后整体删除
 - `notifyPlayerRemoved`：按 `objectName` 匹配，清空 Photo.player。
 - `addRobotButton`/`fillRobotsButton`：`onClicked` 调 `ClientInstance.addRobot()/fillRobots()`；`visible` 含 `ServerInfo.EnableAI`。
 
+### 已完成：Dashboard 操作按钮（2026-07-18）
+- `qml/Dashboard.qml`：新增 Trust/Discard/Cancel/OK 四个 `QSanButton`（268×133，`font.pixelSize: 50`），用 `anchors.bottom: cardArea.top` + `bottomMargin: 8` + `horizontalCenter: cardArea.horizontalCenter` 浮在手牌区上方。
+- Trust 完整可用（`onClicked: clientInstance.trust()`，`Client::trust` slot）。
+- Discard/Cancel/OK 为 UI 占位（`enabled: false` + TODO）：依赖 `CardItem.selected`（当前注释掉）与 target 选择、`Client.status`（无 NOTIFY）未实现。
+- `clientInstance` 属性：`parent ? parent.ClientInstance : null`（Dashboard parent 是 RoomScene 的 CppRoomScene）。
+
+### 已完成：GraphicsBox 基类（2026-07-18）
+- `qml/GraphicsBox.qml`：以 `Image` 为根的图片背景容器基类（参照旧 Popup.qml 但去标题/操作按钮/信号、无 z）。直接用 Image 的 `source` 属性设背景图（子类设 `source: G.getUrl(...)`）；`default property alias content` 供子类填充内容；默认尺寸 720×360（可覆盖）；`MouseArea` `drag.target` 支持拖拽移动（子内容 MouseArea 在上层优先接收点击，空白区拖拽）；`Component.onCompleted` 初始居中（用 x/y 而非 anchors，兼容拖拽）。
+- `QSanguosha.pro`：`OTHER_FILES` 加入 `qml/GraphicsBox.qml`。
+
+### 已完成：ChooseGeneralBox 单将选择（2026-07-18）
+- `qml/ChooseGeneralBox.qml`：基于 GraphicsBox 的选将弹窗（720×460，背景 `card-container.png`）。`property var generals` + `property bool singleResult` + `property var selectedGenerals`；GridView 用 CardItem 显示，`_toggle` 切换选中（单将选1，双将选最多2，回传 `name1+name2`）；选中 scale 1.1。**无自带 OK**，Dashboard OK 触发 `accept()`。右键 CardItem + `ServerInfo.FreeChoose` 调 `parent.freeChooseGeneral()` 弹 C++ FreeChooseDialog 换将该位。
+- `qml/RoomScene.qml`：`onNotifyGeneralsGot` 传 `singleResult`，设 `activeChooseGeneralBox`，`generalChosen` 连接 `ClientInstance.onPlayerChooseGeneral(name)`。
+- `qml/Dashboard.qml`：OK 按钮 `enabled` 绑定 `activeChooseGeneralBox.selectedGenerals.length > 0`，`onClicked` 调 `accept()`。
+- `src/client/client.cpp`：`askForGeneral` 非国战分支 `setStatus(ExecDialog)` → `setStatus(AskForGeneralTaken)`。
+- `src/client/client.h`：`Q_PROPERTY(Status status ... NOTIFY status_changed)`（复用现有 `status_changed` 信号，QML 可响应 status 变化）。
+- `src/qmlui/roomscene.h/cpp`：新增 `Q_INVOKABLE freeChooseGeneral()`，弹 C++ `FreeChooseDialog`（modal exec，parent 用全局 `MainWindowInstance`），连接 `general_chosen` 捕获将名返回。
+- 流程：`generals_got` → ChooseGeneralBox → 选将（右键可 freechoose 换将）→ Dashboard OK → `accept()` → `onPlayerChooseGeneral`（`replyToServer(S_COMMAND_CHOOSE_GENERAL)`，双将 `name1+name2`）。
+- KnownBoth 是"知己知彼"卡牌效果（非国战双将），未实现。
+- `QSanguosha.pro`：`OTHER_FILES` 加入 `qml/ChooseGeneralBox.qml`。
+
 ### 下一步
+- CardItem 卡牌选择（`selected` 状态 + 信号）→ 打通 OK/Cancel/Discard。
 - 逐个弹窗实现，在各自 QML 接收 `notify*`、调用 `replyToServer` 回传。
-- Dashboard 技能按钮、RoomScene 移除测试桩/宽度提示、清理 `src/uibackup`。
+- Dashboard 技能按钮（`QSanSkillButton.qml`）、RoomScene 移除测试桩/宽度提示、清理 `src/uibackup`。

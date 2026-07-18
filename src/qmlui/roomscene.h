@@ -34,6 +34,10 @@ public:
     Q_INVOKABLE void replyToServer(int commandType, const QVariant &data = QVariant());
     Q_INVOKABLE void notifyServer(int commandType, const QVariant &data = QVariant());
 
+    // Pops up the C++ FreeChooseDialog (modal) and returns the chosen general name,
+    // or an empty string if cancelled. Used by ChooseGeneralBox right-click to swap a general.
+    Q_INVOKABLE QString freeChooseGeneral();
+
 signals:
     void gameStartedChanged(bool newGameStarted);
     void gameOverChanged(bool newGameOver);

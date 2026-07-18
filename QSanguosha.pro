@@ -192,9 +192,11 @@ INCLUDEPATH += src/qmlui
 OTHER_FILES += \
     qml/CardItem.qml \
     qml/Dashboard.qml \
+    qml/GraphicsBox.qml \
     qml/main.qml \
     qml/Photo.qml \
     qml/CardContainer.qml \
+    qml/ChooseGeneralBox.qml \
     qml/QSanButton.qml \
     qml/RoomScene.qml \
     qml/RootItem.qml \

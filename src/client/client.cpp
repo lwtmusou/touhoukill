@@ -1783,7 +1783,7 @@ void Client::askForGeneral(const QVariant &arg)
     } else {
         //Sanguosha->playSystemAudioEffect("win");
         emit generals_got(generals, single_result, can_convert);
-        setStatus(ExecDialog);
+        setStatus(AskForGeneralTaken);
     }
 }
 
