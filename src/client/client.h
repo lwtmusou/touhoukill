@@ -323,7 +323,7 @@ signals:
     void kingdoms_got(const QStringList &kingdoms);
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
-    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids,
+    void cards_got(ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids,
                    bool enableEmptyCard);
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();
@@ -346,7 +346,7 @@ signals:
     void focus_moved(const QStringList &focus, QSanProtocol::Countdown countdown);
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);
-    void skill_acquired(const ClientPlayer *player, const QString &skill_name, const bool &head);
+    void skill_acquired(ClientPlayer *player, const QString &skill_name, const bool &head);
     void animated(int name, const QStringList &args);
     void text_spoken(const QString &text);
     void line_spoken(const QString &line);

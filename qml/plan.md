@@ -5,7 +5,7 @@
 以 Qt 6 QML 重写原 QGraphics 游戏界面。宿主窗口 `MainWindow` 通过 `QQuickWidget` 加载 `main.qml`，在 StartScene 与 RoomScene 间切换。目前核心布局（Photo/Dashboard/Card/StartScene/RoomScene）已成型，但游戏交互所需的弹窗、聊天、技能按钮等尚未移植，且 C++ 侧尚未把 `Client` 的请求信号桥接到 QML。
 
 ## 核心待办（剩余功能）
-- 建立 C++ 桥接层，将 `Client` 约 30 个 `askFor*`/`show*` 信号连接到 QML 弹窗并回传玩家响应
+- [x] 建立 C++ 桥接层，将 `Client` 约 30 个 `askFor*`/`show*` 信号连接到 QML 弹窗并回传玩家响应（C++→QML 通知通路已完成；QML→C++ 回传接口 `replyToServer`/`notifyServer` 已就位，具体弹窗逐个接入中）
 - 选将/分将弹窗（对应 choosegeneralbox）：askForGeneral、askForGeneral3v3、askForAssign、askForRole3v3
 - 选项/触发顺序弹窗（对应 chooseoptionsbox、choosetriggerorderbox）：askForChoice、askForOrder、askForDirection、askForSuit、askForKingdom、askForTriggerOrder
 - 玩家牌展示/桌面牌堆（对应 playercardbox、GenericCardContainerUI、TablePile）：showAllCards、showCard、askForGongxin、askForYiji、askForGuanxing
@@ -99,4 +99,17 @@ public slots:
     Q_INVOKABLE void submitResponse(const QString &command, const QVariant &data); // 回传 Client
 };
 ```
+
+## 进度记录
+
+### 已完成：C++ → QML 通知通路（2026-07-18）
+- `src/qmlui/roomscene.h`：新增 `connectClientSignals()` 与约 50 个 `notify*` 信号（参数全部转换为 QML 友好类型：`QStringList`/`QVariantList`/`QObject*`/`int`/`bool`/`QVariant`），新增 `replyToServer(int commandType, QVariant data)` 与 `notifyServer(...)` 两个 `Q_INVOKABLE` 回传入口。
+- `src/qmlui/roomscene.cpp`：构造函数调用 `connectClientSignals()`，用 lambda 集中连接 `Client` 的全部弹窗类（`generals_got`/`kingdoms_got`/`suits_got`/`options_got`/`cards_got`/`roles_got`/`directions_got`/`orders_got`/`triggers_got`/`guanxing`/`gongxin`/`ag_*`/`generals_filled`/`general_*`/`arrange_started`/`assign_asked`）与事件类（`log_received`/`emotion_set`/`skill_*`/`animated`/`*_spoken`/`focus_moved`/`game_*`/`player_*`/`status_changed`/`perspective_changed` 等）信号，槽内 `emit notify*`。`QList<int>`→`QVariantList`、`Card::HandlingMethod`/`Game3v3ChooseOrderCommand`/`Client::Status`→`int`、`Countdown`→`QVariant`。带 `[bridge]` 前缀的 `qDebug` 日志。
+- `qml/Popup.qml`：通用弹窗基类（半透明遮罩 + 居中容器 + title + `default property alias content` + `accepted/rejected/closed` 信号 + Cancel 按钮），按需 `createObject`/`destroy`。
+- `qml/RoomScene.qml`：`Connections { target: roomScene }` 接收全部 `notify*` 信号并 `console.log` 验证通路；`notifyOptionsGot` 用 `optionPopupComponent` 弹出最简选项 `Popup`，选中后调用 `roomScene.replyToServer(S_COMMAND_MULTIPLE_CHOICE, result)` 验证回传链路。
+- `QSanguosha.pro`：`OTHER_FILES` 加入 `qml/Popup.qml`。
+
+### 下一步
+- 逐个弹窗实现（ChooseGeneralBox / ChooseOptionsBox / ChooseTriggerOrderBox / PlayerCardBox / GenericCardContainer / TablePile / ChatWidget / BubbleChatBox / ClientLogBox），在各自 QML 中接收对应 `notify*` 信号、调用 `replyToServer` 回传。
+- Dashboard 技能按钮与装备区绑定、RoomScene addRobot/fillRobots、清理 `src/uibackup` 死代码。
 

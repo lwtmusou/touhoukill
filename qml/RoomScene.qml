@@ -161,6 +161,220 @@ CppRoomScene {
         onClicked: roomScene.spaceClicked()
     }
 
+    // C++ -> QML notification bridge.
+    // Receives every notify* signal forwarded by CppRoomScene (src/qmlui/roomscene.cpp).
+    Connections {
+        function onNotifyAgCleared() {
+            console.log("[bridge->qml] notifyAgCleared");
+        }
+
+        function onNotifyAgFilled(cardIds, disabledIds, shownHandcardIds) {
+            console.log("[bridge->qml] notifyAgFilled", cardIds.length);
+        }
+
+        function onNotifyAgTaken(taker, cardId, moveCards) {
+            console.log("[bridge->qml] notifyAgTaken", cardId);
+        }
+
+        function onNotifyAnimated(name, args) {
+            console.log("[bridge->qml] notifyAnimated", name, args);
+        }
+
+        function onNotifyArrangeStarted(toArrange) {
+            console.log("[bridge->qml] notifyArrangeStarted", toArrange);
+        }
+
+        function onNotifyAssignAsked() {
+            console.log("[bridge->qml] notifyAssignAsked");
+        }
+
+        function onNotifyCardShown(playerName, cardId) {
+            console.log("[bridge->qml] notifyCardShown", playerName, cardId);
+        }
+
+        function onNotifyCardsGot(player, flags, reason, handcardVisible, method, disabledIds, enableEmptyCard) {
+            console.log("[bridge->qml] notifyCardsGot", reason, flags, method);
+        }
+
+        function onNotifyDashboardDeath(who) {
+            console.log("[bridge->qml] notifyDashboardDeath", who);
+        }
+
+        function onNotifyDeputyPreshowed() {
+            console.log("[bridge->qml] notifyDeputyPreshowed");
+        }
+
+        function onNotifyDirectionsGot() {
+            console.log("[bridge->qml] notifyDirectionsGot");
+        }
+
+        function onNotifyEmotionSet(target, emotion) {
+            console.log("[bridge->qml] notifyEmotionSet", target, emotion);
+        }
+
+        function onNotifyFocusMoved(focus, countdown) {
+            console.log("[bridge->qml] notifyFocusMoved", focus);
+        }
+
+        function onNotifyGameOver() {
+            console.log("[bridge->qml] notifyGameOver");
+        }
+
+        function onNotifyGameStarted() {
+            console.log("[bridge->qml] notifyGameStarted");
+        }
+
+        function onNotifyGeneralAsked() {
+            console.log("[bridge->qml] notifyGeneralAsked");
+        }
+
+        function onNotifyGeneralRecovered(index, name) {
+            console.log("[bridge->qml] notifyGeneralRecovered", index, name);
+        }
+
+        function onNotifyGeneralRevealed(self, general) {
+            console.log("[bridge->qml] notifyGeneralRevealed", self, general);
+        }
+
+        function onNotifyGeneralTaken(who, name, rule) {
+            console.log("[bridge->qml] notifyGeneralTaken", who, name);
+        }
+
+        function onNotifyGeneralsFilled(generalNames) {
+            console.log("[bridge->qml] notifyGeneralsFilled", generalNames.length);
+        }
+
+        function onNotifyGeneralsGot(generals, singleResult, canConvert) {
+            console.log("[bridge->qml] notifyGeneralsGot", generals.length, singleResult, canConvert);
+        }
+
+        function onNotifyGeneralsViewed(reason, names) {
+            console.log("[bridge->qml] notifyGeneralsViewed", reason, names);
+        }
+
+        function onNotifyGongxin(cardIds, enableHeart, enabledIds, shownHandcardIds) {
+            console.log("[bridge->qml] notifyGongxin", cardIds.length);
+        }
+
+        function onNotifyGuanxing(cardIds, singleSide, skillName) {
+            console.log("[bridge->qml] notifyGuanxing", skillName, cardIds.length);
+        }
+
+        function onNotifyHeadPreshowed() {
+            console.log("[bridge->qml] notifyHeadPreshowed");
+        }
+
+        function onNotifyKingdomsGot(kingdoms) {
+            console.log("[bridge->qml] notifyKingdomsGot", kingdoms);
+        }
+
+        function onNotifyLineSpoken(line) {
+            console.log("[bridge->qml] notifyLineSpoken", line);
+        }
+
+        function onNotifyLogReceived(logStr) {
+            console.log("[bridge->qml] notifyLogReceived", logStr);
+        }
+
+        function onNotifyNullificationAsked(asked) {
+            console.log("[bridge->qml] notifyNullificationAsked", asked);
+        }
+
+        function onNotifyOptionsGot(skillName, options) {
+            console.log("[bridge->qml] notifyOptionsGot", skillName, options);
+        }
+
+        function onNotifyOrdersGot(reason) {
+            console.log("[bridge->qml] notifyOrdersGot", reason);
+        }
+
+        function onNotifyPerspectiveChanged(targetName, handCardIds, piles) {
+            console.log("[bridge->qml] notifyPerspectiveChanged", targetName);
+        }
+
+        function onNotifyPlayerAdded(newPlayer) {
+            console.log("[bridge->qml] notifyPlayerAdded");
+        }
+
+        function onNotifyPlayerKilled(who) {
+            console.log("[bridge->qml] notifyPlayerKilled", who);
+        }
+
+        function onNotifyPlayerRemoved(playerName) {
+            console.log("[bridge->qml] notifyPlayerRemoved", playerName);
+        }
+
+        function onNotifyPlayerRevived(who) {
+            console.log("[bridge->qml] notifyPlayerRevived", who);
+        }
+
+        function onNotifyPlayerSpoken(who, line) {
+            console.log("[bridge->qml] notifyPlayerSpoken", who, line);
+        }
+
+        function onNotifyRoleStateChanged(stateStr) {
+            console.log("[bridge->qml] notifyRoleStateChanged", stateStr);
+        }
+
+        function onNotifyRolesGot(scheme, roles) {
+            console.log("[bridge->qml] notifyRolesGot", scheme, roles);
+        }
+
+        function onNotifySeatsArranged() {
+            console.log("[bridge->qml] notifySeatsArranged");
+        }
+
+        function onNotifySkillAcquired(player, skillName, head) {
+            console.log("[bridge->qml] notifySkillAcquired", skillName, head);
+        }
+
+        function onNotifySkillAttached(skillName, fromLeft) {
+            console.log("[bridge->qml] notifySkillAttached", skillName, fromLeft);
+        }
+
+        function onNotifySkillDetached(skillName, head) {
+            console.log("[bridge->qml] notifySkillDetached", skillName, head);
+        }
+
+        function onNotifySkillInvalidityChanged(player) {
+            console.log("[bridge->qml] notifySkillInvalidityChanged");
+        }
+
+        function onNotifySkillInvoked(who, skillName) {
+            console.log("[bridge->qml] notifySkillInvoked", who, skillName);
+        }
+
+        function onNotifyStandoff() {
+            console.log("[bridge->qml] notifyStandoff");
+        }
+
+        function onNotifyStartInXs() {
+            console.log("[bridge->qml] notifyStartInXs");
+        }
+
+        function onNotifyStatusChanged(oldStatus, newStatus) {
+            console.log("[bridge->qml] notifyStatusChanged", oldStatus, "->", newStatus);
+        }
+
+        function onNotifySuitsGot(suits) {
+            console.log("[bridge->qml] notifySuitsGot", suits);
+        }
+
+        function onNotifySurrenderEnabled(enabled) {
+            console.log("[bridge->qml] notifySurrenderEnabled", enabled);
+        }
+
+        function onNotifyTextSpoken(text) {
+            console.log("[bridge->qml] notifyTextSpoken", text);
+        }
+
+        function onNotifyTriggersGot(options, optional) {
+            console.log("[bridge->qml] notifyTriggersGot", options.length, optional);
+        }
+
+        target: roomScene
+    }
+
     Dashboard {
         id: dashboard
 

@@ -33,7 +33,7 @@ Item {
     property real originalX
     property real originalY
     property int phase: Player.NotActive
-    property Player player
+    property ClientPlayer player
     property string playerName
     property var privatePile: ({})
     property string role: player.role
