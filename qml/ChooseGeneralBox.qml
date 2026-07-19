@@ -4,17 +4,17 @@ import rocks.touhousatsu 1.0
 
 // General chooser built on GraphicsBox. Receives a list of general names and lets the
 // player pick one (singleResult) or two (hegemony dual-general). Confirmation is done via
-// the Dashboard OK button (roomScene.activeChooseGeneralBox.accept()).
+// the Dashboard OK button (roomScene.activeBox.accept()).
 // Right-click a card with ServerInfo.FreeChoose to pop the C++ FreeChooseDialog and swap it.
 // KnownBoth (know-each-other card effect) logic is NOT implemented here.
 GraphicsBox {
     id: chooseGeneralBox
 
+    // Whether the current selection can be confirmed: single-general needs >=1, dual needs 2.
+    property bool canAccept: selectedGenerals.length >= (singleResult ? 1 : 2)
     property var generals: []
     property var selectedGenerals: []
     property bool singleResult: true
-    // Whether the current selection can be confirmed: single-general needs >=1, dual needs 2.
-    property bool canAccept: selectedGenerals.length >= (singleResult ? 1 : 2)
 
     signal generalChosen(string generalName)
 
@@ -72,8 +72,8 @@ GraphicsBox {
     function accept() {
         if (canAccept) {
             generalChosen(selectedGenerals.join("+"));
-            if (parent && parent.activeChooseGeneralBox === chooseGeneralBox)
-                parent.activeChooseGeneralBox = null;
+            if (parent && parent.activeBox === chooseGeneralBox)
+                parent.activeBox = null;
             chooseGeneralBox.destroy();
         }
     }
@@ -93,8 +93,8 @@ GraphicsBox {
         model: chooseGeneralBox.generals
 
         delegate: CardItem {
-            general: modelData
             enabled: !chooseGeneralBox._isDimmed(modelData)
+            general: modelData
             opacity: 1
             scale: chooseGeneralBox.selectedGenerals.indexOf(modelData) >= 0 ? 1.1 : 1.0
 

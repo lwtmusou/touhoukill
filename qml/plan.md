@@ -19,7 +19,7 @@
 - `src/qmlui/roomscene.h/cpp`：桥接层。`Q_PROPERTY` 暴露 `Self`（`ClientPlayer *`）、`ClientInstance`（`Client *`）；`connectClientSignals()` 集中连接 Client 信号；`Q_INVOKABLE replyToServer/notifyServer/freeChooseGeneral`。全局 `QPointer<RoomScene> RoomSceneInstance`。
 - `src/client/client.h/cpp`：`Client : public QObject`，全局 `QPointer<Client> ClientInstance`（注释明确不应是单例，当前仍是）。约 50 个信号。`getPlayers()` 已 `Q_INVOKABLE`。`addPlayer`/`arrangeSeats`/`removePlayer` 玩家生命周期。
 - `src/client/clientplayer.h`：`ClientPlayer : public Player`，全局 `QPointer<ClientPlayer> Self`。
-- `src/core/player.h`：`Player` Q_PROPERTY 暴露 `seat`/`hp`/`kingdom`/`role`/`general`/`phase`/`alive`/`chained` 等。**`seat` 无 NOTIFY**。
+- `src/core/player.h`：`Player` Q_PROPERTY 暴露 `seat`/`hp`/`renhp`/`linghp`/`maxhp`/`kingdom`/`role`/`general`/`general2`/`phase`/`alive`/`chained`/`avatar` 等。**`seat` 无 NOTIFY**；`avatar` MEMBER `m_avatar` NOTIFY `avatar_changed`；`phase`(QString, STORED false) 与 `phaseValue`(`Player::Phase` 枚举) 双属性。
 - `src/core/protocol.h`：`QSanProtocol::CommandType` 枚举、`Countdown`。
 - `src/core/util.h`：`IntList2VariantList` 等通用转换（桥接复用）。
 - `src/uibackup/`：35 对死代码，不在 .pro（不编译），仅参考。
@@ -27,8 +27,8 @@
 ### QML 侧
 - `qml/main.qml`：`Image` 背景 + `scalableRoot`（固定高 1440，宽随高缩放，最小 1920）+ `RootItem`。有"宽度过小提示"TODO。
 - `qml/RootItem.qml`：`currentScene` 在 StartScene/RoomScene 间切换，监听 `MainWindowInstance.qml_switchToRoomScene`/`qml_switchToStartScene`。
-- `qml/RoomScene.qml`：根 `CppRoomScene`。`property list<Photo> otherPhotos`（QTBUG-147713）。`lay()` 按 `effectiveSeat` 布局。`Component.onCompleted` 预创建占位 Photo（seat 2..N，未绑 player）。`Connections` 接收全部 `notify*`。`activeChooseGeneralBox` 跟踪选将框。含 `testItemToBeRemovedAfterTest` 测试桩。addRobot/fillRobots 已实现。
-- `qml/Photo.qml`：`player` + `required property int seat`。提取 `getGeneralName(g)`/`getImageSourceUrl(g)`（含 `_hegemony` 后缀处理）；source/visible 绑定；general2Image 对称 kingdom frame；player null fallback。
+- `qml/RoomScene.qml`：根 `CppRoomScene`。`property list<Photo> otherPhotos`（QTBUG-147713）。`lay()` 按 `effectiveSeat` 布局。`Component.onCompleted` 预创建占位 Photo（seat 2..N，未绑 player）。`Connections` 接收全部 `notify*`。`activeBox` 跟踪当前活动响应 box（按 status 自适应，同一时间只有一个）。含 `testItemToBeRemovedAfterTest` 测试桩。addRobot/fillRobots 已实现。
+- `qml/Photo.qml`：`player` + `required property int seat`。提取 `getGeneralName(g)`/`getImageSourceUrl(g)`（含 `_hegemony` 后缀处理）；source/visible 绑定；general2Image 对称 kingdom frame；player null fallback。`phase` 绑定 `player.phaseValue`（枚举）；未开始时 `general` 用 `player.avatar`；`PhaseItem` anchors 按 `selfPhoto` 区分（selfPhoto 下方居中 / 非 selfPhoto 右侧 `anchors.right: photo.left`）；`duozhi`（夺志，禁止角色使用/打出牌）时主副将图显示嘤嘤怪。
 - `qml/Dashboard.qml`：Trust/Discard/Cancel/OK 四按钮（`anchors.bottom: cardArea.top` 浮在手牌区上方）；`clientInstance` 属性。
 - `qml/CardItem.qml`：`signal clicked`/`rightClicked`（左/右键分发）；`selected` 属性注释掉（待实现）。
 - `qml/GraphicsBox.qml`：图片背景可拖拽容器基类（Image 根，无标题/操作按钮）。
@@ -85,7 +85,7 @@
 
 ### 选将流程约定
 - **不用 ExecDialog**：`askForGeneral` 统一 `setStatus(AskForGeneralTaken)`（原非国战走 ExecDialog 已改）。
-- **OK 按钮复用 Dashboard 的**：ChooseGeneralBox 不自带 OK，通过 `roomScene.activeChooseGeneralBox` 跟踪，Dashboard OK 按钮触发 `accept()`。
+- **OK 按钮复用 Dashboard 的**：响应 box（ChooseGeneralBox 等）不自带 OK，通过 `roomScene.activeBox`（通用，按 status 自适应，同一时间只有一个）跟踪，Dashboard OK 按钮触发 `activeBox.accept()`。
 - **single_result 语义**：非国战/平异 = `true`（单将）；国战双将 = 服务器给定。`askForGeneral` 非国战分支需设 `single_result = true`（原保持 false 导致误走双将）。
 - **国战双将势力校验**：双将必须同势力（kingdom），或至少一方为 `"zhu"`（百搭势力）。规则与服务器 `room.cpp:3723`、旧版 `uibackup/choosegeneralbox.cpp:489` 一致。QML 侧 `ChooseGeneralBox._canPair(g1, g2)` 直接调 `Sanguosha.getGeneral(name).kingdom`（`Engine::getGeneral` 已加 `Q_INVOKABLE`，QML 可直查，不判空不过度防御）；`_toggle` 选第二个将时拦截不合规搭配。**灰显**：`_isDimmed(g)` 联动 CardItem 标准 `enabled` 属性（`enabled: !_isDimmed(g)`），禁用时半透明黑遮罩覆盖（`visible: !enabled`，不用 opacity 避免漏 GraphicsBox 背景）——0 选不禁、1 选禁不可搭配、2 选禁全部未选。用 `enabled` 而非自定义属性，因 CardItem 作为手牌/装备等其他牌时也需禁用机制，统一复用。**OK 启用**：`canAccept`（单将≥1、双将=2）绑定 Dashboard OK 按钮 enabled 与 accept 校验，选未满不可确认。
 - **回传格式**：单将 `name`，双将 `name1+name2`（与旧版 `reply()` 一致）。
@@ -95,7 +95,8 @@
 
 ### UI 约定
 - **GraphicsBox 基类**：Image 根（直接用 source 属性）、可拖拽、无标题/操作按钮/信号、default property content 槽位、Component.onCompleted 居中（x/y 而非 anchors，兼容拖拽）。
-- **Dashboard 按钮**：`anchors.bottom: cardArea.top` + `bottomMargin` + `horizontalCenter` 浮在手牌区上方；268×133，font.pixelSize 50。**enabled 按 `Client::status`**：Discard=`Playing`；Cancel=`ExecDialog`/`AskForSkillInvoke` 或（`Responding`系列/`Discarding`/`Exchanging` 且 `discardActionRefusable`）；OK=选将 `canAccept` 或 `AskForSkillInvoke`（其他响应状态待 CardItem 选卡落地后按选卡启用）。`Client::Status` 经 `Q_ENUM` + uncreatable 注册，QML 用 `Client.Playing` 等枚举名比较；`discardActionRefusable` 经 `Q_PROPERTY`（READ `isDiscardActionRefusable`/setter/NOTIFY `discardActionRefusableChanged`）暴露。
+- **响应 box 接口约定**：所有需 Dashboard OK 确认的响应 box（ChooseGeneralBox/ChooseOptionsBox/ChooseTriggerOrderBox 等，多基于 GraphicsBox）须提供统一接口：`property bool canAccept`（当前选择是否可确认）+ `function accept()`（确认并回传/清理）。创建时 `roomScene.activeBox = box`，accept/销毁时 `roomScene.activeBox = null`。Dashboard 只认 `activeBox.canAccept`/`activeBox.accept()`，新增 box 类型不需改 Dashboard。同一时间只有一个活动 box（按 status 自适应）。
+- **Dashboard 按钮**：`anchors.bottom: cardArea.top` + `bottomMargin` + `horizontalCenter` 浮在手牌区上方；268×133，font.pixelSize 50。**enabled 按 `Client::status`**：Discard=`Playing`；Cancel=`ExecDialog`/`AskForSkillInvoke` 或（`Responding`系列/`Discarding`/`Exchanging` 且 `discardActionRefusable`）；OK=活动 box `canAccept` 或 `AskForSkillInvoke`（其他响应状态待 CardItem 选卡落地后按选卡启用）。`Client::Status` 经 `Q_ENUM` + uncreatable 注册，QML 用 `Client.Playing` 等枚举名比较；`discardActionRefusable` 经 `Q_PROPERTY`（READ `isDiscardActionRefusable`/setter/NOTIFY `discardActionRefusableChanged`）暴露。enabled 由 `Dashboard.updateStatus()` 命令式设置（`okEnabled`/`cancelEnabled`/`discardEnabled` property），`Connections` 监听 `status_changed`/`discardActionRefusableChanged`/`activeBoxChanged`/选将框 `canAcceptChanged` 触发。`updateStatus` 是 status 变化统一入口（镜像旧 `RoomScene::updateStatus`），后续 prompt/card pending/skill/target 选择等逻辑在此补；OK 点击在响应状态走目标选择等复杂流程，不只靠绑定。
 - **资源访问**：统一用 `G.getAssetUrl(path)`（原 getUrl 已删）。
 - **禁用 `z` 属性**：所有 UI 界面靠元素的声明顺序/父子层级（后声明的同级元素渲染在上层）解决相互覆盖，**不使用 `z` 属性**调整堆叠。**历史原因**：旧代码（`src/uibackup/`）滥用 `z` 调整堆叠，目前已用到小数点前 5 位（万级），为给以后调整留空间，现阶段能不用 `z` 就一律不用。
 
@@ -115,7 +116,7 @@
 `MainWindow::qml_switchToRoomScene` → `RootItem` Connections → `roomSceneComponent.createObject`。此时 ClientInstance/Self 已存在，RoomScene 构造立即 `connectClientSignals()`。
 
 ### 选将数据流
-`Client::askForGeneral` emit `generals_got(generals, single_result, can_convert)` → 桥接 `notifyGeneralsGot` → RoomScene `onNotifyGeneralsGot` 创建 ChooseGeneralBox（传 singleResult，设 activeChooseGeneralBox）→ 选将（右键可 freechoose）→ Dashboard OK → `accept()` emit `generalChosen` → `ClientInstance.onPlayerChooseGeneral(name)`（`replyToServer(S_COMMAND_CHOOSE_GENERAL)`）。
+`Client::askForGeneral` emit `generals_got(generals, single_result, can_convert)` → 桥接 `notifyGeneralsGot` → RoomScene `onNotifyGeneralsGot` 创建 ChooseGeneralBox（传 singleResult，设 activeBox）→ 选将（右键可 freechoose）→ Dashboard OK → `accept()` emit `generalChosen` → `ClientInstance.onPlayerChooseGeneral(name)`（`replyToServer(S_COMMAND_CHOOSE_GENERAL)`）。
 
 ## 6. 进度记录
 
@@ -200,6 +201,7 @@
 - OK/Cancel/Discard 的 enabled 从硬编码 false 改为按 `dashboard.clientInstance.status` 绑定（`Client::Status` 经 `Q_ENUM` + uncreatable 注册，QML 用 `Client.Playing` 等枚举名比较）。
 - Discard=`Playing`；Cancel=`ExecDialog`/`AskForSkillInvoke` 或（`Responding`系列/`Discarding`/`Exchanging` 且 `discardActionRefusable`）；OK=选将 `canAccept` ‖ `AskForSkillInvoke`。Responding 系列用 `status & Client.ClientStatusBasicMask === Client.Responding` 判断（涵盖 RespondingUse 等高位变体）。
 - 暴露 `m_isDiscardActionRefusable` 给 QML：`client.h` 加 `Q_PROPERTY(bool discardActionRefusable READ isDiscardActionRefusable NOTIFY discardActionRefusableChanged)` + getter/setter + 信号（成员保留 public）；`client.cpp` 实现 setter（仅变化时 emit），9 处 `m_isDiscardActionRefusable = X` 改走 `setDiscardActionRefusable(X)`（构造函数初始化列表保留）。
+- 按钮 enabled 改为 `Dashboard.updateStatus()` 命令式设置（`okEnabled`/`cancelEnabled`/`discardEnabled` property），`Connections` 监听 status/refusable/activeBox/canAccept 变化触发。`updateStatus` 用 `switch(status & ClientStatusBasicMask)` 按 status 分支设按钮 enabled（镜像旧 `uibackup/roomscene.cpp:2784-2949`），后续 prompt/card pending/skill/target 选择等逻辑在各 case 补；OK 点击在响应状态走目标选择等复杂流程，不只靠绑定。
 - Responding 等状态的 OK 待 CardItem 选卡落地后按选卡启用。参考 `uibackup/roomscene.cpp:2784-2949`。
 
 ## 7. 下一步

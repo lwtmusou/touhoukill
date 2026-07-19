@@ -4,11 +4,105 @@ import rocks.touhousatsu 1.0
 Item {
     id: dashboard
 
+    property bool cancelEnabled: false
     property var clientInstance: parent ? parent.ClientInstance : null
+    property bool discardEnabled: false
+
+    // Button enabled state, set imperatively by updateStatus() (mirrors old
+    // RoomScene::updateStatus in uibackup/roomscene.cpp:2784-2949). OK cannot rely solely
+    // on bindings because clicking it under some statuses drives complex flows (card
+    // response with target choosing, skill confirm, etc.) that updateStatus must prepare.
+    property bool okEnabled: false
+    required property var photo
+
+    function updateStatus() {
+        // Defaults; each case overrides as needed.
+        okEnabled = false;
+        cancelEnabled = false;
+        discardEnabled = false;
+
+        if (clientInstance === null)
+            return;
+
+        var s = clientInstance.status;
+        var refusable = clientInstance.discardActionRefusable;
+        var box = parent !== null ? parent.activeBox : null;
+
+        switch (s & Client.ClientStatusBasicMask) {
+        case Client.NotActive:
+            break;
+        case Client.Responding:
+            cancelEnabled = refusable;
+            // TODO: okEnabled after card+target selection (CardItem TODO)
+            break;
+        case Client.Playing:
+            discardEnabled = true;
+            break;
+        case Client.Discarding:
+        case Client.Exchanging:
+            cancelEnabled = refusable;
+            break;
+        case Client.ExecDialog:
+            cancelEnabled = true;
+            break;
+        case Client.AskForSkillInvoke:
+            okEnabled = true;
+            cancelEnabled = true;
+            break;
+        case Client.AskForPlayerChoose:
+            cancelEnabled = refusable;
+            break;
+        case Client.AskForShowOrPindian:
+            break;
+        case Client.AskForGeneralTaken:
+            // Choose-general: OK confirms via activeBox.canAccept.
+            okEnabled = box !== null && box.canAccept;
+            break;
+        default:
+            break;
+        }
+
+        // TODO: remaining updateStatus logic per old uibackup/roomscene.cpp:2784-2949:
+        //   prompt box show/hide, card pending (response_skill/discard_skill/showorpindian_skill),
+        //   skill button enable/highlight, target selection prep, card enable/disable.
+    }
 
     height: 360
 
+    Component.onCompleted: updateStatus()
+    onClientInstanceChanged: updateStatus()
+
+    Connections {
+        function onDiscardActionRefusableChanged() {
+            dashboard.updateStatus();
+        }
+
+        function onStatusChanged() {
+            dashboard.updateStatus();
+        }
+
+        target: dashboard.clientInstance
+    }
+
+    Connections {
+        function onActiveChooseGeneralBoxChanged() {
+            dashboard.updateStatus();
+        }
+
+        target: dashboard.parent
+    }
+
+    Connections {
+        function onCanAcceptChanged() {
+            dashboard.updateStatus();
+        }
+
+        target: dashboard.parent !== null ? dashboard.parent.activeBox : null
+    }
+
     Image {
+        id: equipBg
+
         anchors.left: parent.left
         anchors.top: parent.top
         height: parent.height
@@ -78,6 +172,8 @@ Item {
     }
 
     Image {
+        id: cardBg
+
         anchors.right: parent.right
         anchors.top: parent.top
         height: parent.height
@@ -115,7 +211,7 @@ Item {
                 // Enabled in Playing phase (used to end the play / skip). Discarding-phase
                 // discard submits via OK after card selection (TODO: wire onPlayerDiscardCards
                 // once CardItem selection lands).
-                enabled: dashboard.clientInstance != null && dashboard.clientInstance.status === Client.Playing
+                enabled: dashboard.discardEnabled
                 font.pixelSize: 50
                 height: 133
                 source: G.getAssetUrl("image/system/button/button.png")
@@ -128,13 +224,7 @@ Item {
             QSanButton {
                 // Enabled in ExecDialog / AskForSkillInvoke, or in Responding/Discarding/Exchanging
                 // when the discard action is refusable (Client::discardActionRefusable).
-                enabled: dashboard.clientInstance != null
-                         && (dashboard.clientInstance.status === Client.ExecDialog
-                             || dashboard.clientInstance.status === Client.AskForSkillInvoke
-                             || (dashboard.clientInstance.discardActionRefusable
-                                 && ((dashboard.clientInstance.status & Client.ClientStatusBasicMask) === Client.Responding
-                                     || dashboard.clientInstance.status === Client.Discarding
-                                     || dashboard.clientInstance.status === Client.Exchanging)))
+                enabled: dashboard.cancelEnabled
                 font.pixelSize: 50
                 height: 133
                 source: G.getAssetUrl("image/system/button/button.png")
@@ -147,9 +237,7 @@ Item {
             QSanButton {
                 // OK: confirms ChooseGeneralBox selection, or acknowledges AskForSkillInvoke.
                 // Other response statuses enable OK after card selection lands (CardItem.selected TODO).
-                enabled: dashboard.clientInstance != null
-                         && ((dashboard.parent && dashboard.parent.activeChooseGeneralBox !== null && dashboard.parent.activeChooseGeneralBox.canAccept)
-                             || dashboard.clientInstance.status === Client.AskForSkillInvoke)
+                enabled: dashboard.okEnabled
                 font.pixelSize: 50
                 height: 133
                 source: G.getAssetUrl("image/system/button/button.png")
@@ -157,11 +245,18 @@ Item {
                 width: 268
 
                 onClicked: {
-                    if (dashboard.parent && dashboard.parent.activeChooseGeneralBox !== null)
-                        dashboard.parent.activeChooseGeneralBox.accept();
+                    if (dashboard.parent && dashboard.parent.activeBox !== null)
+                        dashboard.parent.activeBox.accept();
                     // TODO: handle AskForSkillInvoke / card-response OK once wired
                 }
             }
         }
+    }
+
+    PhaseItem {
+        anchors.right: cardBg.right
+        anchors.top: cardBg.bottom
+        phase: photo.phase
+        visible: photo.gameStarted
     }
 }

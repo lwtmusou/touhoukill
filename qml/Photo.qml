@@ -20,7 +20,7 @@ Item {
     property int maxhp: player.maxhp
     property real originalX
     property real originalY
-    property int phase: Player.NotActive
+    property int phase: player.phaseValue
     property ClientPlayer player
     property var privatePile: ({})
     property string role: player.role
@@ -408,6 +408,6 @@ Item {
         anchors.horizontalCenter: photo.horizontalCenter
         anchors.top: photo.bottom
         phase: photo.phase
-        visible: photo.gameStarted
+        visible: photo.gameStarted && !photo.selfPhoto
     }
 }
