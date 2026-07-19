@@ -31,7 +31,7 @@ Item {
         cardId = -1;
         general = "";
 
-        cardImage.source = G.getUrl("image/system/card-back.png");
+        cardImage.source = G.getAssetUrl("image/system/card-back.png");
         cardSuitImage.visible = false;
         cardNumberImage.visible = false;
     }
@@ -46,13 +46,13 @@ Item {
         general = "";
 
         var card = Sanguosha.getEngineCard(cardId);
-        cardImage.source = G.getUrl("image/card/" + card.objectName + ".png");
-        cardSuitImage.source = G.getUrl("image/system/cardsuit/" + card.suit + ".png");
+        cardImage.source = G.getAssetUrl("image/card/" + card.objectName + ".png");
+        cardSuitImage.source = G.getAssetUrl("image/system/cardsuit/" + card.suit + ".png");
 
         if (card.red)
-            cardNumberImage.source = G.getUrl("image/system/red/" + card.number.toString() + ".png");
+            cardNumberImage.source = G.getAssetUrl("image/system/red/" + card.number.toString() + ".png");
         else
-            cardNumberImage.source = G.getUrl("image/system/black/" + card.number.toString() + ".png");
+            cardNumberImage.source = G.getAssetUrl("image/system/black/" + card.number.toString() + ".png");
 
         cardSuitImage.visible = true;
         cardNumberImage.visible = true;
@@ -62,7 +62,7 @@ Item {
             return;
         cardId = -1;
 
-        cardImage.source = G.getUrl("image/generals/card/" + general + ".jpg");
+        cardImage.source = G.getAssetUrl("image/generals/card/" + general + ".jpg");
         cardSuitImage.visible = false;
         cardNumberImage.visible = false;
     }

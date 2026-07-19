@@ -12,7 +12,7 @@ Image {
     onPhaseChanged: {
         if (G.isPlayerMainPhase(phase)) {
             opacity = 1;
-            source = G.getUrl("image/system/phase/" + G.playerPhaseToString(phase) + ".png");
+            source = G.getAssetUrl("image/system/phase/" + G.playerPhaseToString(phase) + ".png");
         } else {
             opacity = 0;
         }

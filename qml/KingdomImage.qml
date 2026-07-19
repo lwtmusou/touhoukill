@@ -9,6 +9,6 @@ Image {
     width: 56
 
     onKingdomChanged: {
-        source = G.getUrl("image/kingdom/icon/" + kingdom + ".png");
+        source = G.getAssetUrl("image/kingdom/icon/" + kingdom + ".png");
     }
 }

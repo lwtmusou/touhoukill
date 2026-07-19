@@ -43,7 +43,7 @@ GraphicsBox {
     }
 
     height: 460
-    source: G.getUrl("image/system/card-container.png")
+    source: G.getAssetUrl("image/system/card-container.png")
     width: 720
 
     GridView {

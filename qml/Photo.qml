@@ -57,7 +57,7 @@ Item {
         if (g.endsWith("_hegemony"))
             generalImageFileName = g.substring(0, g.length - 9);
 
-        return G.getUrl("image/fullskin/generals/full/" + generalImageFileName + ".png");
+        return G.getAssetUrl("image/fullskin/generals/full/" + generalImageFileName + ".png");
     }
 
     height: 407
@@ -98,7 +98,7 @@ Item {
             if (huashenGeneral2.endsWith("_hegemony"))
                 huashen2ImageFileName = huashenGeneral2.substring(0, huashenGeneral2.length - 9);
 
-            huashen2Image.source = G.getUrl("image/fullskin/generals/full/" + huashen2ImageFileName + ".png");
+            huashen2Image.source = G.getAssetUrl("image/fullskin/generals/full/" + huashen2ImageFileName + ".png");
             huashen2Image.visible = true;
         }
     }
@@ -110,7 +110,7 @@ Item {
             if (huashenGeneral.endsWith("_hegemony"))
                 huashenImageFileName = huashenGeneral.substring(0, huashenGeneral.length - 9);
 
-            huashenImage.source = G.getUrl("image/fullskin/generals/full/" + huashenImageFileName + ".png");
+            huashenImage.source = G.getAssetUrl("image/fullskin/generals/full/" + huashenImageFileName + ".png");
             huashenImage.visible = true;
         }
     }
@@ -189,7 +189,7 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: banner.height - 8
             height: 196
-            source: G.getUrl("image/kingdom/frame/" + photo.kingdom + ".png")
+            source: G.getAssetUrl("image/kingdom/frame/" + photo.kingdom + ".png")
             visible: photo.gameStarted
             width: 72
 
@@ -278,7 +278,7 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: banner.height - 8
             height: 196
-            source: G.getUrl("image/kingdom/frame/" + photo.kingdom + ".png")
+            source: G.getAssetUrl("image/kingdom/frame/" + photo.kingdom + ".png")
             visible: photo.gameStarted
             width: 72
 

@@ -7,11 +7,11 @@ Image {
     property int num: 0
 
     height: 36
-    source: G.getUrl("image/fullskin/system/handcard/touhougod.png")
+    source: G.getAssetUrl("image/fullskin/system/handcard/touhougod.png")
     width: 60
 
     onKingdomChanged: {
-        source = G.getUrl("image/fullskin/system/handcard/" + kingdom + ".png");
+        source = G.getAssetUrl("image/fullskin/system/handcard/" + kingdom + ".png");
         var color = Sanguosha.getKingdomColor(kingdom);
         if ((color.r * 0.3 + color.g * 0.59 + color.b * 0.11) < 0.5)
             numText.color = "white";

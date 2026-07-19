@@ -63,7 +63,7 @@ Item {
         }
     }
     onRoleChanged: {
-        fixedImage.source = G.getUrl("image/system/roles/" + role + ".png");
+        fixedImage.source = G.getAssetUrl("image/system/roles/" + role + ".png");
     }
     onRoleShownChanged: {
         if (roleShown)

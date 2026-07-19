@@ -8,13 +8,19 @@
 #include "util.h"
 
 #include <QApplication>
+#include <QFileInfo>
 #include <QFont>
 #include <QFontDatabase>
 #include <QtQml>
 
-QUrl TouhouKillQmlUiGlobal::getUrl(const QString &path) const
+QUrl TouhouKillQmlUiGlobal::getAssetUrl(const QString &path) const
 {
     return QDir::current().absoluteFilePath(path);
+}
+
+bool TouhouKillQmlUiGlobal::assetExists(const QString &path) const
+{
+    return QFileInfo::exists(path);
 }
 
 bool TouhouKillQmlUiGlobal::isHegemonyGameMode(const QString &mode) const

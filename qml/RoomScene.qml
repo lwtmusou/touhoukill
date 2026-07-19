@@ -140,7 +140,7 @@ CppRoomScene {
     }
 
     Component.onCompleted: {
-        backgroundImage.source = G.getUrl(Config.TableBgImage);
+        backgroundImage.source = G.getAssetUrl(Config.TableBgImage);
 
         var playercount = Sanguosha.getPlayerCount(ServerInfo.GameMode);
 
@@ -440,7 +440,7 @@ CppRoomScene {
 
                 anchors.fill: parent
                 font.pixelSize: 50
-                source: G.getUrl("image/system/button/button.png")
+                source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Add Robot")
                 visible: !roomScene.gameStarted && roomScene.Self.owner && ServerInfo.EnableAI
 
@@ -458,7 +458,7 @@ CppRoomScene {
 
                 anchors.fill: parent
                 font.pixelSize: 50
-                source: G.getUrl("image/system/button/button.png")
+                source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Fill Robot")
                 visible: !roomScene.gameStarted && roomScene.Self.owner && ServerInfo.EnableAI
 
@@ -482,7 +482,7 @@ CppRoomScene {
 
                 anchors.fill: parent
                 font.pixelSize: 50
-                source: G.getUrl("image/system/button/button.png")
+                source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Return to main menu")
                 visible: !roomScene.gameStarted && !roomScene.gameOver
 
@@ -562,7 +562,7 @@ CppRoomScene {
 
             QSanButton {
                 height: 100
-                source: G.getUrl("image/system/button/button.png")
+                source: G.getAssetUrl("image/system/button/button.png")
                 text: "toggle"
                 width: 100
 

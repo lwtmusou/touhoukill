@@ -5,7 +5,7 @@ import rocks.touhousatsu 1.0
 // Generic draggable container with an image background, base for popups/boxes
 // (QML counterpart of the old QGraphics GraphicsBox). No title, no action buttons;
 // subclasses populate content via the default `content` slot. Set `source` to the
-// background image url (e.g. G.getUrl("image/system/guanxing-box.png")).
+// background image url (e.g. G.getAssetUrl("image/system/guanxing-box.png")).
 
 Image {
     id: graphicsBox

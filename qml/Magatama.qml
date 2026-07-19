@@ -12,14 +12,14 @@ Image {
     function refresh() {
         if (lost) {
             if (dyingThreshold)
-                source = G.getUrl("image/system/magatamas/0d.png");
+                source = G.getAssetUrl("image/system/magatamas/0d.png");
             else
-                source = G.getUrl("image/system/magatamas/0.png");
+                source = G.getAssetUrl("image/system/magatamas/0.png");
         } else {
             if (dyingThreshold)
-                source = G.getUrl("image/system/magatamas/" + n.toString() + "d.png");
+                source = G.getAssetUrl("image/system/magatamas/" + n.toString() + "d.png");
             else
-                source = G.getUrl("image/system/magatamas/" + n.toString() + ".png");
+                source = G.getAssetUrl("image/system/magatamas/" + n.toString() + ".png");
         }
     }
 

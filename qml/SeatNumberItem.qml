@@ -11,7 +11,7 @@ Image {
     onSeatChanged: {
         if (seat >= 1 && seat <= 10) {
             opacity = 1;
-            source = G.getUrl("image/system/seat-num/photo/" + seat.toString() + ".png");
+            source = G.getAssetUrl("image/system/seat-num/photo/" + seat.toString() + ".png");
         } else {
             opacity = 0;
         }

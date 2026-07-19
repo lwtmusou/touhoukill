@@ -22,7 +22,7 @@ Item {
         if (role !== "unknown")
             pngname = pngname + "-1";
 
-        displayArea.source = G.getUrl("image/system/roles/" + pngname + ".png");
+        displayArea.source = G.getAssetUrl("image/system/roles/" + pngname + ".png");
     }
     onRoleShownChanged: {
         if (roleShown)
@@ -34,7 +34,7 @@ Item {
 
         anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        source: G.getUrl("image/system/roles/unknown.png")
+        source: G.getAssetUrl("image/system/roles/unknown.png")
 
         MouseArea {
             anchors.fill: parent
@@ -51,7 +51,7 @@ Item {
         anchors.centerIn: parent
         fillMode: Image.PreserveAspectFit
         height: parent.height * 1.3
-        source: G.getUrl("image/system/role_shown_icon.png")
+        source: G.getAssetUrl("image/system/role_shown_icon.png")
         visible: roleComboBox.roleShown
         width: parent.width * 1.3
     }
@@ -121,9 +121,9 @@ Item {
                 height: roleComboBox.height
                 source: {
                     if (modelData == "unknown")
-                        return G.getUrl("image/system/roles/unknown.png");
+                        return G.getAssetUrl("image/system/roles/unknown.png");
 
-                    return G.getUrl("image/system/roles/" + modelData + "-1.png");
+                    return G.getAssetUrl("image/system/roles/" + modelData + "-1.png");
                 }
                 width: roleComboBox.width
 

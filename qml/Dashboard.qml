@@ -12,7 +12,7 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         height: parent.height
-        source: G.getUrl("image/system/dashboard-equip.png")
+        source: G.getAssetUrl("image/system/dashboard-equip.png")
         width: 347
 
         // TODO: Switch to QSanSkillButton!
@@ -81,7 +81,7 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         height: parent.height
-        source: G.getUrl("image/system/dashboard-hand.png")
+        source: G.getAssetUrl("image/system/dashboard-hand.png")
         width: parent.width - 347
 
         CardContainer {
@@ -104,7 +104,7 @@ Item {
                 enabled: dashboard.clientInstance != null
                 font.pixelSize: 50
                 height: 133
-                source: G.getUrl("image/system/button/button.png")
+                source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Trust")
                 width: 268
 
@@ -116,7 +116,7 @@ Item {
                 enabled: false
                 font.pixelSize: 50
                 height: 133
-                source: G.getUrl("image/system/button/button.png")
+                source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Discard")
                 width: 268
 
@@ -128,7 +128,7 @@ Item {
                 enabled: false
                 font.pixelSize: 50
                 height: 133
-                source: G.getUrl("image/system/button/button.png")
+                source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Cancel")
                 width: 268
 
@@ -140,7 +140,7 @@ Item {
                 enabled: dashboard.parent && dashboard.parent.activeChooseGeneralBox !== null && dashboard.parent.activeChooseGeneralBox.selectedGenerals.length > 0
                 font.pixelSize: 50
                 height: 133
-                source: G.getUrl("image/system/button/button.png")
+                source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("OK")
                 width: 268
 
