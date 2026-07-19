@@ -84,7 +84,7 @@ signals:
     void notifyPlayerAdded(ClientPlayer *newPlayer);
     void notifyPlayerRemoved(const QString &playerName);
     void notifySeatsArranged();
-    void notifyStatusChanged(int oldStatus, int newStatus);
+    void notifyStatusChanged(int newStatus);
     void notifyPlayerKilled(const QString &who);
     void notifyPlayerRevived(const QString &who);
     void notifyDashboardDeath(const QString &who);

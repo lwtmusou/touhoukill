@@ -333,7 +333,7 @@ signals:
     void seats_arranged();
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void maxhp_changed(const QString &who, int delta);
-    void status_changed(Client::Status oldStatus, Client::Status newStatus);
+    void status_changed(Client::Status newStatus);
     void avatars_hiden();
     void pile_reset();
     void player_killed(const QString &who);

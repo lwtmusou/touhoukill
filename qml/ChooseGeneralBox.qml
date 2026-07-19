@@ -10,13 +10,9 @@ import rocks.touhousatsu 1.0
 GraphicsBox {
     id: chooseGeneralBox
 
-    source: G.getUrl("image/system/card-container.png")
-    height: 460
-    width: 720
-
     property var generals: []
-    property bool singleResult: true
     property var selectedGenerals: []
+    property bool singleResult: true
 
     signal generalChosen(string generalName)
 
@@ -45,6 +41,10 @@ GraphicsBox {
             chooseGeneralBox.destroy();
         }
     }
+
+    height: 460
+    source: G.getUrl("image/system/card-container.png")
+    width: 720
 
     GridView {
         id: generalGrid

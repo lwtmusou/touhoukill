@@ -880,7 +880,8 @@ void Client::setStatus(Status status)
         _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     else
         _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_UNKNOWN);
-    emit status_changed(old_status, status);
+    if (old_status != status)
+        emit status_changed(status);
 }
 
 Client::Status Client::getStatus() const
@@ -1769,6 +1770,7 @@ void Client::askForGeneral(const QVariant &arg)
     if (!isHegemonyGameMode(ServerInfo.GameMode) || Self->hasFlag("Pingyi_Choose")) {
         if (!tryParse(arg, generals))
             return;
+        single_result = true;
     } else {
         if (!tryParse(args[0], generals))
             return;

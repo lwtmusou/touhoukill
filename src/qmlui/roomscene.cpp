@@ -198,8 +198,8 @@ void RoomScene::connectClientSignals()
         // Seat is assigned by arrangeSeats; QML reads photo.player.seat directly.
         emit notifySeatsArranged();
     });
-    connect(client, &Client::status_changed, this, [this](Client::Status oldStatus, Client::Status newStatus) {
-        emit notifyStatusChanged(static_cast<int>(oldStatus), static_cast<int>(newStatus));
+    connect(client, &Client::status_changed, this, [this](Client::Status newStatus) {
+        emit notifyStatusChanged(static_cast<int>(newStatus));
     });
     connect(client, &Client::player_killed, this, [this](const QString &who) {
         emit notifyPlayerKilled(who);

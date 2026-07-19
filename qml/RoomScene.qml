@@ -5,6 +5,9 @@ import rocks.touhousatsu 1.0
 CppRoomScene {
     id: roomScene
 
+    // Currently active ChooseGeneralBox instance (null when none); Dashboard OK button confirms it.
+    property var activeChooseGeneralBox: null
+
     // arrangementXXX: [0: right, 1: top, 2: left]
 
     readonly property var arrangement1v2: [//
@@ -42,9 +45,7 @@ CppRoomScene {
 
     // QTBUG-147713: remove this property before running qmlformat, add it back afterwards
     property list<Photo> otherPhotos
-    // Currently active ChooseGeneralBox instance (null when none); Dashboard OK button confirms it.
-    property var activeChooseGeneralBox: null
-
+    
     signal spaceClicked
 
     function lay() {
@@ -249,9 +250,9 @@ CppRoomScene {
         function onNotifyGeneralsGot(generals, singleResult, canConvert) {
             console.log("[bridge->qml] notifyGeneralsGot", generals.length, singleResult, canConvert);
             var box = chooseGeneralBoxComponent.createObject(roomScene, {
-                                                                  "generals": generals,
-                                                                  "singleResult": singleResult
-                                                              });
+                                                                 "generals": generals,
+                                                                 "singleResult": singleResult
+                                                             });
             roomScene.activeChooseGeneralBox = box;
             box.generalChosen.connect(function (name) {
                 roomScene.ClientInstance.onPlayerChooseGeneral(name);
@@ -383,8 +384,8 @@ CppRoomScene {
             console.log("[bridge->qml] notifyStartInXs");
         }
 
-        function onNotifyStatusChanged(oldStatus, newStatus) {
-            console.log("[bridge->qml] notifyStatusChanged", oldStatus, "->", newStatus);
+        function onNotifyStatusChanged(newStatus) {
+            console.log("[bridge->qml] notifyStatusChanged", newStatus);
         }
 
         function onNotifySuitsGot(suits) {

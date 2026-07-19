@@ -339,7 +339,7 @@ void RoomThread::run()
         using_countdown = false;
 
 #ifndef QT_NO_DEBUG
-    using_countdown = false;
+    // using_countdown = false;
 #endif
 
     if (using_countdown) {

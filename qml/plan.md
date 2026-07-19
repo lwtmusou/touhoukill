@@ -153,7 +153,7 @@ src/uibackup/                 # [DELETE] 确认无引用后整体删除
 - `qml/RoomScene.qml`：`onNotifyGeneralsGot` 传 `singleResult`，设 `activeChooseGeneralBox`，`generalChosen` 连接 `ClientInstance.onPlayerChooseGeneral(name)`。
 - `qml/Dashboard.qml`：OK 按钮 `enabled` 绑定 `activeChooseGeneralBox.selectedGenerals.length > 0`，`onClicked` 调 `accept()`。
 - `src/client/client.cpp`：`askForGeneral` 非国战分支 `setStatus(ExecDialog)` → `setStatus(AskForGeneralTaken)`。
-- `src/client/client.h`：`Q_PROPERTY(Status status ... NOTIFY status_changed)`（复用现有 `status_changed` 信号，QML 可响应 status 变化）。
+- `src/client/client.h/cpp`：`Q_PROPERTY(Status status ... NOTIFY status_changed)`，`status_changed` 信号改为规范单参 `status_changed(Status newStatus)`（原双参 old/new 不符合 Qt NOTIFY 规范），`setStatus` 同步 emit 并移除无用 `old_status`；桥接 `notifyStatusChanged(int newStatus)` 单参。
 - `src/qmlui/roomscene.h/cpp`：新增 `Q_INVOKABLE freeChooseGeneral()`，弹 C++ `FreeChooseDialog`（modal exec，parent 用全局 `MainWindowInstance`），连接 `general_chosen` 捕获将名返回。
 - 流程：`generals_got` → ChooseGeneralBox → 选将（右键可 freechoose 换将）→ Dashboard OK → `accept()` → `onPlayerChooseGeneral`（`replyToServer(S_COMMAND_CHOOSE_GENERAL)`，双将 `name1+name2`）。
 - KnownBoth 是"知己知彼"卡牌效果（非国战双将），未实现。

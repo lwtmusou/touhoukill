@@ -73,7 +73,8 @@ Room::Room(QObject *parent, const QString &mode)
     // BlockingQueuedConnection: RoomThread blocks until the main thread executes the slot.
     // INVARIANT: never call setPlayerProperty while holding _m_semRoomMutex on RoomThread, or a deadlock occurs
     // if the main thread is simultaneously blocked on _m_semRoomMutex.acquire() in processResponse.
-    connect(this, SIGNAL(signalSetProperty(ServerPlayer *, const char *, QVariant)), this, SLOT(slotSetProperty(ServerPlayer *, const char *, QVariant)), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(signalSetProperty(ServerPlayer *, const char *, QVariant)), this, SLOT(slotSetProperty(ServerPlayer *, const char *, QVariant)),
+            Qt::BlockingQueuedConnection);
 
     m_generalSelector = new GeneralSelector(this);
 }
@@ -1967,7 +1968,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_AMAZING_GRACE);
-    Q_ASSERT(card_ids.length() > 0);
+    Q_ASSERT(!card_ids.empty() || refusable);
 
     int card_id = -1;
     if (card_ids.length() == 1 && !refusable)

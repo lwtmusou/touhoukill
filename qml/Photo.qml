@@ -8,39 +8,57 @@ Item {
     property bool banling: player.linghp !== -2147483647 - 1
     property int dyingThreshold: player.dyingFactor
     property bool gameStarted: false
-    property string general: {
-        if (gameStarted)
-            return player.general;
-        return player.avatar;
-    }
-    property string general2: {
-        if (gameStarted)
-            return player.general2;
-        return "";
-    }
-    property int hp: {
-        if (banling)
-            return player.renhp;
-        return player.hp;
-    }
+    property string general: (gameStarted ? player.general : (player != null ? player.avatar : "yingyingguai"))
+    property string general2: (gameStarted ? player.general2 : "")
+    property int hp: (banling ? player.renhp : player.hp)
     property string huashenGeneral
     property string huashenGeneral2
     property string huashenSkillName
     property string huashenSkillName2
     property string kingdom: player.kingdom
     property int linghp: player.linghp
-    property int maxhp: 5
+    property int maxhp: player.maxhp
     property real originalX
     property real originalY
     property int phase: Player.NotActive
     property ClientPlayer player
-    property string playerName
     property var privatePile: ({})
     property string role: player.role
     property bool roleShown: player.role_shown
     property string screenName: player.screenname
     required property int seat
     property bool selfPhoto: false
+
+    function getGeneralName(g: string): string {
+        if (g === "")
+            return "";
+
+        var toTranslate = "&" + g;
+        var r = Sanguosha.translate(toTranslate);
+
+        if (r == toTranslate)
+            r = Sanguosha.translate(g);
+
+        if (r == toTranslate && g.endsWith("_hegemony")) {
+            toTranslate = "&" + g.substring(0, g.length - 9);
+            r = Sanguosha.translate(toTranslate);
+            if (r == toTranslate)
+                r = Sanguosha.translate(g.substring(0, g.length - 9));
+        }
+
+        return r;
+    }
+
+    function getImageSourceUrl(g: string): url {
+        if (g === "")
+            return null;
+
+        var generalImageFileName = g;
+        if (g.endsWith("_hegemony"))
+            generalImageFileName = g.substring(0, g.length - 9);
+
+        return G.getUrl("image/fullskin/generals/full/" + generalImageFileName + ".png");
+    }
 
     height: 407
     width: 336
@@ -56,38 +74,37 @@ Item {
 
         // patch for specifying general2 initially
         if (general2 != "") {
-            generalImage.width = Qt.binding(function () {
-                return photo.width / 2;
-            });
+            var general2Temp = general2;
+            general2 = "";
+            general2 = general2Temp;
         }
     }
     onGeneral2Changed: {
         if (general2 === "") {
-            general2Image.visible = false;
             generalImage.width = Qt.binding(function () {
                 return photo.width;
             });
-            return;
+        } else {
+            generalImage.width = Qt.binding(function () {
+                return photo.width / 2;
+            });
         }
-        generalImage.width = Qt.binding(function () {
-            return photo.width / 2;
-        });
-        general2Image.visible = true;
-        general2Image.source = G.getUrl("image/fullskin/generals/full/" + general2 + ".png");
     }
     onGeneralChanged: {
         if (general === "") {
             general = "yingyingguai";
             return;
         }
-
-        generalImage.source = G.getUrl("image/fullskin/generals/full/" + general + ".png");
     }
     onHuashenGeneral2Changed: {
         if (huashenGeneral2 === "") {
             huashen2Image.visible = false;
         } else {
-            huashen2Image.source = G.getUrl("image/fullskin/generals/full/" + huashenGeneral2 + ".png");
+            var huashen2ImageFileName = huashenGeneral2;
+            if (huashenGeneral2.endsWith("_hegemony"))
+                huashen2ImageFileName = huashenGeneral2.substring(0, huashenGeneral2.length - 9);
+
+            huashen2Image.source = G.getUrl("image/fullskin/generals/full/" + huashen2ImageFileName + ".png");
             huashen2Image.visible = true;
         }
     }
@@ -95,7 +112,11 @@ Item {
         if (huashenGeneral === "") {
             huashenImage.visible = false;
         } else {
-            huashenImage.source = G.getUrl("image/fullskin/generals/full/" + huashenGeneral + ".png");
+            var huashenImageFileName = huashenGeneral;
+            if (huashenGeneral.endsWith("_hegemony"))
+                huashenImageFileName = huashenGeneral.substring(0, huashenGeneral.length - 9);
+
+            huashenImage.source = G.getUrl("image/fullskin/generals/full/" + huashenImageFileName + ".png");
             huashenImage.visible = true;
         }
     }
@@ -117,7 +138,7 @@ Item {
         clip: true
         fillMode: Image.PreserveAspectCrop
         height: photo.height
-        source: G.getUrl("image/fullskin/generals/full/yingyingguai.png")
+        source: getImageSourceUrl(general)
         width: photo.width
 
         Image {
@@ -128,7 +149,8 @@ Item {
             clip: true
             fillMode: Image.PreserveAspectCrop
             opacity: 0
-            visible: false
+            source: getImageSourceUrl(huashenGeneral)
+            visible: huashenGeneral != ""
 
             onVisibleChanged: {
                 if (visible)
@@ -189,15 +211,7 @@ Item {
                 style: Text.Outline
                 styleColor: "#BBBBBB"
                 verticalAlignment: Text.AlignVCenter
-                verticalText: {
-                    var toTranslate = "&" + photo.general;
-                    var r = Sanguosha.translate(toTranslate);
-
-                    if (r == toTranslate)
-                        r = Sanguosha.translate(photo.general);
-
-                    return r;
-                }
+                verticalText: getGeneralName(general)
                 width: 45
             }
         }
@@ -212,7 +226,8 @@ Item {
         clip: true
         fillMode: Image.PreserveAspectCrop
         height: photo.height
-        visible: false
+        source: getImageSourceUrl(general2)
+        visible: general2 != ""
         width: photo.width / 2.
 
         Image {
@@ -223,7 +238,8 @@ Item {
             clip: true
             fillMode: Image.PreserveAspectCrop
             opacity: 0
-            visible: false
+            source: getImageSourceUrl(huashenGeneral2)
+            visible: huashenGeneral2 != ""
 
             onVisibleChanged: {
                 if (visible)
@@ -260,6 +276,32 @@ Item {
                 PauseAnimation {
                     duration: 1000
                 }
+            }
+        }
+
+        Image {
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.topMargin: banner.height - 8
+            height: 196
+            source: G.getUrl("image/kingdom/frame/" + photo.kingdom + ".png")
+            visible: photo.gameStarted
+            width: 72
+
+            VerticalText {
+                anchors.centerIn: parent
+                color: "#000000"
+                font.family: G.GameFontFace
+                font.pixelSize: 72
+                fontSizeMode: Text.Fit
+                height: 140
+                horizontalAlignment: Text.AlignHCenter
+                minimumPixelSize: 1
+                style: Text.Outline
+                styleColor: "#BBBBBB"
+                verticalAlignment: Text.AlignVCenter
+                verticalText: getGeneralName(general2)
+                width: 45
             }
         }
     }
