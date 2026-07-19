@@ -4480,6 +4480,118 @@ public:
     }
 };
 
+class ZuiyueVS : public ZeroCardViewAsSkill
+{
+public:
+    ZuiyueVS()
+        : ZeroCardViewAsSkill("zuiyue")
+    {
+    }
+
+    bool isEnabledAtPlay(const Player *player) const override
+    {
+        if (isHegemonyGameMode(ServerInfo.GameMode) && player->hasFlag("zuiyue_used"))
+            return false;
+        return player->hasFlag("zuiyue") && Analeptic::IsAvailable(player);
+    }
+
+    const Card *viewAs() const override
+    {
+        Analeptic *ana = new Analeptic(Card::NoSuit, 0);
+        ana->setSkillName(objectName());
+        return ana;
+    }
+};
+
+class Zuiyue : public TriggerSkill
+{
+public:
+    Zuiyue()
+        : TriggerSkill("zuiyue")
+    {
+        events << PreCardUsed << EventPhaseChanging;
+        view_as_skill = new ZuiyueVS;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    {
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.card->isKindOf("BasicCard") && (use.from != nullptr) && use.from->hasSkill(this) && use.from->getPhase() == Player::Play)
+                room->setPlayerFlag(use.from, "zuiyue");
+            else if (isHegemonyGameMode(ServerInfo.GameMode) && use.card->getSkillName() == "zuiyue")
+                room->setPlayerFlag(use.from, "zuiyue_used");
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play) {
+                room->setPlayerFlag(change.player, "-zuiyue");
+                room->setPlayerFlag(change.player, "-zuiyue_used");
+            }
+        }
+    }
+};
+
+class Doujiu : public TriggerSkill
+{
+public:
+    Doujiu()
+        : TriggerSkill("doujiu")
+    {
+        events << CardUsed << EventPhaseChanging;
+        relate_to_place = "head";
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const override
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            foreach (ServerPlayer *p, room->getAllPlayers())
+                p->setFlags("-doujiu_used");
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!use.card->isKindOf("Peach") && !use.card->isKindOf("Analeptic"))
+            return QList<SkillInvokeDetail>();
+        if (use.from->isKongcheng() || !use.from->isAlive())
+            return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        foreach (ServerPlayer *suika, room->findPlayersBySkillName(objectName())) {
+            if (use.from != suika && !suika->hasFlag("doujiu_used"))
+                d << SkillInvokeDetail(this, suika, suika, nullptr, false, use.from);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        QVariant _data = QVariant::fromValue(invoke->preferredTarget);
+        return room->askForSkillInvoke(invoke->invoker, objectName(), _data);
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        invoke->invoker->setFlags("doujiu_used");
+        invoke->invoker->drawCards(1);
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        if (!invoke->invoker->isKongcheng() && invoke->invoker->pindian(invoke->targets.first(), objectName())) {
+            if (invoke->invoker->isWounded()) {
+                RecoverStruct recover;
+                recover.recover = 1;
+                room->recover(invoke->invoker, recover);
+            }
+            use.nullified_list << "_ALL_TARGETS";
+            data = QVariant::fromValue(use);
+        }
+        return false;
+    }
+};
+
 HegemonyGeneralPackage::HegemonyGeneralPackage()
     : Package("hegemonyGeneral")
 {
@@ -4791,8 +4903,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     kisume_hegemony->addSkill(new TongjuHegemony);
 
     General *suika_hegemony = new General(this, "suika_hegemony", "qun", 4);
-    suika_hegemony->addSkill("zuiyue");
-    suika_hegemony->addSkill("doujiu");
+    suika_hegemony->addSkill(new Zuiyue);
+    suika_hegemony->addSkill(new Doujiu);
     suika_hegemony->addSkill(new CuijiHegemony);
     suika_hegemony->addSkill(new CuijiHEffect);
     suika_hegemony->setHeadMaxHpAdjustedValue(-1);
