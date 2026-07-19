@@ -5,7 +5,7 @@ import rocks.touhousatsu 1.0
 CppRoomScene {
     id: roomScene
 
-    // Currently active ChooseGeneralBox instance (null when none); Dashboard OK button confirms it.
+    // Currently active response box (null when none); Dashboard OK button confirms it via activeBox.accept().
     property var activeBox: null
 
     // arrangementXXX: [0: right, 1: top, 2: left]

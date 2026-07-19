@@ -7,14 +7,13 @@ Item {
     property bool cancelEnabled: false
     property var clientInstance: parent ? parent.ClientInstance : null
     property bool discardEnabled: false
-
-    // Button enabled state, set imperatively by updateStatus() (mirrors old
-    // RoomScene::updateStatus in uibackup/roomscene.cpp:2784-2949). OK cannot rely solely
-    // on bindings because clicking it under some statuses drives complex flows (card
-    // response with target choosing, skill confirm, etc.) that updateStatus must prepare.
     property bool okEnabled: false
     required property var photo
 
+    // Button enabled state, set imperatively by updateStatus() on status change (mirrors
+    // old RoomScene::updateStatus in uibackup/roomscene.cpp:2784-2949). OK cannot rely solely
+    // on bindings because clicking it under some statuses drives complex flows (card
+    // response with target choosing, skill confirm, etc.) that updateStatus must prepare.
     function updateStatus() {
         // Defaults; each case overrides as needed.
         okEnabled = false;
@@ -69,14 +68,18 @@ Item {
 
     height: 360
 
-    Component.onCompleted: updateStatus()
-    onClientInstanceChanged: updateStatus()
+    Component.onCompleted: {
+        okEnabled = false;
+        cancelEnabled = false;
+        discardEnabled = false;
+    }
+    onClientInstanceChanged: {
+        okEnabled = false;
+        cancelEnabled = false;
+        discardEnabled = false;
+    }
 
     Connections {
-        function onDiscardActionRefusableChanged() {
-            dashboard.updateStatus();
-        }
-
         function onStatusChanged() {
             dashboard.updateStatus();
         }
@@ -85,16 +88,8 @@ Item {
     }
 
     Connections {
-        function onActiveChooseGeneralBoxChanged() {
-            dashboard.updateStatus();
-        }
-
-        target: dashboard.parent
-    }
-
-    Connections {
         function onCanAcceptChanged() {
-            dashboard.updateStatus();
+            dashboard.okEnabled = dashboard.parent.activeBox.canAccept;
         }
 
         target: dashboard.parent !== null ? dashboard.parent.activeBox : null
@@ -235,7 +230,7 @@ Item {
             }
 
             QSanButton {
-                // OK: confirms ChooseGeneralBox selection, or acknowledges AskForSkillInvoke.
+                // OK: confirms activeBox selection, or acknowledges AskForSkillInvoke.
                 // Other response statuses enable OK after card selection lands (CardItem.selected TODO).
                 enabled: dashboard.okEnabled
                 font.pixelSize: 50
@@ -255,7 +250,7 @@ Item {
 
     PhaseItem {
         anchors.right: cardBg.right
-        anchors.top: cardBg.bottom
+        anchors.bottom: cardBg.top
         phase: photo.phase
         visible: photo.gameStarted
     }

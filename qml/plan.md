@@ -27,9 +27,9 @@
 ### QML 侧
 - `qml/main.qml`：`Image` 背景 + `scalableRoot`（固定高 1440，宽随高缩放，最小 1920）+ `RootItem`。有"宽度过小提示"TODO。
 - `qml/RootItem.qml`：`currentScene` 在 StartScene/RoomScene 间切换，监听 `MainWindowInstance.qml_switchToRoomScene`/`qml_switchToStartScene`。
-- `qml/RoomScene.qml`：根 `CppRoomScene`。`property list<Photo> otherPhotos`（QTBUG-147713）。`lay()` 按 `effectiveSeat` 布局。`Component.onCompleted` 预创建占位 Photo（seat 2..N，未绑 player）。`Connections` 接收全部 `notify*`。`activeBox` 跟踪当前活动响应 box（按 status 自适应，同一时间只有一个）。含 `testItemToBeRemovedAfterTest` 测试桩。addRobot/fillRobots 已实现。
-- `qml/Photo.qml`：`player` + `required property int seat`。提取 `getGeneralName(g)`/`getImageSourceUrl(g)`（含 `_hegemony` 后缀处理）；source/visible 绑定；general2Image 对称 kingdom frame；player null fallback。`phase` 绑定 `player.phaseValue`（枚举）；未开始时 `general` 用 `player.avatar`；`PhaseItem` anchors 按 `selfPhoto` 区分（selfPhoto 下方居中 / 非 selfPhoto 右侧 `anchors.right: photo.left`）；`duozhi`（夺志，禁止角色使用/打出牌）时主副将图显示嘤嘤怪。
-- `qml/Dashboard.qml`：Trust/Discard/Cancel/OK 四按钮（`anchors.bottom: cardArea.top` 浮在手牌区上方）；`clientInstance` 属性。
+- `qml/RoomScene.qml`：根 `CppRoomScene`。`property list<Photo> otherPhotos`（QTBUG-147713）。`lay()` 按 `effectiveSeat` 布局。`Component.onCompleted` 预创建占位 Photo（seat 2..N，未绑 player）。`Connections` 接收全部 `notify*`。`activeBox` 跟踪当前活动响应 box（按 status 自适应，同一时间只有一个）。`signal spaceClicked` + 根 MouseArea 空白点击触发（RoleComboBox/HegRoleComboBox 监听以收起展开）。Dashboard 实例传 `photo: selfPhoto`。含 `testItemToBeRemovedAfterTest` 测试桩。addRobot/fillRobots 已实现。
+- `qml/Photo.qml`：`player` + `required property int seat`。提取 `getGeneralName(g)`/`getImageSourceUrl(g)`（含 `_hegemony` 后缀处理）；source/visible 绑定；general2Image 对称 kingdom frame；player null fallback。`phase` 绑定 `player.phaseValue`（枚举）；未开始时 `general` 用 `player.avatar`；`PhaseItem` 仅非 selfPhoto 显示（selfPhoto 用 Dashboard 的 PhaseItem），下方居中；`duozhi`（夺志，禁止角色使用/打出牌）时主副将图显示嘤嘤怪。
+- `qml/Dashboard.qml`：Trust/Discard/Cancel/OK 四按钮（`anchors.bottom: cardArea.top` 浮在手牌区上方）；`clientInstance` + `required property var photo`（绑 selfPhoto）属性。`updateStatus()` 按 `Client::status` switch 分支命令式设 `okEnabled`/`cancelEnabled`/`discardEnabled`（`Connections` 监听 status/refusable/activeBox/canAccept）；底部 `PhaseItem` 显示 `photo.phase`。
 - `qml/CardItem.qml`：`signal clicked`/`rightClicked`（左/右键分发）；`selected` 属性注释掉（待实现）。
 - `qml/GraphicsBox.qml`：图片背景可拖拽容器基类（Image 根，无标题/操作按钮）。
 - `qml/ChooseGeneralBox.qml`：基于 GraphicsBox 的选将弹窗。
@@ -96,7 +96,7 @@
 ### UI 约定
 - **GraphicsBox 基类**：Image 根（直接用 source 属性）、可拖拽、无标题/操作按钮/信号、default property content 槽位、Component.onCompleted 居中（x/y 而非 anchors，兼容拖拽）。
 - **响应 box 接口约定**：所有需 Dashboard OK 确认的响应 box（ChooseGeneralBox/ChooseOptionsBox/ChooseTriggerOrderBox 等，多基于 GraphicsBox）须提供统一接口：`property bool canAccept`（当前选择是否可确认）+ `function accept()`（确认并回传/清理）。创建时 `roomScene.activeBox = box`，accept/销毁时 `roomScene.activeBox = null`。Dashboard 只认 `activeBox.canAccept`/`activeBox.accept()`，新增 box 类型不需改 Dashboard。同一时间只有一个活动 box（按 status 自适应）。
-- **Dashboard 按钮**：`anchors.bottom: cardArea.top` + `bottomMargin` + `horizontalCenter` 浮在手牌区上方；268×133，font.pixelSize 50。**enabled 按 `Client::status`**：Discard=`Playing`；Cancel=`ExecDialog`/`AskForSkillInvoke` 或（`Responding`系列/`Discarding`/`Exchanging` 且 `discardActionRefusable`）；OK=活动 box `canAccept` 或 `AskForSkillInvoke`（其他响应状态待 CardItem 选卡落地后按选卡启用）。`Client::Status` 经 `Q_ENUM` + uncreatable 注册，QML 用 `Client.Playing` 等枚举名比较；`discardActionRefusable` 经 `Q_PROPERTY`（READ `isDiscardActionRefusable`/setter/NOTIFY `discardActionRefusableChanged`）暴露。enabled 由 `Dashboard.updateStatus()` 命令式设置（`okEnabled`/`cancelEnabled`/`discardEnabled` property），`Connections` 监听 `status_changed`/`discardActionRefusableChanged`/`activeBoxChanged`/选将框 `canAcceptChanged` 触发。`updateStatus` 是 status 变化统一入口（镜像旧 `RoomScene::updateStatus`），后续 prompt/card pending/skill/target 选择等逻辑在此补；OK 点击在响应状态走目标选择等复杂流程，不只靠绑定。
+- **Dashboard 按钮**：`anchors.bottom: cardArea.top` + `bottomMargin` + `horizontalCenter` 浮在手牌区上方；268×133，font.pixelSize 50。**enabled 按 `Client::status`**：Discard=`Playing`；Cancel=`ExecDialog`/`AskForSkillInvoke` 或（`Responding`系列/`Discarding`/`Exchanging` 且 `discardActionRefusable`）；OK=活动 box `canAccept` 或 `AskForSkillInvoke`（其他响应状态待 CardItem 选卡落地后按选卡启用）。`Client::Status` 经 `Q_ENUM` + uncreatable 注册，QML 用 `Client.Playing` 等枚举名比较；`discardActionRefusable` 经 `Q_PROPERTY`（READ `isDiscardActionRefusable`/setter/NOTIFY `discardActionRefusableChanged`）暴露。enabled 由 `Dashboard.updateStatus()` 命令式设置（`okEnabled`/`cancelEnabled`/`discardEnabled` property），`updateStatus()`（switch case，含未来 prompt/card-pending/skill/target 复杂逻辑）只由 `status_changed` 调用；`onCanAcceptChanged` 直接设 `okEnabled = activeBox.canAccept`；不监听 `onDiscardActionRefusableChanged`（cancel 由 updateStatus 在 status 变化时重算）；`Component.onCompleted`/`onClientInstanceChanged` 直接置三按钮 false（等 `status_changed` 触发 updateStatus）。activeBox 创建/销毁不触发。。`updateStatus` 是 status 变化统一入口（镜像旧 `RoomScene::updateStatus`），后续 prompt/card pending/skill/target 选择等逻辑在此补；OK 点击在响应状态走目标选择等复杂流程，不只靠绑定。
 - **资源访问**：统一用 `G.getAssetUrl(path)`（原 getUrl 已删）。
 - **禁用 `z` 属性**：所有 UI 界面靠元素的声明顺序/父子层级（后声明的同级元素渲染在上层）解决相互覆盖，**不使用 `z` 属性**调整堆叠。**历史原因**：旧代码（`src/uibackup/`）滥用 `z` 调整堆叠，目前已用到小数点前 5 位（万级），为给以后调整留空间，现阶段能不用 `z` 就一律不用。
 
@@ -104,6 +104,7 @@
 - **qmllint 假告警**：未生成 qmltypes 时 `CppRoomScene`/`rocks.touhousatsu` 未识别，大量 `unqualified`/`missing-type` warning，构建后消除，非真实错误。
 - **日志**：桥接层 `qDebug` 带 `[bridge]` 前缀，不打印大 payload。
 - **兼容性**：保留 `MainWindow` 现有 `qml_switchToRoomScene` 等接口签名。
+- **提交前格式化**：C++ 全文件运行 clang-format，QML 全文件运行 qmlformat。**注意 qmlformat 会重排属性/函数先后顺序**，运行后需复查注释是否仍与对应代码位置对得上（如 property 上方的注释、函数前的注释）。`property list<Photo>` 等 qmlformat 不兼容的写法见 QTBUG-147713（RoomScene.qml 注释），需在 qmlformat 前临时移除、之后加回。
 
 ## 5. 关键代码流程
 
