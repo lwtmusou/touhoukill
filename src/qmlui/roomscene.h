@@ -43,6 +43,11 @@ public:
     // so no return value or further QML handling is needed. Used on notifyAssignAsked.
     Q_INVOKABLE void showRoleAssignDialog();
 
+    // Pops up the C++ GameOverDialog (modal). standoff == true shows the standoff
+    // result (single table); false shows the winner/loser split. The dialog owns its
+    // own "Return to main menu" button (deferred scene switch via QTimer).
+    Q_INVOKABLE void showGameOverDialog(bool standoff);
+
 signals:
     void gameStartedChanged(bool newGameStarted);
     void gameOverChanged(bool newGameOver);

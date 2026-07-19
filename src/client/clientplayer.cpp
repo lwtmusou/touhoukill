@@ -263,3 +263,8 @@ void ClientPlayer::setMark(const QString &mark, int value)
 
     // mark_doc->setHtml(text);
 }
+
+bool ClientPlayer::duozhi() const
+{
+    return marks.contains("coupling__yingyingguai") && marks["coupling__yingyingguai"] > 0;
+}

@@ -188,7 +188,6 @@ CppRoomScene {
         }
 
         function onNotifyAssignAsked() {
-            console.log("[bridge->qml] notifyAssignAsked");
             roomScene.showRoleAssignDialog();
         }
 
@@ -221,7 +220,7 @@ CppRoomScene {
         }
 
         function onNotifyGameOver() {
-            console.log("[bridge->qml] notifyGameOver");
+            roomScene.showGameOverDialog(false);
         }
 
         function onNotifyGameStarted() {
@@ -249,7 +248,6 @@ CppRoomScene {
         }
 
         function onNotifyGeneralsGot(generals, singleResult, canConvert) {
-            console.log("[bridge->qml] notifyGeneralsGot", generals.length, singleResult, canConvert);
             var box = chooseGeneralBoxComponent.createObject(roomScene, {
                                                                  "generals": generals,
                                                                  "singleResult": singleResult
@@ -305,7 +303,6 @@ CppRoomScene {
         }
 
         function onNotifyPlayerAdded(newPlayer) {
-            console.log("[bridge->qml] notifyPlayerAdded", newPlayer.screenname);
             for (var i = 0; i < otherPhotos.length; ++i) {
                 if (otherPhotos[i].player === null) {
                     otherPhotos[i].player = newPlayer;
@@ -319,7 +316,6 @@ CppRoomScene {
         }
 
         function onNotifyPlayerRemoved(playerName) {
-            console.log("[bridge->qml] notifyPlayerRemoved", playerName);
             for (var i = 0; i < otherPhotos.length; ++i) {
                 var p = otherPhotos[i].player;
                 if (p !== null && p.objectName === playerName) {
@@ -346,7 +342,6 @@ CppRoomScene {
         }
 
         function onNotifySeatsArranged() {
-            console.log("[bridge->qml] notifySeatsArranged");
             // Seat is assigned by arrangeSeats; read it back from each bound Photo.player.
             for (var i = 0; i < otherPhotos.length; ++i) {
                 if (otherPhotos[i].player !== null)
@@ -378,7 +373,7 @@ CppRoomScene {
         }
 
         function onNotifyStandoff() {
-            console.log("[bridge->qml] notifyStandoff");
+            roomScene.showGameOverDialog(true);
         }
 
         function onNotifyStartInXs() {
@@ -559,15 +554,6 @@ CppRoomScene {
                 PhaseItem {
                     phase: Player.Play
                 }
-            }
-
-            QSanButton {
-                height: 100
-                source: G.getAssetUrl("image/system/button/button.png")
-                text: "toggle"
-                width: 100
-
-                onClicked: roomScene.gameStarted = !roomScene.gameStarted
             }
         }
     }

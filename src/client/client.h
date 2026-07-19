@@ -18,6 +18,7 @@ class Client : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus NOTIFY status_changed)
+    Q_PROPERTY(bool discardActionRefusable READ isDiscardActionRefusable NOTIFY discardActionRefusableChanged)
 
 public:
     enum Status
@@ -228,6 +229,10 @@ public:
         return available_cards;
     }
     void clearHighlightSkillName();
+
+    bool isDiscardActionRefusable() const;
+    void setDiscardActionRefusable(bool refusable);
+
     // public fields
     bool m_isDiscardActionRefusable;
     bool m_canDiscardEquip;
@@ -334,6 +339,7 @@ signals:
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void maxhp_changed(const QString &who, int delta);
     void status_changed(Client::Status newStatus);
+    void discardActionRefusableChanged();
     void avatars_hiden();
     void pile_reset();
     void player_killed(const QString &who);

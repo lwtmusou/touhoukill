@@ -8,8 +8,8 @@ Item {
     property bool banling: player.linghp !== -2147483647 - 1
     property int dyingThreshold: player.dyingFactor
     property bool gameStarted: false
-    property string general: (gameStarted ? player.general : (player != null ? player.avatar : "yingyingguai"))
-    property string general2: (gameStarted ? player.general2 : "")
+    property string general: (gameStarted ? (player.general) : (player != null ? player.avatar : "anjiang"))
+    property string general2: (gameStarted ? (player.general2) : "")
     property int hp: (banling ? player.renhp : player.hp)
     property string huashenGeneral
     property string huashenGeneral2
@@ -132,7 +132,7 @@ Item {
         clip: true
         fillMode: Image.PreserveAspectCrop
         height: photo.height
-        source: getImageSourceUrl(general)
+        source: (player != null && player.duozhi) ? getImageSourceUrl("yingyingguai") : getImageSourceUrl(general)
         width: photo.width
 
         Image {
@@ -220,7 +220,7 @@ Item {
         clip: true
         fillMode: Image.PreserveAspectCrop
         height: photo.height
-        source: getImageSourceUrl(general2)
+        source: (player != null && player.duozhi) ? getImageSourceUrl("yingyingguai") : getImageSourceUrl(general2)
         visible: general2 != ""
         width: photo.width / 2.
 

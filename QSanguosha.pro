@@ -42,6 +42,7 @@ SOURCES += \
     src/dialog/configdialog.cpp \
     src/dialog/connectiondialog.cpp \
     src/dialog/distanceviewdialog.cpp \
+    src/dialog/gameoverdialog.cpp \
     src/dialog/generaloverview.cpp \
     src/dialog/updatedialog.cpp \
     src/dialog/mainwindow.cpp \
@@ -120,6 +121,7 @@ HEADERS += \
     src/dialog/configdialog.h \
     src/dialog/connectiondialog.h \
     src/dialog/distanceviewdialog.h \
+    src/dialog/gameoverdialog.h \
     src/dialog/generaloverview.h \
     src/dialog/updatedialog.h \
     src/dialog/mainwindow.h \

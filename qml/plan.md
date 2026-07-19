@@ -74,6 +74,8 @@
 - **自包含 dialog（Client 去单例化时需处理）**：`RoleAssignDialog` 内部 accept() 直接调 `ClientInstance->onPlayerAssignRole(names, roles)`、reject() 调 `replyToServer(S_COMMAND_CHOOSE_ROLE, QVariant())` 自行回传服务器，因此桥接 `showRoleAssignDialog()` 返回 void、QML 无需返回值或后续处理。这与 `FreeChooseDialog`（桥接捕获 `general_chosen` 信号返回给 QML）模式不同。**Client 去单例化时**：此类 dialog 内部硬编码 `ClientInstance` 全局指针，必须改造为通过参数/上下文传入 Client 引用，否则会破坏；桥接层届时可考虑统一收集这类 dialog 的回传路径。
 - **Engine 函数暴露给 QML**：遇到 Engine（`Sanguosha` 全局单例，已暴露给 QML）中 QML 需要调用但不可调用的函数，**直接在 Engine 类上加 `Q_INVOKABLE` 或 `Q_SLOT`，不走 RoomScene 桥接层**。判定：纯查询/无副作用/不需信号连接的加 `Q_INVOKABLE`（如 `getGeneral`）；需要被信号连接或有槽语义的加 `Q_SLOT`。Engine 已是 QML 可直接访问的全局对象，加宏后 QML 即可调用；返回的 QObject 子类需 `qmlRegisterUncreatableType` 注册后 QML/qmllint 才能识别其类型并读 `Q_PROPERTY`（`General` 已注册，可读 `kingdom`/`maxhp`/`gender`/`lord` 等）。
 
+- **notify 处理函数的 log 约定**：`RoomScene.qml` 的 `onNotifyXxx` 占位时只放 `console.log` 作待实现标记；一旦为该 notify 添加了实际动作（调桥接/创建组件/遍历 Photo 等），**顺手删除其 `console.log`**（动作本身已表明信号到达，log 冗余）。
+
 ### Qt6 moc / QML 约束
 - **Q_PROPERTY 指针类型需完整定义**：`Q_PROPERTY(T *)` 中 `T` 必须 include 完整定义，不能前置声明（否则 moc `static_assert(is_complete<...>)` 失败）。`roomscene.h` 需 `#include "client.h"`/`"clientplayer.h"`。
 - **`Player.seat` 无 NOTIFY**：seat 变化 QML 无法自动感知，必须在 `notifySeatsArranged` 显式读 `photo.player.seat` 回填 `photo.seat`。
@@ -93,7 +95,7 @@
 
 ### UI 约定
 - **GraphicsBox 基类**：Image 根（直接用 source 属性）、可拖拽、无标题/操作按钮/信号、default property content 槽位、Component.onCompleted 居中（x/y 而非 anchors，兼容拖拽）。
-- **Dashboard 按钮**：`anchors.bottom: cardArea.top` + `bottomMargin` + `horizontalCenter` 浮在手牌区上方；268×133，font.pixelSize 50。
+- **Dashboard 按钮**：`anchors.bottom: cardArea.top` + `bottomMargin` + `horizontalCenter` 浮在手牌区上方；268×133，font.pixelSize 50。**enabled 按 `Client::status`**：Discard=`Playing`；Cancel=`ExecDialog`/`AskForSkillInvoke` 或（`Responding`系列/`Discarding`/`Exchanging` 且 `discardActionRefusable`）；OK=选将 `canAccept` 或 `AskForSkillInvoke`（其他响应状态待 CardItem 选卡落地后按选卡启用）。`Client::Status` 经 `Q_ENUM` + uncreatable 注册，QML 用 `Client.Playing` 等枚举名比较；`discardActionRefusable` 经 `Q_PROPERTY`（READ `isDiscardActionRefusable`/setter/NOTIFY `discardActionRefusableChanged`）暴露。
 - **资源访问**：统一用 `G.getAssetUrl(path)`（原 getUrl 已删）。
 - **禁用 `z` 属性**：所有 UI 界面靠元素的声明顺序/父子层级（后声明的同级元素渲染在上层）解决相互覆盖，**不使用 `z` 属性**调整堆叠。**历史原因**：旧代码（`src/uibackup/`）滥用 `z` 调整堆叠，目前已用到小数点前 5 位（万级），为给以后调整留空间，现阶段能不用 `z` 就一律不用。
 
@@ -181,6 +183,24 @@
 ### 2026-07-19：CardItem 禁用机制改用标准 enabled
 - 灰显从自定义 `dimmed` 属性改为 Qt 标准 `enabled` 属性联动：`enabled: !_isDimmed(g)`，遮罩 `visible: !enabled`。
 - 原因：CardItem 作为手牌/装备等其他牌时也需禁用情况，统一用 `enabled` 复用一套机制（禁用时 MouseArea 自动不响应 + 遮罩变暗）。
+
+### 2026-07-19：gameStarted 状态同步给 Photo
+- 问题：`Client::game_started` 信号到达时桥接只 `emit notifyGameStarted()`，未置 C++ `gameStarted` 成员，导致 `roomScene.gameStarted` 恒 false，Photo 的 `gameStarted` 绑定（`Qt.binding(() => roomScene.gameStarted)`）永不刷新，血条/手牌数/roleComboBox/kingdom frame 等不显示。
+- 修复 `roomscene.cpp`：`game_started` lambda 里 `gameStarted = true; emit gameStartedChanged(true);`（`if (!gameStarted)` 幂等）。
+- Photo 侧绑定早已就绪（otherPhotos `Qt.binding`、selfPhoto `gameStarted: roomScene.gameStarted`），无需改 QML。
+
+### 2026-07-19：gameover/standoff 结算对话框
+- 新建 `src/dialog/gameoverdialog.h/cpp`（从 `uibackup/roomscene.cpp` 的 onGameOver/onStandoff/fillTable 移植）：`GameOverDialog(standoff, parent)`，standoff=单表所有玩家 / 非standoff=胜负两表（按 `player->property("win")`）；`fillTable` 10 列统计（RecAnalysis 回放分析：回合数/伤害/受击/击杀/回血/最后手牌）；返回主菜单按钮 `accept()` + `QTimer::singleShot(0, MainWindowInstance, gotoStartScene)` 延迟切场景（避免 exec 栈帧与 RoomScene 销毁冲突）。
+- 桥接 `RoomScene::showGameOverDialog(bool standoff)`（同 freeChoose/showRoleAssignDialog 模式，栈对象 exec）；`game_over`/`standoff` lambda 同步设 `gameOver=true` + `emit gameOverChanged`（同 gameStarted 同步）。
+- `RoomScene.qml`：`onNotifyGameOver` 调 `showGameOverDialog(false)`、`onNotifyStandoff` 调 `showGameOverDialog(true)`。
+- `.pro` 加 `gameoverdialog.cpp/.h`。
+- TODO：重启游戏/保存录像按钮未接（旧代码 `RoomScene::restart()`/`saveReplayRecord`，mainwindow.cpp 已注释，待桥接）。
+
+### 2026-07-19：Dashboard 按钮 enabled 按 Client::status 更新
+- OK/Cancel/Discard 的 enabled 从硬编码 false 改为按 `dashboard.clientInstance.status` 绑定（`Client::Status` 经 `Q_ENUM` + uncreatable 注册，QML 用 `Client.Playing` 等枚举名比较）。
+- Discard=`Playing`；Cancel=`ExecDialog`/`AskForSkillInvoke` 或（`Responding`系列/`Discarding`/`Exchanging` 且 `discardActionRefusable`）；OK=选将 `canAccept` ‖ `AskForSkillInvoke`。Responding 系列用 `status & Client.ClientStatusBasicMask === Client.Responding` 判断（涵盖 RespondingUse 等高位变体）。
+- 暴露 `m_isDiscardActionRefusable` 给 QML：`client.h` 加 `Q_PROPERTY(bool discardActionRefusable READ isDiscardActionRefusable NOTIFY discardActionRefusableChanged)` + getter/setter + 信号（成员保留 public）；`client.cpp` 实现 setter（仅变化时 emit），9 处 `m_isDiscardActionRefusable = X` 改走 `setDiscardActionRefusable(X)`（构造函数初始化列表保留）。
+- Responding 等状态的 OK 待 CardItem 选卡落地后按选卡启用。参考 `uibackup/roomscene.cpp:2784-2949`。
 
 ## 7. 下一步
 1. CardItem 卡牌选择（`selected` 状态 + 信号）→ 打通 OK/Cancel/Discard。

@@ -3,6 +3,7 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "choosegeneraldialog.h"
+#include "gameoverdialog.h"
 #include "mainwindow.h"
 #include "protocol.h"
 #include "roleassigndialog.h"
@@ -181,12 +182,26 @@ void RoomScene::connectClientSignals()
         emit notifyFocusMoved(focus, countdown.toVariant());
     });
     connect(client, &Client::game_started, this, [this]() {
+        // Sync gameStarted so QML bindings (Photo.gameStarted -> roomScene.gameStarted)
+        // flip to true, showing magatamas/handcardNum/roleComboBox/kingdom frame, etc.
+        if (!gameStarted) {
+            gameStarted = true;
+            emit gameStartedChanged(true);
+        }
         emit notifyGameStarted();
     });
     connect(client, &Client::game_over, this, [this]() {
+        if (!gameOver) {
+            gameOver = true;
+            emit gameOverChanged(true);
+        }
         emit notifyGameOver();
     });
     connect(client, &Client::standoff, this, [this]() {
+        if (!gameOver) {
+            gameOver = true;
+            emit gameOverChanged(true);
+        }
         emit notifyStandoff();
     });
     connect(client, &Client::player_added, this, [this](ClientPlayer *new_player) {
@@ -281,6 +296,12 @@ void RoomScene::showRoleAssignDialog()
     // RoleAssignDialog is self-contained: accept() forwards onPlayerAssignRole() to the
     // server and reject() replies with an empty role list, so nothing to return to QML.
     RoleAssignDialog dialog(MainWindowInstance);
+    dialog.exec();
+}
+
+void RoomScene::showGameOverDialog(bool standoff)
+{
+    GameOverDialog dialog(standoff, MainWindowInstance);
     dialog.exec();
 }
 

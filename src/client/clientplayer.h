@@ -13,6 +13,7 @@ class ClientPlayer : public Player
 {
     Q_OBJECT
     Q_PROPERTY(int handcard READ getHandcardNum WRITE setHandcardNum NOTIFY handcardChanged)
+    Q_PROPERTY(bool duozhi READ duozhi NOTIFY duozhi_changed STORED false)
 
 public:
     explicit ClientPlayer(Client *client);
@@ -34,6 +35,8 @@ public:
     QList<int> getKnownHandCardIds() const;
     bool isLastHandCard(const Card *card, bool contain = false) const override;
     void setMark(const QString &mark, int value) override;
+
+    [[nodiscard]] bool duozhi() const;
 
 private:
     int handcard_num;

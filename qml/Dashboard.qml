@@ -112,8 +112,10 @@ Item {
             }
 
             QSanButton {
-                // TODO: enable on Discarding status with cards selected
-                enabled: false
+                // Enabled in Playing phase (used to end the play / skip). Discarding-phase
+                // discard submits via OK after card selection (TODO: wire onPlayerDiscardCards
+                // once CardItem selection lands).
+                enabled: dashboard.clientInstance != null && dashboard.clientInstance.status === Client.Playing
                 font.pixelSize: 50
                 height: 133
                 source: G.getAssetUrl("image/system/button/button.png")
@@ -124,8 +126,15 @@ Item {
             }
 
             QSanButton {
-                // TODO: enable based on ClientInstance.status (cancel is context-dependent)
-                enabled: false
+                // Enabled in ExecDialog / AskForSkillInvoke, or in Responding/Discarding/Exchanging
+                // when the discard action is refusable (Client::discardActionRefusable).
+                enabled: dashboard.clientInstance != null
+                         && (dashboard.clientInstance.status === Client.ExecDialog
+                             || dashboard.clientInstance.status === Client.AskForSkillInvoke
+                             || (dashboard.clientInstance.discardActionRefusable
+                                 && ((dashboard.clientInstance.status & Client.ClientStatusBasicMask) === Client.Responding
+                                     || dashboard.clientInstance.status === Client.Discarding
+                                     || dashboard.clientInstance.status === Client.Exchanging)))
                 font.pixelSize: 50
                 height: 133
                 source: G.getAssetUrl("image/system/button/button.png")
@@ -136,15 +145,22 @@ Item {
             }
 
             QSanButton {
-                // OK: confirms the active ChooseGeneralBox selection (single or dual general).
-                enabled: dashboard.parent && dashboard.parent.activeChooseGeneralBox !== null && dashboard.parent.activeChooseGeneralBox.canAccept
+                // OK: confirms ChooseGeneralBox selection, or acknowledges AskForSkillInvoke.
+                // Other response statuses enable OK after card selection lands (CardItem.selected TODO).
+                enabled: dashboard.clientInstance != null
+                         && ((dashboard.parent && dashboard.parent.activeChooseGeneralBox !== null && dashboard.parent.activeChooseGeneralBox.canAccept)
+                             || dashboard.clientInstance.status === Client.AskForSkillInvoke)
                 font.pixelSize: 50
                 height: 133
                 source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("OK")
                 width: 268
 
-                onClicked: dashboard.parent.activeChooseGeneralBox.accept()
+                onClicked: {
+                    if (dashboard.parent && dashboard.parent.activeChooseGeneralBox !== null)
+                        dashboard.parent.activeChooseGeneralBox.accept();
+                    // TODO: handle AskForSkillInvoke / card-response OK once wired
+                }
             }
         }
     }

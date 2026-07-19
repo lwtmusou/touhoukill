@@ -889,6 +889,19 @@ Client::Status Client::getStatus() const
     return status;
 }
 
+bool Client::isDiscardActionRefusable() const
+{
+    return m_isDiscardActionRefusable;
+}
+
+void Client::setDiscardActionRefusable(bool refusable)
+{
+    if (m_isDiscardActionRefusable != refusable) {
+        m_isDiscardActionRefusable = refusable;
+        emit discardActionRefusableChanged();
+    }
+}
+
 void Client::cardLimitation(const QVariant &limit)
 {
     JsonArray args = limit.value<JsonArray>();
@@ -1103,7 +1116,7 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
     else
         setPromptList(texts);
 
-    m_isDiscardActionRefusable = !card_pattern.endsWith("!");
+    setDiscardActionRefusable(!card_pattern.endsWith("!"));
 
     QString temp_pattern = _processCardPattern(card_pattern);
     QRegularExpression rx(QRegularExpression::anchoredPattern("^@@?(\\w+)(-card)?$"));
@@ -1243,7 +1256,7 @@ void Client::askForNullification(const QVariant &arg)
     }
 
     _m_roomState.setCurrentCardUsePattern("nullification");
-    m_isDiscardActionRefusable = true;
+    setDiscardActionRefusable(true);
 
     setStatus(RespondingUse);
 }
@@ -1572,7 +1585,7 @@ void Client::askForDiscard(const QVariant &reqvar)
 
     discard_num = req[0].toInt();
     min_num = req[1].toInt();
-    m_isDiscardActionRefusable = req[2].toBool();
+    setDiscardActionRefusable(req[2].toBool());
     m_canDiscardEquip = req[3].toBool();
     QString prompt = req[4].toString();
     highlight_skill_name = req[5].toString();
@@ -1610,7 +1623,7 @@ void Client::askForExchange(const QVariant &exchange)
     min_num = args[1].toInt();
     m_canDiscardEquip = args[2].toBool();
     QString prompt = args[3].toString();
-    m_isDiscardActionRefusable = args[4].toBool();
+    setDiscardActionRefusable(args[4].toBool());
 
     highlight_skill_name = args[5].toString();
 
@@ -2041,7 +2054,7 @@ void Client::askForSinglePeach(const QVariant &arg)
     }
 
     _m_roomState.setCurrentCardUsePattern(pattern.join("+"));
-    m_isDiscardActionRefusable = true;
+    setDiscardActionRefusable(true);
     setStatus(RespondingUse);
 }
 
@@ -2062,7 +2075,7 @@ void Client::askForAG(const QVariant &arg)
     if (arr.length() != 2 || !JsonUtils::isBool(arr.first()) || !JsonUtils::isString(arr.value(1)))
         return;
 
-    m_isDiscardActionRefusable = arr.first().toBool();
+    setDiscardActionRefusable(arr.first().toBool());
     highlight_skill_name = arr.value(1).toString();
 
     //if (!arg.isBool()) return;
@@ -2176,7 +2189,7 @@ void Client::askForGongxin(const QVariant &args)
     if (!JsonUtils::tryParse(arg[3], enabled_ids))
         return;
     highlight_skill_name = arg[4].toString();
-    m_isDiscardActionRefusable = arg[5].toBool();
+    setDiscardActionRefusable(arg[5].toBool());
 
     who->setCards(card_ids);
 
@@ -2216,7 +2229,7 @@ void Client::askForYiji(const QVariant &ask_str)
         return;
     JsonArray card_list = ask[0].value<JsonArray>();
     int count = ask[2].toInt();
-    m_isDiscardActionRefusable = ask[1].toBool();
+    setDiscardActionRefusable(ask[1].toBool());
     QString prompt = ask[4].toString();
     highlight_skill_name = ask[5].toString();
 
@@ -2261,7 +2274,7 @@ void Client::askForPlayerChosen(const QVariant &players)
     players_to_choose.clear();
     for (int i = 0; i < choices.size(); i++)
         players_to_choose.push_back(choices[i].toString());
-    m_isDiscardActionRefusable = args[3].toBool();
+    setDiscardActionRefusable(args[3].toBool());
 
     QString text;
     QString description = Sanguosha->translate(ClientInstance->skill_name);
