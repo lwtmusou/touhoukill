@@ -75,7 +75,7 @@ public:
     void addPackage(const QString &name);
     QList<const Package *> getPackages() const;
 
-    const General *getGeneral(const QString &name) const;
+    Q_INVOKABLE const General *getGeneral(const QString &name) const;
     QStringList getGenerals() const;
     int getGeneralCount(bool include_banned = false) const;
     const Skill *getSkill(const QString &skill_name) const;

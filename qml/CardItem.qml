@@ -138,6 +138,17 @@ Item {
         }
     }
 
+    // Dim overlay shown when the card is disabled (enabled == false). Uses an overlay
+    // rectangle instead of opacity so the GraphicsBox background does not show through.
+    // Tied to the standard `enabled` property so all CardItem use cases (choose-general
+    // candidates, hand cards, equips, etc.) share one disable mechanism. Relies on
+    // declaration order (after cardContent/MouseArea) to render on top — no z property.
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.5)
+        visible: !cardItem.enabled
+    }
+
     ParallelAnimation {
         id: goBackAnimation
 

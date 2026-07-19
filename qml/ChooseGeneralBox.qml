@@ -13,8 +13,38 @@ GraphicsBox {
     property var generals: []
     property var selectedGenerals: []
     property bool singleResult: true
+    // Whether the current selection can be confirmed: single-general needs >=1, dual needs 2.
+    property bool canAccept: selectedGenerals.length >= (singleResult ? 1 : 2)
 
     signal generalChosen(string generalName)
+
+    // Hegemony pairing rule: two generals must share a kingdom, or at least one must be
+    // "zhu" (wildcard kingdom). Mirrors server-side check in room.cpp:3723 and the old
+    // uibackup/choosegeneralbox.cpp:489.
+    // Hegemony general names carry a "_hegemony" suffix and are distinct generals — do NOT
+    // strip it, that would resolve to a different general with a possibly different kingdom.
+    function _canPair(g1, g2) {
+        var k1 = Sanguosha.getGeneral(g1).kingdom;
+        var k2 = Sanguosha.getGeneral(g2).kingdom;
+        return k1 === k2 || k1 === "zhu" || k2 === "zhu";
+    }
+
+    // Whether a candidate should be dimmed (unselectable) in dual-general mode:
+    //  - 0 picked: none dimmed
+    //  - 1 picked: dim those that cannot pair with the picked one
+    //  - 2 picked: dim all remaining (selection is full)
+    function _isDimmed(g) {
+        if (singleResult)
+            return false;
+        var sel = selectedGenerals;
+        if (sel.indexOf(g) >= 0)
+            return false;
+        if (sel.length === 0)
+            return false;
+        if (sel.length >= 2)
+            return true;
+        return !_canPair(sel[0], g);
+    }
 
     function _toggle(general) {
         var idx = selectedGenerals.indexOf(general);
@@ -25,16 +55,22 @@ GraphicsBox {
         } else {
             if (singleResult) {
                 selectedGenerals = [general];
-            } else if (selectedGenerals.length < 2) {
-                var arr2 = selectedGenerals.slice();
-                arr2.push(general);
-                selectedGenerals = arr2;
+            } else if (selectedGenerals.length === 0) {
+                selectedGenerals = [general];
+            } else if (selectedGenerals.length === 1) {
+                // Dual-general: the second pick must satisfy the kingdom pairing rule;
+                // otherwise it is rejected (the candidate is also dimmed via opacity).
+                if (_canPair(selectedGenerals[0], general)) {
+                    var arr2 = selectedGenerals.slice();
+                    arr2.push(general);
+                    selectedGenerals = arr2;
+                }
             }
         }
     }
 
     function accept() {
-        if (selectedGenerals.length > 0) {
+        if (canAccept) {
             generalChosen(selectedGenerals.join("+"));
             if (parent && parent.activeChooseGeneralBox === chooseGeneralBox)
                 parent.activeChooseGeneralBox = null;
@@ -58,6 +94,7 @@ GraphicsBox {
 
         delegate: CardItem {
             general: modelData
+            enabled: !chooseGeneralBox._isDimmed(modelData)
             opacity: 1
             scale: chooseGeneralBox.selectedGenerals.indexOf(modelData) >= 0 ? 1.1 : 1.0
 

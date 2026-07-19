@@ -3,6 +3,7 @@
 #include "card.h"
 #include "client.h"
 #include "clientplayer.h"
+#include "general.h"
 #include "player.h"
 #include "skill.h"
 #include "util.h"
@@ -124,6 +125,13 @@ void registerCore()
 
         if (ret == -1)
             qDebug() << "Failed to register ClientPlayer to Qml";
+    }
+
+    {
+        int ret = qmlRegisterUncreatableType<General>("rocks.touhousatsu", 1, 0, "General", "It is currently not supported to create a general in QML.");
+
+        if (ret == -1)
+            qDebug() << "Failed to register General to Qml";
     }
 
     {

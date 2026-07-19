@@ -15,7 +15,7 @@
 - `src/qmlui/qmlui.cpp`：`Q_COREAPP_STARTUP_FUNCTION(registerCore)` 自动注册 QML 类型。
   - 单例：`G`（`TouhouKillQmlUiGlobal`，字体/游戏模式判断、`getAssetUrl(path)`/`assetExists(path)` 资源访问）、`ServerInfo`（含 `EnableAI`/`GameMode`/`FreeChoose` 等）。
   - 可创建：`CppRoomScene`（`RoomScene`，`QQuickItem` 桥接宿主）。
-  - uncreatable：`Card`/`Player`/`ClientPlayer`/`Client`/`Skill`/`ViewAsSkill`/`FilterSkill`/`ProhibitSkill`/`DistanceSkill`/`MaxCardsSkill`/`TargetModSkill`/`AttackRangeSkill`。
+  - uncreatable：`Card`/`Player`/`ClientPlayer`/`General`/`Client`/`Skill`/`ViewAsSkill`/`FilterSkill`/`ProhibitSkill`/`DistanceSkill`/`MaxCardsSkill`/`TargetModSkill`/`AttackRangeSkill`。
 - `src/qmlui/roomscene.h/cpp`：桥接层。`Q_PROPERTY` 暴露 `Self`（`ClientPlayer *`）、`ClientInstance`（`Client *`）；`connectClientSignals()` 集中连接 Client 信号；`Q_INVOKABLE replyToServer/notifyServer/freeChooseGeneral`。全局 `QPointer<RoomScene> RoomSceneInstance`。
 - `src/client/client.h/cpp`：`Client : public QObject`，全局 `QPointer<Client> ClientInstance`（注释明确不应是单例，当前仍是）。约 50 个信号。`getPlayers()` 已 `Q_INVOKABLE`。`addPlayer`/`arrangeSeats`/`removePlayer` 玩家生命周期。
 - `src/client/clientplayer.h`：`ClientPlayer : public Player`，全局 `QPointer<ClientPlayer> Self`。
@@ -51,6 +51,7 @@
 - [x] **MainWindow 单例**：`QPointer<MainWindow> MainWindowInstance`（仿 RoomSceneInstance）。
 - [x] **Client status 规范化**：`Q_PROPERTY ... NOTIFY status_changed`；`status_changed` 单参；`setStatus` 仅变化时 emit。
 - [x] **assign_asked 身份分配**：桥接 `showRoleAssignDialog()` 弹模态 `RoleAssignDialog`（自包含：accept 调 `onPlayerAssignRole`、reject 调 `replyToServer`，无需 QML 返回值）；QML `onNotifyAssignAsked` 触发。
+- [x] **国战双将势力校验**：`ChooseGeneralBox._canPair`（同势力或至少一方 `"zhu"`，对齐 `room.cpp:3723`/旧版 `choosegeneralbox.cpp:489`）+ `Engine::getGeneral` 加 `Q_INVOKABLE`（QML 直调 `Sanguosha.getGeneral(name).kingdom`，含 `_hegemony` fallback）；`_toggle` 拦截不合规第二将 + 不合规候选 opacity 灰显。修复国战可选不同势力的问题。
 
 ### 待做（按优先级）
 - [ ] **CardItem 卡牌选择**：启用 `selected` 属性 + 信号 → 打通 Dashboard OK/Cancel/Discard（useSelectedCard → onPlayerResponseCard/onPlayerDiscardCards）。
@@ -71,6 +72,7 @@
 - **player 维护在 Client**：QML 不 accumulate 玩家副本，通过 `ClientInstance.getPlayers()`（已 Q_INVOKABLE）查询消费。
 - **回传方式**：通用回传用 `replyToServer(int commandType, QVariant)`；简单请求直接调 Client slot（如 `addRobot()`/`trust()`/`onPlayerChooseGeneral(name)`）。
 - **自包含 dialog（Client 去单例化时需处理）**：`RoleAssignDialog` 内部 accept() 直接调 `ClientInstance->onPlayerAssignRole(names, roles)`、reject() 调 `replyToServer(S_COMMAND_CHOOSE_ROLE, QVariant())` 自行回传服务器，因此桥接 `showRoleAssignDialog()` 返回 void、QML 无需返回值或后续处理。这与 `FreeChooseDialog`（桥接捕获 `general_chosen` 信号返回给 QML）模式不同。**Client 去单例化时**：此类 dialog 内部硬编码 `ClientInstance` 全局指针，必须改造为通过参数/上下文传入 Client 引用，否则会破坏；桥接层届时可考虑统一收集这类 dialog 的回传路径。
+- **Engine 函数暴露给 QML**：遇到 Engine（`Sanguosha` 全局单例，已暴露给 QML）中 QML 需要调用但不可调用的函数，**直接在 Engine 类上加 `Q_INVOKABLE` 或 `Q_SLOT`，不走 RoomScene 桥接层**。判定：纯查询/无副作用/不需信号连接的加 `Q_INVOKABLE`（如 `getGeneral`）；需要被信号连接或有槽语义的加 `Q_SLOT`。Engine 已是 QML 可直接访问的全局对象，加宏后 QML 即可调用；返回的 QObject 子类需 `qmlRegisterUncreatableType` 注册后 QML/qmllint 才能识别其类型并读 `Q_PROPERTY`（`General` 已注册，可读 `kingdom`/`maxhp`/`gender`/`lord` 等）。
 
 ### Qt6 moc / QML 约束
 - **Q_PROPERTY 指针类型需完整定义**：`Q_PROPERTY(T *)` 中 `T` 必须 include 完整定义，不能前置声明（否则 moc `static_assert(is_complete<...>)` 失败）。`roomscene.h` 需 `#include "client.h"`/`"clientplayer.h"`。
@@ -83,14 +85,17 @@
 - **不用 ExecDialog**：`askForGeneral` 统一 `setStatus(AskForGeneralTaken)`（原非国战走 ExecDialog 已改）。
 - **OK 按钮复用 Dashboard 的**：ChooseGeneralBox 不自带 OK，通过 `roomScene.activeChooseGeneralBox` 跟踪，Dashboard OK 按钮触发 `accept()`。
 - **single_result 语义**：非国战/平异 = `true`（单将）；国战双将 = 服务器给定。`askForGeneral` 非国战分支需设 `single_result = true`（原保持 false 导致误走双将）。
+- **国战双将势力校验**：双将必须同势力（kingdom），或至少一方为 `"zhu"`（百搭势力）。规则与服务器 `room.cpp:3723`、旧版 `uibackup/choosegeneralbox.cpp:489` 一致。QML 侧 `ChooseGeneralBox._canPair(g1, g2)` 直接调 `Sanguosha.getGeneral(name).kingdom`（`Engine::getGeneral` 已加 `Q_INVOKABLE`，QML 可直查，不判空不过度防御）；`_toggle` 选第二个将时拦截不合规搭配。**灰显**：`_isDimmed(g)` 联动 CardItem 标准 `enabled` 属性（`enabled: !_isDimmed(g)`），禁用时半透明黑遮罩覆盖（`visible: !enabled`，不用 opacity 避免漏 GraphicsBox 背景）——0 选不禁、1 选禁不可搭配、2 选禁全部未选。用 `enabled` 而非自定义属性，因 CardItem 作为手牌/装备等其他牌时也需禁用机制，统一复用。**OK 启用**：`canAccept`（单将≥1、双将=2）绑定 Dashboard OK 按钮 enabled 与 accept 校验，选未满不可确认。
 - **回传格式**：单将 `name`，双将 `name1+name2`（与旧版 `reply()` 一致）。
 - **右键 freechoose**：CardItem `rightClicked` 信号 + `ServerInfo.FreeChoose` → 调 `parent.freeChooseGeneral()`（C++ FreeChooseDialog modal exec）换将该位。
 - **KnownBoth 是"知己知彼"卡牌效果**（非国战双将）；国战双将选择是独立需求。
+- **国战将名 `_hegemony` 后缀是合法将名，`getGeneral` 查询不可去尾**：`Sanguosha.getGeneral("xxx_hegemony")` 直接查到国战将该本身；`xxx` 与 `xxx_hegemony` 是不同武将，kingdom 可能不同，去尾会查到错误的 general。注意这与 `Photo.qml` 的图片资源/翻译层面的 `_hegemony` 处理不同（图片资源可去尾 fallback 找文件、翻译可去尾查找 key，二者均非 getGeneral 查询）。
 
 ### UI 约定
 - **GraphicsBox 基类**：Image 根（直接用 source 属性）、可拖拽、无标题/操作按钮/信号、default property content 槽位、Component.onCompleted 居中（x/y 而非 anchors，兼容拖拽）。
 - **Dashboard 按钮**：`anchors.bottom: cardArea.top` + `bottomMargin` + `horizontalCenter` 浮在手牌区上方；268×133，font.pixelSize 50。
 - **资源访问**：统一用 `G.getAssetUrl(path)`（原 getUrl 已删）。
+- **禁用 `z` 属性**：所有 UI 界面靠元素的声明顺序/父子层级（后声明的同级元素渲染在上层）解决相互覆盖，**不使用 `z` 属性**调整堆叠。**历史原因**：旧代码（`src/uibackup/`）滥用 `z` 调整堆叠，目前已用到小数点前 5 位（万级），为给以后调整留空间，现阶段能不用 `z` 就一律不用。
 
 ### 其他
 - **qmllint 假告警**：未生成 qmltypes 时 `CppRoomScene`/`rocks.touhousatsu` 未识别，大量 `unqualified`/`missing-type` warning，构建后消除，非真实错误。
@@ -153,6 +158,29 @@
 - `roomscene.cpp`：include `roleassigndialog.h`；实现 `showRoleAssignDialog()` —— 栈对象 `RoleAssignDialog dialog(MainWindowInstance); dialog.exec();`。RoleAssignDialog 自包含（accept 调 `ClientInstance->onPlayerAssignRole`、reject 调 `replyToServer(S_COMMAND_CHOOSE_ROLE, QVariant())`），无需 QML 返回值。
 - `RoomScene.qml`：`onNotifyAssignAsked` 调用 `roomScene.showRoleAssignDialog()`。
 - `roleassigndialog.cpp/.h` 已在 .pro（无需改构建）。
+
+### 2026-07-19：国战双将势力校验
+- 修复国战选将可选不同势力的问题：双将必须同势力或至少一方 `"zhu"`。
+- `engine.h`：`Engine::getGeneral` 加 `Q_INVOKABLE`，QML 直接 `Sanguosha.getGeneral(name).kingdom` 读势力，不走 RoomScene 桥接。
+- `ChooseGeneralBox.qml`：`_canPair(g1, g2)` 直接 `Sanguosha.getGeneral(name).kingdom`（对齐 `room.cpp:3723`/旧版 `choosegeneralbox.cpp:489`，不判空不过度防御）；`_toggle` 双将模式选第二个将时校验，不合规拒绝；不合规候选 `opacity` 0.3 灰显。
+- 注：初版曾在桥接层加 `getGeneralKingdom`，后按约定改为直接给 Engine 加 `Q_INVOKABLE`（见"桥接架构"小节"Engine 函数暴露给 QML"规则）。初版 `_canPair` 曾经 `_kingdomOf` 加 `_hegemony` 去尾 fallback，已删除——国战将名带 `_hegemony` 后缀是合法将名，去尾会查到 kingdom 不同的另一个将（见"选将流程约定"小节）。
+
+### 2026-07-19：注册 General 到 QML
+- `qmlui.cpp`：`registerCore` 新增 `qmlRegisterUncreatableType<General>`（紧随 ClientPlayer），include `general.h`。
+- 目的：`Engine::getGeneral` 加 `Q_INVOKABLE` 后 QML 拿到 `const General *`，注册 General 类型使 QML/qmllint 能识别并读其 `Q_PROPERTY`（`kingdom`/`maxhp`/`gender`/`lord`/`hidden` 等），后续可复用，不再依赖未注册类型的元对象回退。
+
+### 2026-07-19：国战选将 UX 修复（3 项）
+- **OK 过早启用**：ChooseGeneralBox 加 `canAccept`（单将≥1、双将=2），`accept()` 与 Dashboard OK 按钮 enabled 统一用它，双将选 1 个不可确认。
+- **选满 2 个后其余应保持灰显**：新增 `_isDimmed(g)`（0 选不灰、1 选灰不可搭配、2 选灰全部未选），替代原 `opacity` 绑定（原条件仅 `length===1`，选满后恢复不灰）。
+- **灰显漏背景**：CardItem 加 `dimmed` 属性 + 半透明黑色遮罩 Rectangle（靠声明顺序覆盖，不用 z/opacity），不漏 GraphicsBox 背景。
+
+### 2026-07-19：确立"禁用 z 属性"约定
+- UI 约定新增：所有 UI 靠声明顺序/父子层级解决覆盖，不用 `z`。
+- CardItem 灰显遮罩移除 `z: 1`（靠在 cardContent/MouseArea 之后声明保证上层覆盖）。
+
+### 2026-07-19：CardItem 禁用机制改用标准 enabled
+- 灰显从自定义 `dimmed` 属性改为 Qt 标准 `enabled` 属性联动：`enabled: !_isDimmed(g)`，遮罩 `visible: !enabled`。
+- 原因：CardItem 作为手牌/装备等其他牌时也需禁用情况，统一用 `enabled` 复用一套机制（禁用时 MouseArea 自动不响应 + 遮罩变暗）。
 
 ## 7. 下一步
 1. CardItem 卡牌选择（`selected` 状态 + 信号）→ 打通 OK/Cancel/Discard。

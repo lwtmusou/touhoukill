@@ -136,8 +136,8 @@ Item {
             }
 
             QSanButton {
-                // OK: confirms the active ChooseGeneralBox selection (single-general case for now).
-                enabled: dashboard.parent && dashboard.parent.activeChooseGeneralBox !== null && dashboard.parent.activeChooseGeneralBox.selectedGenerals.length > 0
+                // OK: confirms the active ChooseGeneralBox selection (single or dual general).
+                enabled: dashboard.parent && dashboard.parent.activeChooseGeneralBox !== null && dashboard.parent.activeChooseGeneralBox.canAccept
                 font.pixelSize: 50
                 height: 133
                 source: G.getAssetUrl("image/system/button/button.png")

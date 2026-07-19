@@ -5551,6 +5551,7 @@ void Room::doBattleArrayAnimate(ServerPlayer *player, ServerPlayer *target)
 void Room::preparePlayers()
 {
     if (isHegemonyGameMode(mode)) {
+        Q_ASSERT(ServerInfo.Enable2ndGeneral);
         foreach (ServerPlayer *player, m_players) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             QList<const Skill *> skills = Sanguosha->getGeneral(general1_name)->getSkillList(true, true);
