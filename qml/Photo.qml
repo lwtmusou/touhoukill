@@ -90,12 +90,6 @@ Item {
             });
         }
     }
-    onGeneralChanged: {
-        if (general === "") {
-            general = "yingyingguai";
-            return;
-        }
-    }
     onHuashenGeneral2Changed: {
         if (huashenGeneral2 === "") {
             huashen2Image.visible = false;
