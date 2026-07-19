@@ -189,6 +189,7 @@ CppRoomScene {
 
         function onNotifyAssignAsked() {
             console.log("[bridge->qml] notifyAssignAsked");
+            roomScene.showRoleAssignDialog();
         }
 
         function onNotifyCardShown(playerName, cardId) {

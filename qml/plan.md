@@ -50,6 +50,7 @@
 - [x] **getUrl→getAssetUrl 重命名**：qml 侧 14 文件批量替换；qmlui.h 新增 assetExists。
 - [x] **MainWindow 单例**：`QPointer<MainWindow> MainWindowInstance`（仿 RoomSceneInstance）。
 - [x] **Client status 规范化**：`Q_PROPERTY ... NOTIFY status_changed`；`status_changed` 单参；`setStatus` 仅变化时 emit。
+- [x] **assign_asked 身份分配**：桥接 `showRoleAssignDialog()` 弹模态 `RoleAssignDialog`（自包含：accept 调 `onPlayerAssignRole`、reject 调 `replyToServer`，无需 QML 返回值）；QML `onNotifyAssignAsked` 触发。
 
 ### 待做（按优先级）
 - [ ] **CardItem 卡牌选择**：启用 `selected` 属性 + 信号 → 打通 Dashboard OK/Cancel/Discard（useSelectedCard → onPlayerResponseCard/onPlayerDiscardCards）。
@@ -57,9 +58,10 @@
 - [ ] **玩家牌展示/桌面牌堆**：PlayerCardBox（showAllCards/showCard/askForGongxin）、GenericCardContainer、TablePile（askForGuanxing/askForYiji）。
 - [ ] **聊天与日志**：ChatWidget、BubbleChatBox、ClientLogBox。
 - [ ] **Dashboard 技能按钮**：`QSanSkillButton.qml` + 装备区绑定。
-- [ ] **选将扩展**：askForGeneral3v3、askForAssign、askForRole3v3；KnownBoth（知己知彼卡牌效果，非国战双将）。
+- [ ] **选将扩展**：askForGeneral3v3、askForRole3v3；KnownBoth（知己知彼卡牌效果，非国战双将）。
 - [ ] **RoomScene 收尾**：移除 `testItemToBeRemovedAfterTest`、main.qml 宽度过小提示。
 - [ ] **清理**：`src/uibackup` 死代码整体删除。
+- [ ] **Client 去单例化**（QML 重构完成后着手，独立阶段）：`client.h` 末尾 TODO 注释明确"Client should ABSOLUTELY NOT be a singleton"——当前 `extern QPointer<Client> ClientInstance` 全局指针导致无法实现客户端侧 AI agent（只能服务端 AI）。改造方向：通过参数/上下文传入 Client 引用，移除全局 `ClientInstance`。**桥接层已部分铺垫**：`RoomScene::selfHelper()`/`clientHelper()`（注释"needed to refactor Self and ClientInstance from singleton"）当前返回 `Self`/`ClientInstance`，是去单例化的注入点；`clientHelper` 内亦有 TODO"consider how to get this after Client is no longer global singleton"。**注意自包含 dialog**：`RoleAssignDialog` 等 dialog 内部硬编码 `ClientInstance`（见"桥接架构"小节），需一并改造。
 
 ## 4. 设计决策与约定（讨论沉淀，后续必须沿用）
 
@@ -68,6 +70,7 @@
 - **notify 信号用具体类型**：参数用 `ClientPlayer *` 而非 `QObject *`（QML 类型提示好）；`Q_PROPERTY` 的 `Self`/`ClientInstance` 同理。
 - **player 维护在 Client**：QML 不 accumulate 玩家副本，通过 `ClientInstance.getPlayers()`（已 Q_INVOKABLE）查询消费。
 - **回传方式**：通用回传用 `replyToServer(int commandType, QVariant)`；简单请求直接调 Client slot（如 `addRobot()`/`trust()`/`onPlayerChooseGeneral(name)`）。
+- **自包含 dialog（Client 去单例化时需处理）**：`RoleAssignDialog` 内部 accept() 直接调 `ClientInstance->onPlayerAssignRole(names, roles)`、reject() 调 `replyToServer(S_COMMAND_CHOOSE_ROLE, QVariant())` 自行回传服务器，因此桥接 `showRoleAssignDialog()` 返回 void、QML 无需返回值或后续处理。这与 `FreeChooseDialog`（桥接捕获 `general_chosen` 信号返回给 QML）模式不同。**Client 去单例化时**：此类 dialog 内部硬编码 `ClientInstance` 全局指针，必须改造为通过参数/上下文传入 Client 引用，否则会破坏；桥接层届时可考虑统一收集这类 dialog 的回传路径。
 
 ### Qt6 moc / QML 约束
 - **Q_PROPERTY 指针类型需完整定义**：`Q_PROPERTY(T *)` 中 `T` 必须 include 完整定义，不能前置声明（否则 moc `static_assert(is_complete<...>)` 失败）。`roomscene.h` 需 `#include "client.h"`/`"clientplayer.h"`。
@@ -145,8 +148,15 @@
 ### 2026-07-19：MainWindow 单例
 - `QPointer<MainWindow> MainWindowInstance`（仿 RoomSceneInstance），构造函数第一行赋值。
 
+### 2026-07-19：assign_asked 身份分配
+- `roomscene.h`：新增 `Q_INVOKABLE void showRoleAssignDialog()` 声明（紧随 `freeChooseGeneral`）。
+- `roomscene.cpp`：include `roleassigndialog.h`；实现 `showRoleAssignDialog()` —— 栈对象 `RoleAssignDialog dialog(MainWindowInstance); dialog.exec();`。RoleAssignDialog 自包含（accept 调 `ClientInstance->onPlayerAssignRole`、reject 调 `replyToServer(S_COMMAND_CHOOSE_ROLE, QVariant())`），无需 QML 返回值。
+- `RoomScene.qml`：`onNotifyAssignAsked` 调用 `roomScene.showRoleAssignDialog()`。
+- `roleassigndialog.cpp/.h` 已在 .pro（无需改构建）。
+
 ## 7. 下一步
 1. CardItem 卡牌选择（`selected` 状态 + 信号）→ 打通 OK/Cancel/Discard。
 2. 选项/触发顺序弹窗（ChooseOptionsBox/ChooseTriggerOrderBox）。
 3. 玩家牌展示/桌面牌堆、聊天日志。
 4. Dashboard 技能按钮、RoomScene 测试桩清理、src/uibackup 删除。
+5. QML 重构完成后：Client 去单例化（见 `client.h` TODO；桥接 `selfHelper`/`clientHelper` 已预留注入点，自包含 dialog 需一并改造）。

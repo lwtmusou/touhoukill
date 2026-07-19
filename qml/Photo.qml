@@ -54,7 +54,7 @@ Item {
             return null;
 
         var generalImageFileName = g;
-        if (g.endsWith("_hegemony"))
+        if (g.endsWith("_hegemony") && !G.assetExists("image/fullskin/generals/full/" + g + ".png"))
             generalImageFileName = g.substring(0, g.length - 9);
 
         return G.getAssetUrl("image/fullskin/generals/full/" + generalImageFileName + ".png");

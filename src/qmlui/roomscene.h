@@ -38,6 +38,11 @@ public:
     // or an empty string if cancelled. Used by ChooseGeneralBox right-click to swap a general.
     Q_INVOKABLE QString freeChooseGeneral();
 
+    // Pops up the C++ RoleAssignDialog (modal). The dialog is self-contained:
+    // accept() calls ClientInstance->onPlayerAssignRole() and reject() calls replyToServer(),
+    // so no return value or further QML handling is needed. Used on notifyAssignAsked.
+    Q_INVOKABLE void showRoleAssignDialog();
+
 signals:
     void gameStartedChanged(bool newGameStarted);
     void gameOverChanged(bool newGameOver);

@@ -5,6 +5,7 @@
 #include "choosegeneraldialog.h"
 #include "mainwindow.h"
 #include "protocol.h"
+#include "roleassigndialog.h"
 #include "util.h"
 
 #include <QApplication>
@@ -273,6 +274,14 @@ QString RoomScene::freeChooseGeneral()
     });
     dialog.exec();
     return chosen;
+}
+
+void RoomScene::showRoleAssignDialog()
+{
+    // RoleAssignDialog is self-contained: accept() forwards onPlayerAssignRole() to the
+    // server and reject() replies with an empty role list, so nothing to return to QML.
+    RoleAssignDialog dialog(MainWindowInstance);
+    dialog.exec();
 }
 
 namespace {
