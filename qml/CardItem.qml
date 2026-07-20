@@ -41,8 +41,15 @@ Item {
     width: 183
 
     onCardIdChanged: {
-        if (cardId == -1)
+        if (cardId == -1) {
+            // Unknown card (other players' hidden hand cards during move, cardId=-1 by design
+            // for client data asymmetry). Show card back, no suit/number.
+            general = "";
+            cardImage.source = G.getAssetUrl("image/system/card-back.png");
+            cardSuitImage.visible = false;
+            cardNumberImage.visible = false;
             return;
+        }
         general = "";
 
         var card = Sanguosha.getEngineCard(cardId);
@@ -142,7 +149,7 @@ Item {
     // rectangle instead of opacity so the GraphicsBox background does not show through.
     // Tied to the standard `enabled` property so all CardItem use cases (choose-general
     // candidates, hand cards, equips, etc.) share one disable mechanism. Relies on
-    // declaration order (after cardContent/MouseArea) to render on top — no z property.
+    // declaration order (after cardContent/MouseArea) to render on top -- no z property.
     Rectangle {
         anchors.fill: parent
         color: Qt.rgba(0, 0, 0, 0.5)

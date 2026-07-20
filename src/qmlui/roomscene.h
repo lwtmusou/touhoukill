@@ -95,6 +95,8 @@ signals:
     void notifyPlayerRemoved(const QString &playerName);
     void notifySeatsArranged();
     void notifyStatusChanged(int newStatus);
+    void notifyMoveCardsGot(int moveId, const QVariantList &moves);
+    void notifyMoveCardsLost(int moveId, const QVariantList &moves);
     void notifyPlayerKilled(const QString &who);
     void notifyPlayerRevived(const QString &who);
     void notifyDashboardDeath(const QString &who);

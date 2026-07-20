@@ -1,18 +1,25 @@
 import QtQuick 6.5
 
 Item {
+    id: cardContainer
+
     property bool autoBack: false
     property list<CardItem> cardItems
     property int lastAlign: Qt.AlignLeft
     property real lastRowOffest: 0
     property int lastRownum: 0
+    // QObject parent for created CardItems -- roomScene (see plan "CardItem and card container design").
+    // visual parent is cardContainer; QObject parent stays roomScene so cards can move
+    // between containers without reparent issues.
+    property var rootScene: null
 
     function createItem(cardId: int): CardItem {
-        var item = cardItemComponent.createObject(this, {
+        var item = cardItemComponent.createObject(rootScene, {
                                                       cardId: cardId,
                                                       visible: true,
                                                       opacity: 0
                                                   });
+        item.parent = cardContainer;
         cardItems.push(item);
 
         return item;
@@ -75,6 +82,21 @@ Item {
         lastAlign = align;
         lastRownum = rownum;
         lastRowOffest = rowOffset;
+    }
+
+    // Remove and destroy the CardItem with the given cardId. self hand cards have unique
+    // cardIds; for other players' hidden cards (cardId == -1) this is not used (they don't
+    // enter Dashboard.cardArea, only handcardNum is synced).
+    function removeItem(cardId: int): CardItem {
+        for (var i = 0; i < cardItems.length; ++i) {
+            if (cardItems[i].cardId === cardId) {
+                var item = cardItems[i];
+                cardItems.splice(i, 1);
+                item.destroy();
+                return item;
+            }
+        }
+        return null;
     }
 
     function takeItem(item: CardItem) {

@@ -9,6 +9,19 @@ Item {
     property bool discardEnabled: false
     property bool okEnabled: false
     required property var photo
+    property var roomScene: null
+
+    // Hand card sync (subtask A): add/remove CardItem in cardArea + relayout.
+    // self hand cards only (other players' hidden cards sync via handcardNum, not here).
+    function addHandCard(cardId: int) {
+        cardArea.createItem(cardId);
+        cardArea.lay(Qt.AlignLeft, 1, 0, true, true);
+    }
+
+    function removeHandCard(cardId: int) {
+        cardArea.removeItem(cardId);
+        cardArea.lay(Qt.AlignLeft, 1, 0, true, true);
+    }
 
     // Button enabled state, set imperatively by updateStatus() on status change (mirrors
     // old RoomScene::updateStatus in uibackup/roomscene.cpp:2784-2949). OK cannot rely solely
@@ -178,7 +191,13 @@ Item {
         CardContainer {
             id: cardArea
 
-            anchors.fill: parent
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.topMargin: 94
+            rootScene: dashboard.roomScene
         }
 
         // Operation buttons floating above the hand area (negative y).
@@ -194,7 +213,7 @@ Item {
             QSanButton {
                 enabled: dashboard.clientInstance != null
                 font.pixelSize: 50
-                height: 133
+                height: 78
                 source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Trust")
                 width: 268
@@ -208,7 +227,7 @@ Item {
                 // once CardItem selection lands).
                 enabled: dashboard.discardEnabled
                 font.pixelSize: 50
-                height: 133
+                height: 78
                 source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Discard")
                 width: 268
@@ -221,7 +240,7 @@ Item {
                 // when the discard action is refusable (Client::discardActionRefusable).
                 enabled: dashboard.cancelEnabled
                 font.pixelSize: 50
-                height: 133
+                height: 78
                 source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Cancel")
                 width: 268
@@ -234,7 +253,7 @@ Item {
                 // Other response statuses enable OK after card selection lands (CardItem.selected TODO).
                 enabled: dashboard.okEnabled
                 font.pixelSize: 50
-                height: 133
+                height: 78
                 source: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("OK")
                 width: 268

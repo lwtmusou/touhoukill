@@ -287,6 +287,28 @@ CppRoomScene {
             console.log("[bridge->qml] notifyLogReceived", logStr);
         }
 
+        // Subtask A: hand area sync. Handle moves where toPlace/fromPlace == PlaceHand && player == Self.
+        // Other places (equip/judge/pile/table) deferred to later subtasks.
+        function onNotifyMoveCardsGot(moveId, moves) {
+            for (var i = 0; i < moves.length; ++i) {
+                var m = moves[i];
+                if (m.toPlace === Player.PlaceHand && m.toPlayer !== null && m.toPlayer.objectName === roomScene.Self.objectName) {
+                    for (var j = 0; j < m.cardIds.length; ++j)
+                        dashboard.addHandCard(m.cardIds[j]);
+                }
+            }
+        }
+
+        function onNotifyMoveCardsLost(moveId, moves) {
+            for (var i = 0; i < moves.length; ++i) {
+                var m = moves[i];
+                if (m.fromPlace === Player.PlaceHand && m.fromPlayer !== null && m.fromPlayer.objectName === roomScene.Self.objectName) {
+                    for (var j = 0; j < m.cardIds.length; ++j)
+                        dashboard.removeHandCard(m.cardIds[j]);
+                }
+            }
+        }
+
         function onNotifyNullificationAsked(asked) {
             console.log("[bridge->qml] notifyNullificationAsked", asked);
         }
@@ -410,6 +432,7 @@ CppRoomScene {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         photo: selfPhoto
+        roomScene: roomScene
         width: parent.width - selfPhoto.width
     }
 

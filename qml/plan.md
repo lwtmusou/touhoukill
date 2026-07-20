@@ -6,6 +6,7 @@
 ## 0. 全局禁令
 
 - **不使用 Qt5Compat**：全局禁用 `QT += 5compat`（`QSanguosha.pro` 当前 `QT += network widgets quick quickwidgets`，不得添加 `5compat`，已在 .pro 注释标注）。所有需要的效果/组件用 Qt 6 原生方案（如 `MultiEffect` 走 `import QtQuick.Effects`），**不得引入 `Qt5Compat.GraphicalEffects` 等 compat 模块**。
+- **QML 与 CPP 文件纯 ASCII**：所有 `.qml`/`.cpp`/`.h`/`.pro` 文件（含注释、字符串）必须使用纯 ASCII 字符，**不得包含中文、全角符号、em dash（`—`）、`§` 等非 ASCII 字符**。中文说明写在 `plan.md`（本文件）里，代码注释用英文。em dash 用 `--` 替代。
 
 ## 1. 项目概述
 将旧版基于 QGraphics 的界面 `src/uibackup/`（35 对 .cpp/.h，约 17k 行，不编译，仅参考）重构为 Qt 6 QML。`MainWindow` 通过 `QQuickWidget` 加载 `qml/main.qml`，在 StartScene 与 RoomScene 间切换。核心布局（Photo/Dashboard/CardItem/StartScene/RoomScene）已成型，游戏交互（弹窗/聊天/技能按钮/卡牌选择）逐步移植中。
@@ -61,7 +62,7 @@
 - [ ] **CardItem 卡牌选择（打通 OK/Cancel/Discard 全链路）**：参考旧版 `src/uibackup/roomscene.cpp` 的 `useSelectedCard()`(2479)/`doOkButton()`(3083)/`doCancelButton()`(3100)/`doDiscardButton()`(3193)/`updateStatus()`(2743) 与 `src/uibackup/dashboard.cpp` 的 `getSelected`/`pendingCard`/`startPending`/`unselectAll`/`enableCards`。整条链路依赖较多，拆为以下子任务（按依赖顺序）：
 
   - [ ] **A. 牌区同步**（前置，覆盖所有玩家可见牌区）：`Client::getCards`/`loseCards` 回调对应 `move_cards_got`/`move_cards_lost` 信号（桥接**尚未转发**），按 `CardsMoveStruct.to_place`/`from_place`（`Player::Place` 枚举：`PlaceHand`/`PlaceEquip`/`PlaceDelayedTrick`/`PlaceJudge`/`PlaceSpecial`/`PlaceTable`/`DiscardPile`）与 `from`/`to` player 分发到对应区域。不仅是手牌：
-    - **手牌区**（`PlaceHand`）：Dashboard `cardArea`（CardContainer）增删 CardItem 并 `lay()`。其他玩家手牌对 self 不可见，只同步 `ClientPlayer.handcard` 数量（已有 `Q_PROPERTY` + `handcardChanged`，Photo 已绑）。
+    - **手牌区**（`PlaceHand`）✅：Dashboard `cardArea`（CardContainer）增删 CardItem 并 `lay()`。其他玩家手牌对 self 不可见，只同步 `ClientPlayer.handcard` 数量（已有 `Q_PROPERTY` + `handcardChanged`，Photo 已绑）。**其他玩家手牌移动过程中 `cardId` 可能为 -1（故意设计，客户端数据不对等——隐藏其他玩家手牌信息）**，CardItem 需处理 `cardId=-1`（显示牌背 `image/system/card-back.png`，不显示卡面/花色/点数）；`qml/CardItem.qml:onCardIdChanged` 已处理 `cardId=-1` 显示牌背。self 自己的手牌 `cardId` 是真实值，正常显示卡面。
     - **装备区**（`PlaceEquip`）：Dashboard `weaponArea`/`armorArea`/`dhorseArea`/`ohorseArea`/`treasureArea`（`qml/Dashboard.qml` 已有占位，当前 `visible: false`，需启用绑定）；其他玩家装备显示在 Photo 上。5 槽位（武器/防具/防马/攻马/宝物）按 `EquipCard::position()` 归位。
     - **判定区**（`PlaceDelayedTrick`）：放延时锦囊（闪电、乐不思蜀、兵粮寸断等）。self 在 Dashboard、其他在 Photo。需新建判定区容器组件。
     - **TablePile（桌面牌堆，统一处理 `PlaceJudge`/`PlaceTable`/`DiscardPile`，不区分）**：判定牌（`PlaceJudge`，判定过程翻出的实体牌，分出此 Place 是为给"红颜"等修改实体判定牌的技能留位置）、桌面打出的牌（`PlaceTable`）、弃牌堆（`DiscardPile`）三者都由 TablePile 显示，不做区分。TablePile 直接用 CardContainer（见"CardItem 与牌容器设计"小节）。**弃牌不直接 destroy，走延迟清除 + 重排机制**（见"CardItem 与牌容器设计"小节的"TablePile 延迟清除机制"）；`PlaceTable`/`PlaceJudge` → `DiscardPile` 是 TablePile 内部 place 变化，目前无专门动画。
@@ -70,7 +71,7 @@
       - **旧代码 `PlaceWuGu` 情况**：旧版 `src/uibackup/roomscene.cpp:3902` 的 `takeAmazingGrace()` 用 `Player::PlaceWuGu` 作 `CardsMoveStruct.from_place` 标记牌来源（五谷丰登公共堆），**仅用于客户端取牌动画**；**当前 `src/core/player.h` 的 `Place` 枚举已删除 `PlaceWuGu`**（旧 uibackup 死代码引用了已不存在的枚举值，服务器侧也从不发送 PlaceWuGu，五谷丰登走 AG 机制 `S_COMMAND_FILL_AMAZING_GRACE`/`S_COMMAND_TAKE_AMAZING_GRACE`，对应 `ag_filled`/`ag_taken` 信号）。
       - **本次重构不引入 `PlaceWuGu` 即可保持功能**：`notifyAgTaken(taker, cardId, moveCards)` 已携带取牌动画所需的全部信息——`moveCards=true` 时 taker 手牌区增牌（走手牌同步，`to_place=PlaceHand`），取牌动画起点用 AG box 自身牌位置（QML 侧已知），无需专门的 `from_place` 枚举值；`moveCards=false` 时仅 AG 区移除该牌。AG box 是独立组件（待做，归入"玩家牌展示/桌面牌堆"任务的 PlayerCardBox/GenericCardContainer 范畴），A 子任务只需保证 `notifyAgTaken` 能驱动 taker 手牌区增删即可。
     - 实现要点：补桥接 `notifyMoveCardsGot`/`notifyMoveCardsLost`（转发 `move_cards_got`/`move_cards_lost`）。**`CardsMoveStruct` 在 C++ 桥接层处理，不暴露给 QML**（不 `qmlRegisterUncreatableType`）——桥接层解析每个 move，转成 QML 可理解的字段传给 QML：`cardIds` (QVariantList&lt;int&gt;)、`fromPlace`/`toPlace` (int，`Player::Place` 枚举值，`Q_ENUM` 已可用，QML 用 `Player.PlaceHand` 等比较)、`fromPlayer`/`toPlayer` (`Player *`，桥接层用结构体已有的 `from_player_name`/`to_player_name` 调 `ClientInstance.getPlayer(name)` 查得；`Player` 已 `qmlRegisterUncreatableType` 注册，QML 可直接读其 Q_PROPERTY)、`fromPileName`/`toPileName` (QString) 等。QML 侧 `onNotifyMoveCardsGot/Lost` 遍历 moves，按 `toPlace`/`fromPlace` + player（self vs 其他 Photo）分发到对应区域，增删后 `lay()`。
-    - **`CardsMoveStruct` 的 `from`/`to` 指针客户端为 null**：`tryParse`(`src/core/structs.cpp:9`) 只解析 `from_player_name`/`to_player_name` 字符串，**不解析 `from`/`to` 指针**（客户端这两者是 nullptr）。桥接层用 `from_player_name`/`to_player_name` 调 `ClientInstance.getPlayer(name)` 查得 `ClientPlayer *`（也是 `Player *`），作为 `fromPlayer`/`toPlayer` 传给 QML。`Player` 已注册，QML 可直接读其 Q_PROPERTY，无需 QML 侧再 getPlayer。结构体 `from`/`to` 的 `Player *` 虚基类 dynamic_cast 问题（`src/core/structs.h:328`）后续细查，桥接层不依赖该指针。
+    - **`CardsMoveStruct` 的 `from`/`to` 指针**：`tryParse`(`src/core/structs.cpp:9`) 只解析 `from_player_name`/`to_player_name` 字符串，不解析 `from`/`to` 指针；但 `Client::getCards`/`loseCards`(`src/client/client.cpp:553-554`) 在 tryParse 后补设 `move.from = getPlayer(from_player_name)` / `move.to = getPlayer(to_player_name)`，所以 `move_cards_got`/`move_cards_lost` 信号触发时 moves 里的 `from`/`to` **非 null**（是 `ClientPlayer *`，也是 `Player *`）。桥接层直接用 `move.from`/`move.to` 作 `fromPlayer`/`toPlayer` 传给 QML（`Player` 已注册，QML 可读其 Q_PROPERTY），无需再 getPlayer。结构体 `from`/`to` 的 `Player *` 虚基类 dynamic_cast 问题（`src/core/structs.h:328`）后续细查。
     - **`isLastHandcard` 不传**：`tryParse` 未解析该字段（客户端恒为构造默认 false），客户端无使用，桥接层不传给 QML。
     - **不用 `CardsMoveStruct::toVariant()`**：该函数（`src/core/structs.cpp:37`）是服务器序列化用，输出 `JsonArray`（服务器协议格式，非 QML 语义化字段），且 `structs.cpp` `#include "room.h"` 可能有依赖。查证 `toVariant` 本身不直接用 `ServerPlayer`（只读 `card_ids`/`shown_ids`/`from_place`/`to_place`/`from_player_name`/`to_player_name`/`from_pile_name`/`to_pile_name`/`reason`/`open`），但格式不适合直接给 QML。桥接层自己解析这些字段转 QML 可理解内容。
     - **CardItem 与牌容器设计（前置）**：见"设计决策与约定"的"CardItem 与牌容器设计"小节——CardContainer 作为通用牌容器（TablePile 直接用，AG box 等 = GraphicsBox 内嵌 CardContainer）；CardItem 的 QObject parent 统一在 roomScene，移动用原实例（visual parent 切换：container → roomScene 飞行 → 新 container），不显示的牌直接 destroy。**`qml/CardContainer.qml:10` 的 `createItem` 现有 `createObject(this)` 必须改为 `createObject(roomScene)` + `cardItem.parent = this`**（否则牌移走后 QObject parent 还在 CardContainer，涉及转移问题）。
@@ -156,7 +157,8 @@
 ### 其他
 - **qmllint 假告警**：未生成 qmltypes 时 `CppRoomScene`/`rocks.touhousatsu` 未识别，大量 `unqualified`/`missing-type` warning，构建后消除，非真实错误。
 - **日志**：桥接层 `qDebug` 带 `[bridge]` 前缀，不打印大 payload。
-- **旧代码类名注意**：`src/uibackup/` 中以 `Q+大写字母` 打头的类不全是 Qt 自带，有自定义类（如 `QSanSelectableItem`/`QSanButton`/`QSanSkillButton`/`QSanInvokeSkillButton` 等 `QSan*` 系列），阅读代码时需确认是 Qt 自带（如 `QGraphicsDropShadowEffect`/`QGraphicsObject`/`QGraphicsProxyWidget`）还是自定义。
+- **旧代码类名注意**：`src/uibackup/` 中以 `Q+大写字母` 打头的类不全是 Qt 自带，有自定义类：`QSan*` 系列（`QSanSelectableItem`/`QSanButton`/`QSanSkillButton`/`QSanInvokeSkillButton` 等）与 `QAnimatedEffect`(`src/uibackup/sprite.h:28`，继承 Qt 自带 `QGraphicsEffect`，用于动画效果，配合 `EffectAnimation` 使用)。阅读代码时需确认是 Qt 自带（如 `QGraphicsDropShadowEffect`/`QGraphicsObject`/`QGraphicsProxyWidget`/`QGraphicsEffect`）还是自定义（`QSan*` 系列、`QAnimatedEffect`）。
+- **旧代码宏定义注意**：`G_ROOM_SKIN`/`G_DASHBOARD_LAYOUT`/`G_ROOM_LAYOUT`/`G_PHOTO_LAYOUT`/`G_COMMON_LAYOUT` 等是宏定义（`#define`，在 `src/dialog/uilegacy/SkinBank.h:470-474`，**非全局变量**），旧 `uibackup` 代码大量使用（如 `G_COMMON_LAYOUT.m_cardNormalHeight`、`G_ROOM_LAYOUT.m_discardPilePadding` 等）。`SkinBank.h` 从 `uibackup` 移到了 `src/dialog/uilegacy/`，**仍在用**（非死代码）。阅读旧代码时 `G_*` 形式的标识符需确认是宏还是变量。
 - **兼容性**：保留 `MainWindow` 现有 `qml_switchToRoomScene` 等接口签名。
 - **提交前格式化**：C++ 全文件运行 clang-format，QML 全文件运行 qmlformat。**注意 qmlformat 会重排属性/函数先后顺序**，运行后需复查注释是否仍与对应代码位置对得上（如 property 上方的注释、函数前的注释）。`property list<Photo>` 等 qmlformat 不兼容的写法见 QTBUG-147713（RoomScene.qml 注释），需在 qmlformat 前临时移除、之后加回。
 
@@ -258,6 +260,14 @@
 - 暴露 `m_isDiscardActionRefusable` 给 QML：`client.h` 加 `Q_PROPERTY(bool discardActionRefusable READ isDiscardActionRefusable NOTIFY discardActionRefusableChanged)` + getter/setter + 信号（成员保留 public）；`client.cpp` 实现 setter（仅变化时 emit），9 处 `m_isDiscardActionRefusable = X` 改走 `setDiscardActionRefusable(X)`（构造函数初始化列表保留）。
 - 按钮 enabled 改为 `Dashboard.updateStatus()` 命令式设置（`okEnabled`/`cancelEnabled`/`discardEnabled` property），`Connections` 监听 status/refusable/activeBox/canAccept 变化触发。`updateStatus` 用 `switch(status & ClientStatusBasicMask)` 按 status 分支设按钮 enabled（镜像旧 `uibackup/roomscene.cpp:2784-2949`），后续 prompt/card pending/skill/target 选择等逻辑在各 case 补；OK 点击在响应状态走目标选择等复杂流程，不只靠绑定。
 - Responding 等状态的 OK 待 CardItem 选卡落地后按选卡启用。参考 `uibackup/roomscene.cpp:2784-2949`。
+
+### 2026-07-20：A-手牌区同步实现
+- **桥接层**：`roomscene.h` 加 `notifyMoveCardsGot`/`notifyMoveCardsLost` 信号（携 `moveId` + `QVariantList moves`）；`roomscene.cpp` `connectClientSignals()` 连接 `Client::move_cards_got`/`move_cards_lost`，lambda 遍历 `QList<CardsMoveStruct>` 转 `QVariantList<QVariantMap>`（字段：`cardIds`/`fromPlace`/`toPlace`/`fromPlayer`(`Player *`)/`toPlayer`(`Player *`)/`fromPileName`/`toPileName`），`from`/`to` 直接用结构体指针（`getCards`/`loseCards` 已 `getPlayer` 补设，非 null），加 `#include "structs.h"`。
+- **CardContainer.qml**：加 `id: cardContainer` + `property var rootScene`；`createItem` 改 `createObject(rootScene)` + `item.parent = cardContainer`（QObject parent = roomScene，visual parent = cardContainer，见"CardItem 与牌容器设计"小节）；加 `removeItem(cardId)`（按 cardId 找 + destroy）。
+- **Dashboard.qml**：加 `property var roomScene` + `addHandCard(cardId)`/`removeHandCard(cardId)` 函数（调 `cardArea.createItem`/`removeItem` + `lay(Qt.AlignLeft, 1, 0, true, true)`）；CardContainer 设 `rootScene: dashboard.roomScene`。
+- **RoomScene.qml**：Dashboard 实例设 `roomScene: roomScene`；`onNotifyMoveCardsGot`/`onNotifyMoveCardsLost` 处理 `toPlace`/`fromPlace == Player.PlaceHand && player.objectName == Self.objectName` 的 move，遍历 `cardIds` 调 `dashboard.addHandCard`/`removeHandCard`。
+- **CardItem.qml**：`onCardIdChanged` 的 `cardId == -1` 分支补全牌背显示（`cardImage.source = card-back.png` + 隐藏花色/点数），之前只 `return` 未设 source。
+- 编译通过（roomscene.o + 链接成功）。qmllint 仅 1 条假告警（CardContainer.qml createObject 返回类型推断为 QObject，实际 CardItem）。
 
 ### 2026-07-20：PhaseItem 构造模式 + selfPhoto 标识 + QSanButton hover
 - 确立 **selfPhoto vs 非 selfPhoto 构造模式**（见"UI 约定"小节）：selfPhoto 不构造的子组件由 Dashboard 承担显示，非 selfPhoto 用 `createObject` 动态构造。

@@ -24,7 +24,7 @@ Item {
 
     // PhaseItem: selfPhoto does NOT construct (uses Dashboard's PhaseItem);
     // non-selfPhoto dynamically constructs via createObject on gameStarted.
-    // Same pattern will apply to equip area etc. — selfPhoto doesn't construct,
+    // Same pattern will apply to equip area etc. -- selfPhoto doesn't construct,
     // non-selfPhoto uses dynamic construction.
     property var phaseItemInstance: null
     property ClientPlayer player

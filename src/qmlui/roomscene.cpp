@@ -1,12 +1,13 @@
 #include "roomscene.h"
 
+#include "choosegeneraldialog.h"
 #include "client.h"
 #include "clientplayer.h"
-#include "choosegeneraldialog.h"
 #include "gameoverdialog.h"
 #include "mainwindow.h"
 #include "protocol.h"
 #include "roleassigndialog.h"
+#include "structs.h"
 #include "util.h"
 
 #include <QApplication>
@@ -255,6 +256,38 @@ void RoomScene::connectClientSignals()
     });
     connect(client, &Client::generals_viewed, this, [this](const QString &reason, const QStringList &names) {
         emit notifyGeneralsViewed(reason, names);
+    });
+    connect(client, &Client::move_cards_got, this, [this](int moveId, const QList<CardsMoveStruct> &moves) {
+        QVariantList qmlMoves;
+        for (const CardsMoveStruct &m : moves) {
+            QVariantMap qmlMove;
+            qmlMove["cardIds"] = IntList2VariantList(m.card_ids);
+            qmlMove["fromPlace"] = static_cast<int>(m.from_place);
+            qmlMove["toPlace"] = static_cast<int>(m.to_place);
+            qmlMove["fromPlayer"] = QVariant::fromValue(m.from);
+            qmlMove["toPlayer"] = QVariant::fromValue(m.to);
+            qmlMove["fromPileName"] = m.from_pile_name;
+            qmlMove["toPileName"] = m.to_pile_name;
+            qmlMoves.append(qmlMove);
+        }
+        qDebug().noquote() << "[bridge] move_cards_got moveId=" << moveId << "count=" << moves.size();
+        emit notifyMoveCardsGot(moveId, qmlMoves);
+    });
+    connect(client, &Client::move_cards_lost, this, [this](int moveId, const QList<CardsMoveStruct> &moves) {
+        QVariantList qmlMoves;
+        for (const CardsMoveStruct &m : moves) {
+            QVariantMap qmlMove;
+            qmlMove["cardIds"] = IntList2VariantList(m.card_ids);
+            qmlMove["fromPlace"] = static_cast<int>(m.from_place);
+            qmlMove["toPlace"] = static_cast<int>(m.to_place);
+            qmlMove["fromPlayer"] = QVariant::fromValue(m.from);
+            qmlMove["toPlayer"] = QVariant::fromValue(m.to);
+            qmlMove["fromPileName"] = m.from_pile_name;
+            qmlMove["toPileName"] = m.to_pile_name;
+            qmlMoves.append(qmlMove);
+        }
+        qDebug().noquote() << "[bridge] move_cards_lost moveId=" << moveId << "count=" << moves.size();
+        emit notifyMoveCardsLost(moveId, qmlMoves);
     });
 
     qDebug().noquote() << "[bridge] RoomScene connected to Client signals";

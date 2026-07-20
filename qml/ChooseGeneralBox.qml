@@ -21,7 +21,7 @@ GraphicsBox {
     // Hegemony pairing rule: two generals must share a kingdom, or at least one must be
     // "zhu" (wildcard kingdom). Mirrors server-side check in room.cpp:3723 and the old
     // uibackup/choosegeneralbox.cpp:489.
-    // Hegemony general names carry a "_hegemony" suffix and are distinct generals — do NOT
+    // Hegemony general names carry a "_hegemony" suffix and are distinct generals -- do NOT
     // strip it, that would resolve to a different general with a possibly different kingdom.
     function _canPair(g1, g2) {
         var k1 = Sanguosha.getGeneral(g1).kingdom;
