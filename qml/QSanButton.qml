@@ -28,6 +28,7 @@ Image {
             name: "entered"
 
             PropertyChanges {
+                hover.color: Qt.rgba(1, 1, 1, .25)
                 hover.visible: true
             }
         },
@@ -35,6 +36,7 @@ Image {
             name: "downEntered"
 
             PropertyChanges {
+                hover.color: Qt.rgba(1, 1, 1, .25)
                 hover.visible: true
             }
         },
@@ -42,6 +44,7 @@ Image {
             name: "downExited"
 
             PropertyChanges {
+                hover.color: Qt.rgba(1, 1, 1, .25)
                 hover.visible: true
             }
         },
@@ -49,6 +52,7 @@ Image {
             name: "disabled"
 
             PropertyChanges {
+                hover.color: Qt.rgba(0, 0, 0, .25)
                 hover.visible: true
             }
         }

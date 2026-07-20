@@ -3,6 +3,8 @@
 # -------------------------------------------------
 TARGET = QSanguosha
 QT += network widgets quick quickwidgets
+# Do NOT add `5compat` — Qt5Compat is globally forbidden in this project (see qml/plan.md §0).
+# Use Qt 6 native alternatives (e.g. MultiEffect via `import QtQuick.Effects`).
 TEMPLATE = app
 
 !macx: CONFIG += audio

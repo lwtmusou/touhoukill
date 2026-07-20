@@ -249,8 +249,8 @@ Item {
     }
 
     PhaseItem {
-        anchors.right: cardBg.right
         anchors.bottom: cardBg.top
+        anchors.right: cardBg.right
         phase: photo.phase
         visible: photo.gameStarted
     }

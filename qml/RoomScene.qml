@@ -147,6 +147,7 @@ CppRoomScene {
         for (var i = 1; i < playercount; ++i) {
             var photo = photoComponent.createObject(this, {
                                                         seat: i + 1,
+                                                        selfPhoto: false,
                                                         gameStarted: Qt.binding(function () {
                                                             return roomScene.gameStarted;
                                                         })
@@ -420,6 +421,7 @@ CppRoomScene {
         gameStarted: roomScene.gameStarted
         player: roomScene.Self
         seat: 1
+        selfPhoto: true
     }
 
     Column {
@@ -494,7 +496,7 @@ CppRoomScene {
         anchors.centerIn: parent
         color: Qt.rgba(0, 0, 0, 0.9)
         height: 600
-        visible: true
+        visible: !gameStarted
         width: parent.width - 2 * 336 - 2 * 20
 
         Row {
@@ -507,6 +509,7 @@ CppRoomScene {
                 kingdom: "pc98"
                 phase: Player.Start
                 seat: 3
+                selfPhoto: false
             }
 
             Photo {
@@ -518,6 +521,7 @@ CppRoomScene {
                 kingdom: "hmx"
                 maxhp: 600
                 seat: 5
+                selfPhoto: false
             }
 
             Photo {
@@ -527,6 +531,7 @@ CppRoomScene {
                 linghp: 20
                 maxhp: 30
                 seat: 7
+                selfPhoto: false
             }
 
             CardItem {

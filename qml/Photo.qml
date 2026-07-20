@@ -21,13 +21,27 @@ Item {
     property real originalX
     property real originalY
     property int phase: player.phaseValue
+
+    // PhaseItem: selfPhoto does NOT construct (uses Dashboard's PhaseItem);
+    // non-selfPhoto dynamically constructs via createObject on gameStarted.
+    // Same pattern will apply to equip area etc. — selfPhoto doesn't construct,
+    // non-selfPhoto uses dynamic construction.
+    property var phaseItemInstance: null
     property ClientPlayer player
     property var privatePile: ({})
     property string role: player.role
     property bool roleShown: player.role_shown
     property string screenName: player.screenname
     required property int seat
-    property bool selfPhoto: false
+    required property bool selfPhoto
+
+    function createPhaseItem() {
+        photo.phaseItemInstance = phaseItemComponent.createObject(photo);
+        photo.phaseItemInstance.anchors.horizontalCenter = Qt.binding(() => photo.horizontalCenter);
+        photo.phaseItemInstance.anchors.top = Qt.binding(() => photo.bottom);
+        photo.phaseItemInstance.phase = Qt.binding(() => photo.phase);
+        photo.phaseItemInstance.visible = Qt.binding(() => photo.gameStarted);
+    }
 
     function getGeneralName(g: string): string {
         if (g === "")
@@ -72,7 +86,11 @@ Item {
             kingdomImage.visible = true;
         }
 
-        // patch for specifying general2 initially
+        if (!selfPhoto)
+            photo.createPhaseItem();
+
+        // patch for specifying general2 initially during test.
+        // Remove after RoomScene.testItemToBeRemovedAfterTest is removed
         if (general2 != "") {
             var general2Temp = general2;
             general2 = "";
@@ -88,30 +106,6 @@ Item {
             generalImage.width = Qt.binding(function () {
                 return photo.width / 2;
             });
-        }
-    }
-    onHuashenGeneral2Changed: {
-        if (huashenGeneral2 === "") {
-            huashen2Image.visible = false;
-        } else {
-            var huashen2ImageFileName = huashenGeneral2;
-            if (huashenGeneral2.endsWith("_hegemony"))
-                huashen2ImageFileName = huashenGeneral2.substring(0, huashenGeneral2.length - 9);
-
-            huashen2Image.source = G.getAssetUrl("image/fullskin/generals/full/" + huashen2ImageFileName + ".png");
-            huashen2Image.visible = true;
-        }
-    }
-    onHuashenGeneralChanged: {
-        if (huashenGeneral === "") {
-            huashenImage.visible = false;
-        } else {
-            var huashenImageFileName = huashenGeneral;
-            if (huashenGeneral.endsWith("_hegemony"))
-                huashenImageFileName = huashenGeneral.substring(0, huashenGeneral.length - 9);
-
-            huashenImage.source = G.getAssetUrl("image/fullskin/generals/full/" + huashenImageFileName + ".png");
-            huashenImage.visible = true;
         }
     }
     onRoleChanged: {
@@ -404,10 +398,10 @@ Item {
         }
     }
 
-    PhaseItem {
-        anchors.horizontalCenter: photo.horizontalCenter
-        anchors.top: photo.bottom
-        phase: photo.phase
-        visible: photo.gameStarted && !photo.selfPhoto
+    Component {
+        id: phaseItemComponent
+
+        PhaseItem {
+        }
     }
 }
