@@ -42,9 +42,8 @@ CppRoomScene {
         , [2, 5, 2],//
     ]
     property int layBorderMargin: 20
-
-    // QTBUG-147713: remove this property before running qmlformat, add it back afterwards
     property list<Photo> otherPhotos
+    readonly property int zzzWorkaroundQTBUG147713: 0
 
     signal spaceClicked
 
@@ -462,7 +461,7 @@ CppRoomScene {
 
                 anchors.fill: parent
                 font.pixelSize: 50
-                source: G.getAssetUrl("image/system/button/button.png")
+                normalSource: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Add Robot")
                 visible: !roomScene.gameStarted && roomScene.Self.owner && ServerInfo.EnableAI
 
@@ -480,7 +479,7 @@ CppRoomScene {
 
                 anchors.fill: parent
                 font.pixelSize: 50
-                source: G.getAssetUrl("image/system/button/button.png")
+                normalSource: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Fill Robot")
                 visible: !roomScene.gameStarted && roomScene.Self.owner && ServerInfo.EnableAI
 
@@ -504,7 +503,7 @@ CppRoomScene {
 
                 anchors.fill: parent
                 font.pixelSize: 50
-                source: G.getAssetUrl("image/system/button/button.png")
+                normalSource: G.getAssetUrl("image/system/button/button.png")
                 text: qsTr("Return to main menu")
                 visible: !roomScene.gameStarted && !roomScene.gameOver
 

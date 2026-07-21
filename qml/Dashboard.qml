@@ -194,75 +194,92 @@ Item {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 10
             anchors.left: parent.left
-            anchors.right: parent.right
+            anchors.right: buttonSet.left
             anchors.top: parent.top
             anchors.topMargin: 94
             rootScene: dashboard.roomScene
         }
 
-        // Operation buttons floating above the hand area (negative y).
-        // Trust is fully functional (Client::trust slot); OK/Cancel/Discard depend on CardItem
-        // selection & target choosing (CardItem.selected is currently commented out), so they are
-        // UI stubs with TODO until card selection lands.
-        Row {
-            anchors.bottom: cardArea.top
-            anchors.bottomMargin: 8
-            anchors.horizontalCenter: cardArea.horizontalCenter
-            spacing: 8
+        // Button set: platter bg.png (100x195) + 4 platter buttons stacked per old layout
+        // (skins/defaultSkin.layout.json: buttonSetSize/confirmButtonArea/cancelButtonArea/
+        // discardButtonArea/trustButtonArea). Mirrors old RoomScene button_widget creation
+        // (uibackup/roomscene.cpp:800-815).
+        Item {
+            id: buttonSet
 
-            QSanButton {
-                enabled: dashboard.clientInstance != null
-                font.pixelSize: 50
-                height: 78
-                source: G.getAssetUrl("image/system/button/button.png")
-                text: qsTr("Trust")
-                width: 268
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            anchors.top: parent.top
+            width: 184
 
-                onClicked: dashboard.clientInstance.trust()
+            Image {
+                anchors.fill: parent
+                source: G.getAssetUrl("image/system/button/platter/bg.png")
             }
 
             QSanButton {
-                // Enabled in Playing phase (used to end the play / skip). Discarding-phase
-                // discard submits via OK after card selection (TODO: wire onPlayerDiscardCards
-                // once CardItem selection lands).
-                enabled: dashboard.discardEnabled
-                font.pixelSize: 50
-                height: 78
-                source: G.getAssetUrl("image/system/button/button.png")
-                text: qsTr("Discard")
-                width: 268
-
-                // TODO: dashboard.clientInstance.onPlayerDiscardCards(selectedCard)
-            }
-
-            QSanButton {
-                // Enabled in ExecDialog / AskForSkillInvoke, or in Responding/Discarding/Exchanging
-                // when the discard action is refusable (Client::discardActionRefusable).
-                enabled: dashboard.cancelEnabled
-                font.pixelSize: 50
-                height: 78
-                source: G.getAssetUrl("image/system/button/button.png")
-                text: qsTr("Cancel")
-                width: 268
-
-                // TODO: doCancelButton based on ClientInstance.status
-            }
-
-            QSanButton {
-                // OK: confirms activeBox selection, or acknowledges AskForSkillInvoke.
-                // Other response statuses enable OK after card selection lands (CardItem.selected TODO).
+                disabledSource: G.getAssetUrl("image/system/button/platter/confirm/disabled.png")
+                downSource: G.getAssetUrl("image/system/button/platter/confirm/down.png")
                 enabled: dashboard.okEnabled
-                font.pixelSize: 50
-                height: 78
-                source: G.getAssetUrl("image/system/button/button.png")
-                text: qsTr("OK")
-                width: 268
+                height: 129
+                hoverSource: G.getAssetUrl("image/system/button/platter/confirm/hover.png")
+                normalSource: G.getAssetUrl("image/system/button/platter/confirm/normal.png")
+                overlayEnabled: false
+                width: 129
+                x: 11
+                y: 18
 
                 onClicked: {
                     if (dashboard.parent && dashboard.parent.activeBox !== null)
                         dashboard.parent.activeBox.accept();
                     // TODO: handle AskForSkillInvoke / card-response OK once wired
                 }
+            }
+
+            QSanButton {
+                disabledSource: G.getAssetUrl("image/system/button/platter/cancel/disabled.png")
+                downSource: G.getAssetUrl("image/system/button/platter/cancel/down.png")
+                enabled: dashboard.cancelEnabled
+                height: 127
+                hoverSource: G.getAssetUrl("image/system/button/platter/cancel/hover.png")
+                normalSource: G.getAssetUrl("image/system/button/platter/cancel/normal.png")
+                overlayEnabled: false
+                width: 129
+                x: 2
+                y: 206
+
+                // TODO: doCancelButton based on ClientInstance.status
+            }
+
+            QSanButton {
+                disabledSource: G.getAssetUrl("image/system/button/platter/discard/disabled.png")
+                downSource: G.getAssetUrl("image/system/button/platter/discard/down.png")
+                enabled: dashboard.discardEnabled
+                height: 138
+                hoverSource: G.getAssetUrl("image/system/button/platter/discard/hover.png")
+                normalSource: G.getAssetUrl("image/system/button/platter/discard/normal.png")
+                overlayEnabled: false
+                width: 64
+                x: 123
+                y: 110
+
+                // TODO: dashboard.clientInstance.onPlayerDiscardCards(selectedCard)
+            }
+
+            QSanButton {
+                checkable: true
+                disabledSource: G.getAssetUrl("image/system/button/platter/trust/disabled.png")
+                downSource: G.getAssetUrl("image/system/button/platter/trust/down.png")
+                enabled: dashboard.clientInstance != null
+                height: 57
+                hoverSource: G.getAssetUrl("image/system/button/platter/trust/hover.png")
+                normalSource: G.getAssetUrl("image/system/button/platter/trust/normal.png")
+                overlayEnabled: false
+                width: 57
+                x: 114
+                y: 299
+
+                onClicked: dashboard.clientInstance.trust()
             }
         }
     }

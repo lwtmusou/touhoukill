@@ -32,7 +32,7 @@ Item {
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-            source: G.getAssetUrl("image/system/button/button.png")
+            normalSource: G.getAssetUrl("image/system/button/button.png")
             text: qsTr("Start game")
             width: (parent.width - parent.spacing) / 2
 
@@ -42,7 +42,7 @@ Item {
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-            source: G.getAssetUrl("image/system/button/button.png")
+            normalSource: G.getAssetUrl("image/system/button/button.png")
             text: qsTr("General overview")
             width: (parent.width - parent.spacing) / 2
 
@@ -52,7 +52,7 @@ Item {
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-            source: G.getAssetUrl("image/system/button/button.png")
+            normalSource: G.getAssetUrl("image/system/button/button.png")
             text: qsTr("Start server")
             width: (parent.width - parent.spacing) / 2
 
@@ -62,7 +62,7 @@ Item {
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-            source: G.getAssetUrl("image/system/button/button.png")
+            normalSource: G.getAssetUrl("image/system/button/button.png")
             text: qsTr("Card overview")
             width: (parent.width - parent.spacing) / 2
 
@@ -72,7 +72,7 @@ Item {
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-            source: G.getAssetUrl("image/system/button/button.png")
+            normalSource: G.getAssetUrl("image/system/button/button.png")
             text: qsTr("PC Console Start")
             width: (parent.width - parent.spacing) / 2
 
@@ -82,7 +82,7 @@ Item {
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-            source: G.getAssetUrl("image/system/button/button.png")
+            normalSource: G.getAssetUrl("image/system/button/button.png")
             text: qsTr("Configure")
             width: (parent.width - parent.spacing) / 2
 
@@ -92,7 +92,7 @@ Item {
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-            source: G.getAssetUrl("image/system/button/button.png")
+            normalSource: G.getAssetUrl("image/system/button/button.png")
             text: qsTr("Replay")
             width: (parent.width - parent.spacing) / 2
 
@@ -102,7 +102,7 @@ Item {
         QSanButton {
             font.pixelSize: 53
             height: (parent.height - parent.spacing * 3) / 4
-            source: G.getAssetUrl("image/system/button/button.png")
+            normalSource: G.getAssetUrl("image/system/button/button.png")
             text: qsTr("About Us")
             width: (parent.width - parent.spacing) / 2
 

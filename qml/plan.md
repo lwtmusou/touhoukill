@@ -32,12 +32,13 @@
 ### QML 侧
 - `qml/main.qml`：`Image` 背景 + `scalableRoot`（固定高 1440，宽随高缩放，最小 1920）+ `RootItem`。有"宽度过小提示"TODO。
 - `qml/RootItem.qml`：`currentScene` 在 StartScene/RoomScene 间切换，监听 `MainWindowInstance.qml_switchToRoomScene`/`qml_switchToStartScene`。
-- `qml/RoomScene.qml`：根 `CppRoomScene`。`property list<Photo> otherPhotos`（QTBUG-147713）。`lay()` 按 `effectiveSeat` 布局。`Component.onCompleted` 预创建占位 Photo（seat 2..N，未绑 player）。`Connections` 接收全部 `notify*`。`activeBox` 跟踪当前活动响应 box（按 status 自适应，同一时间只有一个）。`signal spaceClicked` + 根 MouseArea 空白点击触发（`RoleComboBox`/`HegRoleComboBox` 各自内部 `Connections { target: roomScene }` 监听以收起展开）。Dashboard 实例传 `photo: selfPhoto`。含 `testItemToBeRemovedAfterTest` 测试桩（`visible: !gameStarted`）。addRobot/fillRobots 已实现；未开始且未结算时显示"返回主菜单"按钮 `startSceneButton`（调 `MainWindowInstance.gotoStartScene()`）。
+- `qml/RoomScene.qml`：根 `CppRoomScene`。`property list<Photo> otherPhotos`（QTBUG-147713，配 `readonly property int zzzWorkaroundQTBUG147713: 0` workaround）。`lay()` 按 `effectiveSeat` 布局。`Component.onCompleted` 预创建占位 Photo（seat 2..N，未绑 player）。`Connections` 接收全部 `notify*`。`activeBox` 跟踪当前活动响应 box（按 status 自适应，同一时间只有一个）。`signal spaceClicked` + 根 MouseArea 空白点击触发（`RoleComboBox`/`HegRoleComboBox` 各自内部 `Connections { target: roomScene }` 监听以收起展开）。Dashboard 实例传 `photo: selfPhoto`。含 `testItemToBeRemovedAfterTest` 测试桩（`visible: !gameStarted`）。addRobot/fillRobots 已实现；未开始且未结算时显示"返回主菜单"按钮 `startSceneButton`（调 `MainWindowInstance.gotoStartScene()`）。
 - `qml/Photo.qml`：`player` + `required property int seat` + `required property bool selfPhoto`（RoomScene 显式传 true/false：selfPhoto 实例 true，占位/测试 Photo false）。提取 `getGeneralName(g)`/`getImageSourceUrl(g)`（含 `_hegemony` 后缀处理）；source/visible 绑定；general2Image 对称 kingdom frame；player null fallback。`phase` 绑定 `player.phaseValue`（枚举）；未开始时 `general` 用 `player.avatar`；`PhaseItem` 用 `createPhaseItem()` 命令式创建（`Component.createObject`，`Component.onCompleted` 里 `if (!selfPhoto)` 调用——selfPhoto 不构造，用 Dashboard 的；无销毁；`visible` 绑 `gameStarted`；Component 模板内不访问外层 id 避开 `pragma ComponentBehavior: Bound` 告警）；`duozhi`（夺志，禁止角色使用/打出牌）时主副将图显示嘤嘤怪。化身图 `huashenImage`/`huashen2Image` source/visible 声明式绑定（`getImageSourceUrl(huashenGeneral)` / `huashenGeneral != ""`），`_hegemony` 由 `getImageSourceUrl` 统一 fallback；原 `onHuashenGeneralChanged`/`onHuashenGeneral2Changed` 命令式处理器（含手写 `_hegemony` 截断）已删除；opacity 循环动画（500ms 淡入→4s 停→500ms 淡出→1s 间歇）由 `onVisibleChanged` 启停。
-- `qml/Dashboard.qml`：Trust/Discard/Cancel/OK 四按钮（`anchors.bottom: cardArea.top` 浮在手牌区上方）；`clientInstance` + `required property var photo`（绑 selfPhoto）属性。`updateStatus()` 按 `Client::status` switch 分支命令式设 `okEnabled`/`cancelEnabled`/`discardEnabled`（`Connections` 监听 status/refusable/activeBox/canAccept）；底部 `PhaseItem` 显示 `photo.phase`。
+- `qml/Dashboard.qml`：4 按钮（OK/Cancel/Discard/Trust）改为 **platter 按钮集合**（`bg.png` 100×195 背景 + 4 platter 按钮按 `skins/defaultSkin.layout.json` 的 `confirmButtonArea`/`cancelButtonArea`/`discardButtonArea`/`trustButtonArea` 叠放，对标旧版 `roomscene.cpp:800-815`）；`clientInstance` + `required property var photo`（绑 selfPhoto）+ `roomScene` 属性。`addHandCard`/`removeHandCard` 同步手牌（A 子任务）。`updateStatus()` 按 `Client::status` switch 分支命令式设 `okEnabled`/`cancelEnabled`/`discardEnabled`（`Connections` 监听 status/refusable/activeBox/canAccept）；`PhaseItem` 显示 `photo.phase`。
 - `qml/CardItem.qml`：`signal clicked`/`rightClicked`（左/右键分发）；`selected` 属性注释掉（待实现）。
 - `qml/GraphicsBox.qml`：图片背景可拖拽容器基类（Image 根，无标题/操作按钮）。
 - `qml/ChooseGeneralBox.qml`：基于 GraphicsBox 的选将弹窗。
+- `qml/QSanButton.qml`：按钮组件。`property url normalSource`/`hoverSource`/`downSource`/`disabledSource`（调用方指定各状态图，QSanButton 按 state 选取，空状态 fallback `normalSource`）+ `property bool overlayEnabled`（hover 叠加与 Text 显隐，platter 模式设 false）。**调用方直接指定各状态 image，不拼接路径、不约定文件名**：platter 按钮 4 个 source 都设 + `overlayEnabled: false`；普通按钮只设 `normalSource`（其他空 fallback），`overlayEnabled` 默认 true。
 
 ### 构建
 - `QSanguosha.pro`：`SOURCES`/`HEADERS` 含 `src/qmlui/*`，`OTHER_FILES` 列 `qml/*.qml`。`src/uibackup` 未引用。
@@ -160,7 +161,8 @@
 - **旧代码类名注意**：`src/uibackup/` 中以 `Q+大写字母` 打头的类不全是 Qt 自带，有自定义类：`QSan*` 系列（`QSanSelectableItem`/`QSanButton`/`QSanSkillButton`/`QSanInvokeSkillButton` 等）与 `QAnimatedEffect`(`src/uibackup/sprite.h:28`，继承 Qt 自带 `QGraphicsEffect`，用于动画效果，配合 `EffectAnimation` 使用)。阅读代码时需确认是 Qt 自带（如 `QGraphicsDropShadowEffect`/`QGraphicsObject`/`QGraphicsProxyWidget`/`QGraphicsEffect`）还是自定义（`QSan*` 系列、`QAnimatedEffect`）。
 - **旧代码宏定义注意**：`G_ROOM_SKIN`/`G_DASHBOARD_LAYOUT`/`G_ROOM_LAYOUT`/`G_PHOTO_LAYOUT`/`G_COMMON_LAYOUT` 等是宏定义（`#define`，在 `src/dialog/uilegacy/SkinBank.h:470-474`，**非全局变量**），旧 `uibackup` 代码大量使用（如 `G_COMMON_LAYOUT.m_cardNormalHeight`、`G_ROOM_LAYOUT.m_discardPilePadding` 等）。`SkinBank.h` 从 `uibackup` 移到了 `src/dialog/uilegacy/`，**仍在用**（非死代码）。阅读旧代码时 `G_*` 形式的标识符需确认是宏还是变量。
 - **兼容性**：保留 `MainWindow` 现有 `qml_switchToRoomScene` 等接口签名。
-- **提交前格式化**：C++ 全文件运行 clang-format，QML 全文件运行 qmlformat。**注意 qmlformat 会重排属性/函数先后顺序**，运行后需复查注释是否仍与对应代码位置对得上（如 property 上方的注释、函数前的注释）。`property list<Photo>` 等 qmlformat 不兼容的写法见 QTBUG-147713（RoomScene.qml 注释），需在 qmlformat 前临时移除、之后加回。
+- **提交前格式化**：C++ 全文件运行 clang-format，QML 全文件运行 qmlformat。**注意 qmlformat 会重排属性/函数先后顺序**，运行后需复查注释是否仍与对应代码位置对得上（如 property 上方的注释、函数前的注释）。
+- **QTBUG-147713 workaround**（`property list<xxx>` 导致 qmlformat 解析错乱）：workaround 是加一个字母序靠后的 property——RoomScene.qml 用 `readonly property int zzzWorkaroundQTBUG147713: 0`（`zzz` 前缀确保排在 `otherPhotos` 后）。**删除条件**：之后若新增 property 字母序排在 `list<xxx>` 类型 property 之后，该 property 自然承担"排序靠后"角色，即可删除 `zzzWorkaroundQTBUG147713`。
 
 ## 5. 关键代码流程
 
@@ -261,6 +263,13 @@
 - 按钮 enabled 改为 `Dashboard.updateStatus()` 命令式设置（`okEnabled`/`cancelEnabled`/`discardEnabled` property），`Connections` 监听 status/refusable/activeBox/canAccept 变化触发。`updateStatus` 用 `switch(status & ClientStatusBasicMask)` 按 status 分支设按钮 enabled（镜像旧 `uibackup/roomscene.cpp:2784-2949`），后续 prompt/card pending/skill/target 选择等逻辑在各 case 补；OK 点击在响应状态走目标选择等复杂流程，不只靠绑定。
 - Responding 等状态的 OK 待 CardItem 选卡落地后按选卡启用。参考 `uibackup/roomscene.cpp:2784-2949`。
 
+### 2026-07-20：Dashboard 按钮布局改旧版 platter 集合
+- 4 按钮（OK/Cancel/Discard/Trust）从水平 Row 改为 **platter 按钮集合**（对标旧版 `roomscene.cpp:800-815` + `skins/defaultSkin.layout.json`）。
+- `qml/QSanButton.qml`：加 `property url normalSource`/`hoverSource`/`downSource`/`disabledSource`（调用方指定各状态图，QSanButton 按 state 选取，空 fallback `normalSource`）+ `property bool overlayEnabled`（hover 叠加与 Text 显隐）。**调用方直接指定各状态 image，不拼接路径、不约定文件名**：platter 按钮 4 个 source 都设 + `overlayEnabled: false`；普通按钮只设 `normalSource`。
+- `qml/Dashboard.qml`：删 Row，加 `buttonSet`（`Item` 100×195，`bg.png` 背景 + 4 platter 按钮按 `confirmButtonArea` [6,10,75,90] / `cancelButtonArea` [1,112,75,90] / `discardButtonArea` [67,60,77,95] / `trustButtonArea` [62,162,70,70] 叠放）；`buttonSet` 定位 `cardBg` 右上（`anchors.right/top`）；`cardArea` `rightMargin: 120` 让出 buttonSet 空间。trust 按钮保留 `checkable: true`（旧版 S_STYLE_TOGGLE）。
+- 其他 11 处 QSanButton 用法（RoomScene 3 + StartScene 8）`source` → `directSource`。
+- lint 通过（仅预先存在的假告警）。
+
 ### 2026-07-20：A-手牌区同步实现
 - **桥接层**：`roomscene.h` 加 `notifyMoveCardsGot`/`notifyMoveCardsLost` 信号（携 `moveId` + `QVariantList moves`）；`roomscene.cpp` `connectClientSignals()` 连接 `Client::move_cards_got`/`move_cards_lost`，lambda 遍历 `QList<CardsMoveStruct>` 转 `QVariantList<QVariantMap>`（字段：`cardIds`/`fromPlace`/`toPlace`/`fromPlayer`(`Player *`)/`toPlayer`(`Player *`)/`fromPileName`/`toPileName`），`from`/`to` 直接用结构体指针（`getCards`/`loseCards` 已 `getPlayer` 补设，非 null），加 `#include "structs.h"`。
 - **CardContainer.qml**：加 `id: cardContainer` + `property var rootScene`；`createItem` 改 `createObject(rootScene)` + `item.parent = cardContainer`（QObject parent = roomScene，visual parent = cardContainer，见"CardItem 与牌容器设计"小节）；加 `removeItem(cardId)`（按 cardId 找 + destroy）。
@@ -273,7 +282,7 @@
 - 确立 **selfPhoto vs 非 selfPhoto 构造模式**（见"UI 约定"小节）：selfPhoto 不构造的子组件由 Dashboard 承担显示，非 selfPhoto 用 `createObject` 动态构造。
 - `qml/Photo.qml`：`selfPhoto` 改 `required property bool selfPhoto`（强制显式传值）；`PhaseItem` 从静态声明 + `visible: !selfPhoto` 改为 `createPhaseItem()` 命令式创建（`Component.createObject`，`Component.onCompleted` 里 `if (!selfPhoto)` 调用——selfPhoto 不构造；无销毁，`visible` 绑 `gameStarted`）——避开 `Loader` 的 `pragma ComponentBehavior: Bound` 告警（Component 模板 `PhaseItem {}` 内不访问外层 id，`Qt.binding(() => photo.xxx)` 闭包绑 anchors/phase/visible）。
 - `qml/RoomScene.qml`：selfPhoto 实例设 `selfPhoto: true`；占位 Photo（`Component.onCompleted` 创建）与测试桩 Photo 显式 `selfPhoto: false`。
-- `qml/QSanButton.qml`：hover 状态加 `hover.color`（`entered`/`downEntered`/`downExited` 用 `Qt.rgba(1,1,1,.25)` 白色半透明，`disabled` 用 `Qt.rgba(0,0,0,.25)` 黑色半透明）。
+- `qml/QSanButton.qml`：hover 状态加 `hover.color`（`entered`/`downEntered`/`downExited` 用 `Qt.rgba(1,1,1,.25)` 白色半透明，`disabled` 用 `Qt.rgba(0,0,0,.25)` 黑色半透明）。**加 platter 皮肤支持**：`buttonSkin`/`buttonName` 属性，非空时 source 按 state 自动切换 `image/system/button/<buttonSkin>/<buttonName>/<normal|hover|down|disabled>.png`；空时用 `directSource`（原 `source` 改名，现有非 platter 用法已迁移）。platter 模式隐藏 hover 叠加与 Text（platter 图自带 hover 态与图标）。
 - 后续装备区同理：selfPhoto 在 Dashboard 构造，非 selfPhoto 在 Photo 用 `createObject` 动态构造。
 
 ### 2026-07-19：Photo 化身图绑定化 + RoomScene 测试桩显隐
