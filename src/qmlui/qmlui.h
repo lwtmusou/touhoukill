@@ -15,16 +15,16 @@ class TouhouKillQmlUiGlobal : public QObject
     Q_PROPERTY(QString GameFontFace READ gameFontFace STORED false)
 
 public:
-    Q_INVOKABLE bool assetExists(const QString &path) const;
-    Q_INVOKABLE QUrl getAssetUrl(const QString &path) const;
-    Q_INVOKABLE bool isHegemonyGameMode(const QString &mode) const;
-    Q_INVOKABLE bool isNormalGameMode(const QString &mode) const;
-    Q_INVOKABLE bool isPlayerMainPhase(Player::Phase phase) const;
-    Q_INVOKABLE QString playerPhaseToString(Player::Phase phase) const;
+    [[nodiscard]] Q_INVOKABLE bool assetExists(const QString &path) const;
+    [[nodiscard]] Q_INVOKABLE QUrl getAssetUrl(const QString &path) const;
+    [[nodiscard]] Q_INVOKABLE bool isHegemonyGameMode(const QString &mode) const;
+    [[nodiscard]] Q_INVOKABLE bool isNormalGameMode(const QString &mode) const;
+    [[nodiscard]] Q_INVOKABLE bool isPlayerMainPhase(Player::Phase phase) const;
+    [[nodiscard]] Q_INVOKABLE QString playerPhaseToString(Player::Phase phase) const;
 
-    QString buttonFontFace() const;
-    QString skillButtonFontFace() const;
-    QString gameFontFace() const;
+    [[nodiscard]] QString buttonFontFace() const;
+    [[nodiscard]] QString skillButtonFontFace() const;
+    [[nodiscard]] QString gameFontFace() const;
 };
 
 class TouhouKillServerInfoStruct : public QObject

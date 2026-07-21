@@ -3,15 +3,21 @@
 #include "choosegeneraldialog.h"
 #include "client.h"
 #include "clientplayer.h"
+#include "engine.h"
 #include "gameoverdialog.h"
 #include "mainwindow.h"
 #include "protocol.h"
 #include "roleassigndialog.h"
+#include "skill.h"
 #include "structs.h"
 #include "util.h"
 
 #include <QApplication>
+#include <QString>
+#include <QStringView>
 #include <QtQml>
+
+using namespace Qt::Literals::StringLiterals;
 
 QPointer<RoomScene> RoomSceneInstance;
 
@@ -248,6 +254,9 @@ void RoomScene::connectClientSignals()
     connect(client, &Client::skill_detached, this, [this](const QString &skill_name, bool head) {
         emit notifySkillDetached(skill_name, head);
     });
+    // Game events forwarded as-is (Client::handleGameEvent already did UI-independent
+    // state updates). QML reacts to UI-side aspects via notifyEventReceived.
+    connect(client, &Client::event_received, this, &RoomScene::notifyEventReceived);
     connect(client, &Client::perspective_changed, this, [this](const QString &targetName, const QList<int> &handCardIds, const QVariantMap &piles) {
         emit notifyPerspectiveChanged(targetName, IntList2VariantList(handCardIds), piles);
     });
@@ -336,6 +345,56 @@ void RoomScene::showGameOverDialog(bool standoff)
 {
     GameOverDialog dialog(standoff, MainWindowInstance);
     dialog.exec();
+}
+
+namespace {
+// Mirror old QSanSkillButton::setSkill (qsanbutton.cpp:279-338) skill-type deduction.
+[[nodiscard]] QString skillTypeString(const Skill *skill)
+{
+    const bool is_optional_trigger = skill->inherits("TriggerSkill") && !skill->isEquipSkill() && ViewAsSkill::parseViewAsSkill(skill) == nullptr && !skill->isCompulsory()
+        && !skill->isLimited() && !skill->isWake() && !skill->isEternal();
+    const bool is_passive_modifier = skill->inherits("ProhibitSkill") || skill->inherits("DistanceSkill") || skill->inherits("MaxCardsSkill") || skill->inherits("TargetModSkill")
+        || skill->inherits("AttackRangeSkill") || skill->inherits("ViewHasSkill");
+
+    if (skill->inherits("BattleArraySkill"))
+        return u"array"_s;
+    if (skill->isWake())
+        return u"awaken"_s;
+    if (skill->isLimited())
+        return skill->isAttachedLordSkill() ? u"attachedlord"_s : u"oneoff"_s;
+    if (skill->isFrequent() || is_optional_trigger)
+        return u"frequent"_s;
+    if (skill->isCompulsory() || skill->isEternal() || is_passive_modifier)
+        return u"compulsory"_s;
+    return skill->isAttachedLordSkill() ? u"attachedlord"_s : u"proactive"_s;
+}
+} // namespace
+
+QVariantList RoomScene::getPlayerSkillButtons(ClientPlayer *player) const
+{
+    QVariantList result;
+    if (player == nullptr)
+        return result;
+
+    const bool isLord = (player->getRole() == u"lord"_s);
+    const QList<const Skill *> skills = player->getVisibleSkillList(false);
+    for (const Skill *skill : skills) {
+        if (skill == nullptr)
+            continue;
+        // filter lord skill for non-lord (mirror old updateSkillButtons)
+        if (skill->isLordSkill() && !isLord)
+            continue;
+
+        const ViewAsSkill *vas = ViewAsSkill::parseViewAsSkill(skill);
+        QVariantMap m;
+        m[u"skillName"_s] = skill->objectName();
+        m[u"skillType"_s] = skillTypeString(skill);
+        m[u"translatedName"_s] = Sanguosha->translate(skill->objectName());
+        m[u"description"_s] = skill->getDescription(true, false);
+        m[u"viewAsSkillName"_s] = vas != nullptr ? vas->objectName() : QString();
+        result.append(m);
+    }
+    return result;
 }
 
 namespace {

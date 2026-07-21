@@ -215,6 +215,12 @@ CppRoomScene {
             console.log("[bridge->qml] notifyEmotionSet", target, emotion);
         }
 
+        // Global game event dispatch hub (Client::event_received forwarded as-is).
+        // Skill-related events -> skillDock.handleSkillEvent; other event types TODO.
+        function onNotifyEventReceived(args) {
+            skillDock.handleSkillEvent(args);
+        }
+
         function onNotifyFocusMoved(focus, countdown) {
             console.log("[bridge->qml] notifyFocusMoved", focus);
         }
@@ -444,6 +450,19 @@ CppRoomScene {
         player: roomScene.Self
         seat: 1
         selfPhoto: true
+    }
+
+    // Self skill button dock: single dock above selfPhoto. Skill-specific notifies
+    // (attached/detached/acquired/invalidity_changed) are handled inside SkillDock;
+    // global game events arrive via onNotifyEventReceived below -> skillDock.handleSkillEvent.
+    SkillDock {
+        id: skillDock
+
+        anchors.bottom: selfPhoto.top
+        anchors.horizontalCenter: selfPhoto.horizontalCenter
+        roomScene: roomScene
+        visible: roomScene.gameStarted
+        width: selfPhoto.width
     }
 
     Column {

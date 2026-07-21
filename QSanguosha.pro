@@ -202,6 +202,8 @@ OTHER_FILES += \
     qml/CardContainer.qml \
     qml/ChooseGeneralBox.qml \
     qml/QSanButton.qml \
+    qml/QSanSkillButton.qml \
+    qml/SkillDock.qml \
     qml/RoomScene.qml \
     qml/RootItem.qml \
     qml/StartScene.qml \

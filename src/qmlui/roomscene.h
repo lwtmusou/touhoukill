@@ -48,6 +48,12 @@ public:
     // own "Return to main menu" button (deferred scene switch via QTimer).
     Q_INVOKABLE void showGameOverDialog(bool standoff);
 
+    // Returns a player's visible non-equip skills as QVariantMaps for QML skill buttons /
+    // tooltips. Each map: skillName, skillType (proactive/frequent/compulsory/awaken/oneoff/
+    // array/attachedlord), translatedName, description, viewAsSkillName (empty if none).
+    // Lord skills are filtered for non-lord players (mirror old updateSkillButtons).
+    [[nodiscard]] Q_INVOKABLE QVariantList getPlayerSkillButtons(ClientPlayer *player) const;
+
 signals:
     void gameStartedChanged(bool newGameStarted);
     void gameOverChanged(bool newGameOver);
@@ -107,6 +113,11 @@ signals:
     void notifySkillInvalidityChanged(ClientPlayer *player);
     void notifySkillAttached(const QString &skillName, bool fromLeft);
     void notifySkillDetached(const QString &skillName, bool head);
+    // Game event forwarded from Client::event_received (mirror old handleGameEvent).
+    // Client::handleGameEvent does UI-independent state updates first, then emits
+    // event_received; this signal lets QML react to UI-side aspects. args is the raw
+    // JsonArray ([eventType, ...]).
+    void notifyEventReceived(const QVariant &args);
     void notifyPerspectiveChanged(const QString &targetName, const QVariantList &handCardIds, const QVariantMap &piles);
     void notifyRoleStateChanged(const QString &stateStr);
     void notifyGeneralsViewed(const QString &reason, const QStringList &names);

@@ -3,13 +3,13 @@
 > 本文件是 QML 重构的主索引：项目结构、任务清单、设计约定、踩坑记录、进度。
 > **维护指示**：
 > - 每次大幅度更新（新增功能模块/改动桥接层/完成一个 notify 处理或 UI 组件/重命名）后，自主更新本文件的"任务清单"状态、"进度记录"与"目录结构"，不等用户提醒。小幅格式调整不必记。
-> - **每次修改文件后格式化**：每完成一个 `.cpp`/`.h` 文件修改后主动运行 clang-format 全文件格式化，每完成一个 `.qml` 文件修改后主动运行 qmlformat 全文件格式化（不等提交）。注意 qmlformat 会重排属性/函数先后顺序，运行后需复查注释是否仍与对应代码位置对得上（如 property 上方的注释、函数前的注释）。
+> - **每次修改文件后格式化**（含新增文件）：每完成一个 `.cpp`/`.h` 文件修改或新增后主动运行 clang-format 全文件格式化，每完成一个 `.qml` 文件修改或新增后主动运行 qmlformat 全文件格式化（不等提交）。注意 qmlformat 会重排属性/函数先后顺序，运行后需复查注释是否仍与对应代码位置对得上（如 property 上方的注释、函数前的注释）。
 
 ## 0. 全局禁令
 
 - **不使用 Qt5Compat**：全局禁用 `QT += 5compat`（`QSanguosha.pro` 当前 `QT += network widgets quick quickwidgets`，不得添加 `5compat`，已在 .pro 注释标注）。所有需要的效果/组件用 Qt 6 原生方案（如 `MultiEffect` 走 `import QtQuick.Effects`），**不得引入 `Qt5Compat.GraphicalEffects` 等 compat 模块**。
 - **QML 与 CPP 文件纯 ASCII**：所有 `.qml`/`.cpp`/`.h`/`.pro` 文件（含注释、字符串）必须使用纯 ASCII 字符，**不得包含中文、全角符号、em dash（`—`）、`§` 等非 ASCII 字符**。中文说明写在 `plan.md`（本文件）里，代码注释用英文。em dash 用 `--` 替代。
-- **plan 只记最新状态**：本文件记录当前实现/约定的最新状态，**不写代码取回/还原/重构的历史过程**，**不写已修正的 bug**（已修复的 bug 描述直接删除，不留"修复了 X"/"纠正误判"痕迹）。进度记录只记"做了什么/确认了什么事实"，不记"之前错了现在改对"。设计小节描述现状，不描述"曾经是 A 现在改成 B"。
+- **plan 只记最新状态**：本文件记录当前实现/约定的最新状态，**不写代码取回/还原/重构的历史过程**，**不写已修正的 bug**（已修复的 bug 描述直接删除，不留"修复了 X"/"纠正误判"痕迹）。进度记录只记"做了什么/确认了什么事实"，不记"之前错了现在改对"。设计小节描述现状，不描述"曾经是 A 现在改成 B"。说明改动原因时用"旧版代码中 X 未做 Y。本次因 Z 加入"句式（陈述旧版事实+原因），不用"此前...→..."变迁叙述。进度记录不写编译/测试/运行情况（如"编译通过"/"lint 通过"）。
 
 ## 1. 项目概述
 将旧版基于 QGraphics 的界面 `src/uibackup/`（35 对 .cpp/.h，约 17k 行，不编译，仅参考）重构为 Qt 6 QML。`MainWindow` 通过 `QQuickWidget` 加载 `qml/main.qml`，在 StartScene 与 RoomScene 间切换。核心布局（Photo/Dashboard/CardItem/StartScene/RoomScene）已成型，游戏交互（弹窗/聊天/技能按钮/卡牌选择）逐步移植中。
@@ -28,7 +28,7 @@
 - `src/client/client.h/cpp`：`Client : public QObject`，全局 `QPointer<Client> ClientInstance`（注释明确不应是单例，当前仍是）。约 50 个信号。`getPlayers()` 已 `Q_INVOKABLE`。`addPlayer`/`arrangeSeats`/`removePlayer` 玩家生命周期。
 - `src/client/clientplayer.h`：`ClientPlayer : public Player`，全局 `QPointer<ClientPlayer> Self`。
 - `src/core/player.h`：`Player` Q_PROPERTY 暴露 `seat`/`hp`/`renhp`/`linghp`/`maxhp`/`kingdom`/`role`/`general`/`general2`/`phase`/`alive`/`chained`/`avatar` 等。**`seat` 无 NOTIFY**；`avatar` MEMBER `m_avatar` NOTIFY `avatar_changed`；`phase`(QString, STORED false) 与 `phaseValue`(`Player::Phase` 枚举) 双属性。
-- `src/core/protocol.h`：`QSanProtocol::CommandType` 枚举、`Countdown`。
+- `src/core/protocol.h`：`QSanProtocol` namespace 用 `Q_NAMESPACE` + `Q_ENUM_NS(GameEventType)` 暴露游戏事件枚举给 QML（`qmlRegisterUncreatableMetaObject` 注册为 `QSanProtocol`，QML 用 `QSanProtocol.S_GAME_EVENT_ADD_SKILL` 等访问）；`CommandType` 枚举、`Countdown`。
 - `src/core/util.h`：`IntList2VariantList` 等通用转换（桥接复用）。
 - `src/uibackup/`：35 对死代码，不在 .pro（不编译），仅参考。
 
@@ -107,6 +107,7 @@
 - [ ] **选将扩展**：askForGeneral3v3、askForRole3v3；KnownBoth（知己知彼卡牌效果，非国战双将）。
 - [ ] **RoomScene 收尾**：移除 `testItemToBeRemovedAfterTest`、main.qml 宽度过小提示。
 - [ ] **清理**：`src/uibackup` 死代码整体删除。
+- [ ] **移 handleGameEvent 其余 UI 无关事件到 Client**：`S_GAME_EVENT_UPDATE_PRESHOW`（`Self->setSkillPreshowed`）、`S_GAME_EVENT_CHANGE_GENDER`（`player->setGender`）、`S_GAME_EVENT_CHANGE_HERO`（player 状态）等 UI 无关逻辑从旧 `RoomScene::handleGameEvent` 移到 `Client::handleGameEvent`（技能 4 事件已移）。
 - [ ] **Client 去单例化**（QML 重构完成后着手，独立阶段）：`client.h` 末尾 TODO 注释明确"Client should ABSOLUTELY NOT be a singleton"——当前 `extern QPointer<Client> ClientInstance` 全局指针导致无法实现客户端侧 AI agent（只能服务端 AI）。改造方向：通过参数/上下文传入 Client 引用，移除全局 `ClientInstance`。**桥接层已部分铺垫**：`RoomScene::selfHelper()`/`clientHelper()`（注释"needed to refactor Self and ClientInstance from singleton"）当前返回 `Self`/`ClientInstance`，是去单例化的注入点；`clientHelper` 内亦有 TODO"consider how to get this after Client is no longer global singleton"。**注意自包含 dialog**：`RoleAssignDialog` 等 dialog 内部硬编码 `ClientInstance`（见"桥接架构"小节），需一并改造。
 
 ## 4. 设计决策与约定（讨论沉淀，后续必须沿用）
@@ -119,6 +120,7 @@
 - **自包含 dialog（Client 去单例化时需处理）**：`RoleAssignDialog` 内部 accept() 直接调 `ClientInstance->onPlayerAssignRole(names, roles)`、reject() 调 `replyToServer(S_COMMAND_CHOOSE_ROLE, QVariant())` 自行回传服务器，因此桥接 `showRoleAssignDialog()` 返回 void、QML 无需返回值或后续处理。这与 `FreeChooseDialog`（桥接捕获 `general_chosen` 信号返回给 QML）模式不同。**Client 去单例化时**：此类 dialog 内部硬编码 `ClientInstance` 全局指针，必须改造为通过参数/上下文传入 Client 引用，否则会破坏；桥接层届时可考虑统一收集这类 dialog 的回传路径。
 - **Engine 函数暴露给 QML**：遇到 Engine（`Sanguosha` 全局单例，已暴露给 QML）中 QML 需要调用但不可调用的函数，**直接在 Engine 类上加 `Q_INVOKABLE` 或 `Q_SLOT`，不走 RoomScene 桥接层**。判定：纯查询/无副作用/不需信号连接的加 `Q_INVOKABLE`（如 `getGeneral`）；需要被信号连接或有槽语义的加 `Q_SLOT`。Engine 已是 QML 可直接访问的全局对象，加宏后 QML 即可调用；返回的 QObject 子类需 `qmlRegisterUncreatableType` 注册后 QML/qmllint 才能识别其类型并读 `Q_PROPERTY`（`General` 已注册，可读 `kingdom`/`maxhp`/`gender`/`lord` 等）。
 
+- **游戏事件 UI 无关逻辑在 Client**：旧版 `RoomScene::handleGameEvent`(`uibackup/roomscene.cpp:421`) 混了 UI 无关（`player->addSkill`/`loseSkill`/`acquireSkill`/`detachSkill`/`setSkillPreshowed`/`setGender` 等 player 状态更新）与 UI 相关（`updateAvatarTooltip`/`expandSpecialCard`/`updateSkillButtons` 等）。QML 重构把 UI 无关部分移到 `Client::handleGameEvent`(`client.cpp:330`)，`emit event_received` 后由 QML 桥接转发 notify 信号驱动 UI。技能 4 事件（ADD/LOSE/ACQUIRE/DETACH SKILL）已移；其余 UI 无关事件（preshow/gender/hero 等）TODO。
 - **notify 处理函数的 log 约定**：`RoomScene.qml` 的 `onNotifyXxx` 占位时只放 `console.log` 作待实现标记；一旦为该 notify 添加了实际动作（调桥接/创建组件/遍历 Photo 等），**顺手删除其 `console.log`**（动作本身已表明信号到达，log 冗余）。
 
 ### Qt6 moc / QML 约束
@@ -173,7 +175,7 @@
 - **装备技能按钮不挂场景（视觉靠边框动画）**：`_m_equipSkillBtns[5]`(`dashboard.h:288`) 创建时 `new QSanInvokeSkillButton()`（**无 parent 参数**，对比 `addSkillButtonByName` 的 `new QSanInvokeSkillButton(this)`），不挂任何 item/场景，故不显示。视觉反馈靠 `_m_equipBorders[i]`(`dashboard.h:287`) 边框动画（`image/system/emotion/equipborder/`，`_onEquipSelectChanged`→`_setEquipBorderAnimation`）；点击由 `Dashboard::mouseReleaseEvent` 主动 `click()`。**QSanInvokeSkillButton 本身 `_repaint`/`paint` 是完整实现**（`qsanbutton.cpp:377-477`：`getSkillButtonPixmap` 皮肤图+技能名文字+ATTACHEDLORD 武将头像+`isSkillInvalid` 红叉+CANPRESHOW 黄框），武将技能按钮经 `dock.addSkillButtonByName` 挂 dock 显示，装备技能按钮因不挂场景而不显示。装备技能来源 `Sanguosha->getSkill(equip)`，`equip_skill` 标志（`skill.cpp:231`，装备技能构造时设 true）。
 - **技能按钮三类 + addSkillButton 分流**：Dashboard 持 `_m_skillDock`(主将)/`_m_rightSkillDock`(副将，国战)/`_m_equipSkillBtns[5]`(装备槽)。`addSkillButton`(`dashboard.cpp:589-638`) 先遍历 5 装备槽匹配 skillName（`Sanguosha->getSkill(equip)->objectName()`），命中→建装备技能按钮 return；否则进 head?`_m_skillDock`:`_m_rightSkillDock`。**装备技能优先匹配装备槽，不进 dock**。
 - **技能按钮视觉与 dock 布局**（`qsanbutton.cpp`）：`QSanInvokeSkillButton::_repaint`(377-404) 填 `_m_bgPixmap[i] = G_ROOM_SKIN.getSkillButtonPixmap(state, skillType, width)` + CANPRESHOW 半透明 + `getSkillTextFont` 画技能名（非 WIDE 取前 2 字）；`paint`(406-477) `drawPixmap` + ATTACHEDLORD 画武将头像（找拥有该技能的武将 `generalName.png`）+ `isSkillInvalid` 红叉 + CANPRESHOW 黄框。`QSanInvokeSkillDock::update`(508-610) 布局：regular_buttons + lordskill_buttons 分组，按行排列（每行最多 3，末行 1 个时平衡到 2），`setButtonWidth`/`setPos`，lordskill 单独定位（左侧偏移），`m_skillButtonSank` 影响行偏移。`QSanSkillButton::onMouseClick`(242-262) 触发：CANPRESHOW→`preshow`；TOGGLE+isDown+`_m_emitActivateSignal`→`skill_activated`，!isDown+`_m_emitDeactivateSignal`→`skill_deactivated`。
-- **技能按钮驱动**（`roomscene.cpp`）：Client 信号→slot：`skill_attached(name,from_left)`→`attachSkill`→`addSkillButton`；`skill_detached(name,head)`→`detachSkill`→`dashboard->removeSkillButton`+delete；`skill_acquired(player,name,head)`→`acquireSkill`→if self `addSkillButton`；`skill_invalidity_changed(player)`→`skillInvalidityChange`→if self `dashboard->updateSkillButton()`；游戏事件 `UPDATE_SKILL`/`PREPARE_SKILL`→`updateSkillButtons`（全量重建：遍历 Self 主/副将技能，过滤 LordSkill，国战 preshow 状态，非国战全 disable）。`roomscene::addSkillButton`(`roomscene.cpp:2397-2428`) 连接：viewAsSkill 非空→`skill_activated`→`skillButtonActivated`+`onSkillActivated`；skill 有 dialog→`skill_activated`→`dialog.popup`。**注**：`PlayerCardContainer` 的 `add_equip_skill`/`remove_equip_skill` 信号（`GenericCardContainerUI.cpp:1082/1122` emit）在 uibackup 里**无 connect**（死代码），装备技能按钮实际由 `skill_attached`/`skill_acquired` 驱动（服务器发技能获得通知时 `addSkillButton` 遍历装备槽匹配创建），不由装备增删直接驱动。
+- **技能按钮驱动**（`roomscene.cpp` 桥接）：Client 信号→notify：`skill_attached`→`notifySkillAttached`；`skill_detached`→`notifySkillDetached`；`skill_acquired`→`notifySkillAcquired`（游戏中获得技能，如转移/觉醒）；`skill_invalidity_changed`→`notifySkillInvalidityChanged`；**初始技能（武将选择后）走游戏事件 `S_GAME_EVENT_ADD_SKILL`**（`Client::event_received`→`notifyEventReceived`），**非 `skill_acquired`**。QML skillDock 监听 `notifyEventReceived`（及 skill_attached/detached/acquired/invalidity_changed）按事件类型分发：带 Skill 的 6 个事件（ADD/LOSE/ACQUIRE/DETACH/PREPARE/UPDATE → `rebuild`，`getPlayerSkillButtons(roomScene.Self)`）；`SKILL_INVOKED` → 倒计时 TODO。事件类型用 `QSanProtocol.S_GAME_EVENT_*` 枚举比较（`Q_NAMESPACE` + `Q_ENUM_NS` 暴露，见目录结构小节）。**分发结构**：RoomScene 顶层 `onNotifyEventReceived`（全局游戏事件分发中枢）按事件类型转发 skill 相关 → `skillDock.handleSkillEvent`（`qml/SkillDock.qml` 拆分组件，含 `buttonWidths`/`handleSkillEvent`/`rebuild`/`Flow`+`Repeater`/skill 专属 Connections）；skill 专属 notify（attached/detached/acquired/invalidity_changed）由 SkillDock.qml 内部 Connections 监听 → `rebuild`（skill 专属信号非全局事件，放 SkillDock 内）。旧版 `roomscene::addSkillButton`(`roomscene.cpp:2397-2428`) 连接 viewAsSkill→`skill_activated`→`skillButtonActivated`/`onSkillActivated`，skill 有 dialog→`dialog.popup`（QML 版 pending/dialog TODO）。**注**：`add_equip_skill`/`remove_equip_skill` 信号（`GenericCardContainerUI.cpp:1082/1122` emit）在 uibackup 无 connect（死代码），装备技能按钮实际由 `skill_attached`/`skill_acquired` 驱动（`addSkillButton` 遍历装备槽匹配），不由装备增删直接驱动。
 - **ViewAsSkill 用装备发动**：`startPending`(`dashboard.cpp:1200-1248`) 连接 `_m_equipCards[i]` mark_changed→`onMarkChanged`；`updatePending`(`dashboard.cpp:1600-1610`) 装备按 `view_as_skill->viewFilter(pended, equip->getCard())` 设 markable，不可 mark 且装备技能按钮不可用→`_m_equipRegions[i]` opacity 0.7；`onMarkChanged`(`dashboard.cpp:1694-1712`) 装备 mark→加入 pendings→updatePending。装备技能本身可能是 ViewAsSkill（`ViewAsSkill::parseViewAsSkill` flatten，`qsanbutton.cpp:270`），点击装备技能按钮→`skill_activated`→`startPending`。
 - **互斥**（`dashboard.cpp:708-741`）：`skillButtonActivated`——激活任一技能按钮（sender）→dock 其他 isDown 的 ViewAsSkill 按钮重置 UP + 其他装备技能按钮 `setEnabled(false)`；`skillButtonDeactivated`→恢复其他装备技能按钮 `setEnabled(true)`，若 isDown 则 `click()` 取消。同一时间只一个 ViewAsSkill 激活。
 - **chooseSkillButton**（`roomscene.cpp:3936-3962`）：`AskForSkillInvoke` 时若有多个 enabled 技能按钮，弹 QDialog 列表双击选择（`btn->click()`）。
@@ -183,6 +185,7 @@
 
 ### 其他
 - **qmllint 假告警**：未生成 qmltypes 时 `CppRoomScene`/`rocks.touhousatsu` 未识别，大量 `unqualified`/`missing-type` warning，构建后消除，非真实错误。
+- **auto 使用规则**（C++ modernize 约束）：**`auto` 仅用于无法显式写出类型的 lambda 相关场景**——(1) 声明 lambda 对象本身（`auto f = [](){};`）；(2) 模板推导结果含 lambda 类型（lambda 类型匿名，只能用 auto，如 `auto x = std::make_tuple([](){}, 1);`）。其余一律用显式类型——含 lambda 函数体内、普通变量、范围 for、返回值。**禁用结构化绑定 `auto [a,b,c] = ...`**。另：C++17 CTAD `std::unique_ptr ptr = std::make_unique<xxx>();`（不写模板参数，靠推导）可用。
 - **日志**：桥接层 `qDebug` 带 `[bridge]` 前缀，不打印大 payload。
 - **旧代码类名注意**：`src/uibackup/` 中以 `Q+大写字母` 打头的类不全是 Qt 自带，有自定义类：`QSan*` 系列（`QSanSelectableItem`/`QSanButton`/`QSanSkillButton`/`QSanInvokeSkillButton` 等）与 `QAnimatedEffect`(`src/uibackup/sprite.h:28`，继承 Qt 自带 `QGraphicsEffect`，用于动画效果，配合 `EffectAnimation` 使用)。阅读代码时需确认是 Qt 自带（如 `QGraphicsDropShadowEffect`/`QGraphicsObject`/`QGraphicsProxyWidget`/`QGraphicsEffect`）还是自定义（`QSan*` 系列、`QAnimatedEffect`）。
 - **旧代码宏定义注意**：`G_ROOM_SKIN`/`G_DASHBOARD_LAYOUT`/`G_ROOM_LAYOUT`/`G_PHOTO_LAYOUT`/`G_COMMON_LAYOUT` 等是宏定义（`#define`，在 `SkinBank.h:481-485`，**非全局变量**），旧 `uibackup` 代码大量使用（如 `G_COMMON_LAYOUT.m_cardNormalHeight`、`G_ROOM_LAYOUT.m_discardPilePadding` 等）。`SkinBank.h`/`SkinBank.cpp` 在 `uibackup/`（含 `QSanRoomSkin` 完整定义：`PlayerCardContainerLayout`/`DashboardLayout`/`PhotoLayout` 结构、`getSkillButtonPixmap`/`getButtonPixmap` 等、`S_SKIN_KEY_EQUIP_ICON`/`S_SKIN_KEY_EQUIP_BROKEN_ICON` 等皮肤键）；`src/dialog/uilegacy/` 也有一份（仍在用，非死代码）。阅读旧代码时 `G_*` 形式的标识符需确认是宏还是变量。
@@ -281,7 +284,6 @@
 - `qml/QSanButton.qml`：加 `property url normalSource`/`hoverSource`/`downSource`/`disabledSource`（调用方指定各状态图，QSanButton 按 state 选取，空 fallback `normalSource`）+ `property bool overlayEnabled`（hover 叠加与 Text 显隐）。**调用方直接指定各状态 image，不拼接路径、不约定文件名**：platter 按钮 4 个 source 都设 + `overlayEnabled: false`；普通按钮只设 `normalSource`。
 - `qml/Dashboard.qml`：删 Row，加 `buttonSet`（`Item` 100×195，`bg.png` 背景 + 4 platter 按钮按 `confirmButtonArea` [6,10,75,90] / `cancelButtonArea` [1,112,75,90] / `discardButtonArea` [67,60,77,95] / `trustButtonArea` [62,162,70,70] 叠放）；`buttonSet` 定位 `cardBg` 右上（`anchors.right/top`）；`cardArea` `rightMargin: 120` 让出 buttonSet 空间。trust 按钮保留 `checkable: true`（旧版 S_STYLE_TOGGLE）。
 - 其他 11 处 QSanButton 用法（RoomScene 3 + StartScene 8）`source` → `directSource`。
-- lint 通过（仅预先存在的假告警）。
 
 ### 2026-07-20：A-手牌区同步实现
 - **桥接层**：`roomscene.h` 加 `notifyMoveCardsGot`/`notifyMoveCardsLost` 信号（携 `moveId` + `QVariantList moves`）；`roomscene.cpp` `connectClientSignals()` 连接 `Client::move_cards_got`/`move_cards_lost`，lambda 遍历 `QList<CardsMoveStruct>` 转 `QVariantList<QVariantMap>`（字段：`cardIds`/`fromPlace`/`toPlace`/`fromPlayer`(`Player *`)/`toPlayer`(`Player *`)/`fromPileName`/`toPileName`），`from`/`to` 直接用结构体指针（`getCards`/`loseCards` 已 `getPlayer` 补设，非 null），加 `#include "structs.h"`。
@@ -289,7 +291,6 @@
 - **Dashboard.qml**：加 `property var roomScene` + `addHandCard(cardId)`/`removeHandCard(cardId)` 函数（调 `cardArea.createItem`/`removeItem` + `lay(Qt.AlignLeft, 1, 0, true, true)`）；CardContainer 设 `rootScene: dashboard.roomScene`。
 - **RoomScene.qml**：Dashboard 实例设 `roomScene: roomScene`；`onNotifyMoveCardsGot`/`onNotifyMoveCardsLost` 处理 `toPlace`/`fromPlace == Player.PlaceHand && player.objectName == Self.objectName` 的 move，遍历 `cardIds` 调 `dashboard.addHandCard`/`removeHandCard`。
 - **CardItem.qml**：`onCardIdChanged` 的 `cardId == -1` 分支补全牌背显示（`cardImage.source = card-back.png` + 隐藏花色/点数）。
-- 编译通过（roomscene.o + 链接成功）。qmllint 仅 1 条假告警（CardContainer.qml createObject 返回类型推断为 QObject，实际 CardItem）。
 
 ### 2026-07-20：PhaseItem 构造模式 + selfPhoto 标识 + QSanButton hover
 - 确立 **selfPhoto vs 非 selfPhoto 构造模式**（见"UI 约定"小节）：selfPhoto 不构造的子组件由 Dashboard 承担显示，非 selfPhoto 用 `createObject` 动态构造。
@@ -319,6 +320,25 @@
 - 决策：**武将技能按钮不做主将/副将双 dock**——QML 版 Dashboard 已去除武将图部分改用 selfPhoto，旧版双 dock（主将 dock 在 self 头像下方 + 副将 dock 在副头像下方）会违和。武将技能按钮进单 dock（视觉放 selfPhoto 下方，parent = Dashboard）。
 - attachlord 单独 dock、武将图显示等旧版有但 QML 暂不做的功能，留 TODO 后续追加（不在代码留 TODO，仅 plan 记录）。
 - 更新 QSanSkillButton 子任务（三类改两类：装备技能按钮 + 武将技能单 dock）+ 设计小节"武将技能按钮 dock 位置 + 多状态"条目。
+
+### 2026-07-21：技能按钮组件 + 桥接
+- C++ 桥接 `roomscene.h/cpp`：加 `Q_INVOKABLE QVariantList getPlayerSkillButtons(ClientPlayer *player) const` 返回任意 player 可见非装备技能列表（QVariantMap：`skillName`/`skillType`/`translatedName`/`description`/`viewAsSkillName`），self dock + 其他 player tooltip 共用；`getSelfSkillButtons()` 是 `getPlayerSkillButtons(Self)` 便捷封装；`skillTypeString()` 辅助函数对标旧 `setSkill`(`qsanbutton.cpp:279-338`) 判定 7 种 SkillType；LordSkill 过滤按该 player 是否主公。include `engine.h`/`skill.h`。skill_attached/detached/acquired/invalidity_changed 信号转发已有（`roomscene.cpp:239-249`）。qmlui 代码 modernize C++17（`[[nodiscard]]` getter、`u"..."_s` 字面量替代 `QStringLiteral`；`auto` 仅限 lambda，见"其他"小节）。
+- `qml/QSanSkillButton.qml`（新）：多状态图片按钮，source = `image/system/button/skill/<skillType>/<buttonWidth>-<state>.png`（7 skillType × 3 宽度 × normal/hover/down/disabled）；toggleable 类型（proactive/oneoff/array/attachedlord）点击 toggle + emit `skillActivated`/`skillDeactivated`；非 toggleable（compulsory/awaken/frequent）仅显示；文字用 `G.SkillButtonFontFace`，非 wide 取前 2 字。
+- `qml/RoomScene.qml`：加技能按钮单 dock（`skillDock`），`anchors.bottom: selfPhoto.top`（selfPhoto 上方，因 selfPhoto 贴底），`Flow`+`Repeater` 布局，`buttonWidths(count)` 按旧版 `dock.update()`(`qsanbutton.cpp:508-610`) 行排列+末行平衡生成每按钮宽度（1→[1]；2→[2,2]；3→[2,2,1]；3n+1→(n-1)*3 个 3+4 个 2；3n+2→n*3 个 3+2 个 2；3n+3→全 3），rebuild 时缓存数组，Repeater 按索引取；`Component.onCompleted` 调 `rebuild()`；`Connections` 监听 `onNotifySkillAttached/Detached/Acquired/InvalidityChanged` 全量重建。
+- `.pro` OTHER_FILES 加 `qml/QSanSkillButton.qml`。
+- TODO：ViewAsSkill pending + 互斥 + chooseSkillButton（见"待做"小节）；attachlord 武将头像、国战 canPreshow 视觉；Photo tooltip 显示其他 player 技能（`getPlayerSkillButtons`），tooltip 后续精致化。
+
+### 2026-07-22：Client::handleGameEvent 补技能状态更新
+- 旧版代码中 `Client::handleGameEvent` 未调用 `player->addSkill`/`loseSkill`/`acquireSkill`/`detachSkill`（`skills` map 由 `addSkill` 填充，`getPlayerSkillButtons` 依赖它）。本次因初始技能显示需要（武将选择后 `S_GAME_EVENT_ADD_SKILL` 需填 `skills`），在 `Client::handleGameEvent`(`client.cpp:330`) 加入技能 4 事件（ADD/LOSE/ACQUIRE/DETACH SKILL）的 player 状态更新，UI 无关逻辑从旧 `RoomScene::handleGameEvent` 移入。`emit event_received` 后桥接转发 `notifyEventReceived` 驱动 QML。其余 UI 无关事件（preshow/gender/hero）TODO。
+
+### 2026-07-22：QSanProtocol 枚举暴露 + notifyEventReceived 按 Skill 事件分发
+- `src/core/protocol.h`：`QSanProtocol` namespace 加 `Q_NAMESPACE`，`GameEventType` 后加 `Q_ENUM_NS(GameEventType)`（暴露所有 `S_GAME_EVENT_*` 枚举给 QML）。`qmlui.cpp` `registerCore` 加 `qmlRegisterUncreatableMetaObject(QSanProtocol::staticMetaObject, "rocks.touhousatsu", 1, 0, "QSanProtocol", ...)` 注册，QML 用 `QSanProtocol.S_GAME_EVENT_ADD_SKILL` 等访问（需 qmake 重新生成 Makefile 让 moc 处理 protocol.h）。
+- `qml/RoomScene.qml` skillDock：`handleSkillEvent(args)` 按 `args[0]` 事件类型分发——ADD/LOSE/ACQUIRE/DETACH/PREPARE/UPDATE SKILL → `rebuild`；`SKILL_INVOKED` → 倒计时 TODO。`onNotifyEventReceived` 调 `handleSkillEvent`（不再无条件 rebuild）。
+
+### 2026-07-22：SkillDock.qml 拆分 + 全局事件分发中枢
+- 拆 `qml/SkillDock.qml`（原 RoomScene.qml 内联 skillDock）：含 `property var roomScene`、`buttonWidths`/`handleSkillEvent`/`rebuild`、`Flow`+`Repeater`+`QSanSkillButton`、skill 专属 Connections（onNotifySkillAcquired/Attached/Detached/InvalidityChanged → `rebuild`）。RoomScene 实例化 `SkillDock { id: skillDock; roomScene: roomScene; anchors.bottom: selfPhoto.top; ... }`。
+- `notifyEventReceived`（全局游戏事件流）移到 RoomScene 顶层 Connections 的 `onNotifyEventReceived`（全局事件分发中枢，按事件类型转发——当前 skill 相关 → `skillDock.handleSkillEvent`，其他事件类型 TODO），不再放 SkillDock 内（全局状态非 SkillDock 私有）。skill 专属 notify 留 SkillDock 内部。
+- `.pro` OTHER_FILES 加 `qml/SkillDock.qml`。
 
 ## 7. 下一步
 1. **CardItem 卡牌选择全链路**（已拆分为 A-G 子任务，见"待做"小节）：

@@ -329,6 +329,44 @@ void Client::replyToServer(CommandType command, const QVariant &arg)
 
 void Client::handleGameEvent(const QVariant &arg)
 {
+    // UI-independent player state updates (moved from old RoomScene::handleGameEvent).
+    // UI-side reactions stay in the QML bridge via event_received -> notify signals.
+    const QVariantList list = arg.toList();
+    if (!list.isEmpty()) {
+        const int eventType = list[0].toInt();
+        switch (eventType) {
+        case QSanProtocol::S_GAME_EVENT_ADD_SKILL:
+            if (list.size() >= 4) {
+                ClientPlayer *p = getPlayer(list[1].toString());
+                if (p != nullptr)
+                    p->addSkill(list[2].toString(), list[3].toBool());
+            }
+            break;
+        case QSanProtocol::S_GAME_EVENT_LOSE_SKILL:
+            if (list.size() >= 4) {
+                ClientPlayer *p = getPlayer(list[1].toString());
+                if (p != nullptr)
+                    p->loseSkill(list[2].toString(), list[3].toBool());
+            }
+            break;
+        case QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL:
+            if (list.size() >= 4) {
+                ClientPlayer *p = getPlayer(list[1].toString());
+                if (p != nullptr)
+                    p->acquireSkill(list[2].toString(), list[3].toBool());
+            }
+            break;
+        case QSanProtocol::S_GAME_EVENT_DETACH_SKILL:
+            if (list.size() >= 4) {
+                ClientPlayer *p = getPlayer(list[1].toString());
+                if (p != nullptr)
+                    p->detachSkill(list[2].toString(), list[3].toBool());
+            }
+            break;
+        default:
+            break;
+        }
+    }
     emit event_received(arg);
 }
 

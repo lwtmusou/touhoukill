@@ -1,9 +1,12 @@
 #ifndef THKILL_PROTOCOL_H
 #define THKILL_PROTOCOL_H
 
+#include <QObject>
 #include <QVariant>
 
 namespace QSanProtocol {
+
+Q_NAMESPACE
 
 enum PacketDescription
 {
@@ -179,6 +182,7 @@ enum GameEventType
     S_GAME_EVENT_UPDATE_PRESHOW
     //S_GAME_EVENT_BROKEN_EQUIP_CHANGED
 };
+Q_ENUM_NS(GameEventType)
 
 enum AnimateType
 {

@@ -5,6 +5,7 @@
 #include "clientplayer.h"
 #include "general.h"
 #include "player.h"
+#include "protocol.h"
 #include "skill.h"
 #include "util.h"
 
@@ -189,6 +190,15 @@ void registerCore()
 
         if (ret == -1)
             qDebug() << "Failed to register AttackRangeSkill to Qml";
+    }
+
+    {
+        // Expose QSanProtocol enums (e.g. S_GAME_EVENT_ADD_SKILL) to QML via
+        // Q_NAMESPACE + Q_ENUM_NS. Access as QSanProtocol.S_GAME_EVENT_ADD_SKILL.
+        int ret = qmlRegisterUncreatableMetaObject(QSanProtocol::staticMetaObject, "rocks.touhousatsu", 1, 0, "QSanProtocol", "Cannot create a namespace instance.");
+
+        if (ret == -1)
+            qDebug() << "Failed to register QSanProtocol namespace to Qml";
     }
 }
 } // namespace
