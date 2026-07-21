@@ -57,7 +57,7 @@
 - [x] **MainWindow 单例**：`QPointer<MainWindow> MainWindowInstance`（仿 RoomSceneInstance）。
 - [x] **Client status 规范化**：`Q_PROPERTY ... NOTIFY status_changed`；`status_changed` 单参；`setStatus` 仅变化时 emit。
 - [x] **assign_asked 身份分配**：桥接 `showRoleAssignDialog()` 弹模态 `RoleAssignDialog`（自包含：accept 调 `onPlayerAssignRole`、reject 调 `replyToServer`，无需 QML 返回值）；QML `onNotifyAssignAsked` 触发。
-- [x] **国战双将势力校验**：`ChooseGeneralBox._canPair`（同势力或至少一方 `"zhu"`，对齐 `room.cpp:3723`/旧版 `choosegeneralbox.cpp:489`）+ `Engine::getGeneral` 加 `Q_INVOKABLE`（QML 直调 `Sanguosha.getGeneral(name).kingdom`，含 `_hegemony` fallback）；`_toggle` 拦截不合规第二将 + 不合规候选 opacity 灰显。修复国战可选不同势力的问题。
+- [x] **国战双将势力校验**：`ChooseGeneralBox._canPair`（同势力或至少一方 `"zhu"`，对齐 `room.cpp:3723`/旧版 `choosegeneralbox.cpp:489`）+ `Engine::getGeneral` 加 `Q_INVOKABLE`（QML 直调 `Sanguosha.getGeneral(name).kingdom`，含 `_hegemony` fallback）；`_toggle` 拦截不合规第二将 + 不合规候选 opacity 灰显。
 
 ### 待做（按优先级）
 - [ ] **CardItem 卡牌选择（打通 OK/Cancel/Discard 全链路）**：参考旧版 `src/uibackup/roomscene.cpp` 的 `useSelectedCard()`(2479)/`doOkButton()`(3083)/`doCancelButton()`(3100)/`doDiscardButton()`(3193)/`updateStatus()`(2743) 与 `src/uibackup/dashboard.cpp` 的 `getSelected`/`pendingCard`/`startPending`/`unselectAll`/`enableCards`。整条链路依赖较多，拆为以下子任务（按依赖顺序）：
@@ -118,9 +118,9 @@
 - **`QList<int>` 转换**：复用 `util.h::IntList2VariantList`，勿手写循环。
 
 ### 选将流程约定
-- **不用 ExecDialog**：`askForGeneral` 统一 `setStatus(AskForGeneralTaken)`（原非国战走 ExecDialog 已改）。
+- **不用 ExecDialog**：`askForGeneral` 统一 `setStatus(AskForGeneralTaken)`。
 - **OK 按钮复用 Dashboard 的**：响应 box（ChooseGeneralBox 等）不自带 OK，通过 `roomScene.activeBox`（通用，按 status 自适应，同一时间只有一个）跟踪，Dashboard OK 按钮触发 `activeBox.accept()`。
-- **single_result 语义**：非国战/平异 = `true`（单将）；国战双将 = 服务器给定。`askForGeneral` 非国战分支需设 `single_result = true`（原保持 false 导致误走双将）。
+- **single_result 语义**：非国战/平异 = `true`（单将）；国战双将 = 服务器给定。`askForGeneral` 非国战分支需设 `single_result = true`。
 - **国战双将势力校验**：双将必须同势力（kingdom），或至少一方为 `"zhu"`（百搭势力）。规则与服务器 `room.cpp:3723`、旧版 `uibackup/choosegeneralbox.cpp:489` 一致。QML 侧 `ChooseGeneralBox._canPair(g1, g2)` 直接调 `Sanguosha.getGeneral(name).kingdom`（`Engine::getGeneral` 已加 `Q_INVOKABLE`，QML 可直查，不判空不过度防御）；`_toggle` 选第二个将时拦截不合规搭配。**灰显**：`_isDimmed(g)` 联动 CardItem 标准 `enabled` 属性（`enabled: !_isDimmed(g)`），禁用时半透明黑遮罩覆盖（`visible: !enabled`，不用 opacity 避免漏 GraphicsBox 背景）——0 选不禁、1 选禁不可搭配、2 选禁全部未选。用 `enabled` 而非自定义属性，因 CardItem 作为手牌/装备等其他牌时也需禁用机制，统一复用。**OK 启用**：`canAccept`（单将≥1、双将=2）绑定 Dashboard OK 按钮 enabled 与 accept 校验，选未满不可确认。
 - **回传格式**：单将 `name`，双将 `name1+name2`（与旧版 `reply()` 一致）。
 - **右键 freechoose**：CardItem `rightClicked` 信号 + `ServerInfo.FreeChoose` → 调 `parent.freeChooseGeneral()`（C++ FreeChooseDialog modal exec）换将该位。
@@ -222,7 +222,6 @@
 - `roleassigndialog.cpp/.h` 已在 .pro（无需改构建）。
 
 ### 2026-07-19：国战双将势力校验
-- 修复国战选将可选不同势力的问题：双将必须同势力或至少一方 `"zhu"`。
 - `engine.h`：`Engine::getGeneral` 加 `Q_INVOKABLE`，QML 直接 `Sanguosha.getGeneral(name).kingdom` 读势力，不走 RoomScene 桥接。
 - `ChooseGeneralBox.qml`：`_canPair(g1, g2)` 直接 `Sanguosha.getGeneral(name).kingdom`（对齐 `room.cpp:3723`/旧版 `choosegeneralbox.cpp:489`，不判空不过度防御）；`_toggle` 双将模式选第二个将时校验，不合规拒绝；不合规候选 `opacity` 0.3 灰显。
 - 注：初版曾在桥接层加 `getGeneralKingdom`，后按约定改为直接给 Engine 加 `Q_INVOKABLE`（见"桥接架构"小节"Engine 函数暴露给 QML"规则）。初版 `_canPair` 曾经 `_kingdomOf` 加 `_hegemony` 去尾 fallback，已删除——国战将名带 `_hegemony` 后缀是合法将名，去尾会查到 kingdom 不同的另一个将（见"选将流程约定"小节）。
@@ -231,11 +230,6 @@
 - `qmlui.cpp`：`registerCore` 新增 `qmlRegisterUncreatableType<General>`（紧随 ClientPlayer），include `general.h`。
 - 目的：`Engine::getGeneral` 加 `Q_INVOKABLE` 后 QML 拿到 `const General *`，注册 General 类型使 QML/qmllint 能识别并读其 `Q_PROPERTY`（`kingdom`/`maxhp`/`gender`/`lord`/`hidden` 等），后续可复用，不再依赖未注册类型的元对象回退。
 
-### 2026-07-19：国战选将 UX 修复（3 项）
-- **OK 过早启用**：ChooseGeneralBox 加 `canAccept`（单将≥1、双将=2），`accept()` 与 Dashboard OK 按钮 enabled 统一用它，双将选 1 个不可确认。
-- **选满 2 个后其余应保持灰显**：新增 `_isDimmed(g)`（0 选不灰、1 选灰不可搭配、2 选灰全部未选），替代原 `opacity` 绑定（原条件仅 `length===1`，选满后恢复不灰）。
-- **灰显漏背景**：CardItem 加 `dimmed` 属性 + 半透明黑色遮罩 Rectangle（靠声明顺序覆盖，不用 z/opacity），不漏 GraphicsBox 背景。
-
 ### 2026-07-19：确立"禁用 z 属性"约定
 - UI 约定新增：所有 UI 靠声明顺序/父子层级解决覆盖，不用 `z`。
 - CardItem 灰显遮罩移除 `z: 1`（靠在 cardContent/MouseArea 之后声明保证上层覆盖）。
@@ -243,11 +237,6 @@
 ### 2026-07-19：CardItem 禁用机制改用标准 enabled
 - 灰显从自定义 `dimmed` 属性改为 Qt 标准 `enabled` 属性联动：`enabled: !_isDimmed(g)`，遮罩 `visible: !enabled`。
 - 原因：CardItem 作为手牌/装备等其他牌时也需禁用情况，统一用 `enabled` 复用一套机制（禁用时 MouseArea 自动不响应 + 遮罩变暗）。
-
-### 2026-07-19：gameStarted 状态同步给 Photo
-- 问题：`Client::game_started` 信号到达时桥接只 `emit notifyGameStarted()`，未置 C++ `gameStarted` 成员，导致 `roomScene.gameStarted` 恒 false，Photo 的 `gameStarted` 绑定（`Qt.binding(() => roomScene.gameStarted)`）永不刷新，血条/手牌数/roleComboBox/kingdom frame 等不显示。
-- 修复 `roomscene.cpp`：`game_started` lambda 里 `gameStarted = true; emit gameStartedChanged(true);`（`if (!gameStarted)` 幂等）。
-- Photo 侧绑定早已就绪（otherPhotos `Qt.binding`、selfPhoto `gameStarted: roomScene.gameStarted`），无需改 QML。
 
 ### 2026-07-19：gameover/standoff 结算对话框
 - 新建 `src/dialog/gameoverdialog.h/cpp`（从 `uibackup/roomscene.cpp` 的 onGameOver/onStandoff/fillTable 移植）：`GameOverDialog(standoff, parent)`，standoff=单表所有玩家 / 非standoff=胜负两表（按 `player->property("win")`）；`fillTable` 10 列统计（RecAnalysis 回放分析：回合数/伤害/受击/击杀/回血/最后手牌）；返回主菜单按钮 `accept()` + `QTimer::singleShot(0, MainWindowInstance, gotoStartScene)` 延迟切场景（避免 exec 栈帧与 RoomScene 销毁冲突）。
@@ -275,7 +264,7 @@
 - **CardContainer.qml**：加 `id: cardContainer` + `property var rootScene`；`createItem` 改 `createObject(rootScene)` + `item.parent = cardContainer`（QObject parent = roomScene，visual parent = cardContainer，见"CardItem 与牌容器设计"小节）；加 `removeItem(cardId)`（按 cardId 找 + destroy）。
 - **Dashboard.qml**：加 `property var roomScene` + `addHandCard(cardId)`/`removeHandCard(cardId)` 函数（调 `cardArea.createItem`/`removeItem` + `lay(Qt.AlignLeft, 1, 0, true, true)`）；CardContainer 设 `rootScene: dashboard.roomScene`。
 - **RoomScene.qml**：Dashboard 实例设 `roomScene: roomScene`；`onNotifyMoveCardsGot`/`onNotifyMoveCardsLost` 处理 `toPlace`/`fromPlace == Player.PlaceHand && player.objectName == Self.objectName` 的 move，遍历 `cardIds` 调 `dashboard.addHandCard`/`removeHandCard`。
-- **CardItem.qml**：`onCardIdChanged` 的 `cardId == -1` 分支补全牌背显示（`cardImage.source = card-back.png` + 隐藏花色/点数），之前只 `return` 未设 source。
+- **CardItem.qml**：`onCardIdChanged` 的 `cardId == -1` 分支补全牌背显示（`cardImage.source = card-back.png` + 隐藏花色/点数）。
 - 编译通过（roomscene.o + 链接成功）。qmllint 仅 1 条假告警（CardContainer.qml createObject 返回类型推断为 QObject，实际 CardItem）。
 
 ### 2026-07-20：PhaseItem 构造模式 + selfPhoto 标识 + QSanButton hover
