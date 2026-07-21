@@ -15,7 +15,7 @@
 
 void CardItem::_initialize()
 {
-    setAcceptedMouseButtons({});
+    setAcceptedMouseButtons(nullptr);
 
     setFlag(QGraphicsItem::ItemIsMovable);
     m_opacityAtHome = 1.0;

@@ -321,8 +321,8 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     convertContainer->setZValue(z + 3);
     convertContainer->setParentItem(this);
 
-    //DO NOT USE std::sort HERE FOR WE NEED TO KEEP THE INITIAL ORDER IN SOME CASES
-    std::stable_sort(generals.begin(), generals.end(), sortByKingdom);
+    //DO NOT USE qSort HERE FOR WE NEED TO KEEP THE INITIAL ORDER IN SOME CASES
+    qStableSort(generals.begin(), generals.end(), sortByKingdom);
 
     foreach (const QString &general, generals) {
         /*if (player) {

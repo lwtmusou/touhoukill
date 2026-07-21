@@ -229,7 +229,7 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
         copy->setEnabled(false);
         result.append(copy);
 
-        copy->setAcceptedMouseButtons({});
+        copy->setAcceptedMouseButtons(nullptr);
 
         if (m_currentPlayer != nullptr)
             to_take->showAvatar(m_currentPlayer->getGeneral());

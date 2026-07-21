@@ -46,7 +46,6 @@
 #include <QPropertyAnimation>
 #include <QRadioButton>
 #include <QSequentialAnimationGroup>
-#include <QStandardPaths>
 #include <QTimer>
 #include <QTransform>
 #include <QtMath>
@@ -682,7 +681,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         bool paused = arg[1].toBool();
         if (pausing_item->isVisible() != paused) {
             if (paused) {
-                QBrush pausing_brush(QColor(qsgsRand() % 256, qsgsRand() % 256, qsgsRand() % 256));
+                QBrush pausing_brush(QColor(qrand() % 256, qrand() % 256, qrand() % 256));
                 pausing_item->setBrush(pausing_brush);
                 bringToFront(pausing_item);
                 bringToFront(pausing_text);
@@ -1299,7 +1298,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats)
         const Player *player = seats.at(i);
         for (int j = i; j < photos.length(); j++) {
             if (photos.at(j)->getPlayer() == player) {
-                photos.swapItemsAt(i, j);
+                photos.swap(i, j);
                 break;
             }
         }
@@ -2751,12 +2750,12 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         const ViewAsSkill *vsSkill = button->getViewAsSkill();
         if (vsSkill != nullptr) {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            QRegularExpression rx(QRegularExpression::anchoredPattern("@@?([_A-Za-z]+)(\\d+)?!?"));
+            QRegExp rx("@@?([_A-Za-z]+)(\\d+)?!?");
             CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
             if ((newStatus & Client::ClientStatusBasicMask) == Client::Responding) {
                 if (newStatus == Client::RespondingUse)
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
-                else if (newStatus == Client::Responding || rx.match(pattern).hasMatch())
+                else if (newStatus == Client::Responding || rx.exactMatch(pattern))
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
             } else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
@@ -2823,9 +2822,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         discard_button->setEnabled(false);
 
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        QRegularExpression rx("@@?(\\w+)(-card)?(\\d+)?!?");
-        if (QRegularExpressionMatch m = rx.match(pattern); m.hasMatch()) {
-            QString skill_name = m.capturedTexts().at(1);
+        QRegExp rx("@@?(\\w+)(-card)?(\\d+)?!?");
+        if (rx.exactMatch(pattern)) {
+            QString skill_name = rx.capturedTexts().at(1);
             const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
             if (skill != nullptr) {
                 CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_RESPONSE;

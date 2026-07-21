@@ -165,7 +165,7 @@ QFont TriggerOptionButton::defaultFont()
 
 void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
-    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::HighQualityAntialiasing);
     painter->save();
     painter->setBrush(Qt::black);
     painter->setPen(Sanguosha->getKingdomColor(Self->getGeneral()->getKingdom()));
@@ -281,7 +281,7 @@ void ChooseTriggerOrderBox::storeMinimumWidth()
         SkillInvokeDetailForClient skillDetail;
         skillDetail.tryParse(option.toMap());
 
-        const int w = fontMetrics.horizontalAdvance(TriggerOptionButton::displayedTextOf(skillDetail, 2));
+        const int w = fontMetrics.width(TriggerOptionButton::displayedTextOf(skillDetail, 2));
         if (w > width)
             width = w;
     }

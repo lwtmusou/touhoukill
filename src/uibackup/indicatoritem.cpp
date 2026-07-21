@@ -2,7 +2,6 @@
 #include "engine.h"
 
 #include <QGraphicsBlurEffect>
-#include <QLinearGradient>
 #include <QPainter>
 #include <QPauseAnimation>
 #include <QPropertyAnimation>

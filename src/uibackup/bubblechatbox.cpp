@@ -4,11 +4,7 @@
 #include <QBitmap>
 #include <QGraphicsScene>
 #include <QPainter>
-#include <QPixmap>
 #include <QPropertyAnimation>
-#include <QRegion>
-#include <QSize>
-#include <QSizeF>
 #include <QTextDocument>
 
 const int PIXELS_PER_LINE = 168;
@@ -96,7 +92,7 @@ void BubbleChatBox::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*
 
 QPainterPath BubbleChatBox::shape() const
 {
-    QRegion maskRegion(QBitmap::fromPixmap(m_backgroundPixmap.mask().scaled(m_rect.size().toSize())));
+    QRegion maskRegion(m_backgroundPixmap.mask().scaled(m_rect.size().toSize()));
     QPainterPath path;
     path.addRegion(maskRegion);
     return path;
@@ -113,7 +109,7 @@ void BubbleChatBox::setText(const QString &text)
 
     QFontMetrics fm(m_chatLabel->font());
     int imgCount = text.count("</img>");
-    int width = qAbs(fm.horizontalAdvance(plainText)) + imgCount * CHAT_FACE_WIDTH;
+    int width = qAbs(fm.width(plainText)) + (imgCount * CHAT_FACE_WIDTH);
     int lineCount = 1;
     if (width > PIXELS_PER_LINE) {
         lineCount = width / PIXELS_PER_LINE;

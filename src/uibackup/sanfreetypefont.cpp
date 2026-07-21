@@ -7,11 +7,10 @@
 #include <QPainter>
 #include <QRect>
 #include <QSize>
-#include <QStandardPaths>
 #include <QString>
 
-#define NEW_FONT_PIXEL(x, y, channel) (newImage[((y) * cols + (x)) * 4 + channel])
-#define FONT_PIXEL(x, y) (bitmap.buffer[(y) * rowStep + (x)])
+#define NEW_FONT_PIXEL(x, y, channel) (newImage[((y) * cols + (x)) * 4 + (channel)])
+#define FONT_PIXEL(x, y) (bitmap.buffer[(y)*rowStep + (x)])
 
 SanFreeTypeFont *const SanFreeTypeFont::m_instance = new SanFreeTypeFont;
 

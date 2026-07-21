@@ -2,7 +2,6 @@
 #define _QSAN_BUTTON_H
 
 #include "skill.h"
-
 #include <QGraphicsObject>
 #include <QList>
 #include <QPixmap>

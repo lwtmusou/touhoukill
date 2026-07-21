@@ -948,7 +948,7 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks)
         QGraphicsPixmapItem *item = new QGraphicsPixmapItem(_getDelayedTrickParent());
         QRect start = _m_layout->m_delayedTrickFirstRegion;
         QPoint step = _m_layout->m_delayedTrickStep;
-        start.translate(step * (int)_m_judgeCards.length());
+        start.translate(step * _m_judgeCards.size());
         _paintPixmap(item, start, G_ROOM_SKIN.getCardJudgeIconPixmap(trick->getCard()->objectName()));
         trick->setHomeOpacity(0.0);
         trick->setHomePos(start.center());
@@ -984,7 +984,7 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard *equip)
     //if (m_player->isBrokenEquip(equip->getEffectiveId()))
     //    painter.drawPixmap(_m_layout->m_equipTianyiArea, G_ROOM_SKIN.getCardTianyiPixmap());
     /*if (m_player->isBrokenEquip(equip->getEffectiveId())) {
-        painter.setRenderHints(QPainter::Antialiasing);
+        painter.setRenderHints(QPainter::HighQualityAntialiasing);
         QPen pen(Qt::red);
         pen.setWidth(3);
         painter.setPen(pen);

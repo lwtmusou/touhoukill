@@ -11,7 +11,6 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsSceneWheelEvent>
 #include <QPainter>
-#include <QRegularExpression>
 #include <QScrollBar>
 
 const char *HEROSKIN_PIXMAP_PATH = "image/heroskin/fullskin/generals/full";
@@ -26,7 +25,7 @@ const int Y_START_POS = 32;
 const int SKIN_ITEM_WIDTH = SKIN_ITEM_AREA.width();
 const int SKIN_ITEM_HEIGHT = SKIN_ITEM_AREA.height();
 //(?:[A-Za-z_]+)(\\d+).png
-const QRegularExpression SKIN_FILE_NAME_PATTERN(QRegularExpression::anchoredPattern("(?:[A-Za-z_0-9]+)(\\d+).png"));
+const QRegExp SKIN_FILE_NAME_PATTERN = QRegExp("(?:[A-Za-z_0-9]+)(\\d+).png");
 
 HeroSkinContainer *HeroSkinContainer::m_currentTopMostContainer = nullptr;
 QMap<QString, QStringList> HeroSkinContainer::m_generalToSkinFiles;
@@ -75,7 +74,7 @@ bool HeroSkinContainer::hasSkin(const QString &generalName)
     if (!m_generalToHasSkin.contains(generalName)) {
         QStringList files = HeroSkinContainer::getHeroSkinFiles(generalName);
         foreach (const QString &file, files) {
-            if (SKIN_FILE_NAME_PATTERN.match(file).hasMatch()) {
+            if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
                 m_generalToHasSkin[generalName] = true;
                 break;
             }
@@ -91,8 +90,8 @@ int HeroSkinContainer::getNextSkinIndex(const QString &generalName, int skinInde
 
     QStringList files = HeroSkinContainer::getHeroSkinFiles(generalName);
     foreach (const QString &file, files) {
-        if (QRegularExpressionMatch m = SKIN_FILE_NAME_PATTERN.match(file); m.hasMatch()) {
-            int num = m.capturedTexts().at(1).toInt();
+        if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
+            int num = SKIN_FILE_NAME_PATTERN.capturedTexts().at(1).toInt();
             if (num > skinIndex) {
                 result = num;
                 break;
@@ -158,8 +157,8 @@ void HeroSkinContainer::initSkins()
 
     QStringList files = getHeroSkinFiles(m_generalName);
     foreach (const QString &file, files) {
-        if (QRegularExpressionMatch m = SKIN_FILE_NAME_PATTERN.match(file); m.hasMatch()) {
-            int skinIndex = m.capturedTexts().at(1).toInt();
+        if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
+            int skinIndex = SKIN_FILE_NAME_PATTERN.capturedTexts().at(1).toInt();
             if (skinIndexUsed != skinIndex) {
                 createSkinItem(skinIndex, dummyRectItem);
             }
@@ -284,7 +283,7 @@ void HeroSkinContainer::swapWithSkinItemUsed(int skinIndex)
     oldSkinItemUsed->setPos(newSkinItemUsedPos);
     newSkinItemUsed->setPos(oldSkinItemUsedPos);
 
-    m_skins.swapItemsAt(0, m_skins.indexOf(newSkinItemUsed));
+    m_skins.swap(0, m_skins.indexOf(newSkinItemUsed));
 }
 
 const SanShadowTextFont &HeroSkinContainer::getAvatarNameFont()
