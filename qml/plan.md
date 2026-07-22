@@ -23,7 +23,7 @@
 - `src/qmlui/qmlui.cpp`：`Q_COREAPP_STARTUP_FUNCTION(registerCore)` 自动注册 QML 类型。
   - 单例：`G`（`TouhouKillQmlUiGlobal`，字体/游戏模式判断、`getAssetUrl(path)`/`assetExists(path)` 资源访问）、`ServerInfo`（含 `EnableAI`/`GameMode`/`FreeChoose` 等）。
   - 可创建：`CppRoomScene`（`RoomScene`，`QQuickItem` 桥接宿主）。
-  - uncreatable：`Card`/`Player`/`ClientPlayer`/`General`/`Client`/`Skill`/`ViewAsSkill`/`FilterSkill`/`ProhibitSkill`/`DistanceSkill`/`MaxCardsSkill`/`TargetModSkill`/`AttackRangeSkill`。
+  - uncreatable：`Card`/`EquipCard`（暴露 `Location` 枚举）/`Player`/`ClientPlayer`/`General`/`Client`/`Skill`/`ViewAsSkill`/`FilterSkill`/`ProhibitSkill`/`DistanceSkill`/`MaxCardsSkill`/`TargetModSkill`/`AttackRangeSkill`。
 - `src/qmlui/roomscene.h/cpp`：桥接层。`Q_PROPERTY` 暴露 `Self`（`ClientPlayer *`）、`ClientInstance`（`Client *`）；`connectClientSignals()` 集中连接 Client 信号；`Q_INVOKABLE replyToServer/notifyServer/freeChooseGeneral`。全局 `QPointer<RoomScene> RoomSceneInstance`。
 - `src/client/client.h/cpp`：`Client : public QObject`，全局 `QPointer<Client> ClientInstance`（注释明确不应是单例，当前仍是）。约 50 个信号。`getPlayers()` 已 `Q_INVOKABLE`。`addPlayer`/`arrangeSeats`/`removePlayer` 玩家生命周期。
 - `src/client/clientplayer.h`：`ClientPlayer : public Player`，全局 `QPointer<ClientPlayer> Self`。
@@ -39,6 +39,7 @@
 - `qml/Photo.qml`：`player` + `required property int seat` + `required property bool selfPhoto`（RoomScene 显式传 true/false：selfPhoto 实例 true，占位/测试 Photo false）。提取 `getGeneralName(g)`/`getImageSourceUrl(g)`（含 `_hegemony` 后缀处理）；source/visible 绑定；general2Image 对称 kingdom frame；player null fallback。`phase` 绑定 `player.phaseValue`（枚举）；未开始时 `general` 用 `player.avatar`；`PhaseItem` 用 `createPhaseItem()` 命令式创建（`Component.createObject`，`Component.onCompleted` 里 `if (!selfPhoto)` 调用——selfPhoto 不构造，用 Dashboard 的；无销毁；`visible` 绑 `gameStarted`；Component 模板内不访问外层 id 避开 `pragma ComponentBehavior: Bound` 告警）；`duozhi`（夺志，禁止角色使用/打出牌）时主副将图显示嘤嘤怪。化身图 `huashenImage`/`huashen2Image` source/visible 声明式绑定（`getImageSourceUrl(huashenGeneral)` / `huashenGeneral != ""`），`_hegemony` 由 `getImageSourceUrl` 统一 fallback；opacity 循环动画（500ms 淡入→4s 停→500ms 淡出→1s 间歇）由 `onVisibleChanged` 启停。
 - `qml/Dashboard.qml`：4 按钮（OK/Cancel/Discard/Trust）为 **platter 按钮集合**（`bg.png` 100×195 背景 + 4 platter 按钮按 `skins/defaultSkin.layout.json` 的 `confirmButtonArea`/`cancelButtonArea`/`discardButtonArea`/`trustButtonArea` 叠放，对标旧版 `roomscene.cpp:800-815`）；`clientInstance` + `required property var photo`（绑 selfPhoto）+ `roomScene` 属性。`addHandCard`/`removeHandCard` 同步手牌（A 子任务）。`updateStatus()` 按 `Client::status` switch 分支命令式设 `okEnabled`/`cancelEnabled`/`discardEnabled`（`Connections` 监听 status/refusable/activeBox/canAccept）；`PhaseItem` 显示 `photo.phase`。
 - `qml/CardItem.qml`：`signal clicked`/`rightClicked`（左/右键分发）；`selected` 属性注释掉（待实现）。
+- `qml/EquipSlot.qml`：装备单槽显示（`property int cardId`，`onCardIdChanged` 经 `Sanguosha.getEngineCard` 取卡读 `objectName`/`suit`/`number_string`/`red`）。**可配置**（`equipIconDir`/`equipIconWidth`/`equipIconHeight`/`suitArea`/`pointArea`）：Dashboard 默认 `image/equips/` 149×25（`suitArea [128,5,21,17]`/`pointArea [117,-5,30,30]`），Photo 设 `image/fullskin/small-equips/` 140×19（`suitArea [117,2,21,17]`/`pointArea [106,-4,25,25]`）。对标旧 `_getEquipPixmap` + defaultSkin layout（dashboard/photo 两段）；**图标自带装备名**，无装备名 text、无距离 text（skin `equipTextArea`/`equipDistanceArea` = `[0,0,0,0]`）。A 子任务装备区同步用；不含距离/broken/点击分流（装备区任务）。
 - `qml/GraphicsBox.qml`：图片背景可拖拽容器基类（Image 根，无标题/操作按钮）。
 - `qml/ChooseGeneralBox.qml`：基于 GraphicsBox 的选将弹窗。
 - `qml/QSanButton.qml`：按钮组件。`property url normalSource`/`hoverSource`/`downSource`/`disabledSource`（调用方指定各状态图，QSanButton 按 state 选取，空状态 fallback `normalSource`）+ `property bool overlayEnabled`（hover 叠加与 Text 显隐，platter 模式设 false）。**调用方直接指定各状态 image，不拼接路径、不约定文件名**：platter 按钮 4 个 source 都设 + `overlayEnabled: false`；普通按钮只设 `normalSource`（其他空 fallback），`overlayEnabled` 默认 true。
@@ -67,7 +68,7 @@
 
   - [ ] **A. 牌区同步**（前置，覆盖所有玩家可见牌区）：`Client::getCards`/`loseCards` 回调对应 `move_cards_got`/`move_cards_lost` 信号（桥接**尚未转发**），按 `CardsMoveStruct.to_place`/`from_place`（`Player::Place` 枚举：`PlaceHand`/`PlaceEquip`/`PlaceDelayedTrick`/`PlaceJudge`/`PlaceSpecial`/`PlaceTable`/`DiscardPile`）与 `from`/`to` player 分发到对应区域。不仅是手牌：
     - **手牌区**（`PlaceHand`）✅：Dashboard `cardArea`（CardContainer）增删 CardItem 并 `lay()`。其他玩家手牌对 self 不可见，只同步 `ClientPlayer.handcard` 数量（已有 `Q_PROPERTY` + `handcardChanged`，Photo 已绑）。**其他玩家手牌移动过程中 `cardId` 可能为 -1（故意设计，客户端数据不对等——隐藏其他玩家手牌信息）**，CardItem 需处理 `cardId=-1`（显示牌背 `image/system/card-back.png`，不显示卡面/花色/点数）；`qml/CardItem.qml:onCardIdChanged` 已处理 `cardId=-1` 显示牌背。self 自己的手牌 `cardId` 是真实值，正常显示卡面。
-    - **装备区**（`PlaceEquip`）：Dashboard `weaponArea`/`armorArea`/`dhorseArea`/`ohorseArea`/`treasureArea`（`qml/Dashboard.qml` 已有占位，当前 `visible: false`，需启用绑定）；其他玩家装备显示在 Photo 上。5 槽位（武器/防具/防马/攻马/宝物）按 `EquipCard::position()` 归位。
+    - **装备区**（`PlaceEquip`）✅（同步部分）：Dashboard 5 槽（`qml/Dashboard.qml` 的 `equipCardIds[EquipCard.WeaponLocation]` 等 + `EquipSlot`，`image/equips/` 149×25）；其他玩家装备叠加 Photo 内部底部（`qml/Photo.qml` 非 self `equipArea`，`image/fullskin/small-equips/` 140×19）。槽位由 QML 读 `card.location`（EquipCard `Q_PROPERTY(Location location)`，运行时元对象查找）获取——桥接层 `move_cards_got`/`lost` 只转 move 字段，不解析装备槽位；QML `onNotifyMoveCardsGot/Lost` 按 `toPlayer`/`fromPlayer` 分发到目标 dashboard/photo 的 `addEquip`/`removeEquip`。装备槽对标旧 `_getEquipPixmap` + defaultSkin layout（dashboard/photo 两段），图标自带装备名，无装备名/距离 text（skin `equipTextArea`/`equipDistanceArea` = `[0,0,0,0]`）。**broken 占位图/距离文字/点击分流/有效态/装备技能按钮**留待"Dashboard 技能按钮 + 装备区"任务。
     - **判定区**（`PlaceDelayedTrick`）：放延时锦囊（闪电、乐不思蜀、兵粮寸断等）。self 在 Dashboard、其他在 Photo。需新建判定区容器组件。
     - **TablePile（桌面牌堆，统一处理 `PlaceJudge`/`PlaceTable`/`DiscardPile`，不区分）**：判定牌（`PlaceJudge`，判定过程翻出的实体牌，分出此 Place 是为给"红颜"等修改实体判定牌的技能留位置）、桌面打出的牌（`PlaceTable`）、弃牌堆（`DiscardPile`）三者都由 TablePile 显示，不做区分。TablePile 直接用 CardContainer（见"CardItem 与牌容器设计"小节）。**弃牌不直接 destroy，走延迟清除 + 重排机制**（见"CardItem 与牌容器设计"小节的"TablePile 延迟清除机制"）；`PlaceTable`/`PlaceJudge` → `DiscardPile` 是 TablePile 内部 place 变化，目前无专门动画。
     - **私人牌堆**（`PlaceSpecial`，如邓艾"屯田"的田、木牛流马 `wooden_ox`）：`ClientPlayer::getPileNames()` 动态获取 pile 名，`pile_changed(name)` 信号通知增删（`changePile`/`setPile` 触发）；显示在角色旁，可点击展开查看。需新建 pile 容器组件。
@@ -122,6 +123,7 @@
 
 - **游戏事件 UI 无关逻辑在 Client**：旧版 `RoomScene::handleGameEvent`(`uibackup/roomscene.cpp:421`) 混了 UI 无关（`player->addSkill`/`loseSkill`/`acquireSkill`/`detachSkill`/`setSkillPreshowed`/`setGender` 等 player 状态更新）与 UI 相关（`updateAvatarTooltip`/`expandSpecialCard`/`updateSkillButtons` 等）。QML 重构把 UI 无关部分移到 `Client::handleGameEvent`(`client.cpp:330`)，`emit event_received` 后由 QML 桥接转发 notify 信号驱动 UI。技能 4 事件（ADD/LOSE/ACQUIRE/DETACH SKILL）已移；其余 UI 无关事件（preshow/gender/hero 等）TODO。
 - **notify 处理函数的 log 约定**：`RoomScene.qml` 的 `onNotifyXxx` 占位时只放 `console.log` 作待实现标记；一旦为该 notify 添加了实际动作（调桥接/创建组件/遍历 Photo 等），**顺手删除其 `console.log`**（动作本身已表明信号到达，log 冗余）。
+- **枚举类型暴露给 QML**：C++ 侧的枚举（如 `EquipCard::Location`）需 `Q_ENUM`（非旧式 `Q_ENUMS`）+ `qmlRegisterUncreatableType<T>` 注册后，QML 才能用 `T.EnumMember` 访问（如 `EquipCard.WeaponLocation`）。**`Q_ENUM` 必须置于 `enum` 声明之后**（旧式 `Q_ENUMS` 位置无关，但 `Q_ENUM` 在 enum 前编译不过）；`EquipCard` 是抽象类（`virtual location()=0`），注册为 uncreatable 仅暴露枚举，不创建实例。UI 侧装备槽索引用 `equipCardIds[EquipCard.WeaponLocation]` 等枚举名，不用魔数 0-4。**枚举值 Q_PROPERTY**：`EquipCard` 加 `Q_PROPERTY(Location location READ location STORED false)`，QML 读 `card.location`（`const Card *` 实际为 EquipCard 时，运行时元对象查找子类 Q_PROPERTY）直接得槽位，桥接层无需 dynamic_cast 解析。`Weapon` 加 `Q_PROPERTY(int range READ getRange)` 供距离显示（A 子任务暂不用，留装备区任务）。
 
 ### Qt6 moc / QML 约束
 - **Q_PROPERTY 指针类型需完整定义**：`Q_PROPERTY(T *)` 中 `T` 必须 include 完整定义，不能前置声明（否则 moc `static_assert(is_complete<...>)` 失败）。`roomscene.h` 需 `#include "client.h"`/`"clientplayer.h"`。
@@ -129,6 +131,7 @@
 - **NOTIFY 信号规范**：无参或单参（新值）；仅值变化时 emit。`status_changed(Status newStatus)` 单参，`setStatus` 保留 `old_status` 仅 `old != new` 时 emit。
 - **避免 const_cast**：信号参数需非 const 传 QML 时，直接改 Client 信号签名去 const（如 `cards_got`/`skill_acquired`）。
 - **`QList<int>` 转换**：复用 `util.h::IntList2VariantList`，勿手写循环。
+- **读 Card 子类属性必须 getRealCard**：`Sanguosha.getEngineCard(id)`/`getCard(id)` 返回 **WrappedCard**（游戏中所有实际卡都是 WrappedCard，card.h 注释），不是真实卡子类（EquipCard/Weapon 等）。WrappedCard 透传 Card 基类属性（suit/number/objectName/number_string/red 等，takeOver 时同步），读基类属性可直接 `card.suit` 等；但**子类独有属性**（`EquipCard.location`、`Weapon.range` 等）WrappedCard 没有，`card.location` 返回 undefined。必须 `card.getRealCard()`（`Q_INVOKABLE`，WrappedCard override 返回 `m_card` 真实卡）拿真实卡后再读子类属性：`card.getRealCard().location`。
 
 ### 选将流程约定
 - **不用 ExecDialog**：`askForGeneral` 统一 `setStatus(AskForGeneralTaken)`。
@@ -147,6 +150,7 @@
 - **资源访问**：统一用 `G.getAssetUrl(path)`。
 - **禁用 `z` 属性**：所有 UI 界面靠元素的声明顺序/父子层级（后声明的同级元素渲染在上层）解决相互覆盖，**不使用 `z` 属性**调整堆叠。**历史原因**：旧代码（`src/uibackup/`）滥用 `z` 调整堆叠，目前已用到小数点前 5 位（万级），为给以后调整留空间，现阶段能不用 `z` 就一律不用。
 - **selfPhoto vs 非 selfPhoto 构造模式**：selfPhoto 与非 selfPhoto 共用 `Photo.qml` 组件，通过 `required property bool selfPhoto` 区分（RoomScene 显式传：selfPhoto 实例 `true`，占位/测试 Photo `false`）。**selfPhoto 不构造的子组件，由 Dashboard 承担显示**；非 selfPhoto 用 `Component.createObject` 命令式**动态构造**（`createPhaseItem()` 在 `Component.onCompleted` 调用一次创建，无销毁；`visible` 绑条件控制显隐；Component 模板内不访问外层 id，避开 `Loader` 的 `pragma ComponentBehavior: Bound` 告警）。已应用：`PhaseItem`（selfPhoto 不构造，用 Dashboard 的；非 selfPhoto 在 `Component.onCompleted` 里 `if (!selfPhoto) createPhaseItem()` 创建，`visible` 绑 `gameStarted`）。**后续装备区等同理**：selfPhoto 装备区在 Dashboard 构造（`Dashboard.qml` 已有 `weaponArea` 等占位），非 selfPhoto 装备区在 Photo 用 `createObject` 动态构造。
+- **layout 仅参考旧代码，不严格对标**：旧 `defaultSkin.layout.json`/`SkinBank` 的坐标/尺寸仅作参考，QML 侧不逐字段对标。现有 QML 内容（Photo/Dashboard/EquipSlot/装备区等）layout 多有偏差（尺寸/间距/位置未精确还原旧版），功能做完后统一调整，不在各子任务中纠结 layout 精确度。
 
 ### CardItem 与牌容器设计（架构决策）
 - **CardContainer 作为通用牌容器**（代替旧版 `GenericCardContainer` 基类）：
@@ -340,9 +344,24 @@
 - `notifyEventReceived`（全局游戏事件流）移到 RoomScene 顶层 Connections 的 `onNotifyEventReceived`（全局事件分发中枢，按事件类型转发——当前 skill 相关 → `skillDock.handleSkillEvent`，其他事件类型 TODO），不再放 SkillDock 内（全局状态非 SkillDock 私有）。skill 专属 notify 留 SkillDock 内部。
 - `.pro` OTHER_FILES 加 `qml/SkillDock.qml`。
 
+### 2026-07-22：A-装备区同步实现
+- **桥接层**：`roomscene.cpp` `move_cards_got`/`lost` lambda 转 `qmlMove`（cardIds/fromPlace/toPlace/fromPlayer/toPlayer/fromPileName/toPileName），**不解析装备槽位**——槽位由 QML 读 `card.location`（EquipCard `Q_PROPERTY(Location location)`）获取。
+- **Dashboard.qml**：加 `property var equipCardIds: [-1,-1,-1,-1,-1]` + `addEquip(location, cardId)`/`removeEquip(location)`（数组 slice 重建触发 change）；`equipBg` 内 5 个占位 `Image`（weaponArea 等，原 `visible:false`）替换为 `EquipSlot`，`cardId` 绑 `equipCardIds[0..4]`，保持原 anchors（topMargin 72/129/186/243/300）。
+- **Photo.qml**：加 `equipCardIds`/`addEquip`/`removeEquip`；非 self 装备区 `equipArea` **叠加 Photo 内部底部**（`anchors.bottom: photo.bottom` + `height: 5*33-14`），`Repeater` model 5 生成 `EquipSlot`（`cardId` 绑 `photo.equipCardIds[index]`，index 0..4 = EquipCard.Location），设 small-equips 配置（`image/fullskin/small-equips/` 140×19，`suitArea [117,2,21,17]`/`pointArea [106,-4,25,25]`，y=index*33）。selfPhoto 不显示（用 Dashboard 的）。
+- **RoomScene.qml**：加 `findPhotoByPlayerName(playerName)` 辅助函数；`onNotifyMoveCardsGot`/`Lost` 增加 `PlaceEquip` 分支——按 `toPlayer`/`fromPlayer`（self → dashboard，其他 → `findPhotoByPlayerName`）分发，遍历 `cardIds`，`var loc = Sanguosha.getEngineCard(m.cardIds[k]).getRealCard().location` 读槽位（getEngineCard 返回 WrappedCard，须 getRealCard 拿真实 EquipCard 才有 location Q_PROPERTY），调 `target.addEquip(loc, cardId)`/`removeEquip(loc)`。
+- **EquipSlot.qml**（新）：单槽显示，`property int cardId`，`onCardIdChanged` 经 `Sanguosha.getEngineCard(cardId)` 取卡读 `objectName`/`suit`/`number_string`/`red`（基类属性，WrappedCard 透传，不需 getRealCard）。**可配置**（`equipIconDir`/`equipIconWidth`/`equipIconHeight`/`suitArea`/`pointArea`）：Dashboard 默认 `image/equips/` 149×25（`suitArea [128,5,21,17]`/`pointArea [117,-5,30,30]`），Photo 设 `image/fullskin/small-equips/` 140×19（`suitArea [117,2,21,17]`/`pointArea [106,-4,25,25]`）。对标旧 `_getEquipPixmap` + defaultSkin layout（dashboard/photo 两段，`equipTextArea`/`equipDistanceArea` = `[0,0,0,0]`，**图标自带装备名**，无装备名/距离 text）。`visible` 绑 `cardId !== -1`。
+- **数据流**：`Client::getCards`→`_getSingleCard`→`ClientPlayer::addCard(PlaceEquip)`→`setEquip`（Client 内部更新 player 装备指针，不发信号）；桥接 `move_cards_got` 转 move 字段传 QML，QML 侧读 `card.location` 得槽位，`addEquip`/`removeEquip` 维护 `equipCardIds` 数组驱动 `EquipSlot` 显示。**不用 Player 装备 Q_PROPERTY 绑定**（setEquip/removeEquip 无信号，且与 A 子任务 move 驱动设计一致）。
+- TODO：broken 占位图、距离文字（武器 range/马 correct）、装备点击分流、有效态、装备技能按钮留待"Dashboard 技能按钮 + 装备区"任务；Photo 装备区后续拆 `PhotoEquipArea` + 动态构造（与 PhaseItem 模式统一）。
+
+### 2026-07-22：EquipCard 枚举暴露给 QML
+- `src/package/standard.h`：`EquipCard` 的 `Q_ENUMS(Location)` 改 `Q_ENUM(Location)`（须在 enum 声明后）；加 `Q_PROPERTY(Location location READ location STORED false)`（QML 读 `card.location` 直接得槽位）。`Weapon` 加 `Q_PROPERTY(int range READ getRange)`（距离显示用，A 子任务暂不用）。
+- `src/qmlui/qmlui.cpp`：`registerCore` 加 `qmlRegisterUncreatableType<EquipCard>`（紧随 Card），`#include "standard.h"`；EquipCard 是抽象类（`virtual location()=0`），注册仅暴露 `Location` 枚举（`WeaponLocation`/`ArmorLocation`/`DefensiveHorseLocation`/`OffensiveHorseLocation`/`TreasureLocation`），不创建实例。
+- `qml/Dashboard.qml`/`qml/Photo.qml`：5 个装备槽索引从魔数 `[0..4]` 改为 `EquipCard.WeaponLocation` 等枚举名。
+- **桥接层简化**：`roomscene.cpp` `move_cards_got`/`lost` lambda 去掉 `equipLocations` 解析（dynamic_cast EquipCard）与 `#include "standard.h"`；QML `onNotifyMoveCardsGot/Lost` 改读 `Sanguosha.getEngineCard(cardId).getRealCard().location` 得槽位（getEngineCard 返回 WrappedCard，须 getRealCard 拿真实 EquipCard；详见"Qt6 moc / QML 约束"getRealCard 条）。槽位信息不再经桥接层传，QML 直读 Card Q_PROPERTY。
+
 ## 7. 下一步
 1. **CardItem 卡牌选择全链路**（已拆分为 A-G 子任务，见"待做"小节）：
-   - 执行顺序：A（牌区同步：手牌/装备/判定/私人牌堆）→ B（CardItem 选中态）→ C（Dashboard pending + PromptBox）→ D（桥接选卡回传）→ E（OK/Cancel/Discard 按钮回传）→ F（目标选择）。
+   - 执行顺序：A（牌区同步：手牌✅/装备✅/判定/私人牌堆/TablePile）→ B（CardItem 选中态）→ C（Dashboard pending + PromptBox）→ D（桥接选卡回传）→ E（OK/Cancel/Discard 按钮回传）→ F（目标选择）。
    - 第一阶段最小闭环：A+B+C+D+E（先只支持 `targetFixed` 卡：桃自用、无懈可击等），F 补目标选择（杀/闪/桃救人），G 与"Dashboard 技能按钮"任务合并。
 2. 选项/触发顺序弹窗（ChooseOptionsBox/ChooseTriggerOrderBox）。
 3. 玩家牌展示/桌面牌堆、聊天日志。

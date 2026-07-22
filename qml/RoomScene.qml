@@ -47,6 +47,16 @@ CppRoomScene {
 
     signal spaceClicked
 
+    // Find a non-self Photo by player objectName. Returns null if not found.
+    function findPhotoByPlayerName(playerName: string) {
+        for (var i = 0; i < otherPhotos.length; ++i) {
+            var p = otherPhotos[i].player;
+            if (p !== null && p.objectName === playerName)
+                return otherPhotos[i];
+        }
+        return null;
+    }
+
     function lay() {
         var playerCount = Sanguosha.getPlayerCount(ServerInfo.GameMode);
         var verticalAlignment = Qt.AlignVCenter;
@@ -292,14 +302,25 @@ CppRoomScene {
             console.log("[bridge->qml] notifyLogReceived", logStr);
         }
 
-        // Subtask A: hand area sync. Handle moves where toPlace/fromPlace == PlaceHand && player == Self.
-        // Other places (equip/judge/pile/table) deferred to later subtasks.
+        // Subtask A: card-area sync. Hand area: self only (other players' hidden
+        // cards sync via handcardNum). Equip area: route PlaceEquip moves to the
+        // 5 fixed slots of the target player (self -> dashboard, others -> photo),
+        // slot index read from card.location (EquipCard Q_PROPERTY). Judge/pile/
+        // table deferred to later subtasks.
         function onNotifyMoveCardsGot(moveId, moves) {
             for (var i = 0; i < moves.length; ++i) {
                 var m = moves[i];
                 if (m.toPlace === Player.PlaceHand && m.toPlayer !== null && m.toPlayer.objectName === roomScene.Self.objectName) {
                     for (var j = 0; j < m.cardIds.length; ++j)
                         dashboard.addHandCard(m.cardIds[j]);
+                } else if (m.toPlace === Player.PlaceEquip && m.toPlayer !== null) {
+                    var target = m.toPlayer.objectName === roomScene.Self.objectName ? dashboard : roomScene.findPhotoByPlayerName(m.toPlayer.objectName);
+                    if (target !== null) {
+                        for (var k = 0; k < m.cardIds.length; ++k) {
+                            var loc = Sanguosha.getEngineCard(m.cardIds[k]).getRealCard().location;
+                            target.addEquip(loc, m.cardIds[k]);
+                        }
+                    }
                 }
             }
         }
@@ -310,6 +331,14 @@ CppRoomScene {
                 if (m.fromPlace === Player.PlaceHand && m.fromPlayer !== null && m.fromPlayer.objectName === roomScene.Self.objectName) {
                     for (var j = 0; j < m.cardIds.length; ++j)
                         dashboard.removeHandCard(m.cardIds[j]);
+                } else if (m.fromPlace === Player.PlaceEquip && m.fromPlayer !== null) {
+                    var target = m.fromPlayer.objectName === roomScene.Self.objectName ? dashboard : roomScene.findPhotoByPlayerName(m.fromPlayer.objectName);
+                    if (target !== null) {
+                        for (var k = 0; k < m.cardIds.length; ++k) {
+                            var loc = Sanguosha.getEngineCard(m.cardIds[k]).getRealCard().location;
+                            target.removeEquip(loc);
+                        }
+                    }
                 }
             }
         }

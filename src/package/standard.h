@@ -56,7 +56,7 @@ private:
 class EquipCard : public Card
 {
     Q_OBJECT
-    Q_ENUMS(Location)
+    Q_PROPERTY(Location location READ location STORED false)
 
 public:
     enum Location
@@ -67,6 +67,7 @@ public:
         OffensiveHorseLocation,
         TreasureLocation
     };
+    Q_ENUM(Location)
 
     EquipCard(Suit suit, int number)
         : Card(suit, number, true)
@@ -285,9 +286,10 @@ public:
 class Weapon : public EquipCard
 {
     Q_OBJECT
+    Q_PROPERTY(int range READ getRange)
 
 public:
-    Weapon(Suit suit, int number, int range);
+    Weapon(Suit suit, int number, int range = 1);
     int getRange() const;
 
     void onUse(Room *room, const CardUseStruct &card_use) const override;

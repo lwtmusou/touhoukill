@@ -171,7 +171,7 @@ public:
     virtual bool isAvailable(const Player *player) const;
     virtual bool ignoreCardValidty(const Player *player) const;
 
-    inline virtual const Card *getRealCard() const
+    Q_INVOKABLE inline virtual const Card *getRealCard() const
     {
         return this;
     }

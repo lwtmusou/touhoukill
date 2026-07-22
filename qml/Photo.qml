@@ -7,6 +7,9 @@ Item {
 
     property bool banling: player.linghp !== -2147483647 - 1
     property int dyingThreshold: player.dyingFactor
+    // Equip slot cardIds for non-self photos (5 fixed slots, -1 = empty).
+    // Driven by PlaceEquip moves (subtask A sync). self uses Dashboard's equip area.
+    property var equipCardIds: [-1, -1, -1, -1, -1]
     property bool gameStarted: false
     property string general: (gameStarted ? (player.general) : (player != null ? player.avatar : "anjiang"))
     property string general2: (gameStarted ? (player.general2) : "")
@@ -34,6 +37,13 @@ Item {
     property string screenName: player.screenname
     required property int seat
     required property bool selfPhoto
+
+    // Equip area sync (subtask A): route PlaceEquip moves to the 5 fixed slots.
+    function addEquip(location: int, cardId: int) {
+        var a = equipCardIds.slice();
+        a[location] = cardId;
+        equipCardIds = a;
+    }
 
     function createPhaseItem() {
         photo.phaseItemInstance = phaseItemComponent.createObject(photo);
@@ -72,6 +82,12 @@ Item {
             generalImageFileName = g.substring(0, g.length - 9);
 
         return G.getAssetUrl("image/fullskin/generals/full/" + generalImageFileName + ".png");
+    }
+
+    function removeEquip(location: int) {
+        var a = equipCardIds.slice();
+        a[location] = -1;
+        equipCardIds = a;
     }
 
     height: 407
@@ -394,6 +410,36 @@ Item {
                 anchors.top: parent.top
                 roleShown: photo.roleShown
                 visible: false
+            }
+        }
+    }
+
+    // Non-self equip area (subtask A sync). Overlays Photo bottom; uses small-equip
+    // icons (image/fullskin/small-equips, 140x19) per photo layout. self uses
+    // Dashboard's equip area. TODO (equip-area task): split into PhotoEquipArea +
+    // dynamic createObject. Repeater index 0..4 == EquipCard.Location enum value.
+    Item {
+        id: equipArea
+
+        anchors.bottom: photo.bottom
+        anchors.left: photo.left
+        height: 5 * 33 - 14
+        visible: !selfPhoto
+        width: 140
+
+        Repeater {
+            model: 5
+
+            EquipSlot {
+                cardId: photo.equipCardIds[index]
+                equipIconDir: "image/fullskin/small-equips/"
+                equipIconHeight: 19
+                equipIconWidth: 140
+                height: 19
+                pointArea: [106, -4, 25, 25]
+                suitArea: [117, 2, 21, 17]
+                width: 140
+                y: index * 33
             }
         }
     }

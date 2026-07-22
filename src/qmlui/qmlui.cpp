@@ -7,6 +7,7 @@
 #include "player.h"
 #include "protocol.h"
 #include "skill.h"
+#include "standard.h"
 #include "util.h"
 
 #include <QApplication>
@@ -105,6 +106,15 @@ void registerCore()
 
         if (ret == -1)
             qDebug() << "Failed to register Card to Qml";
+    }
+
+    {
+        // Expose EquipCard::Location enum (WeaponLocation/ArmorLocation/...) to QML
+        // so the UI can index equip slots by name instead of magic numbers.
+        int ret = qmlRegisterUncreatableType<EquipCard>("rocks.touhousatsu", 1, 0, "EquipCard", "It is currently not supported to create an equip card in QML.");
+
+        if (ret == -1)
+            qDebug() << "Failed to register EquipCard to Qml";
     }
 
     {

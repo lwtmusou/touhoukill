@@ -201,6 +201,7 @@ OTHER_FILES += \
     qml/Photo.qml \
     qml/CardContainer.qml \
     qml/ChooseGeneralBox.qml \
+    qml/EquipSlot.qml \
     qml/QSanButton.qml \
     qml/QSanSkillButton.qml \
     qml/SkillDock.qml \
