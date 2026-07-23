@@ -7,33 +7,19 @@ Item {
     property bool cancelEnabled: false
     property var clientInstance: parent ? parent.ClientInstance : null
     property bool discardEnabled: false
-    // Equip slot cardIds: 5 fixed slots (weapon/armor/defensive-horse/offensive-horse/
-    // treasure). -1 = empty. Driven by PlaceEquip moves (subtask A sync).
-    property var equipCardIds: [-1, -1, -1, -1, -1]
+
+    // Equip area (SelfEquipArea) lives inside equipBg; exposed via alias so
+    // RoomScene can call equipArea.addEquip/removeEquip for PlaceEquip moves.
+    property alias equipArea: equipArea
     property bool okEnabled: false
     required property var photo
     property var roomScene: null
-
-    // Equip area sync (subtask A): route PlaceEquip moves to the 5 fixed slots.
-    // location is EquipCard::Location (0=weapon,1=armor,2=defensive-horse,
-    // 3=offensive-horse,4=treasure), resolved by the bridge layer.
-    function addEquip(location: int, cardId: int) {
-        var a = equipCardIds.slice();
-        a[location] = cardId;
-        equipCardIds = a;
-    }
 
     // Hand card sync (subtask A): add/remove CardItem in cardArea + relayout.
     // self hand cards only (other players' hidden cards sync via handcardNum, not here).
     function addHandCard(cardId: int) {
         cardArea.createItem(cardId);
         cardArea.lay(Qt.AlignLeft, 1, 0, true, true);
-    }
-
-    function removeEquip(location: int) {
-        var a = equipCardIds.slice();
-        a[location] = -1;
-        equipCardIds = a;
     }
 
     function removeHandCard(cardId: int) {
@@ -135,47 +121,16 @@ Item {
         source: G.getAssetUrl("image/system/dashboard-equip.png")
         width: 347
 
-        // 5 equip slots (subtask A sync). Visibility driven by cardId inside EquipSlot.
-        // TODO (equip-area task): click routing / valid state / broken placeholder /
-        // distance text / equip skill button.
-        EquipSlot {
+        // Self equip area (5 slots). equipCardIds/addEquip/removeEquip live inside
+        // SelfEquipArea (EquipAreaBase). TODO (equip-area task): click routing /
+        // valid state / broken placeholder / distance / equip skill button.
+        SelfEquipArea {
+            id: equipArea
+
             anchors.left: parent.left
             anchors.leftMargin: 12
             anchors.top: parent.top
             anchors.topMargin: 72
-            cardId: dashboard.equipCardIds[EquipCard.WeaponLocation]
-        }
-
-        EquipSlot {
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            anchors.top: parent.top
-            anchors.topMargin: 129
-            cardId: dashboard.equipCardIds[EquipCard.ArmorLocation]
-        }
-
-        EquipSlot {
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            anchors.top: parent.top
-            anchors.topMargin: 186
-            cardId: dashboard.equipCardIds[EquipCard.DefensiveHorseLocation]
-        }
-
-        EquipSlot {
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            anchors.top: parent.top
-            anchors.topMargin: 243
-            cardId: dashboard.equipCardIds[EquipCard.OffensiveHorseLocation]
-        }
-
-        EquipSlot {
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            anchors.top: parent.top
-            anchors.topMargin: 300
-            cardId: dashboard.equipCardIds[EquipCard.TreasureLocation]
         }
     }
 

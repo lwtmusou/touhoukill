@@ -137,7 +137,7 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         anchors.fill: parent
 
-        onClicked: {
+        onClicked: mouse => {
             if (mouse.button === Qt.RightButton)
                 parent.rightClicked();
             else

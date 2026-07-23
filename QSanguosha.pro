@@ -199,8 +199,10 @@ OTHER_FILES += \
     qml/GraphicsBox.qml \
     qml/main.qml \
     qml/Photo.qml \
+    qml/PhotoEquipArea.qml \
     qml/CardContainer.qml \
     qml/ChooseGeneralBox.qml \
+    qml/EquipAreaBase.qml \
     qml/EquipSlot.qml \
     qml/QSanButton.qml \
     qml/QSanSkillButton.qml \
@@ -216,6 +218,7 @@ OTHER_FILES += \
     qml/KingdomImage.qml \
     qml/PhaseItem.qml \
     qml/SeatNumberItem.qml \
+    qml/SelfEquipArea.qml \
     qml/VerticalText.qml
 
 win32{

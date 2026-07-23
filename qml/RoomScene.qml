@@ -48,6 +48,7 @@ CppRoomScene {
     signal spaceClicked
 
     // Find a non-self Photo by player objectName. Returns null if not found.
+    // TODO: add `: var` return value type notation once QTBUG-148521 is resolved
     function findPhotoByPlayerName(playerName: string) {
         for (var i = 0; i < otherPhotos.length; ++i) {
             var p = otherPhotos[i].player;
@@ -314,7 +315,7 @@ CppRoomScene {
                     for (var j = 0; j < m.cardIds.length; ++j)
                         dashboard.addHandCard(m.cardIds[j]);
                 } else if (m.toPlace === Player.PlaceEquip && m.toPlayer !== null) {
-                    var target = m.toPlayer.objectName === roomScene.Self.objectName ? dashboard : roomScene.findPhotoByPlayerName(m.toPlayer.objectName);
+                    var target = m.toPlayer.objectName === roomScene.Self.objectName ? dashboard.equipArea : roomScene.findPhotoByPlayerName(m.toPlayer.objectName).equipArea;
                     if (target !== null) {
                         for (var k = 0; k < m.cardIds.length; ++k) {
                             var loc = Sanguosha.getEngineCard(m.cardIds[k]).getRealCard().location;
@@ -332,7 +333,7 @@ CppRoomScene {
                     for (var j = 0; j < m.cardIds.length; ++j)
                         dashboard.removeHandCard(m.cardIds[j]);
                 } else if (m.fromPlace === Player.PlaceEquip && m.fromPlayer !== null) {
-                    var target = m.fromPlayer.objectName === roomScene.Self.objectName ? dashboard : roomScene.findPhotoByPlayerName(m.fromPlayer.objectName);
+                    var target = m.fromPlayer.objectName === roomScene.Self.objectName ? dashboard.equipArea : roomScene.findPhotoByPlayerName(m.fromPlayer.objectName).equipArea;
                     if (target !== null) {
                         for (var k = 0; k < m.cardIds.length; ++k) {
                             var loc = Sanguosha.getEngineCard(m.cardIds[k]).getRealCard().location;
