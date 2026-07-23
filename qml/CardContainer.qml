@@ -48,6 +48,12 @@ Item {
         if (align === Qt.AlignRight) {
             x = width - (step * (nperrow - 1));
             step = -step;
+        } else if (align === Qt.AlignHCenter) {
+            // Single-row centering (TablePile usage). Total row width = step*(count-1) + cardWidth.
+            var rowWidth = step * (cardItems.length - 1) + cardItems[0].width;
+            x = (width - rowWidth) / 2;
+            if (x < 0)
+                x = 0;
         }
 
         var i;

@@ -219,6 +219,7 @@ OTHER_FILES += \
     qml/PhaseItem.qml \
     qml/SeatNumberItem.qml \
     qml/SelfEquipArea.qml \
+    qml/TablePile.qml \
     qml/VerticalText.qml
 
 win32{

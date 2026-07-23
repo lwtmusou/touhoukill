@@ -46,6 +46,7 @@
 - `qml/GraphicsBox.qml`：图片背景可拖拽容器基类（Image 根，无标题/操作按钮）。
 - `qml/ChooseGeneralBox.qml`：基于 GraphicsBox 的选将弹窗。
 - `qml/QSanButton.qml`：按钮组件。`property url normalSource`/`hoverSource`/`downSource`/`disabledSource`（调用方指定各状态图，QSanButton 按 state 选取，空状态 fallback `normalSource`）+ `property bool overlayEnabled`（hover 叠加与 Text 显隐，platter 模式设 false）。**调用方直接指定各状态 image，不拼接路径、不约定文件名**：platter 按钮 4 个 source 都设 + `overlayEnabled: false`；普通按钮只设 `normalSource`（其他空 fallback），`overlayEnabled` 默认 true。
+- `qml/TablePile.qml`：桌面牌堆（`PlaceTable`/`PlaceJudge`/`DiscardPile` 统一），Item 根内含 CardContainer（id `pile`）+ 延迟清除 Timer。`addCard`/`removeCard` 走 `pile.createItem`/`removeItem` + `lay(AlignHCenter)`；`clearTimestamps`（cardId->时间戳）+ `currentTime`（Timer 每秒+1）+ `_markOverflowClearance`（超量标记）+ `_checkClearance`（超时 `destroy` + 重排）。对标旧 `TablePile.cpp`。
 
 ### 构建
 - `QSanguosha.pro`：`SOURCES`/`HEADERS` 含 `src/qmlui/*`，`OTHER_FILES` 列 `qml/*.qml`。`src/uibackup` 未引用。
@@ -73,7 +74,7 @@
     - **手牌区**（`PlaceHand`）✅：Dashboard `cardArea`（CardContainer）增删 CardItem 并 `lay()`。其他玩家手牌对 self 不可见，只同步 `ClientPlayer.handcard` 数量（已有 `Q_PROPERTY` + `handcardChanged`，Photo 已绑）。**其他玩家手牌移动过程中 `cardId` 可能为 -1（故意设计，客户端数据不对等——隐藏其他玩家手牌信息）**，CardItem 需处理 `cardId=-1`（显示牌背 `image/system/card-back.png`，不显示卡面/花色/点数）；`qml/CardItem.qml:onCardIdChanged` 已处理 `cardId=-1` 显示牌背。self 自己的手牌 `cardId` 是真实值，正常显示卡面。
     - **装备区**（`PlaceEquip`）✅（同步部分）：Dashboard 5 槽（`qml/Dashboard.qml` 的 `equipCardIds[EquipCard.WeaponLocation]` 等 + `EquipSlot`，`image/equips/` 149×25）；其他玩家装备叠加 Photo 内部底部（`qml/Photo.qml` 非 self `equipArea`，`image/fullskin/small-equips/` 140×19）。槽位由 QML 读 `Sanguosha.getEngineCard(cardId).getRealCard().location` 获取（getEngineCard 返回 WrappedCard，须 getRealCard 拿真实 EquipCard 才有 location Q_PROPERTY）——桥接层 `move_cards_got`/`lost` 只转 move 字段，不解析装备槽位；QML `onNotifyMoveCardsGot/Lost` 按 `toPlayer`/`fromPlayer` 分发到目标 dashboard/photo 的 `addEquip`/`removeEquip`。装备槽对标旧 `_getEquipPixmap` + defaultSkin layout（dashboard/photo 两段），图标自带装备名，无装备名/距离 text（skin `equipTextArea`/`equipDistanceArea` = `[0,0,0,0]`）。**broken 占位图/距离文字/点击分流/有效态/装备技能按钮**留待"Dashboard 技能按钮 + 装备区"任务。
     - **判定区**（`PlaceDelayedTrick`）：放延时锦囊（闪电、乐不思蜀、兵粮寸断等）。self 在 Dashboard、其他在 Photo。需新建判定区容器组件。
-    - **TablePile（桌面牌堆，统一处理 `PlaceJudge`/`PlaceTable`/`DiscardPile`，不区分）**：判定牌（`PlaceJudge`，判定过程翻出的实体牌，分出此 Place 是为给"红颜"等修改实体判定牌的技能留位置）、桌面打出的牌（`PlaceTable`）、弃牌堆（`DiscardPile`）三者都由 TablePile 显示，不做区分。TablePile 直接用 CardContainer（见"CardItem 与牌容器设计"小节）。**弃牌不直接 destroy，走延迟清除 + 重排机制**（见"CardItem 与牌容器设计"小节的"TablePile 延迟清除机制"）；`PlaceTable`/`PlaceJudge` → `DiscardPile` 是 TablePile 内部 place 变化，目前无专门动画。
+    - **TablePile（桌面牌堆，统一处理 `PlaceJudge`/`PlaceTable`/`DiscardPile`，不区分）**✅：判定牌（`PlaceJudge`，判定过程翻出的实体牌，分出此 Place 是为给"红颜"等修改实体判定牌的技能留位置）、桌面打出的牌（`PlaceTable`）、弃牌堆（`DiscardPile`）三者都由 TablePile 显示，不做区分。TablePile 直接用 CardContainer（见"CardItem 与牌容器设计"小节）。**弃牌不直接 destroy，走延迟清除 + 重排机制**（见"CardItem 与牌容器设计"小节的"TablePile 延迟清除机制"）；`PlaceTable`/`PlaceJudge`/`DiscardPile` 三者间互转（TablePile 内部 place 变化）跳过 add/remove，牌原位保留（不改顺序、不重启动画）。进出场动画（新建+销毁，无源位置飞行）待"CardItem 移动动画"任务统一处理。
     - **私人牌堆**（`PlaceSpecial`，如邓艾"屯田"的田、木牛流马 `wooden_ox`）：`ClientPlayer::getPileNames()` 动态获取 pile 名，`pile_changed(name)` 信号通知增删（`changePile`/`setPile` 触发）；显示在角色旁，可点击展开查看。需新建 pile 容器组件。
     - **公共牌区 / 五谷丰登（AG）**：由 `notifyAgFilled`/`notifyAgTaken`/`notifyAgCleared` 驱动（**已桥接**，见 `roomscene.h`），**不走 `move_cards_got/lost`**，AG 区不属于任何 player 的 place。
       - **旧代码 `PlaceWuGu` 情况**：旧版 `src/uibackup/roomscene.cpp:3902` 的 `takeAmazingGrace()` 用 `Player::PlaceWuGu` 作 `CardsMoveStruct.from_place` 标记牌来源（五谷丰登公共堆），**仅用于客户端取牌动画**；**`src/core/player.h` 的 `Place` 枚举不含 `PlaceWuGu`**（旧 uibackup 死代码引用了已不存在的枚举值，服务器侧也从不发送 PlaceWuGu，五谷丰登走 AG 机制 `S_COMMAND_FILL_AMAZING_GRACE`/`S_COMMAND_TAKE_AMAZING_GRACE`，对应 `ag_filled`/`ag_taken` 信号）。
@@ -96,6 +97,7 @@
   - [ ] **G. 技能按钮触发的 ViewAsSkill（与"Dashboard 技能按钮"任务交叉，合并到该任务）**：`QSanSkillButton` 点击 → `startPending(skill)`，组牌回传。依赖技能按钮组件。
 
   **简化策略（第一阶段最小闭环）**：A → B → C → D → E（先只支持 `targetFixed` 的卡：桃自用、无懈可击等），再 F 补目标选择（杀/闪/桃救人等），G 与"Dashboard 技能按钮"任务合并。
+- [ ] **CardItem 移动动画**（牌区同步的动画完善，A 子任务后续）：当前手牌/装备/TablePile 的进出场是简化"新建+销毁"模式——牌进区域时 `createItem` 在容器原点(0,0)创建后 `lay()`+`goBack()` 飞向 `homePos`（起点不自然，非从源位置飞来）；牌离区域时直接 `removeItem` destroy（无飞出动画）。本任务统一改为"原实例移动"（见"CardItem 与牌容器设计"小节）：容器间移动用原 CardItem 实例，切 visual parent 前后用 `mapToItem`/`mapFromItem` 把牌当前位置映射到目标容器坐标系作动画起点，`lay()` 设 `homeX`/`homeY`，`goBack()` 飞行；无目标的牌 `destroy()`。涉及手牌区（`Dashboard.addHandCard`/`removeHandCard`）、装备区（`addEquip`/`removeEquip`）、TablePile（`addCard`/`removeCard`）的 add/remove 改造，以及 `move_cards_got`/`lost` 配对 move 的源→目标实例传递（当前 got 新建 + lost 销毁，需改为 got 接收 lost 释放的实例）。TablePile 延迟清除已改为直接 `destroy()`（不淡出），本任务不重做。**待排查**：TablePile 仍有全透明 carditem 残留（`_checkClearance` 跨对象 list 副本 splice 已修但仍存在），原因待技能实现后排查（可能与技能发动的 move 流程或 CardItem opacity 动画有关）。
 - [ ] **选项/触发顺序弹窗**：ChooseOptionsBox（askForChoice/askForOrder/askForDirection/askForSuit/askForKingdom）、ChooseTriggerOrderBox（askForTriggerOrder）。
 - [ ] **玩家牌展示/桌面牌堆**：PlayerCardBox（showAllCards/showCard/askForGongxin）、GenericCardContainer、TablePile（askForGuanxing/askForYiji）。
 - [ ] **聊天与日志**：ChatWidget、BubbleChatBox、ClientLogBox。
@@ -135,6 +137,7 @@
 - **避免 const_cast**：信号参数需非 const 传 QML 时，直接改 Client 信号签名去 const（如 `cards_got`/`skill_acquired`）。
 - **`QList<int>` 转换**：复用 `util.h::IntList2VariantList`，勿手写循环。
 - **读 Card 子类属性必须 getRealCard**：`Sanguosha.getEngineCard(id)`/`getCard(id)` 返回 **WrappedCard**（游戏中所有实际卡都是 WrappedCard，card.h 注释），不是真实卡子类（EquipCard/Weapon 等）。WrappedCard 透传 Card 基类属性（suit/number/objectName/number_string/red 等，takeOver 时同步），读基类属性可直接 `card.suit` 等；但**子类独有属性**（`EquipCard.location`、`Weapon.range` 等）WrappedCard 没有，`card.location` 返回 undefined。必须 `card.getRealCard()`（`Q_INVOKABLE`，WrappedCard override 返回 `m_card` 真实卡）拿真实卡后再读子类属性：`card.getRealCard().location`。
+- **QML `property list<T>` 跨对象访问返回副本**：`var items = obj.listProp; items.splice/push(...)` 作用于副本，不修改原 list property。修改 list property 必须同对象直接操作（obj 内部用 `listProp.splice`、或经 obj 提供的方法如 `CardContainer.removeItem`），不可用跨对象副本 splice。
 
 ### 选将流程约定
 - **不用 ExecDialog**：`askForGeneral` 统一 `setStatus(AskForGeneralTaken)`。
@@ -169,7 +172,7 @@
   - **QObject parent = roomScene**（`CppRoomScene` 根，常驻）。CardItem 创建统一走 `cardItemComponent.createObject(roomScene, {...})`，QObject parent = roomScene。**这样不涉及对象所有权转移**，只涉及 visual parent（显示坐标）切换——这正是 QObject parent 设为 roomScene 的原因。
   - **visual parent 按需切换**：容器内时 `cardItem.parent = container`（visual）。
   - **容器间移动用原实例，直接设为目标容器**：牌从 A 移到 B，visual parent 直接 A → B（不经过 roomScene 中间态）。切 parent 前后用 `mapToItem`/`mapFromItem` 把牌当前位置映射到 B 坐标系作为动画起点；B 调 `lay()` 设牌的 `homeX`/`homeY`（目标位置），`cardItem.goBack()` 动画从起点飞到 `homeX`/`homeY`。**利用 CardContainer 已做好的 `lay()` 函数**，动画终点由 lay 给出。QObject parent 始终是 roomScene，保留实例连续性与选中态。
-  - **TablePile 延迟清除机制（牌进弃牌堆不直接 destroy）**：牌进 TablePile（`PlaceTable`/`PlaceJudge`/`DiscardPile` 统一）后，参考旧版 `src/uibackup/TablePile.cpp`——加入可见牌列表（`m_visibleCards`），超过可见数（`m_numCardsVisible`）或被 `clear(true)` 标记时 `_markClearance` 设清除时间戳（`tablePileClearTimeStamp`）；`timerEvent` 定时检查超时（`S_CLEARANCE_DELAY_BUCKETS`）后 `_fadeOutCardsLocked` 淡出动画（opacity→0）+ `deleteLater`，期间 `adjustCards()`（对应 QML 的 `lay()`）重新排列。即弃牌**一段时间后 destroy 且重新排列 TablePile**，不直接 destroy，也不"飞出"。`PlaceTable`/`PlaceJudge` → `DiscardPile` 是 TablePile 内部 place 变化，目前无专门动画。QML 侧 TablePile（CardContainer）需实现等价的延迟清除定时器 + 淡出 + 重排逻辑。
+  - **TablePile 延迟清除机制（牌进弃牌堆不直接 destroy）**：牌进 TablePile（`PlaceTable`/`PlaceJudge`/`DiscardPile` 统一）后加入可见牌列表（`pile.cardItems`）；超过可见数（`numCardsVisible`）时 `_markOverflowClearance` 给最老未标记牌设清除时间戳（`clearTimestamps[cardId]`）；Timer 每秒 `currentTime`+1，超时（`currentTime - ts > sClearanceDelayBuckets(3)`）的牌直接 `destroy()` + 从列表移除 + `lay()` 重排（不淡出；旧版 `TablePile.cpp` `_fadeOutCardsLocked` 有 opacity→0 淡出，QML 暂不做）。`PlaceTable`/`PlaceJudge`/`DiscardPile` 三者间互转（TablePile 内部 place 变化）跳过 add/remove，牌原位保留（不改顺序、不重启动画）。进出场动画（新建+销毁，无源位置飞行）待"CardItem 移动动画"任务统一处理。
   - **不需要 cardPool**：没有"空闲暂存"状态——容器间移动直接到目标容器（`lay()` + `goBack()`）；无目标的牌 `destroy()`。牌按需动态创建/销毁，非静态预创建。
   - 容器销毁时（`Component.onDestruction`）：把其持有的 CardItem visual parent 重置回 roomScene，由 roomScene 统一管理后续（继续移动或 destroy）。QObject parent 永远是 roomScene，容器销毁不动 QObject 生命周期，安全。
 - **CardContainer.qml 现有 `createItem` 需改造（涉及转移问题）**：`qml/CardContainer.qml:10` 的 `createItem(cardId)` 当前用 `createObject(this)`（QObject parent = CardContainer），**牌移到其他容器时 QObject parent 还在 CardContainer，涉及转移问题**。必须改为 `createObject(roomScene)`（QObject parent = roomScene）+ `cardItem.parent = this`（visual parent = CardContainer）。这样原实例移动只切 visual parent，不动 QObject parent。
@@ -364,9 +367,19 @@
 - `qml/Dashboard.qml`/`qml/Photo.qml`：5 个装备槽索引从魔数 `[0..4]` 改为 `EquipCard.WeaponLocation` 等枚举名。
 - **桥接层简化**：`roomscene.cpp` `move_cards_got`/`lost` lambda 去掉 `equipLocations` 解析（dynamic_cast EquipCard）与 `#include "standard.h"`；QML `onNotifyMoveCardsGot/Lost` 改读 `Sanguosha.getEngineCard(cardId).getRealCard().location` 得槽位（getEngineCard 返回 WrappedCard，须 getRealCard 拿真实 EquipCard；详见"Qt6 moc / QML 约束"getRealCard 条）。槽位信息不再经桥接层传，QML 直读 Card Q_PROPERTY。
 
+### 2026-07-23：A-TablePile 同步实现
+- **新建 `qml/TablePile.qml`**：Item 根（`anchors.centerIn: parent`，width `parent.width*0.45`/height 256）内含 CardContainer（id `pile`，`rootScene` 透传）。`addCard(cardId)`/`removeCard(cardId)` 走 `pile.createItem`/`removeItem` + `lay(Qt.AlignHCenter,1,0,true,true)`。延迟清除对标旧 `TablePile.cpp`：`clearTimestamps`（{}，cardId->timestamp，新牌 `Number.MAX_VALUE`）+ `currentTime`（Timer 每秒 +1，`running: pile.cardItems.length>0`）；`_markOverflowClearance` 超量（`length - max(numVisible, numAdded+1)`）时给最老未标记牌设时间戳；`_checkClearance` 倒序遍历，`currentTime - ts > sClearanceDelayBuckets(3)` 的牌从 cardItems splice + `destroy()` + 删时间戳，有移除则重排。`numCardsVisible = floor(width/183)+1`（对标旧 `setSize`）。TablePile 统一处理 `PlaceTable`/`PlaceJudge`/`DiscardPile`，不区分；`PlaceDelayedTrick`（判定区容器）/`PlaceSpecial`（私人牌堆）不在本次范围。
+- **`qml/CardContainer.qml`**：`lay` 加 `Qt.AlignHCenter` 单行居中分支（`x = (width - (step*(length-1)+cardWidth))/2`，负则 0），TablePile 用；手牌区 `AlignLeft` 不受影响。
+- **`qml/RoomScene.qml`**：加 `TablePile { id: tablePile; rootScene: roomScene }` 实例（SkillDock 后）；`onNotifyMoveCardsGot` 加 `toPlace === PlaceTable||PlaceJudge||DiscardPile` 分支调 `tablePile.addCard`，`onNotifyMoveCardsLost` 加 `fromPlace` 同三者分支调 `tablePile.removeCard`；注释更新（"Judge/pile/table deferred" → "Table pile ... routed to tablePile; Judge area(PlaceDelayedTrick)/private piles(PlaceSpecial) deferred"）。
+- **`.pro`** OTHER_FILES 加 `qml/TablePile.qml`。
+- TODO：判定区（`PlaceDelayedTrick`，延时锦囊，self Dashboard/其他 Photo，需新建判定区容器组件）、私人牌堆（`PlaceSpecial`，`ClientPlayer::getPileNames`/`pile_changed`，需新建 pile 容器组件）留待后续；TablePile 的 `showJudgeResult`（判定结果高亮，旧 `TablePile.cpp:104`）未移植；牌区进出场动画（手牌/装备/TablePile 当前简化"新建+销毁"）待"CardItem 移动动画"任务统一做原实例移动 + 坐标映射起点 + 飞行。
+
+### 2026-07-24：TablePile 内部 place 互转跳过
+- `qml/RoomScene.qml`：加 `isTablePilePlace(place)` 辅助函数（`PlaceTable`/`PlaceJudge`/`DiscardPile`）；`onNotifyMoveCardsGot` TablePile 分支加 `&& !isTablePilePlace(m.fromPlace)`，`onNotifyMoveCardsLost` 加 `&& !isTablePilePlace(m.toPlace)`。`PlaceTable`/`PlaceJudge`/`DiscardPile` 三者间互转的 move，got/lost 都跳过（牌原位保留，不改顺序、不重启动画）；仅从外部进入或去外部才 add/remove。
+
 ## 7. 下一步
 1. **CardItem 卡牌选择全链路**（已拆分为 A-G 子任务，见"待做"小节）：
-   - 执行顺序：A（牌区同步：手牌✅/装备✅/判定/私人牌堆/TablePile）→ B（CardItem 选中态）→ C（Dashboard pending + PromptBox）→ D（桥接选卡回传）→ E（OK/Cancel/Discard 按钮回传）→ F（目标选择）。
+   - 执行顺序：A（牌区同步：手牌✅/装备✅/TablePile✅/判定/私人牌堆）→ B（CardItem 选中态）→ C（Dashboard pending + PromptBox）→ D（桥接选卡回传）→ E（OK/Cancel/Discard 按钮回传）→ F（目标选择）。
    - 第一阶段最小闭环：A+B+C+D+E（先只支持 `targetFixed` 卡：桃自用、无懈可击等），F 补目标选择（杀/闪/桃救人），G 与"Dashboard 技能按钮"任务合并。
 2. 选项/触发顺序弹窗（ChooseOptionsBox/ChooseTriggerOrderBox）。
 3. 玩家牌展示/桌面牌堆、聊天日志。

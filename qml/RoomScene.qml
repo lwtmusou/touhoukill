@@ -58,6 +58,13 @@ CppRoomScene {
         return null;
     }
 
+    // Whether a Player::Place is managed by TablePile (PlaceTable/PlaceJudge/DiscardPile).
+    // Moves between these places are internal to TablePile: skipped in got/lost so the
+    // card stays in place (no reorder, no animation restart).
+    function isTablePilePlace(place: int): bool {
+        return place === Player.PlaceTable || place === Player.PlaceJudge || place === Player.DiscardPile;
+    }
+
     function lay() {
         var playerCount = Sanguosha.getPlayerCount(ServerInfo.GameMode);
         var verticalAlignment = Qt.AlignVCenter;
@@ -306,8 +313,9 @@ CppRoomScene {
         // Subtask A: card-area sync. Hand area: self only (other players' hidden
         // cards sync via handcardNum). Equip area: route PlaceEquip moves to the
         // 5 fixed slots of the target player (self -> dashboard, others -> photo),
-        // slot index read from card.location (EquipCard Q_PROPERTY). Judge/pile/
-        // table deferred to later subtasks.
+        // slot index read from card.location (EquipCard Q_PROPERTY). Table pile:
+        // PlaceTable/PlaceJudge/DiscardPile routed to tablePile (delayed clearance).
+        // Judge area (PlaceDelayedTrick) / private piles (PlaceSpecial) deferred.
         function onNotifyMoveCardsGot(moveId, moves) {
             for (var i = 0; i < moves.length; ++i) {
                 var m = moves[i];
@@ -322,6 +330,9 @@ CppRoomScene {
                             target.addEquip(loc, m.cardIds[k]);
                         }
                     }
+                } else if (isTablePilePlace(m.toPlace) && !isTablePilePlace(m.fromPlace)) {
+                    for (var j = 0; j < m.cardIds.length; ++j)
+                        tablePile.addCard(m.cardIds[j]);
                 }
             }
         }
@@ -340,6 +351,9 @@ CppRoomScene {
                             target.removeEquip(loc);
                         }
                     }
+                } else if (isTablePilePlace(m.fromPlace) && !isTablePilePlace(m.toPlace)) {
+                    for (var j = 0; j < m.cardIds.length; ++j)
+                        tablePile.removeCard(m.cardIds[j]);
                 }
             }
         }
@@ -493,6 +507,14 @@ CppRoomScene {
         roomScene: roomScene
         visible: roomScene.gameStarted
         width: selfPhoto.width
+    }
+
+    // Table pile: central display for PlaceTable/PlaceJudge/DiscardPile cards (played
+    // cards, judge cards, discard). Delayed clearance + fade out (see TablePile.qml).
+    TablePile {
+        id: tablePile
+
+        rootScene: roomScene
     }
 
     Column {
