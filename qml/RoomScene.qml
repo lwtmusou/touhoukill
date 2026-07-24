@@ -496,21 +496,21 @@ CppRoomScene {
         selfPhoto: true
     }
 
-    // Self skill button dock: single dock above selfPhoto. Skill-specific notifies
+    // Self skill button dock: single dock over selfPhoto (bottom-aligned, extends upward). Skill-specific notifies
     // (attached/detached/acquired/invalidity_changed) are handled inside SkillDock;
     // global game events arrive via onNotifyEventReceived below -> skillDock.handleSkillEvent.
     SkillDock {
         id: skillDock
 
-        anchors.bottom: selfPhoto.top
-        anchors.horizontalCenter: selfPhoto.horizontalCenter
+        anchors.bottom: selfPhoto.bottom
+        anchors.left: selfPhoto.left
+        anchors.right: selfPhoto.right
         roomScene: roomScene
         visible: roomScene.gameStarted
-        width: selfPhoto.width
     }
 
     // Table pile: central display for PlaceTable/PlaceJudge/DiscardPile cards (played
-    // cards, judge cards, discard). Delayed clearance + fade out (see TablePile.qml).
+    // cards, judge cards, discard). Delayed clearance + destroy (see TablePile.qml).
     TablePile {
         id: tablePile
 

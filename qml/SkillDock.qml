@@ -2,8 +2,8 @@ import QtQuick 6.5
 
 import rocks.touhousatsu 1.0
 
-// Self skill button dock: single dock above selfPhoto (QML Dashboard dropped the
-// old right-frame avatar area, so the dock sits above selfPhoto). Rebuilt from
+// Self skill button dock: anchored to selfPhoto (bottom-aligned, extends upward;
+// QML Dashboard dropped the old right-frame avatar area). Rebuilt from
 // roomScene.getPlayerSkillButtons(roomScene.Self) on skill add/remove/acquire/
 // invalidity notify and on skill-related game events (dispatched by RoomScene via
 // handleSkillEvent). Pending/mutex/chooseSkillButton TODO (plan.md).
