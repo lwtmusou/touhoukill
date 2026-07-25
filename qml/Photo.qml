@@ -18,6 +18,7 @@ Item {
     property string huashenGeneral2
     property string huashenSkillName
     property string huashenSkillName2
+    property alias judgeArea: judgeArea
     property string kingdom: player.kingdom
     property int linghp: player.linghp
     property int maxhp: player.maxhp
@@ -409,6 +410,25 @@ Item {
 
         anchors.bottom: photo.bottom
         anchors.left: photo.left
+        visible: !selfPhoto
+    }
+
+    // Judge area (delayed tricks): one icon per card. selfPhoto hides (uses Dashboard's).
+    JudgeArea {
+        id: judgeArea
+
+        anchors.left: photo.left
+        anchors.top: banner.bottom
+        visible: !selfPhoto
+    }
+
+    // Private piles (PlaceSpecial): buttons + dropdown. selfPhoto hides (uses Dashboard's).
+    PrivatePileArea {
+        id: privatePileArea
+
+        anchors.right: photo.right
+        anchors.top: banner.bottom
+        player: photo.player
         visible: !selfPhoto
     }
 

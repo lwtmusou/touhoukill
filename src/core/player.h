@@ -288,8 +288,8 @@ public:
     bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     [[nodiscard]] int getCardCount(bool include_equip = true, bool include_judging = false) const;
 
-    [[nodiscard]] QList<int> getPile(const QString &pile_name) const;
-    [[nodiscard]] QStringList getPileNames() const;
+    [[nodiscard]] Q_INVOKABLE QList<int> getPile(const QString &pile_name) const;
+    [[nodiscard]] Q_INVOKABLE QStringList getPileNames() const;
     [[nodiscard]] QString getPileName(int card_id) const;
 
     [[nodiscard]] bool pileOpen(const QString &pile_name, const QString &player) const;

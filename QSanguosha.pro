@@ -197,9 +197,11 @@ OTHER_FILES += \
     qml/CardItem.qml \
     qml/Dashboard.qml \
     qml/GraphicsBox.qml \
+    qml/JudgeArea.qml \
     qml/main.qml \
     qml/Photo.qml \
     qml/PhotoEquipArea.qml \
+    qml/PrivatePileArea.qml \
     qml/CardContainer.qml \
     qml/ChooseGeneralBox.qml \
     qml/EquipAreaBase.qml \

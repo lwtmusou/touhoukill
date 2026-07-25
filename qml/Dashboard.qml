@@ -11,6 +11,7 @@ Item {
     // Equip area (SelfEquipArea) lives inside equipBg; exposed via alias so
     // RoomScene can call equipArea.addEquip/removeEquip for PlaceEquip moves.
     property alias equipArea: equipArea
+    property alias judgeArea: judgeArea
     property bool okEnabled: false
     required property var photo
     property var roomScene: null
@@ -244,5 +245,23 @@ Item {
         anchors.right: cardBg.right
         phase: photo.phase
         visible: photo.gameStarted
+    }
+
+    // Judge area (delayed tricks): one icon per card. RoomScene dispatches
+    // PlaceDelayedTrick moves to judgeArea.addDelayedTrick/removeDelayedTrick.
+    JudgeArea {
+        id: judgeArea
+
+        anchors.bottom: cardBg.top
+        anchors.left: cardBg.left
+    }
+
+    // Private piles (PlaceSpecial): buttons + dropdown, driven by player.pileChanged.
+    PrivatePileArea {
+        id: privatePileArea
+
+        anchors.bottom: cardBg.top
+        anchors.horizontalCenter: equipBg.horizontalCenter
+        player: photo.player
     }
 }

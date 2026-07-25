@@ -315,7 +315,9 @@ CppRoomScene {
         // 5 fixed slots of the target player (self -> dashboard, others -> photo),
         // slot index read from card.location (EquipCard Q_PROPERTY). Table pile:
         // PlaceTable/PlaceJudge/DiscardPile routed to tablePile (delayed clearance).
-        // Judge area (PlaceDelayedTrick) / private piles (PlaceSpecial) deferred.
+        // Judge area (PlaceDelayedTrick) routed to judgeArea (one icon per card).
+        // Private piles (PlaceSpecial) driven by player.pileChanged inside
+        // PrivatePileArea (no move dispatch needed).
         function onNotifyMoveCardsGot(moveId, moves) {
             for (var i = 0; i < moves.length; ++i) {
                 var m = moves[i];
@@ -333,6 +335,12 @@ CppRoomScene {
                 } else if (isTablePilePlace(m.toPlace) && !isTablePilePlace(m.fromPlace)) {
                     for (var j = 0; j < m.cardIds.length; ++j)
                         tablePile.addCard(m.cardIds[j]);
+                } else if (m.toPlace === Player.PlaceDelayedTrick && m.toPlayer !== null) {
+                    var judgeTarget = m.toPlayer.objectName === roomScene.Self.objectName ? dashboard.judgeArea : roomScene.findPhotoByPlayerName(m.toPlayer.objectName).judgeArea;
+                    if (judgeTarget !== null) {
+                        for (var j = 0; j < m.cardIds.length; ++j)
+                            judgeTarget.addDelayedTrick(m.cardIds[j]);
+                    }
                 }
             }
         }
@@ -354,6 +362,14 @@ CppRoomScene {
                 } else if (isTablePilePlace(m.fromPlace) && !isTablePilePlace(m.toPlace)) {
                     for (var j = 0; j < m.cardIds.length; ++j)
                         tablePile.removeCard(m.cardIds[j]);
+                } else if (m.fromPlace === Player.PlaceDelayedTrick && m.fromPlayer !== null) {
+                    var judgeTarget = m.fromPlayer.objectName === roomScene.Self.objectName ? dashboard.judgeArea : roomScene.findPhotoByPlayerName(
+                                                                                                  m.fromPlayer.objectName).judgeArea;
+
+                    if (judgeTarget !== null) {
+                        for (var j = 0; j < m.cardIds.length; ++j)
+                            judgeTarget.removeDelayedTrick(m.cardIds[j]);
+                    }
                 }
             }
         }
