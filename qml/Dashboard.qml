@@ -8,11 +8,14 @@ Item {
     property var clientInstance: parent ? parent.ClientInstance : null
     property bool discardEnabled: false
 
-    // Equip area (SelfEquipArea) lives inside equipBg; exposed via alias so
-    // RoomScene can call equipArea.addEquip/removeEquip for PlaceEquip moves.
+    // equipArea (SelfEquipArea), judgeArea (JudgeArea), phaseItem (PhaseItem):
+    // exposed via alias so RoomScene can bind selfPhoto's corresponding properties
+    // (selfPhoto does not construct its own). equipArea/judgeArea also used for
+    // move dispatch (addEquip/removeEquip, addDelayedTrick/removeDelayedTrick).
     property alias equipArea: equipArea
     property alias judgeArea: judgeArea
     property bool okEnabled: false
+    property alias phaseItem: phaseItem
     required property var photo
     property var roomScene: null
 
@@ -241,6 +244,8 @@ Item {
     }
 
     PhaseItem {
+        id: phaseItem
+
         anchors.bottom: cardBg.top
         anchors.right: cardBg.right
         phase: photo.phase
@@ -254,14 +259,5 @@ Item {
 
         anchors.bottom: cardBg.top
         anchors.left: cardBg.left
-    }
-
-    // Private piles (PlaceSpecial): buttons + dropdown, driven by player.pileChanged.
-    PrivatePileArea {
-        id: privatePileArea
-
-        anchors.bottom: cardBg.top
-        anchors.horizontalCenter: equipBg.horizontalCenter
-        player: photo.player
     }
 }

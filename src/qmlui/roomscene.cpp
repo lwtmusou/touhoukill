@@ -266,35 +266,30 @@ void RoomScene::connectClientSignals()
     connect(client, &Client::generals_viewed, this, [this](const QString &reason, const QStringList &names) {
         emit notifyGeneralsViewed(reason, names);
     });
-    connect(client, &Client::move_cards_got, this, [this](int moveId, const QList<CardsMoveStruct> &moves) {
+    // Convert CardsMoveStruct to QML-friendly QVariantMap (bridge parses, does not
+    // expose CardsMoveStruct to QML). Used by both move_cards_got/lost lambdas.
+    auto toQmlMove = [](const CardsMoveStruct &m) {
+        return QVariantMap {
+            {u"cardIds"_s, IntList2VariantList(m.card_ids)},
+            {u"fromPlace"_s, static_cast<int>(m.from_place)},
+            {u"toPlace"_s, static_cast<int>(m.to_place)},
+            {u"fromPlayer"_s, QVariant::fromValue(m.from)},
+            {u"toPlayer"_s, QVariant::fromValue(m.to)},
+            {u"fromPileName"_s, m.from_pile_name},
+            {u"toPileName"_s, m.to_pile_name},
+        };
+    };
+    connect(client, &Client::move_cards_got, this, [this, toQmlMove](int moveId, const QList<CardsMoveStruct> &moves) {
         QVariantList qmlMoves;
-        for (const CardsMoveStruct &m : moves) {
-            QVariantMap qmlMove;
-            qmlMove["cardIds"] = IntList2VariantList(m.card_ids);
-            qmlMove["fromPlace"] = static_cast<int>(m.from_place);
-            qmlMove["toPlace"] = static_cast<int>(m.to_place);
-            qmlMove["fromPlayer"] = QVariant::fromValue(m.from);
-            qmlMove["toPlayer"] = QVariant::fromValue(m.to);
-            qmlMove["fromPileName"] = m.from_pile_name;
-            qmlMove["toPileName"] = m.to_pile_name;
-            qmlMoves.append(qmlMove);
-        }
+        for (const CardsMoveStruct &m : moves)
+            qmlMoves.append(toQmlMove(m));
         qDebug().noquote() << "[bridge] move_cards_got moveId=" << moveId << "count=" << moves.size();
         emit notifyMoveCardsGot(moveId, qmlMoves);
     });
-    connect(client, &Client::move_cards_lost, this, [this](int moveId, const QList<CardsMoveStruct> &moves) {
+    connect(client, &Client::move_cards_lost, this, [this, toQmlMove](int moveId, const QList<CardsMoveStruct> &moves) {
         QVariantList qmlMoves;
-        for (const CardsMoveStruct &m : moves) {
-            QVariantMap qmlMove;
-            qmlMove["cardIds"] = IntList2VariantList(m.card_ids);
-            qmlMove["fromPlace"] = static_cast<int>(m.from_place);
-            qmlMove["toPlace"] = static_cast<int>(m.to_place);
-            qmlMove["fromPlayer"] = QVariant::fromValue(m.from);
-            qmlMove["toPlayer"] = QVariant::fromValue(m.to);
-            qmlMove["fromPileName"] = m.from_pile_name;
-            qmlMove["toPileName"] = m.to_pile_name;
-            qmlMoves.append(qmlMove);
-        }
+        for (const CardsMoveStruct &m : moves)
+            qmlMoves.append(toQmlMove(m));
         qDebug().noquote() << "[bridge] move_cards_lost moveId=" << moveId << "count=" << moves.size();
         emit notifyMoveCardsLost(moveId, qmlMoves);
     });
@@ -386,12 +381,13 @@ QVariantList RoomScene::getPlayerSkillButtons(ClientPlayer *player) const
             continue;
 
         const ViewAsSkill *vas = ViewAsSkill::parseViewAsSkill(skill);
-        QVariantMap m;
-        m[u"skillName"_s] = skill->objectName();
-        m[u"skillType"_s] = skillTypeString(skill);
-        m[u"translatedName"_s] = Sanguosha->translate(skill->objectName());
-        m[u"description"_s] = skill->getDescription(true, false);
-        m[u"viewAsSkillName"_s] = vas != nullptr ? vas->objectName() : QString();
+        QVariantMap m {
+            {u"skillName"_s, skill->objectName()},
+            {u"skillType"_s, skillTypeString(skill)},
+            {u"translatedName"_s, Sanguosha->translate(skill->objectName())},
+            {u"description"_s, skill->getDescription(true, false)},
+            {u"viewAsSkillName"_s, vas != nullptr ? vas->objectName() : QString()},
+        };
         result.append(m);
     }
     return result;

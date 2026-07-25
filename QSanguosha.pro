@@ -58,6 +58,7 @@ SOURCES += \
     src/dialog/updatedialog.cpp \
     src/dialog/uilegacy/SkinBank.cpp \
     src/main.cpp \
+    src/package/exppattern.cpp \
     src/package/hegemonyCard.cpp \
     src/package/hegemonyGeneral.cpp \
     src/package/maneuvering.cpp \
@@ -137,6 +138,7 @@ HEADERS += \
     src/dialog/updatedialog.h \
     src/dialog/uilegacy/SkinBank.h \
     src/dialog/uilegacy/qsanbutton.h \
+    src/package/exppattern.h \
     src/package/hegemonyCard.h \
     src/package/hegemonyGeneral.h \
     src/package/maneuvering.h \

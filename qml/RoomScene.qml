@@ -366,6 +366,7 @@ CppRoomScene {
                     var judgeTarget = m.fromPlayer.objectName === roomScene.Self.objectName ? dashboard.judgeArea : roomScene.findPhotoByPlayerName(
                                                                                                   m.fromPlayer.objectName).judgeArea;
 
+
                     if (judgeTarget !== null) {
                         for (var j = 0; j < m.cardIds.length; ++j)
                             judgeTarget.removeDelayedTrick(m.cardIds[j]);
@@ -506,7 +507,10 @@ CppRoomScene {
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
+        equipArea: dashboard.equipArea
         gameStarted: roomScene.gameStarted
+        judgeArea: dashboard.judgeArea
+        phaseItem: dashboard.phaseItem
         player: roomScene.Self
         seat: 1
         selfPhoto: true

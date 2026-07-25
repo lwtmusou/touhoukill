@@ -7,9 +7,11 @@ Item {
 
     property bool banling: player.linghp !== -2147483647 - 1
     property int dyingThreshold: player.dyingFactor
-    // Equip area (PhotoEquipArea) exposed via alias so RoomScene can call
-    // equipArea.addEquip/removeEquip for PlaceEquip moves.
-    property alias equipArea: equipArea
+    // PhaseItem / EquipArea / JudgeArea: selfPhoto binds to Dashboard's instances
+    // (set by RoomScene); non-selfPhoto dynamically constructs via createXxx() on
+    // Component.onCompleted. equipArea/judgeArea are exposed (var) for RoomScene
+    // move dispatch; phaseItem is internal (not accessed externally).
+    property var equipArea: null
     property bool gameStarted: false
     property string general: (gameStarted ? (player.general) : (player != null ? player.avatar : "anjiang"))
     property string general2: (gameStarted ? (player.general2) : "")
@@ -18,19 +20,14 @@ Item {
     property string huashenGeneral2
     property string huashenSkillName
     property string huashenSkillName2
-    property alias judgeArea: judgeArea
+    property var judgeArea: null
     property string kingdom: player.kingdom
     property int linghp: player.linghp
     property int maxhp: player.maxhp
     property real originalX
     property real originalY
     property int phase: player.phaseValue
-
-    // PhaseItem: selfPhoto does NOT construct (uses Dashboard's PhaseItem);
-    // non-selfPhoto dynamically constructs via createObject on gameStarted.
-    // Same pattern will apply to equip area etc. -- selfPhoto doesn't construct,
-    // non-selfPhoto uses dynamic construction.
-    property var phaseItemInstance: null
+    property var phaseItem: null
     property ClientPlayer player
     property var privatePile: ({})
     property string role: player.role
@@ -39,12 +36,24 @@ Item {
     required property int seat
     required property bool selfPhoto
 
+    function createEquipArea() {
+        photo.equipArea = equipAreaComponent.createObject(photo);
+        photo.equipArea.anchors.bottom = Qt.binding(() => photo.bottom);
+        photo.equipArea.anchors.left = Qt.binding(() => photo.left);
+    }
+
+    function createJudgeArea() {
+        photo.judgeArea = judgeAreaComponent.createObject(photo);
+        photo.judgeArea.anchors.left = Qt.binding(() => photo.left);
+        photo.judgeArea.anchors.top = Qt.binding(() => banner.bottom);
+    }
+
     function createPhaseItem() {
-        photo.phaseItemInstance = phaseItemComponent.createObject(photo);
-        photo.phaseItemInstance.anchors.horizontalCenter = Qt.binding(() => photo.horizontalCenter);
-        photo.phaseItemInstance.anchors.top = Qt.binding(() => photo.bottom);
-        photo.phaseItemInstance.phase = Qt.binding(() => photo.phase);
-        photo.phaseItemInstance.visible = Qt.binding(() => photo.gameStarted);
+        photo.phaseItem = phaseItemComponent.createObject(photo);
+        photo.phaseItem.anchors.horizontalCenter = Qt.binding(() => photo.horizontalCenter);
+        photo.phaseItem.anchors.top = Qt.binding(() => photo.bottom);
+        photo.phaseItem.phase = Qt.binding(() => photo.phase);
+        photo.phaseItem.visible = Qt.binding(() => photo.gameStarted);
     }
 
     function getGeneralName(g: string): string {
@@ -90,8 +99,11 @@ Item {
             kingdomImage.visible = true;
         }
 
-        if (!selfPhoto)
+        if (!selfPhoto) {
             photo.createPhaseItem();
+            photo.createEquipArea();
+            photo.createJudgeArea();
+        }
 
         // patch for specifying general2 initially during test.
         // Remove after RoomScene.testItemToBeRemovedAfterTest is removed
@@ -402,40 +414,34 @@ Item {
         }
     }
 
-    // Non-self equip area (PhotoEquipArea). Overlays Photo bottom; display only.
-    // self uses Dashboard's equip area. TODO (equip-area task): dynamic createObject
-    // (PhaseItem pattern) instead of declarative instance.
-    PhotoEquipArea {
-        id: equipArea
-
-        anchors.bottom: photo.bottom
-        anchors.left: photo.left
-        visible: !selfPhoto
-    }
-
-    // Judge area (delayed tricks): one icon per card. selfPhoto hides (uses Dashboard's).
-    JudgeArea {
-        id: judgeArea
-
-        anchors.left: photo.left
-        anchors.top: banner.bottom
-        visible: !selfPhoto
-    }
-
-    // Private piles (PlaceSpecial): buttons + dropdown. selfPhoto hides (uses Dashboard's).
+    // Private piles (PlaceSpecial): buttons + dropdown, driven by player.pileChanged.
+    // One instance per Photo (each player's piles show beside their own Photo).
     PrivatePileArea {
         id: privatePileArea
 
         anchors.right: photo.right
         anchors.top: banner.bottom
         player: photo.player
-        visible: !selfPhoto
     }
 
     Component {
         id: phaseItemComponent
 
         PhaseItem {
+        }
+    }
+
+    Component {
+        id: equipAreaComponent
+
+        PhotoEquipArea {
+        }
+    }
+
+    Component {
+        id: judgeAreaComponent
+
+        JudgeArea {
         }
     }
 }
