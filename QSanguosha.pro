@@ -193,7 +193,14 @@ INCLUDEPATH += src/server
 INCLUDEPATH += src/util
 INCLUDEPATH += src/qmlui
 
-OTHER_FILES += \
+# QML/JS files listed under SOURCES (not OTHER_FILES) so that:
+# (1) lupdate-pro scans them for qsTr() -- OTHER_FILES is not scanned;
+# (2) Qt Creator shows them in the project tree under Sources (no functional
+#     difference -- qmake only compiles files matched by compiler rules;
+#     .qml/.js have no rule so they are excluded from the build automatically).
+# Wrapped in lupdate_only so qmake build ignores this block entirely.
+lupdate_only {
+SOURCES += \
     qml/CardItem.qml \
     qml/Dashboard.qml \
     qml/GraphicsBox.qml \
@@ -223,6 +230,7 @@ OTHER_FILES += \
     qml/SelfEquipArea.qml \
     qml/TablePile.qml \
     qml/VerticalText.qml
+}
 
 win32{
     CONFIG += skip_target_version_ext

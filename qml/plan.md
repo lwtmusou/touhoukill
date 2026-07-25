@@ -9,7 +9,7 @@
 
 - **不使用 Qt5Compat**：全局禁用 `QT += 5compat`（`QSanguosha.pro` 当前 `QT += network widgets quick quickwidgets`，不得添加 `5compat`，已在 .pro 注释标注）。所有需要的效果/组件用 Qt 6 原生方案（如 `MultiEffect` 走 `import QtQuick.Effects`），**不得引入 `Qt5Compat.GraphicalEffects` 等 compat 模块**。
 - **QML 与 CPP 文件纯 ASCII**：所有 `.qml`/`.cpp`/`.h`/`.pro` 文件（含注释、字符串）必须使用纯 ASCII 字符，**不得包含中文、全角符号、em dash（`—`）、`§` 等非 ASCII 字符**。中文说明写在 `plan.md`（本文件）里，代码注释用英文。em dash 用 `--` 替代。
-- **plan 只记最新状态**：本文件记录当前实现/约定的最新状态，**不写代码取回/还原/重构的历史过程**，**不写已修正的 bug**（已修复的 bug 描述直接删除，不留"修复了 X"/"纠正误判"痕迹）。进度记录只记"做了什么/确认了什么事实"，不记"之前错了现在改对"。设计小节描述现状，不描述"曾经是 A 现在改成 B"。说明改动原因时用"旧版代码中 X 未做 Y。本次因 Z 加入"句式（陈述旧版事实+原因），不用"此前...→..."变迁叙述。进度记录不写编译/测试/运行情况（如"编译通过"/"lint 通过"）。
+- **plan 只记最新状态**：除"进度记录"章节外，本文件其余部分（项目结构/任务清单/设计决策/代码流程等）记录当前实现/约定的最新状态，**不写代码取回/还原/重构的历史过程**，**不写已修正的 bug**（已修复的 bug 描述直接删除，不留"修复了 X"/"纠正误判"痕迹）。设计小节描述现状，不描述"曾经是 A 现在改成 B"。说明改动原因时用"旧版代码中 X 未做 Y。本次因 Z 加入"句式（陈述旧版事实+原因），不用"此前...→..."变迁叙述。"进度记录"章节不受此限，按时间顺序追加，保留历史动作描述（如"`.pro` OTHER_FILES 加 X"，即使后续改为 SOURCES 仍保留原条目）。进度记录只记"做了什么/确认了什么事实"，不记"之前错了现在改对"。进度记录不写编译/测试/运行情况（如"编译通过"/"lint 通过"）。
 
 ## 1. 项目概述
 将旧版基于 QGraphics 的界面 `src/uibackup/`（35 对 .cpp/.h，约 17k 行，不编译，仅参考）重构为 Qt 6 QML。`MainWindow` 通过 `QQuickWidget` 加载 `qml/main.qml`，在 StartScene 与 RoomScene 间切换。核心布局（Photo/Dashboard/CardItem/StartScene/RoomScene）已成型，游戏交互（弹窗/聊天/技能按钮/卡牌选择）逐步移植中。
@@ -51,8 +51,9 @@
 - `qml/PrivatePileArea.qml`：私人牌堆（`PlaceSpecial`），每个 pile 一个按钮（翻译名+数量）+ 点击弹下拉菜单显示 pile 牌（CardItem Repeater）。`player.getPileNames()`/`getPile(name)`（Q_INVOKABLE）+ `pile_changed` 驱动刷新。
 
 ### 构建
-- `QSanguosha.pro`：`SOURCES`/`HEADERS` 含 `src/qmlui/*`，`OTHER_FILES` 列 `qml/*.qml`。`src/uibackup` 未引用。
+- `QSanguosha.pro`：`SOURCES`/`HEADERS` 含 `src/qmlui/*`；QML 文件在 `lupdate_only { SOURCES += ... }` 块（见下"lupdate QML 识别"）。`src/uibackup` 未引用。
 - `compile_commands.json`：构建目录 `/Users/fs/build-QSanguosha-Qt_6-Release`，clang++ Qt6 arm64 macOS。
+- **lupdate QML 识别**：`QSanguosha.pro` 用 `lupdate_only { SOURCES += <qml 文件列表> }` 块（非 `OTHER_FILES`，非 file glob）。lupdate-pro 扫描 SOURCES 的 qsTr，OTHER_FILES 不扫描；`lupdate_only` 块仅 lupdate 处理，qmake 构建忽略（.qml/.js 无编译规则，不会进入构建）。QML 翻译字符串用 `qsTr()`。
 
 ## 3. 任务清单
 
