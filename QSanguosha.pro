@@ -1,24 +1,29 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
+
+## Project basics
 TARGET = QSanguosha
-QT += network widgets quick quickwidgets
-# Do NOT add `5compat` -- Qt5Compat is globally forbidden in this project (see qml/plan.md section 0).
-# Use Qt 6 native alternatives (e.g. MultiEffect via `import QtQuick.Effects`).
 TEMPLATE = app
-
-!macx: CONFIG += audio
-
-CONFIG += c++17
-win32:CONFIG(debug, debug|release): CONFIG += console
-CONFIG += lua
+# Do NOT add `5compat` -- Qt5Compat is globally forbidden in this project
+# (see qml/plan.md section 0). Use Qt 6 native alternatives
+# (e.g. MultiEffect via `import QtQuick.Effects`).
+QT += network widgets quick quickwidgets
 
 VERSION = 0.10.11
 VERSIONNUMBER = 20250705
 
+## Compiler / build flags
+CONFIG += c++17
 CONFIG += precompiled_header
 PRECOMPILED_HEADER = src/pch.h
+win32:CONFIG(debug, debug|release): CONFIG += console
 
+## Feature toggles
+!macx: CONFIG += audio
+CONFIG += lua
+
+## Source files (C++)
 SOURCES += \
     src/client/aux-skills.cpp \
     src/client/client.cpp \
@@ -46,12 +51,19 @@ SOURCES += \
     src/dialog/distanceviewdialog.cpp \
     src/dialog/gameoverdialog.cpp \
     src/dialog/generaloverview.cpp \
-    src/dialog/updatedialog.cpp \
     src/dialog/mainwindow.cpp \
     src/dialog/roleassigndialog.cpp \
-    src/package/exppattern.cpp \
+    src/dialog/serverdialog.cpp \
+    src/dialog/TimedProgressBar.cpp \
+    src/dialog/updatedialog.cpp \
+    src/dialog/uilegacy/SkinBank.cpp \
+    src/main.cpp \
+    src/package/hegemonyCard.cpp \
+    src/package/hegemonyGeneral.cpp \
     src/package/maneuvering.cpp \
     src/package/package.cpp \
+    src/package/peasants_vs_landlord.cpp \
+    src/package/playground.cpp \
     src/package/protagonist.cpp \
     src/package/standard-cards.cpp \
     src/package/standard.cpp \
@@ -74,8 +86,9 @@ SOURCES += \
     src/package/th99.cpp \
     src/package/thndj.cpp \
     src/package/touhougod.cpp \
-    src/package/hegemonyGeneral.cpp \
     src/package/washout.cpp \
+    src/qmlui/qmlui.cpp \
+    src/qmlui/roomscene.cpp \
     src/server/ai.cpp \
     src/server/gamerule.cpp \
     src/server/generalselector.cpp \
@@ -85,17 +98,9 @@ SOURCES += \
     src/server/serverplayer.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
-    src/util/recorder.cpp \
-    src/main.cpp \
-    src/package/hegemonyCard.cpp \
-    src/package/playground.cpp \
-    src/package/peasants_vs_landlord.cpp \
-    src/dialog/TimedProgressBar.cpp \
-    src/dialog/serverdialog.cpp \
-    src/dialog/uilegacy/SkinBank.cpp \
-    src/qmlui/qmlui.cpp \
-    src/qmlui/roomscene.cpp
+    src/util/recorder.cpp
 
+## Header files (C++)
 HEADERS += \
     src/client/aux-skills.h \
     src/client/client.h \
@@ -125,12 +130,19 @@ HEADERS += \
     src/dialog/distanceviewdialog.h \
     src/dialog/gameoverdialog.h \
     src/dialog/generaloverview.h \
-    src/dialog/updatedialog.h \
     src/dialog/mainwindow.h \
     src/dialog/roleassigndialog.h \
-    src/package/exppattern.h \
+    src/dialog/serverdialog.h \
+    src/dialog/TimedProgressBar.h \
+    src/dialog/updatedialog.h \
+    src/dialog/uilegacy/SkinBank.h \
+    src/dialog/uilegacy/qsanbutton.h \
+    src/package/hegemonyCard.h \
+    src/package/hegemonyGeneral.h \
     src/package/maneuvering.h \
     src/package/package.h \
+    src/package/peasants_vs_landlord.h \
+    src/package/playground.h \
     src/package/protagonist.h \
     src/package/standard-equips.h \
     src/package/standard.h \
@@ -153,8 +165,10 @@ HEADERS += \
     src/package/th99.h \
     src/package/thndj.h \
     src/package/touhougod.h \
-    src/package/hegemonyGeneral.h \
     src/package/washout.h \
+    src/pch.h \
+    src/qmlui/qmlui.h \
+    src/qmlui/roomscene.h \
     src/server/ai.h \
     src/server/gamerule.h \
     src/server/generalselector.h \
@@ -165,88 +179,82 @@ HEADERS += \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
-    src/util/socket.h \
-    src/package/hegemonyCard.h \
-    src/package/playground.h \
-    src/pch.h \
-    src/package/peasants_vs_landlord.h \
-    src/dialog/TimedProgressBar.h \
-    src/dialog/serverdialog.h \
-    src/dialog/uilegacy/SkinBank.h \
-    src/dialog/uilegacy/qsanbutton.h \
-    src/qmlui/roomscene.h \
-    src/qmlui/qmlui.h
+    src/util/socket.h
 
+## Qt Designer forms (.ui)
 FORMS += \
     src/dialog/cardoverview.ui \
     src/dialog/configdialog.ui \
     src/dialog/generaloverview.ui \
     src/dialog/mainwindow.ui
 
+## Include paths
 INCLUDEPATH += include
 INCLUDEPATH += src/client
 INCLUDEPATH += src/core
 INCLUDEPATH += src/dialog
 INCLUDEPATH += src/package
+INCLUDEPATH += src/qmlui
 INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
 INCLUDEPATH += src/util
-INCLUDEPATH += src/qmlui
 
-# QML/JS files listed under SOURCES (not OTHER_FILES) so that:
+## QML files (lupdate-only)
+# Listed under SOURCES (not OTHER_FILES) so that:
 # (1) lupdate-pro scans them for qsTr() -- OTHER_FILES is not scanned;
-# (2) Qt Creator shows them in the project tree under Sources (no functional
-#     difference -- qmake only compiles files matched by compiler rules;
-#     .qml/.js have no rule so they are excluded from the build automatically).
-# Wrapped in lupdate_only so qmake build ignores this block entirely.
+# (2) Qt Creator shows them in the project tree under Sources.
+# Wrapped in lupdate_only so qmake build ignores this block entirely
+# (.qml/.js have no compiler rule, so they never enter the build anyway).
 lupdate_only {
 SOURCES += \
+    qml/CardContainer.qml \
     qml/CardItem.qml \
+    qml/ChooseGeneralBox.qml \
     qml/Dashboard.qml \
+    qml/EquipAreaBase.qml \
+    qml/EquipSlot.qml \
     qml/GraphicsBox.qml \
+    qml/HandcardNum.qml \
+    qml/HegRoleComboBox.qml \
     qml/JudgeArea.qml \
+    qml/KingdomImage.qml \
+    qml/Magatama.qml \
+    qml/Magatamas.qml \
     qml/main.qml \
+    qml/PhaseItem.qml \
     qml/Photo.qml \
     qml/PhotoEquipArea.qml \
     qml/PrivatePileArea.qml \
-    qml/CardContainer.qml \
-    qml/ChooseGeneralBox.qml \
-    qml/EquipAreaBase.qml \
-    qml/EquipSlot.qml \
     qml/QSanButton.qml \
     qml/QSanSkillButton.qml \
-    qml/SkillDock.qml \
+    qml/RoleComboBox.qml \
     qml/RoomScene.qml \
     qml/RootItem.qml \
-    qml/StartScene.qml \
-    qml/Magatamas.qml \
-    qml/Magatama.qml \
-    qml/RoleComboBox.qml \
-    qml/HegRoleComboBox.qml \
-    qml/HandcardNum.qml \
-    qml/KingdomImage.qml \
-    qml/PhaseItem.qml \
     qml/SeatNumberItem.qml \
     qml/SelfEquipArea.qml \
+    qml/SkillDock.qml \
+    qml/StartScene.qml \
     qml/TablePile.qml \
     qml/VerticalText.qml
 }
 
-win32{
+## Version defines
+DEFINES += "QSGS_VERSION=\\\"$$VERSION\\\""
+DEFINES += "QSGS_VERSIONNUMBER=\\\"$$VERSIONNUMBER\\\""
+
+## Platform-specific settings
+win32 {
     CONFIG += skip_target_version_ext
     RC_ICONS += resource/icon/sgs.ico
     QMAKE_TARGET_DESCRIPTION = "TouhouSatsu Main Program"
 }
-
-macx{
+macx {
     ICON = resource/icon/sgs.icns
 }
 
-DEFINES += "QSGS_VERSION=\\\"$$VERSION\\\""
-DEFINES += "QSGS_VERSIONNUMBER=\\\"$$VERSIONNUMBER\\\""
-
+## Platform-specific libs and defines
 LIBS += -L.
-win32-msvc*{
+win32-msvc* {
     DEFINES += _CRT_SECURE_NO_WARNINGS
     !contains(QMAKE_HOST.arch, x86_64) {
         DEFINES += WIN32
@@ -257,12 +265,12 @@ win32-msvc*{
         LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x64"
     }
 }
-win32-g++{
+win32-g++ {
     DEFINES += WIN32
     LIBS += -L"$$_PRO_FILE_PWD_/lib/win/MinGW"
     DEFINES += GPP
 }
-winrt{
+winrt {
     DEFINES += _CRT_SECURE_NO_WARNINGS
     DEFINES += WINRT
     !winphone {
@@ -270,36 +278,32 @@ winrt{
     } else {
         DEFINES += WINPHONE
         contains($$QMAKESPEC, arm): LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/arm"
-        else : LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/x86"
+        else: LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/x86"
     }
 }
-macx{
+macx {
     DEFINES += MAC
-    ## LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
     DEFINES += LUA_USE_MACOSX
 }
-ios{
+ios {
     DEFINES += IOS
-    CONFIG(iphonesimulator){
+    CONFIG(iphonesimulator) {
         LIBS += -L"$$_PRO_FILE_PWD_/lib/ios/simulator/lib"
-    }
-    else {
+    } else {
         LIBS += -L"$$_PRO_FILE_PWD_/lib/ios/device/lib"
     }
 }
-linux{
-    android{
+linux {
+    android {
         DEFINES += ANDROID
         ANDROID_LIBPATH = $$_PRO_FILE_PWD_/lib/android/$$ANDROID_ARCHITECTURE/lib
         LIBS += -L"$$ANDROID_LIBPATH"
-    }
-    else {
+    } else {
         DEFINES += LINUX
         !contains(QMAKE_HOST.arch, x86_64) {
             LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x86"
             QMAKE_LFLAGS += -Wl,--rpath=lib/linux/x86
-        }
-        else {
+        } else {
             LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x64"
             QMAKE_LFLAGS += -Wl,--rpath=lib/linux/x64
         }
@@ -308,85 +312,84 @@ linux{
     }
 }
 
-CONFIG(audio){
+## Optional feature: audio (fmod)
+CONFIG(audio) {
     DEFINES += AUDIO_SUPPORT
     INCLUDEPATH += include/fmod
-    CONFIG(debug, debug|release): LIBS += -lfmodexL
-    else:LIBS += -lfmodex
     SOURCES += src/core/audio.cpp
-
-    android{
-        CONFIG(debug, debug|release):ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodexL.so
-        else:ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodex.so
+    CONFIG(debug, debug|release): LIBS += -lfmodexL
+    else: LIBS += -lfmodex
+    android {
+        CONFIG(debug, debug|release): ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodexL.so
+        else: ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodex.so
     }
 }
 
-CONFIG(lua){
-
-android:DEFINES += "\"getlocaledecpoint()='.'\""
-
+## Optional feature: Lua (embedded interpreter + SWIG bindings)
+CONFIG(lua) {
+    android: DEFINES += "\"getlocaledecpoint()='.'\""
     SOURCES += \
-        src/lua/lzio.c \
-        src/lua/lvm.c \
-        src/lua/lundump.c \
-        src/lua/ltm.c \
-        src/lua/ltablib.c \
-        src/lua/ltable.c \
-        src/lua/lstrlib.c \
-        src/lua/lstring.c \
-        src/lua/lstate.c \
-        src/lua/lparser.c \
-        src/lua/loslib.c \
-        src/lua/lopcodes.c \
-        src/lua/lobject.c \
-        src/lua/loadlib.c \
-        src/lua/lmem.c \
-        src/lua/lmathlib.c \
-        src/lua/llex.c \
-        src/lua/liolib.c \
-        src/lua/linit.c \
-        src/lua/lgc.c \
-        src/lua/lfunc.c \
-        src/lua/ldump.c \
-        src/lua/ldo.c \
-        src/lua/ldebug.c \
-        src/lua/ldblib.c \
-        src/lua/lctype.c \
-        src/lua/lcorolib.c \
-        src/lua/lcode.c \
-        src/lua/lbitlib.c \
-        src/lua/lbaselib.c \
+        src/lua/lapi.c \
         src/lua/lauxlib.c \
-        src/lua/lapi.c
+        src/lua/lbaselib.c \
+        src/lua/lbitlib.c \
+        src/lua/lcode.c \
+        src/lua/lcorolib.c \
+        src/lua/lctype.c \
+        src/lua/ldblib.c \
+        src/lua/ldebug.c \
+        src/lua/ldo.c \
+        src/lua/ldump.c \
+        src/lua/lfunc.c \
+        src/lua/lgc.c \
+        src/lua/linit.c \
+        src/lua/liolib.c \
+        src/lua/llex.c \
+        src/lua/lmathlib.c \
+        src/lua/lmem.c \
+        src/lua/loadlib.c \
+        src/lua/lobject.c \
+        src/lua/lopcodes.c \
+        src/lua/loslib.c \
+        src/lua/lparser.c \
+        src/lua/lstate.c \
+        src/lua/lstring.c \
+        src/lua/lstrlib.c \
+        src/lua/ltable.c \
+        src/lua/ltablib.c \
+        src/lua/ltm.c \
+        src/lua/lundump.c \
+        src/lua/lvm.c \
+        src/lua/lzio.c
     HEADERS += \
-        src/lua/lzio.h \
-        src/lua/lvm.h \
-        src/lua/lundump.h \
-        src/lua/lualib.h \
-        src/lua/luaconf.h \
-        src/lua/lua.hpp \
-        src/lua/lua.h \
-        src/lua/ltm.h \
-        src/lua/ltable.h \
-        src/lua/lstring.h \
-        src/lua/lstate.h \
-        src/lua/lparser.h \
-        src/lua/lopcodes.h \
-        src/lua/lobject.h \
-        src/lua/lmem.h \
-        src/lua/llimits.h \
-        src/lua/llex.h \
-        src/lua/lgc.h \
-        src/lua/lfunc.h \
-        src/lua/ldo.h \
-        src/lua/ldebug.h \
-        src/lua/lctype.h \
-        src/lua/lcode.h \
+        src/lua/lapi.h \
         src/lua/lauxlib.h \
-        src/lua/lapi.h
+        src/lua/lcode.h \
+        src/lua/lctype.h \
+        src/lua/ldebug.h \
+        src/lua/ldo.h \
+        src/lua/lfunc.h \
+        src/lua/lgc.h \
+        src/lua/llimits.h \
+        src/lua/lmem.h \
+        src/lua/lobject.h \
+        src/lua/lopcodes.h \
+        src/lua/lparser.h \
+        src/lua/lstate.h \
+        src/lua/lstring.h \
+        src/lua/ltable.h \
+        src/lua/ltm.h \
+        src/lua/lua.h \
+        src/lua/lua.hpp \
+        src/lua/luaconf.h \
+        src/lua/lualib.h \
+        src/lua/lundump.h \
+        src/lua/lvm.h \
+        src/lua/lzio.h
     INCLUDEPATH += src/lua
 }
 
+## SWIG: generate Lua bindings from .i files
 SWIGFILES += $$_PRO_FILE_PWD_/swig/sanguosha.i
 SWIGDEPENDS += $$_PRO_FILE_PWD_/swig/sanguosha.i \
                $$_PRO_FILE_PWD_/swig/ai.i \
@@ -413,10 +416,10 @@ swig.variable_out = SOURCES
 
 QMAKE_EXTRA_COMPILERS += swig
 
-!build_pass{
+## Translations
+TRANSLATIONS += builds/sanguosha.ts
+!build_pass {
     system("$$dirname(QMAKE_QMAKE)/lrelease $$_PRO_FILE_PWD_/builds/sanguosha.ts -qm $$_PRO_FILE_PWD_/sanguosha.qm")
 }
 
-TRANSLATIONS += builds/sanguosha.ts
-
-#ANDROID_PACKAGE_SOURCE_DIR = $$_PRO_FILE_PWD_/resource/android
+# ANDROID_PACKAGE_SOURCE_DIR = $$_PRO_FILE_PWD_/resource/android
