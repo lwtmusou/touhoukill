@@ -3,6 +3,7 @@
 
 #include "client.h"
 #include "clientplayer.h"
+#include "photo.h"
 
 #include <QPointer>
 #include <QQuickItem>
@@ -18,6 +19,9 @@ class RoomScene : public QQuickItem
     Q_OBJECT
     Q_PROPERTY(bool gameStarted MEMBER gameStarted NOTIFY gameStartedChanged)
     Q_PROPERTY(bool gameOver MEMBER gameOver NOTIFY gameOverChanged)
+    Q_PROPERTY(bool okEnabled READ okEnabled NOTIFY okEnabledChanged)
+    Q_PROPERTY(bool cancelEnabled READ cancelEnabled NOTIFY cancelEnabledChanged)
+    Q_PROPERTY(bool discardEnabled READ discardEnabled NOTIFY discardEnabledChanged)
     Q_PROPERTY(ClientPlayer *Self READ selfHelper STORED false)
     Q_PROPERTY(Client *ClientInstance READ clientHelper STORED false)
 
@@ -31,80 +35,68 @@ public:
     [[nodiscard]] ClientPlayer *selfHelper() const;
     [[nodiscard]] Client *clientHelper() const;
 
+    [[nodiscard]] bool okEnabled() const;
+    [[nodiscard]] bool cancelEnabled() const;
+    [[nodiscard]] bool discardEnabled() const;
+
     // Bridge entry: connect Client's askFor*/show*/*_got signals to QML notify* signals.
     // Safe to call multiple times; idempotent via QPointer tracking.
     void connectClientSignals();
 
-    // Player response path (QML -> Client). commandType is QSanProtocol::CommandType as int.
-    // TODO: full implementation in the next phase (player response submission).
+    // QML -> C++ server request path. commandType is QSanProtocol::CommandType as int.
     Q_INVOKABLE void replyToServer(int commandType, const QVariant &data = QVariant());
     Q_INVOKABLE void notifyServer(int commandType, const QVariant &data = QVariant());
 
     // ---- Phase 1: card selection (Dashboard) ----
-    // Explicit ViewAsSkill: check whether a card passes viewFilter.
-    // selectedIds are already-picked material cards (for multi-card skills).
     [[nodiscard]] Q_INVOKABLE bool skillViewFilter(const QString &skillName, const QVariantList &selectedIds, int cardId) const;
 
     // ---- Phase 2: target selection (RoomScene) ----
-    // Generate virtual card from materials. Returns const Card* (nullptr if invalid).
-    // QML reads card.targetFixed(Self) directly, calls enabledTargetsForCard(card) for targets.
-    // Real cards from hand go through the same enabledTargetsForCard path:
-    //   var card = Sanguosha.getEngineCard(id);  // real
-    //   var card = roomScene.skillViewAs(name, ids);  // virtual
-    // Both are Card* and use the same target-selection pipeline.
     [[nodiscard]] Q_INVOKABLE const Card *skillViewAs(const QString &skillName, const QVariantList &cardIds);
 
-    // Returns valid target player objectNames for any Card (real or virtual).
-    // Unified path for both hand cards and skill-generated virtual cards.
-    [[nodiscard]] Q_INVOKABLE QStringList enabledTargetsForCard(const Card *card) const;
+    [[nodiscard]] Q_INVOKABLE QStringList enabledTargetsForCard(const Card *card, const QStringList &selectedTargetNames) const;
+    [[nodiscard]] Q_INVOKABLE QStringList enabledTargets(int cardId, const QStringList &selectedTargetNames) const;
+    [[nodiscard]] Q_INVOKABLE bool isCardTargetsFeasible(const Card *card, const QStringList &selectedTargetNames) const;
 
-    // Convenience: enabledTargetsForCard via engine cardId.
-    [[nodiscard]] Q_INVOKABLE QStringList enabledTargets(int cardId) const;
+    // ---- Card/target selection (state held in C++, QML only calls these) ----
+    // Update selected card state from Dashboard. Passes the full selectedCardIds list
+    // (supports multi-select for Discarding/Exchanging). Resets target state, computes
+    // enabled targets, syncs Photo targetable flags, recomputes OK readiness.
+    Q_INVOKABLE void selectCard(const QVariantList &selectedCardIds);
+    // Toggle a player in/out of the selected target list, then recompute OK readiness.
+    Q_INVOKABLE void toggleTarget(const QString &playerName);
+    // Status-driven button enablement (cancel/discard) + clear selections on status
+    // change away from selection modes. Hand-card isAvailable enablement stays in QML
+    // (Dashboard.updateStatus) until CardContainer is bridged.
+    Q_INVOKABLE void updateDashboardStatus();
+    // Register/unregister a Photo so C++ can drive its targetable/targetSelected.
+    Q_INVOKABLE void registerPhoto(Photo *photo);
+    Q_INVOKABLE void unregisterPhoto(Photo *photo);
 
     // ---- Phase 3: submit ----
-    // Unified card-response: QML has a Card* (real from Sanguosha.getCard(id),
-    // virtual from skillViewAs) + target names. Bridge converts targets and calls
-    // Client::onPlayerResponseCard. Works for both hand cards and skill cards.
-    Q_INVOKABLE void respondCard(const Card *card, const QStringList &targetNames = {});
-
-    // Aux-skill submit (auto-detected: ResponseSkill/DiscardSkill via m_currentViewAsSkill).
-    // For simple patterns like "slash"/"peach"/discard/exchange where QML just passes
-    // raw cardIds without explicitly getting a Card*.
-    Q_INVOKABLE void submitCardResponse(const QVariantList &cardIds, const QStringList &targetNames = {});
+    Q_INVOKABLE void respondCard(const Card *card);
+    // Aux-skill submit. Uses internally-held m_selectedTargets (no targetNames from QML).
+    Q_INVOKABLE void submitCardResponse(const QVariantList &cardIds);
     Q_INVOKABLE void submitDiscard(const QVariantList &cardIds);
     Q_INVOKABLE void discardCard(const Card *card);
 
-    // Simple Client wrappers (all onPlayer* calls go through bridge, never direct from QML).
     Q_INVOKABLE void respondToSkillInvoke(bool invoke);
     Q_INVOKABLE void finishPlayPhase();
     Q_INVOKABLE void cancelResponse(int status);
 
-    // Pops up the C++ FreeChooseDialog (modal) and returns the chosen general name,
-    // or an empty string if cancelled. Used by ChooseGeneralBox right-click to swap a general.
     Q_INVOKABLE QString freeChooseGeneral();
-
-    // Pops up the C++ RoleAssignDialog (modal). The dialog is self-contained:
-    // accept() calls ClientInstance->onPlayerAssignRole() and reject() calls replyToServer(),
-    // so no return value or further QML handling is needed. Used on notifyAssignAsked.
     Q_INVOKABLE void showRoleAssignDialog();
-
-    // Pops up the C++ GameOverDialog (modal). standoff == true shows the standoff
-    // result (single table); false shows the winner/loser split. The dialog owns its
-    // own "Return to main menu" button (deferred scene switch via QTimer).
     Q_INVOKABLE void showGameOverDialog(bool standoff);
 
-    // Returns a player's visible non-equip skills as QVariantMaps for QML skill buttons /
-    // tooltips. Each map: skillName, skillType (proactive/frequent/compulsory/awaken/oneoff/
-    // array/attachedlord), translatedName, description, viewAsSkillName (empty if none).
-    // Lord skills are filtered for non-lord players (mirror old updateSkillButtons).
     [[nodiscard]] Q_INVOKABLE QVariantList getPlayerSkillButtons(ClientPlayer *player) const;
 
 signals:
     void gameStartedChanged(bool newGameStarted);
     void gameOverChanged(bool newGameOver);
+    void okEnabledChanged();
+    void cancelEnabledChanged();
+    void discardEnabledChanged();
 
     // ---- C++ -> QML notification signals (one per Client signal that QML needs to react to) ----
-    // Popup-type notifications (core TODO from plan.md)
     void notifyGeneralsGot(const QStringList &generals, bool singleResult, bool canConvert);
     void notifyKingdomsGot(const QStringList &kingdoms);
     void notifySuitsGot(const QStringList &suits);
@@ -127,7 +119,6 @@ signals:
     void notifyGeneralRevealed(bool self, const QString &general);
     void notifyAssignAsked();
 
-    // Event-type notifications
     void notifyStartInXs();
     void notifyHeadPreshowed();
     void notifyDeputyPreshowed();
@@ -158,33 +149,38 @@ signals:
     void notifySkillInvalidityChanged(ClientPlayer *player);
     void notifySkillAttached(const QString &skillName, bool fromLeft);
     void notifySkillDetached(const QString &skillName, bool head);
-    // Game event forwarded from Client::event_received (mirror old handleGameEvent).
-    // Client::handleGameEvent does UI-independent state updates first, then emits
-    // event_received; this signal lets QML react to UI-side aspects. args is the raw
-    // JsonArray ([eventType, ...]).
     void notifyEventReceived(const QVariant &args);
     void notifyPerspectiveChanged(const QString &targetName, const QVariantList &handCardIds, const QVariantMap &piles);
     void notifyRoleStateChanged(const QString &stateStr);
     void notifyGeneralsViewed(const QString &reason, const QStringList &names);
 
 private:
-    // Configure the current ViewAsSkill / aux-skill from Client status + pattern.
-    // Called internally from status_changed handler before emit notifyStatusChanged.
     void updateAuxSkill();
+
+    // Card/target selection state (held in C++, QML reads via Q_PROPERTY/signals).
+    QVariantList m_selectedCardIds;
+    const Card *m_selectedCard = nullptr;
+    QStringList m_selectedTargets;
+    QStringList m_enabledTargetNames;
+    bool m_targetSelectionActive = false;
+    QList<QPointer<Photo>> m_photos;
+
+    // Button enablement (Q_PROPERTY + NOTIFY).
+    bool m_okEnabled = false;
+    bool m_cancelEnabled = false;
+    bool m_discardEnabled = false;
+
+    void recomputeOkReadiness();
+    void syncPhotoTargets();
 
     bool gameStarted;
     bool gameOver;
-    bool m_clientConnected; // tracks whether connectClientSignals() has wired Client signals
+    bool m_clientConnected;
 
-    // Aux-skills: created once, reconfigured on each status change. Owned by this.
     ResponseSkill *m_responseSkill = nullptr;
     DiscardSkill *m_discardSkill = nullptr;
     ShowOrPindianSkill *m_showOrPindianSkill = nullptr;
     ChoosePlayerSkill *m_choosePlayerSkill = nullptr;
-
-    // Points to whichever aux-skill (or real ViewAsSkill) is currently active.
-    // nullptr when no card/response is expected. tryViewAsCard / submitCardResponse
-    // / submitDiscard consult this pointer to generate the virtual card.
     const ViewAsSkill *m_currentViewAsSkill = nullptr;
 };
 

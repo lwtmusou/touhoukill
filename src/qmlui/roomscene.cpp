@@ -234,6 +234,7 @@ void RoomScene::connectClientSignals()
     });
     connect(client, &Client::status_changed, this, [this](Client::Status newStatus) {
         updateAuxSkill();
+        updateDashboardStatus();
         emit notifyStatusChanged(static_cast<int>(newStatus));
     });
     connect(client, &Client::player_killed, this, [this](const QString &who) {
@@ -407,38 +408,66 @@ const Card *RoomScene::skillViewAs(const QString &skillName, const QVariantList 
     return vas->viewAs(cards);
 }
 
-QStringList RoomScene::enabledTargetsForCard(const Card *card) const
+QStringList RoomScene::enabledTargetsForCard(const Card *card, const QStringList &selectedTargetNames) const
 {
     QStringList result;
     if (card == nullptr || Self == nullptr)
         return result;
 
-    const Client *client = ClientInstance;
+    Client *client = ClientInstance;
     if (client == nullptr)
         return result;
 
-    QList<const Player *> emptySel;
+    // Build already-selected targets list from names. targetFilter semantics: query
+    // feasibility of to_select given the currently-selected targets.
+    QList<const Player *> selected;
+    selected.reserve(selectedTargetNames.size());
+    for (const QString &name : selectedTargetNames) {
+        ClientPlayer *p = client->getPlayer(name);
+        if (p != nullptr)
+            selected.append(p);
+    }
+
     const QList<ClientPlayer *> players = client->getPlayers();
     for (const ClientPlayer *player : players) {
         if (player == Self)
             continue;
         int maxVotes = 0;
-        card->targetFilter(emptySel, player, Self, maxVotes);
+        card->targetFilter(selected, player, Self, maxVotes);
         if (maxVotes > 0)
             result.append(player->objectName());
     }
     return result;
 }
 
-QStringList RoomScene::enabledTargets(int cardId) const
+QStringList RoomScene::enabledTargets(int cardId, const QStringList &selectedTargetNames) const
 {
     const Card *card = ClientInstance->getCard(cardId);
-    return enabledTargetsForCard(card);
+    return enabledTargetsForCard(card, selectedTargetNames);
+}
+
+bool RoomScene::isCardTargetsFeasible(const Card *card, const QStringList &selectedTargetNames) const
+{
+    if (card == nullptr || Self == nullptr)
+        return false;
+
+    Client *client = ClientInstance;
+    if (client == nullptr)
+        return false;
+
+    QList<const Player *> selected;
+    selected.reserve(selectedTargetNames.size());
+    for (const QString &name : selectedTargetNames) {
+        ClientPlayer *p = client->getPlayer(name);
+        if (p != nullptr)
+            selected.append(p);
+    }
+    return card->targetsFeasible(selected, Self);
 }
 
 // ---- Phase 3: submit ----
 
-void RoomScene::respondCard(const Card *card, const QStringList &targetNames)
+void RoomScene::respondCard(const Card *card)
 {
     Client *c = ClientInstance;
     if (c == nullptr) {
@@ -447,7 +476,7 @@ void RoomScene::respondCard(const Card *card, const QStringList &targetNames)
     }
 
     QList<const Player *> targets;
-    for (const QString &name : targetNames) {
+    for (const QString &name : m_selectedTargets) {
         if (Player *p = c->getPlayer(name))
             targets.append(p);
     }
@@ -465,7 +494,7 @@ void RoomScene::discardCard(const Card *card)
     c->onPlayerDiscardCards(card);
 }
 
-void RoomScene::submitCardResponse(const QVariantList &cardIds, const QStringList &targetNames)
+void RoomScene::submitCardResponse(const QVariantList &cardIds)
 {
     Client *c = ClientInstance;
     if (c == nullptr) {
@@ -487,7 +516,7 @@ void RoomScene::submitCardResponse(const QVariantList &cardIds, const QStringLis
     }
 
     QList<const Player *> targets;
-    for (const QString &name : targetNames) {
+    for (const QString &name : m_selectedTargets) {
         if (Player *p = c->getPlayer(name))
             targets.append(p);
     }
@@ -678,6 +707,169 @@ QVariantList RoomScene::getPlayerSkillButtons(ClientPlayer *player) const
     return result;
 }
 
+bool RoomScene::okEnabled() const
+{
+    return m_okEnabled;
+}
+
+bool RoomScene::cancelEnabled() const
+{
+    return m_cancelEnabled;
+}
+
+bool RoomScene::discardEnabled() const
+{
+    return m_discardEnabled;
+}
+
+void RoomScene::selectCard(const QVariantList &selectedCardIds)
+{
+    m_selectedCardIds = selectedCardIds;
+    m_selectedTargets.clear();
+    m_enabledTargetNames.clear();
+    m_targetSelectionActive = false;
+    syncPhotoTargets();
+
+    if (selectedCardIds.isEmpty() || ClientInstance == nullptr || Self == nullptr) {
+        m_selectedCard = nullptr;
+        recomputeOkReadiness();
+        return;
+    }
+
+    m_selectedCard = ClientInstance->getCard(selectedCardIds.first().toInt());
+    if (m_selectedCard == nullptr) {
+        recomputeOkReadiness();
+        return;
+    }
+
+    if (m_selectedCard->targetFixed(Self)) {
+        recomputeOkReadiness();
+        return;
+    }
+
+    const int basic = static_cast<int>(ClientInstance->getStatus()) & Client::ClientStatusBasicMask;
+    if (basic != Client::Playing && basic != Client::Responding) {
+        recomputeOkReadiness();
+        return;
+    }
+
+    m_enabledTargetNames = enabledTargetsForCard(m_selectedCard, m_selectedTargets);
+    m_targetSelectionActive = !m_enabledTargetNames.isEmpty();
+    syncPhotoTargets();
+    recomputeOkReadiness();
+}
+
+void RoomScene::toggleTarget(const QString &playerName)
+{
+    if (m_selectedCard == nullptr)
+        return;
+    if (m_selectedTargets.contains(playerName))
+        m_selectedTargets.removeAll(playerName);
+    else
+        m_selectedTargets.append(playerName);
+    syncPhotoTargets();
+    recomputeOkReadiness();
+}
+
+void RoomScene::updateDashboardStatus()
+{
+    bool newCancel = false;
+    bool newDiscard = false;
+
+    if (ClientInstance != nullptr) {
+        const int basic = static_cast<int>(ClientInstance->getStatus()) & Client::ClientStatusBasicMask;
+        const bool refusable = ClientInstance->isDiscardActionRefusable();
+        switch (basic) {
+        case Client::Responding:
+            newCancel = refusable;
+            break;
+        case Client::Playing:
+            newDiscard = true;
+            break;
+        case Client::Discarding:
+        case Client::Exchanging:
+            newCancel = refusable;
+            break;
+        case Client::ExecDialog:
+            newCancel = true;
+            break;
+        case Client::AskForSkillInvoke:
+            newCancel = true;
+            break;
+        case Client::AskForPlayerChoose:
+            newCancel = refusable;
+            break;
+        default:
+            break;
+        }
+
+        // Clear selections on status change away from selection modes.
+        if (basic != Client::Playing && basic != Client::Responding && basic != Client::Discarding && basic != Client::Exchanging && basic != Client::AskForShowOrPindian
+            && basic != Client::AskForGeneralTaken) {
+            m_selectedCard = nullptr;
+            m_selectedCardIds.clear();
+            m_selectedTargets.clear();
+            m_enabledTargetNames.clear();
+            m_targetSelectionActive = false;
+            syncPhotoTargets();
+        }
+    }
+
+    if (m_cancelEnabled != newCancel) {
+        m_cancelEnabled = newCancel;
+        emit cancelEnabledChanged();
+    }
+    if (m_discardEnabled != newDiscard) {
+        m_discardEnabled = newDiscard;
+        emit discardEnabledChanged();
+    }
+    recomputeOkReadiness();
+}
+
+void RoomScene::registerPhoto(Photo *photo)
+{
+    if (photo != nullptr && !m_photos.contains(photo))
+        m_photos.append(photo);
+}
+
+void RoomScene::unregisterPhoto(Photo *photo)
+{
+    m_photos.removeAll(photo);
+}
+
+void RoomScene::recomputeOkReadiness()
+{
+    bool newOk = false;
+    if (ClientInstance != nullptr) {
+        const int s = static_cast<int>(ClientInstance->getStatus()) & Client::ClientStatusBasicMask;
+        if (s == Client::AskForSkillInvoke) {
+            newOk = true;
+        } else if (s == Client::Playing || s == Client::Responding || s == Client::AskForShowOrPindian) {
+            if (m_selectedCard != nullptr && Self != nullptr)
+                newOk = m_selectedCard->targetFixed(Self) || isCardTargetsFeasible(m_selectedCard, m_selectedTargets);
+        } else if (s == Client::Discarding || s == Client::Exchanging) {
+            newOk = !m_selectedCardIds.isEmpty();
+        }
+        // AskForGeneralTaken: okEnabled driven by QML activeBox.canAccept binding, not here.
+    }
+    if (m_okEnabled != newOk) {
+        m_okEnabled = newOk;
+        emit okEnabledChanged();
+    }
+}
+
+void RoomScene::syncPhotoTargets()
+{
+    for (const QPointer<Photo> &p : m_photos) {
+        if (p == nullptr)
+            continue;
+        const QString name = p->playerName();
+        const bool can = m_targetSelectionActive && m_enabledTargetNames.contains(name);
+        p->setTargetable(can);
+        p->setTargetSelected(m_selectedTargets.contains(name));
+    }
+}
+
 namespace {
 void registerRoomScene()
 {
@@ -685,6 +877,11 @@ void registerRoomScene()
 
     if (ret == -1)
         qDebug() << "Failed to register RoomScene to Qml";
+
+    ret = qmlRegisterType<Photo>("rocks.touhousatsu", 1, 0, "CppPhoto");
+
+    if (ret == -1)
+        qDebug() << "Failed to register CppPhoto to Qml";
 }
 } // namespace
 

@@ -41,30 +41,11 @@ CppRoomScene {
         , [2, 4, 2]//
         , [2, 5, 2],//
     ]
-    property var enabledTargetNames: []
     property int layBorderMargin: 20
     property list<Photo> otherPhotos
-
-    // Target selection state (Task F). When a non-targetFixed card is selected in
-    // Dashboard, targetSelectionActive flips to true; Photos show targetable highlight;
-    // click toggles a Photo into/out of selectedTargets. On OK the targets are sent
-    // alongside the selected card.
-    property var selectedTargets: []
-    property bool targetSelectionActive: false
     readonly property int zzzWorkaroundQTBUG147713: 0
 
     signal spaceClicked
-
-    // Sync targetable/targetSelected flags to all Photos.
-    function _syncPhotoTargets() {
-        var i;
-        for (i = 0; i < otherPhotos.length; ++i) {
-            var p = otherPhotos[i];
-            var pn = p.player !== null ? p.player.objectName : "";
-            p.targetable = targetSelectionActive && enabledTargetNames.indexOf(pn) >= 0;
-            p.targetSelected = selectedTargets.indexOf(pn) >= 0;
-        }
-    }
 
     // Find a non-self Photo by player objectName. Returns null if not found.
     // TODO: add `: var` return value type notation once QTBUG-148521 is resolved
@@ -175,43 +156,6 @@ CppRoomScene {
         }
     }
 
-    // Called by Dashboard when a hand card is selected/deselected. If a non-targetFixed
-    // card is now selected, activates target selection on Photos.
-    function onCardSelected(cardId: int) {
-        // Reset target state first.
-        selectedTargets = [];
-        enabledTargetNames = [];
-        targetSelectionActive = false;
-        _syncPhotoTargets();
-
-        if (cardId === -1)
-            return;
-
-        var card = roomScene.ClientInstance.getCard(cardId);
-        if (card.targetFixed(roomScene.Self))
-            return; // targetFixed: no target selection needed
-
-        var s = roomScene.ClientInstance.status;
-        var basic = s & Client.ClientStatusBasicMask;
-        if (basic !== Client.Playing && basic !== Client.Responding)
-            return;
-
-        enabledTargetNames = roomScene.enabledTargetsForCard(card);
-        targetSelectionActive = enabledTargetNames.length > 0;
-        _syncPhotoTargets();
-    }
-
-    // Toggle a Photo player name in/out of selectedTargets.
-    function toggleTarget(playerName: string) {
-        var arr = selectedTargets.slice();
-        var idx = arr.indexOf(playerName);
-        if (idx >= 0)
-            arr.splice(idx, 1);
-        else
-            arr.push(playerName);
-        selectedTargets = arr;
-    }
-
     Component.onCompleted: {
         backgroundImage.source = G.getAssetUrl(Config.TableBgImage);
 
@@ -226,13 +170,11 @@ CppRoomScene {
                                                         })
                                                     });
             otherPhotos.push(photo);
+            roomScene.registerPhoto(photo);
         }
 
         lay();
     }
-
-    // React to selectedTargets changes (user clicked a Photo).
-    onSelectedTargetsChanged: _syncPhotoTargets()
     onWidthChanged: lay()
 
     MouseArea {

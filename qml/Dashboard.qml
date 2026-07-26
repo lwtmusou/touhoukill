@@ -4,9 +4,7 @@ import rocks.touhousatsu 1.0
 Item {
     id: dashboard
 
-    property bool cancelEnabled: false
     property var clientInstance: parent ? parent.ClientInstance : null
-    property bool discardEnabled: false
 
     // equipArea (SelfEquipArea), judgeArea (JudgeArea), phaseItem (PhaseItem):
     // exposed via alias so RoomScene can bind selfPhoto's corresponding properties
@@ -14,7 +12,15 @@ Item {
     // move dispatch (addEquip/removeEquip, addDelayedTrick/removeDelayedTrick).
     property alias equipArea: equipArea
     property alias judgeArea: judgeArea
-    property bool okEnabled: false
+    readonly property bool okEnabled: {
+        if (clientInstance === null)
+            return false;
+        if ((clientInstance.status & Client.ClientStatusBasicMask) === Client.AskForGeneralTaken) {
+            var box = parent !== null ? parent.activeBox : null;
+            return box !== null && box.canAccept;
+        }
+        return roomScene !== null && roomScene.okEnabled;
+    }
     property alias phaseItem: phaseItem
     required property var photo
     property var roomScene: null
@@ -27,7 +33,7 @@ Item {
             item.toggleSelected();
             // Notify RoomScene for target-selection activation (Task F).
             if (dashboard.roomScene !== null)
-                dashboard.roomScene.onCardSelected(item.selected ? item.cardId : -1);
+                dashboard.roomScene.selectCard(dashboard.selectedCardIds());
         });
         cardArea.lay(Qt.AlignLeft, 1, 0, true, true);
     }
@@ -46,63 +52,14 @@ Item {
         return ids;
     }
 
-    // Button enabled state, set imperatively by updateStatus() on status change (mirrors
-    // old RoomScene::updateStatus in uibackup/roomscene.cpp:2784-2949). OK cannot rely solely
-    // on bindings because clicking it under some statuses drives complex flows (card
-    // response with target choosing, skill confirm, etc.) that updateStatus must prepare.
+    // Hand-card enablement only (status-driven button enablement is in CppRoomScene::
+    // updateDashboardStatus). Hand-card isAvailable stays in QML until CardContainer
+    // is bridged.
     function updateStatus() {
-        // Defaults; each case overrides as needed.
-        okEnabled = false;
-        cancelEnabled = false;
-        discardEnabled = false;
-
         if (clientInstance === null)
             return;
 
         var s = clientInstance.status;
-        var refusable = clientInstance.discardActionRefusable;
-        var box = parent !== null ? parent.activeBox : null;
-
-        switch (s & Client.ClientStatusBasicMask) {
-        case Client.NotActive:
-            break;
-        case Client.Responding:
-            cancelEnabled = refusable;
-            // OK depends on card selection (wired in E).
-            break;
-        case Client.Playing:
-            discardEnabled = true;
-            // OK depends on card selection (wired in E).
-            break;
-        case Client.Discarding:
-        case Client.Exchanging:
-            cancelEnabled = refusable;
-            // OK depends on card selection (wired in E).
-            break;
-        case Client.ExecDialog:
-            cancelEnabled = true;
-            break;
-        case Client.AskForSkillInvoke:
-            okEnabled = true;
-            cancelEnabled = true;
-            break;
-        case Client.AskForPlayerChoose:
-            cancelEnabled = refusable;
-            break;
-        case Client.AskForShowOrPindian:
-            // OK depends on card selection (wired in E).
-            break;
-        case Client.AskForGeneralTaken:
-            // Choose-general: OK confirms via activeBox.canAccept.
-            okEnabled = box !== null && box.canAccept;
-            break;
-        default:
-            break;
-        }
-
-        // Enable/disable hand cards based on current status.
-        // Playing/Responding: enable cards where isAvailable(Self).
-        // Discarding/Exchanging/AskForShowOrPindian: all hand cards enabled.
         var rs = dashboard.roomScene;
         var selfPlayer = rs !== null ? rs.Self : null;
         var sc = s & Client.ClientStatusBasicMask;
@@ -118,19 +75,6 @@ Item {
             handCards[i].enabled = enab;
         }
 
-        // OK readiness for card/target selection.
-        var hasSel = selectedCardIds().length > 0;
-        if (sc === Client.Playing || sc === Client.Responding || sc === Client.AskForShowOrPindian) {
-            if (rs !== null && rs.targetSelectionActive)
-                okEnabled = hasSel && rs.selectedTargets.length > 0;
-            else if (hasSel)
-                okEnabled = true;
-        }
-        if (sc === Client.Discarding || sc === Client.Exchanging) {
-            if (hasSel)
-                okEnabled = true;
-        }
-
         // If status changed away from selection mode, clear selections.
         if (sc !== Client.Playing && sc !== Client.Responding && sc !== Client.Discarding && sc !== Client.Exchanging && sc !== Client.AskForShowOrPindian && sc
                 !== Client.AskForGeneralTaken)
@@ -140,30 +84,24 @@ Item {
     height: 360
 
     Component.onCompleted: {
-        okEnabled = false;
-        cancelEnabled = false;
-        discardEnabled = false;
+        dashboard.updateStatus();
+        if (dashboard.roomScene !== null)
+            dashboard.roomScene.updateDashboardStatus();
     }
     onClientInstanceChanged: {
-        okEnabled = false;
-        cancelEnabled = false;
-        discardEnabled = false;
+        dashboard.updateStatus();
+        if (dashboard.roomScene !== null)
+            dashboard.roomScene.updateDashboardStatus();
     }
 
+    // Status change: C++ updateDashboardStatus is called internally before
+    // notifyStatusChanged; QML only needs to update hand-card isAvailable enablement.
     Connections {
         function onStatusChanged() {
             dashboard.updateStatus();
         }
 
         target: dashboard.clientInstance
-    }
-
-    Connections {
-        function onCanAcceptChanged() {
-            dashboard.okEnabled = dashboard.parent.activeBox.canAccept;
-        }
-
-        target: dashboard.parent !== null ? dashboard.parent.activeBox : null
     }
 
     Image {
@@ -265,7 +203,7 @@ Item {
                     } else if (basic === Client.Playing || basic === Client.Responding || basic === Client.AskForShowOrPindian) {
                         var ids = dashboard.selectedCardIds();
                         if (ids.length > 0 && rs !== null)
-                            rs.submitCardResponse(ids, rs.selectedTargets);
+                            rs.submitCardResponse(ids);
                     } else if (basic === Client.Discarding || basic === Client.Exchanging) {
                         var ids2 = dashboard.selectedCardIds();
                         if (ids2.length > 0 && rs !== null)
@@ -277,7 +215,7 @@ Item {
             QSanButton {
                 disabledSource: G.getAssetUrl("image/system/button/platter/cancel/disabled.png")
                 downSource: G.getAssetUrl("image/system/button/platter/cancel/down.png")
-                enabled: dashboard.cancelEnabled
+                enabled: dashboard.roomScene !== null && dashboard.roomScene.cancelEnabled
                 height: 127
                 hoverSource: G.getAssetUrl("image/system/button/platter/cancel/hover.png")
                 normalSource: G.getAssetUrl("image/system/button/platter/cancel/normal.png")
@@ -306,7 +244,7 @@ Item {
             QSanButton {
                 disabledSource: G.getAssetUrl("image/system/button/platter/discard/disabled.png")
                 downSource: G.getAssetUrl("image/system/button/platter/discard/down.png")
-                enabled: dashboard.discardEnabled
+                enabled: dashboard.roomScene !== null && dashboard.roomScene.discardEnabled
                 height: 138
                 hoverSource: G.getAssetUrl("image/system/button/platter/discard/hover.png")
                 normalSource: G.getAssetUrl("image/system/button/platter/discard/normal.png")
