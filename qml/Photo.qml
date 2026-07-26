@@ -35,6 +35,11 @@ Item {
     property string screenName: player.screenname
     required property int seat
     required property bool selfPhoto
+    property bool targetSelected: false
+
+    // Target selection (Task F). Set by RoomScene when a non-targetFixed card is selected
+    // and this Photo's player is a valid target. Toggled by clicking the Photo.
+    property bool targetable: false
 
     function createEquipArea() {
         photo.equipArea = equipAreaComponent.createObject(photo);
@@ -442,6 +447,31 @@ Item {
         id: judgeAreaComponent
 
         JudgeArea {
+        }
+    }
+
+    // Target selection highlight ring (Task F). A semi-transparent border that
+    // appears when this Photo is a valid target. Glows brighter when selected.
+    // Only visible when targetSelectionActive is true on the room scene.
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: -3
+        border.color: photo.targetSelected ? "#00FF00" : "#FFD700"
+        border.width: photo.targetSelected ? 3 : 2
+        color: "transparent"
+        radius: 4
+        visible: photo.targetable && !photo.selfPhoto && parent !== null && parent.targetSelectionActive === true
+    }
+
+    // Click to toggle this Photo as a target, but only when target selection is active.
+    MouseArea {
+        anchors.fill: parent
+        enabled: photo.targetable && !photo.selfPhoto && parent !== null && parent.targetSelectionActive === true
+        visible: enabled
+
+        onClicked: {
+            if (photo.player !== null && parent !== null)
+                parent.toggleTarget(photo.player.objectName);
         }
     }
 }

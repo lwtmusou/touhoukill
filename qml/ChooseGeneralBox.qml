@@ -96,7 +96,8 @@ GraphicsBox {
             enabled: !chooseGeneralBox._isDimmed(modelData)
             general: modelData
             opacity: 1
-            scale: chooseGeneralBox.selectedGenerals.indexOf(modelData) >= 0 ? 1.1 : 1.0
+            selected: chooseGeneralBox.selectedGenerals.indexOf(modelData) >= 0
+            useSelectionBorder: true
 
             onClicked: chooseGeneralBox._toggle(modelData)
 

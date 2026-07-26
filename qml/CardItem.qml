@@ -11,8 +11,13 @@ Item {
     property real homeX: 0
     property real homeY: 0
 
-    // property for recording its status
-    // property bool selected
+    // Selection state. Dashboard hand cards toggle via clicked; ChooseGeneralBox
+    // binds this externally per the selected-generals list. Lift-up visual (Translate
+    // transform) is driven by this property.
+    property bool selected: false
+    // ChooseGeneralBox uses a border instead of lift-up (GridView clip hides the offset).
+    // Dashboard hand cards do not set this; they rely on Translate lift-up alone.
+    property bool useSelectionBorder: false
 
     signal clicked
     signal rightClicked
@@ -36,9 +41,27 @@ Item {
         cardNumberImage.visible = false;
     }
 
+    function toggleSelected() {
+        selected = !selected;
+    }
+
     height: 256
     opacity: 0
     width: 183
+
+    // Lift-up on selection: Translate.y offset (does NOT modify cardItem.y / homeY,
+    // so it does not interfere with lay() / goBack()). Hand cards use this;
+    // ChooseGeneralBox uses border highlight instead (selected visual per context).
+    transform: Translate {
+        y: cardItem.selected ? -25 : 0
+
+        Behavior on y {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutQuad
+            }
+        }
+    }
 
     onCardIdChanged: {
         if (cardId == -1) {
@@ -154,6 +177,16 @@ Item {
         anchors.fill: parent
         color: Qt.rgba(0, 0, 0, 0.5)
         visible: !cardItem.enabled
+    }
+
+    // Selection border (ChooseGeneralBox context, where Translate lift-up is clipped
+    // by GridView clip:true). Gold 2px border when selected.
+    Rectangle {
+        anchors.fill: parent
+        border.color: "#FFD700"
+        border.width: 2
+        color: "transparent"
+        visible: cardItem.selected && cardItem.useSelectionBorder
     }
 
     ParallelAnimation {

@@ -19,6 +19,7 @@ class Client : public QObject
     Q_OBJECT
     Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus NOTIFY status_changed)
     Q_PROPERTY(bool discardActionRefusable READ isDiscardActionRefusable NOTIFY discardActionRefusableChanged)
+    Q_PROPERTY(QString promptText READ promptText NOTIFY promptTextChanged)
 
 public:
     enum Status
@@ -101,6 +102,8 @@ public:
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
+    // Plain-text prompt for QML (Q_PROPERTY promptText). Returns toPlainText() of the prompt doc.
+    [[nodiscard]] Q_INVOKABLE QString promptText() const;
 
     typedef void (Client::*Callback)(const QVariant &);
 
@@ -204,7 +207,7 @@ public:
     {
         return &_m_roomState;
     }
-    inline virtual Card *getCard(int cardId) const
+    Q_INVOKABLE inline virtual Card *getCard(int cardId) const
     {
         return _m_roomState.getCard(cardId);
     }
@@ -394,6 +397,8 @@ signals:
 
     void assign_asked();
     void start_in_xs();
+
+    void promptTextChanged(const QString &newPromptText);
 
     void head_preshowed();
     void deputy_preshowed(); //hegemony

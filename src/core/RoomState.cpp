@@ -4,8 +4,9 @@
 
 RoomState::~RoomState()
 {
-    foreach (Card *card, m_cards.values())
+    foreach (QPointer<WrappedCard> card, m_cards)
         delete card;
+
     m_cards.clear();
 }
 
@@ -18,7 +19,7 @@ Card *RoomState::getCard(int cardId) const
 
 void RoomState::resetCard(int cardId)
 {
-    Card *newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
+    Card *newCard = Card::Clone(Sanguosha->getEngineCard(cardId)); // Caution: memory leak here
     if (newCard == nullptr)
         return;
     newCard->setFlags(m_cards[cardId]->getFlags());
@@ -28,15 +29,18 @@ void RoomState::resetCard(int cardId)
 }
 
 // Reset all cards, generals' states of the room instance
-void RoomState::reset()
+void RoomState::reset(QObject *parent)
 {
-    foreach (WrappedCard *card, m_cards.values())
+    foreach (QPointer<WrappedCard> card, m_cards)
         delete card;
     m_cards.clear();
 
     int n = Sanguosha->getCardCount();
     for (int i = 0; i < n; i++) {
         const Card *card = Sanguosha->getEngineCard(i);
-        m_cards[i] = new WrappedCard(Card::Clone(card));
+        WrappedCard *wc = new WrappedCard(Card::Clone(card));
+        if (parent != nullptr)
+            wc->setParent(parent);
+        m_cards[i] = wc;
     }
 }

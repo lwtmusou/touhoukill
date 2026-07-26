@@ -227,6 +227,7 @@ SOURCES += \
     qml/Photo.qml \
     qml/PhotoEquipArea.qml \
     qml/PrivatePileArea.qml \
+    qml/PromptBox.qml \
     qml/QSanButton.qml \
     qml/QSanSkillButton.qml \
     qml/RoleComboBox.qml \

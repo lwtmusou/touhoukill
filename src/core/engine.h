@@ -78,12 +78,12 @@ public:
     Q_INVOKABLE const General *getGeneral(const QString &name) const;
     QStringList getGenerals() const;
     int getGeneralCount(bool include_banned = false) const;
-    const Skill *getSkill(const QString &skill_name) const;
+    Q_INVOKABLE const Skill *getSkill(const QString &skill_name) const;
     const Skill *getSkill(const EquipCard *card) const;
     QStringList getSkillNames() const;
     QList<const Skill *> getSkills() const;
     const TriggerSkill *getTriggerSkill(const QString &skill_name) const;
-    const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
+    Q_INVOKABLE const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
     QList<const DistanceSkill *> getDistanceSkills() const;
     QList<const MaxCardsSkill *> getMaxCardsSkills() const;
     QList<const TargetModSkill *> getTargetModSkills() const;
@@ -95,7 +95,7 @@ public:
     int getCardCount() const;
     Q_INVOKABLE const Card *getEngineCard(int cardId) const;
     // @todo: consider making this const Card *
-    Card *getCard(int cardId);
+    Q_INVOKABLE Card *getCard(int cardId);
     WrappedCard *getWrappedCard(int cardId);
 
     QStringList getLords(bool contain_banned = false) const;
@@ -125,8 +125,8 @@ public:
     Room *currentRoom();
     RoomState *currentRoomState();
 
-    QString getCurrentCardUsePattern();
-    CardUseStruct::CardUseReason getCurrentCardUseReason();
+    Q_INVOKABLE QString getCurrentCardUsePattern();
+    Q_INVOKABLE CardUseStruct::CardUseReason getCurrentCardUseReason();
 
     bool isGeneralHidden(const QString &general_name) const;
 

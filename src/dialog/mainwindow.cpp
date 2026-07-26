@@ -357,8 +357,8 @@ void MainWindow::gotoStartScene()
     delete systray;
     systray = nullptr;
 
-    delete ClientInstance.data();
     emit qml_switchToStartScene();
+    delete ClientInstance.data();
 }
 
 void MainWindow::startGameInAnotherInstance()

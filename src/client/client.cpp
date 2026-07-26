@@ -864,7 +864,7 @@ void Client::activate(const QVariant &playerId)
 void Client::startGame(const QVariant &arg)
 {
     Sanguosha->registerRoom(this);
-    _m_roomState.reset();
+    _m_roomState.reset(this);
 
     JsonArray arr = arg.value<JsonArray>();
     lord_name = arr[0].toString();
@@ -1125,6 +1125,7 @@ QString Client::setPromptList(const QStringList &texts)
     }
 
     prompt_doc->setHtml(prompt);
+    emit promptTextChanged(prompt_doc->toPlainText());
     return prompt;
 }
 
@@ -1558,6 +1559,11 @@ QTextDocument *Client::getLinesDoc() const
 QTextDocument *Client::getPromptDoc() const
 {
     return prompt_doc;
+}
+
+QString Client::promptText() const
+{
+    return prompt_doc != nullptr ? prompt_doc->toPlainText() : QString();
 }
 
 void Client::resetPiles(const QVariant & /*unused*/)

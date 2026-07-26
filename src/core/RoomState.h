@@ -5,6 +5,8 @@
 #include "player.h"
 #include "structs.h"
 
+#include <QPointer>
+
 // RoomState is a singleton that stores virtual generals, cards (versus factory loaded
 // generals, cards in the Engine). Each room or roomscene should have one and only one
 // associated RoomState.
@@ -42,11 +44,14 @@ public:
     //        Card to be updated in the room.
     // @return
     void resetCard(int cardId);
-    // Reset all cards, generals' states of the room instance
-    void reset();
+    // Reset all cards, generals' states of the room instance.
+    // parent: the owning QObject (Client on client side, Room on server side).
+    // Newly created WrappedCards get setParent(parent) to prevent double-free
+    // when QML holds references to cards returned via Client::getCard.
+    void reset(QObject *parent = nullptr);
 
 protected:
-    QHash<int, WrappedCard *> m_cards;
+    QHash<int, QPointer<WrappedCard>> m_cards;
     QString m_currentCardUsePattern;
     CardUseStruct::CardUseReason m_currentCardUseReason;
 };

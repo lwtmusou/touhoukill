@@ -1,5 +1,6 @@
 #include "roomscene.h"
 
+#include "aux-skills.h"
 #include "choosegeneraldialog.h"
 #include "client.h"
 #include "clientplayer.h"
@@ -26,12 +27,22 @@ RoomScene::RoomScene(QQuickItem *parent)
     , gameStarted(false)
     , gameOver(false)
     , m_clientConnected(false)
+    , m_responseSkill(new ResponseSkill)
+    , m_discardSkill(new DiscardSkill)
+    , m_showOrPindianSkill(new ShowOrPindianSkill)
+    , m_choosePlayerSkill(new ChoosePlayerSkill)
 {
     // ???
     if (RoomSceneInstance != nullptr)
         qFatal("RoomScene should be singleton");
 
     RoomSceneInstance = this;
+
+    // Own the aux-skills so they stay alive for the lifetime of this RoomScene.
+    m_responseSkill->setParent(this);
+    m_discardSkill->setParent(this);
+    m_showOrPindianSkill->setParent(this);
+    m_choosePlayerSkill->setParent(this);
 
     // RoomScene is created by QML when entering room scene, at which point
     // ClientInstance / Self are guaranteed to be valid. Connect immediately.
@@ -222,6 +233,7 @@ void RoomScene::connectClientSignals()
         emit notifySeatsArranged();
     });
     connect(client, &Client::status_changed, this, [this](Client::Status newStatus) {
+        updateAuxSkill();
         emit notifyStatusChanged(static_cast<int>(newStatus));
     });
     connect(client, &Client::player_killed, this, [this](const QString &who) {
@@ -340,6 +352,279 @@ void RoomScene::showGameOverDialog(bool standoff)
 {
     GameOverDialog dialog(standoff, MainWindowInstance);
     dialog.exec();
+}
+
+// ---- Phase 1: card selection (Dashboard calls per card) ----
+
+bool RoomScene::skillViewFilter(const QString &skillName, const QVariantList &selectedIds, int cardId) const
+{
+    const Skill *skill = Sanguosha->getSkill(skillName);
+    if (skill == nullptr)
+        return false;
+
+    const ViewAsSkill *vas = ViewAsSkill::parseViewAsSkill(skill);
+    if (vas == nullptr)
+        return false;
+
+    const Card *toSelect = ClientInstance->getCard(cardId);
+    if (toSelect == nullptr)
+        return false;
+
+    QList<const Card *> selected;
+    for (const QVariant &id : selectedIds) {
+        const Card *c = ClientInstance->getCard(id.toInt());
+        if (c != nullptr)
+            selected.append(c);
+    }
+
+    return vas->viewFilter(selected, toSelect);
+}
+
+// ---- Phase 2: target selection (RoomScene calls after cards are picked) ----
+
+const Card *RoomScene::skillViewAs(const QString &skillName, const QVariantList &cardIds)
+{
+    const Skill *skill = Sanguosha->getSkill(skillName);
+    if (skill == nullptr)
+        return nullptr;
+
+    const ViewAsSkill *vas = ViewAsSkill::parseViewAsSkill(skill);
+    if (vas == nullptr)
+        return nullptr;
+
+    QList<const Card *> cards;
+    // ChoosePlayerSkill is ZeroCardViewAsSkill: no material cards needed.
+    if (vas->objectName() != u"choose_player"_s) {
+        if (cardIds.isEmpty())
+            return nullptr;
+        for (const QVariant &id : cardIds) {
+            const Card *c = ClientInstance->getCard(id.toInt());
+            if (c != nullptr)
+                cards.append(c);
+        }
+    }
+
+    return vas->viewAs(cards);
+}
+
+QStringList RoomScene::enabledTargetsForCard(const Card *card) const
+{
+    QStringList result;
+    if (card == nullptr || Self == nullptr)
+        return result;
+
+    const Client *client = ClientInstance;
+    if (client == nullptr)
+        return result;
+
+    QList<const Player *> emptySel;
+    const QList<ClientPlayer *> players = client->getPlayers();
+    for (const ClientPlayer *player : players) {
+        if (player == Self)
+            continue;
+        int maxVotes = 0;
+        card->targetFilter(emptySel, player, Self, maxVotes);
+        if (maxVotes > 0)
+            result.append(player->objectName());
+    }
+    return result;
+}
+
+QStringList RoomScene::enabledTargets(int cardId) const
+{
+    const Card *card = ClientInstance->getCard(cardId);
+    return enabledTargetsForCard(card);
+}
+
+// ---- Phase 3: submit ----
+
+void RoomScene::respondCard(const Card *card, const QStringList &targetNames)
+{
+    Client *c = ClientInstance;
+    if (c == nullptr) {
+        qWarning() << "RoomScene::respondCard: ClientInstance is null";
+        return;
+    }
+
+    QList<const Player *> targets;
+    for (const QString &name : targetNames) {
+        if (Player *p = c->getPlayer(name))
+            targets.append(p);
+    }
+
+    c->onPlayerResponseCard(card, targets.isEmpty() ? QList<const Player *>() : targets);
+}
+
+void RoomScene::discardCard(const Card *card)
+{
+    Client *c = ClientInstance;
+    if (c == nullptr) {
+        qWarning() << "RoomScene::discardCard: ClientInstance is null";
+        return;
+    }
+    c->onPlayerDiscardCards(card);
+}
+
+void RoomScene::submitCardResponse(const QVariantList &cardIds, const QStringList &targetNames)
+{
+    Client *c = ClientInstance;
+    if (c == nullptr) {
+        qWarning() << "RoomScene::submitCardResponse: ClientInstance is null";
+        return;
+    }
+
+    const Card *responseCard = nullptr;
+    if (m_currentViewAsSkill != nullptr && !cardIds.isEmpty()) {
+        QList<const Card *> cards;
+        for (const QVariant &id : cardIds) {
+            const Card *card = ClientInstance->getCard(id.toInt());
+            if (card != nullptr)
+                cards.append(card);
+        }
+        responseCard = m_currentViewAsSkill->viewAs(cards);
+    } else if (!cardIds.isEmpty()) {
+        responseCard = ClientInstance->getCard(cardIds.first().toInt());
+    }
+
+    QList<const Player *> targets;
+    for (const QString &name : targetNames) {
+        if (Player *p = c->getPlayer(name))
+            targets.append(p);
+    }
+
+    c->onPlayerResponseCard(responseCard, targets.isEmpty() ? QList<const Player *>() : targets);
+}
+
+void RoomScene::submitDiscard(const QVariantList &cardIds)
+{
+    Client *c = ClientInstance;
+    if (c == nullptr) {
+        qWarning() << "RoomScene::submitDiscard: ClientInstance is null";
+        return;
+    }
+
+    const Card *discardCard = nullptr;
+    Client::Status status = c->getStatus();
+    Client::Status basic = static_cast<Client::Status>(status & Client::ClientStatusBasicMask);
+    if ((basic == Client::Discarding || basic == Client::Exchanging) && !cardIds.isEmpty()) {
+        QList<const Card *> cards;
+        for (const QVariant &id : cardIds) {
+            const Card *card = ClientInstance->getCard(id.toInt());
+            if (card != nullptr)
+                cards.append(card);
+        }
+        discardCard = m_discardSkill->viewAs(cards);
+    } else if (!cardIds.isEmpty()) {
+        discardCard = ClientInstance->getCard(cardIds.first().toInt());
+    }
+
+    c->onPlayerDiscardCards(discardCard);
+}
+
+void RoomScene::respondToSkillInvoke(bool invoke)
+{
+    Client *c = ClientInstance;
+    if (c == nullptr) {
+        qWarning() << "RoomScene::respondToSkillInvoke: ClientInstance is null";
+        return;
+    }
+    c->onPlayerInvokeSkill(invoke);
+}
+
+void RoomScene::finishPlayPhase()
+{
+    Client *c = ClientInstance;
+    if (c == nullptr) {
+        qWarning() << "RoomScene::finishPlayPhase: ClientInstance is null";
+        return;
+    }
+    c->onPlayerResponseCard(nullptr);
+}
+
+void RoomScene::cancelResponse(int status)
+{
+    Client *c = ClientInstance;
+    if (c == nullptr) {
+        qWarning() << "RoomScene::cancelResponse: ClientInstance is null";
+        return;
+    }
+
+    Client::Status s = static_cast<Client::Status>(status);
+    Client::Status basic = static_cast<Client::Status>(s & Client::ClientStatusBasicMask);
+
+    switch (basic) {
+    case Client::Responding:
+    case Client::AskForShowOrPindian:
+        c->onPlayerResponseCard(nullptr);
+        break;
+    case Client::Discarding:
+    case Client::Exchanging:
+        c->onPlayerDiscardCards(nullptr);
+        break;
+    case Client::AskForSkillInvoke:
+        c->onPlayerInvokeSkill(false);
+        break;
+    case Client::AskForPlayerChoose:
+        c->onPlayerChoosePlayer(nullptr);
+        break;
+    default:
+        break;
+    }
+}
+
+// ---- Internal: aux-skill auto-configuration ----
+
+void RoomScene::updateAuxSkill()
+{
+    Client *client = ClientInstance;
+    if (client == nullptr) {
+        m_currentViewAsSkill = nullptr;
+        return;
+    }
+
+    Client::Status status = client->getStatus();
+    Client::Status basic = static_cast<Client::Status>(status & Client::ClientStatusBasicMask);
+    QString pattern = client->getRoomState()->getCurrentCardUsePattern();
+
+    m_currentViewAsSkill = nullptr;
+
+    switch (basic) {
+    case Client::Responding:
+    case Client::Playing: {
+        if (pattern.startsWith(u"@@"_s) && !pattern.startsWith(u"@@sp_convert!"_s)) {
+            // Real skill: let QML drive via skillViewFilter / skillViewAs / respondCard.
+            break;
+        }
+        if (!pattern.isEmpty()) {
+            // Card pattern: "slash", "peach", "jink" -- use ResponseSkill.
+            QString p = pattern;
+            if (p.endsWith(u'!'))
+                p.chop(1);
+            m_responseSkill->setPattern(p);
+            m_currentViewAsSkill = m_responseSkill;
+        }
+        break;
+    }
+    case Client::Discarding:
+    case Client::Exchanging:
+        m_discardSkill->setNum(client->discard_num);
+        m_discardSkill->setMinNum(client->min_num);
+        m_discardSkill->setIncludeEquip(client->m_canDiscardEquip);
+        m_discardSkill->setIsDiscard(basic != Client::Exchanging);
+        m_currentViewAsSkill = m_discardSkill;
+        break;
+    case Client::AskForShowOrPindian: {
+        m_showOrPindianSkill->setPattern(pattern);
+        m_currentViewAsSkill = m_showOrPindianSkill;
+        break;
+    }
+    case Client::AskForPlayerChoose:
+        m_choosePlayerSkill->setPlayerNames(client->players_to_choose);
+        m_currentViewAsSkill = m_choosePlayerSkill;
+        break;
+    default:
+        break;
+    }
 }
 
 namespace {

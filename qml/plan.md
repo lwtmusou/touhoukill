@@ -88,16 +88,16 @@
     - **不用 `CardsMoveStruct::toVariant()`**：该函数（`src/core/structs.cpp:37`）是服务器序列化用，输出 `JsonArray`（服务器协议格式，非 QML 语义化字段），且 `structs.cpp` `#include "room.h"` 可能有依赖。查证 `toVariant` 本身不直接用 `ServerPlayer`（只读 `card_ids`/`shown_ids`/`from_place`/`to_place`/`from_player_name`/`to_player_name`/`from_pile_name`/`to_pile_name`/`reason`/`open`），但格式不适合直接给 QML。桥接层自己解析这些字段转 QML 可理解内容。
     - **CardItem 与牌容器设计（前置）**：见"设计决策与约定"的"CardItem 与牌容器设计"小节——CardContainer 作为通用牌容器（TablePile 直接用，AG box 等 = GraphicsBox 内嵌 CardContainer）；CardItem 的 QObject parent 统一在 roomScene，移动用原实例（visual parent 切换：container → roomScene 飞行 → 新 container），不显示的牌直接 destroy。**`qml/CardContainer.qml:10` 的 `createItem` 现有 `createObject(this)` 必须改为 `createObject(roomScene)` + `cardItem.parent = this`**（否则牌移走后 QObject parent 还在 CardContainer，涉及转移问题）。
     - 无牌区同步则无从选卡/选装备，是 B-E 的前置。
-  - [ ] **B. CardItem 选中态**：启用 `qml/CardItem.qml` 注释掉的 `selected` 属性 + `selectedChanged` 信号；单击 toggle `selected`；`enabled` 已联动禁用遮罩（见 2026-07-19 进度）。选中视觉对标旧版 `Dashboard::selectCard`(`uibackup/dashboard.cpp:538`)：
+  - [x] **B. CardItem 选中态**：启用 `qml/CardItem.qml` 注释掉的 `selected` 属性 + `selectedChanged` 信号；单击 toggle `selected`；`enabled` 已联动禁用遮罩（见 2026-07-19 进度）。选中视觉对标旧版 `Dashboard::selectCard`(`uibackup/dashboard.cpp:538`)：
     - **抬起**：对标 `S_PENDING_OFFSET_Y = -25`(`dashboard.h:128`)。用 `transform: Translate { y: selected ? -25 : 0 }` + `Behavior` 动画，**不动 `y`/`homeY`**，避免与 `lay()`/`goBack()` 冲突（旧版改 homePos 会与 lay 重设打架，QML 用 transform 隔离更干净）。手牌区用。
     - **不使用 glow**：旧版 `QGraphicsDropShadowEffect`(`carditem.cpp:373`，Qt 自带 `QGraphicsEffect` 子类) 是 **hover 触发**（`hoverChanged → setEnabled`），非 selected 触发，故不引入 glow（不引入 `MultiEffect`/`QtQuick.Effects`；不接受 `Qt5Compat`）。
     - **ChooseGeneralBox 改造**：去掉 `qml/ChooseGeneralBox.qml:99` 的 `scale: ... ? 1.1 : 1.0`，改为 `selected: selectedGenerals.indexOf(modelData) >= 0`。ChooseGeneralBox 的 GridView `clip: true`，抬起 25 像素会被裁剪，故改用 **border 高亮**（selected 时 CardItem 加金色/白色 border）替换 scale 1.1，与手牌区抬起不同的 selected 视觉（按上下文）。
     - `qml/CardContainer.qml` 暴露 `selectedItems`（只读）/ `unselectAll(except)` / `selectOnlyCard()`。
-  - [ ] **C. Dashboard pending 状态机 + PromptBox**：扩展 `Dashboard.updateStatus()` 按 status 进入 pending（镜像旧 `updateStatus` 各 case）：`Playing` → `enableCards`；`Responding`/`Discarding`/`Exchanging`/`AskForShowOrPindian` → `startPending(skill)` 按当前 pattern。手牌按 ViewAsSkill `viewFilter` enable/disable。pattern 来源 `Sanguosha->currentRoomState()->getCurrentCardUsePattern()`，需在 C++ 侧（`RoomState` 或桥接）暴露 `Q_PROPERTY`/`Q_INVOKABLE` 给 QML。新建 `qml/PromptBox.qml` 显示 prompt 文本（`Client::getPromptDoc()` 是 `QTextDocument*`，需桥接转 QString，参考旧 `roomscene.cpp:320`），随 status `appear`/`disappear`。
-  - [ ] **D. 桥接选卡回传**：`const Card *` 无法跨 QML，桥接层 `RoomScene` 新增 `Q_INVOKABLE` 回传接口（如 `submitCardResponse(int status, QVariantList cardIds, QStringList targetNames)` / `submitDiscard(QVariantList cardIds)` / `cancelResponse(int status)`）。内部按 `cardIds` 经 `Client::getCard` 取 `const Card *`，`targetNames` 经 `Client::getPlayer` 转 `const Player *`，调 `Client::onPlayerResponseCard`/`onPlayerDiscardCards`/`onPlayerInvokeSkill` 等。**第一阶段不做 ViewAsSkill 组合牌**（如"龙鳞"用两牌当杀），只回传单张原始牌；组牌留待 G 子任务。
-  - [ ] **E. OK/Cancel/Discard 按钮回传**：Dashboard 三按钮 `onClicked` 按 `clientInstance.status` 分支调桥接：OK → `submitCardResponse`/`submitDiscard`/`onPlayerInvokeSkill(true)`（AskForSkillInvoke）/`activeBox.accept()`（AskForGeneralTaken）；Cancel → `cancelResponse(status)`（`Playing`=unselectAll 不回传、`Responding`/`AskForShowOrPindian`=`onPlayerResponseCard(nullptr)`、`Discarding`/`Exchanging`=`onPlayerDiscardCards(nullptr)`、`ExecDialog`=reject dialog、`AskForSkillInvoke`=`onPlayerInvokeSkill(false)`、`AskForPlayerChoose`=`onPlayerChoosePlayer(nullptr)`）；Discard → `Playing` 状态 `onPlayerResponseCard(nullptr)`（结束出牌阶段）。
-  - [ ] **F. 目标选择**：Photo 单击进入目标选择（status=`Playing`/`Responding` 且当前选中卡需目标，按 `card.targetFixed(Self)` 判断）；收集 `selected_targets`；Photo 视觉高亮可选目标（按 `card.targetFilter`，桥接 `Q_INVOKABLE enabledTargets(cardId)` 返回可选 player objectName 列表）；选满后 OK 启用。
-  - [ ] **G. 技能按钮触发的 ViewAsSkill（与"Dashboard 技能按钮"任务交叉，合并到该任务）**：`QSanSkillButton` 点击 → `startPending(skill)`，组牌回传。依赖技能按钮组件。
+  - [x] **C. Dashboard pending 状态机 + PromptBox**：扩展 `Dashboard.updateStatus()` 按 status 进入 pending（镜像旧 `updateStatus` 各 case）：`Playing` → `enableCards`；`Responding`/`Discarding`/`Exchanging`/`AskForShowOrPindian` → `startPending(skill)` 按当前 pattern。手牌按 ViewAsSkill `viewFilter` enable/disable。pattern 来源 `Sanguosha->currentRoomState()->getCurrentCardUsePattern()`，需在 C++ 侧（`RoomState` 或桥接）暴露 `Q_PROPERTY`/`Q_INVOKABLE` 给 QML。新建 `qml/PromptBox.qml` 显示 prompt 文本（`Client::getPromptDoc()` 是 `QTextDocument*`，需桥接转 QString，参考旧 `roomscene.cpp:320`），随 status `appear`/`disappear`。
+  - [x] **D. 桥接选卡回传**：`const Card *` 无法跨 QML，桥接层 `RoomScene` 新增 `Q_INVOKABLE` 回传接口（如 `submitCardResponse(int status, QVariantList cardIds, QStringList targetNames)` / `submitDiscard(QVariantList cardIds)` / `cancelResponse(int status)`）。内部按 `cardIds` 经 `Client::getCard` 取 `const Card *`，`targetNames` 经 `Client::getPlayer` 转 `const Player *`，调 `Client::onPlayerResponseCard`/`onPlayerDiscardCards`/`onPlayerInvokeSkill` 等。**第一阶段不做 ViewAsSkill 组合牌**（如"龙鳞"用两牌当杀），只回传单张原始牌；组牌留待 G 子任务。
+  - [x] **E. OK/Cancel/Discard 按钮回传**：Dashboard 三按钮 `onClicked` 按 `clientInstance.status` 分支调桥接：OK → `submitCardResponse`/`submitDiscard`/`onPlayerInvokeSkill(true)`（AskForSkillInvoke）/`activeBox.accept()`（AskForGeneralTaken）；Cancel → `cancelResponse(status)`（`Playing`=unselectAll 不回传、`Responding`/`AskForShowOrPindian`=`onPlayerResponseCard(nullptr)`、`Discarding`/`Exchanging`=`onPlayerDiscardCards(nullptr)`、`ExecDialog`=reject dialog、`AskForSkillInvoke`=`onPlayerInvokeSkill(false)`、`AskForPlayerChoose`=`onPlayerChoosePlayer(nullptr)`）；Discard → `Playing` 状态 `onPlayerResponseCard(nullptr)`（结束出牌阶段）。
+  - [x] **F. 目标选择**：Photo 单击进入目标选择（status=`Playing`/`Responding` 且当前选中卡需目标，按 `card.targetFixed(Self)` 判断）；收集 `selected_targets`；Photo 视觉高亮可选目标（按 `card.targetFilter`，桥接 `Q_INVOKABLE enabledTargets(cardId)` 返回可选 player objectName 列表）；选满后 OK 启用。
+  - [ ] **G. 技能按钮触发的 ViewAsSkill（与"Dashboard 技能按钮"任务交叉，合并到该任务）**：`QSanSkillButton` 点击 → `startPending(skill)`，组牌回传。依赖技能按钮组件。**aux-skill 桥接已就绪**：`updateAuxSkill()` 自动按 status+pattern 配置 ResponseSkill/DiscardSkill/ShowOrPindianSkill/ChoosePlayerSkill；`tryViewAsCard(cardIds)` 返回虚拟牌信息与可选目标；`submitCardResponse`/`submitDiscard` 内部走 `viewAs` 生成虚拟牌下发。
 
   **简化策略（第一阶段最小闭环）**：A → B → C → D → E（先只支持 `targetFixed` 的卡：桃自用、无懈可击等），再 F 补目标选择（杀/闪/桃救人等），G 与"Dashboard 技能按钮"任务合并。
 - [ ] **CardItem 移动动画**（牌区同步的动画完善，A 子任务后续）：当前手牌/装备/TablePile 的进出场是简化"新建+销毁"模式——牌进区域时 `createItem` 在容器原点(0,0)创建后 `lay()`+`goBack()` 飞向 `homePos`（起点不自然，非从源位置飞来）；牌离区域时直接 `removeItem` destroy（无飞出动画）。本任务统一改为"原实例移动"（见"CardItem 与牌容器设计"小节）：容器间移动用原 CardItem 实例，切 visual parent 前后用 `mapToItem`/`mapFromItem` 把牌当前位置映射到目标容器坐标系作动画起点，`lay()` 设 `homeX`/`homeY`，`goBack()` 飞行；无目标的牌 `destroy()`。涉及手牌区（`Dashboard.addHandCard`/`removeHandCard`）、装备区（`addEquip`/`removeEquip`）、TablePile（`addCard`/`removeCard`）的 add/remove 改造，以及 `move_cards_got`/`lost` 配对 move 的源→目标实例传递（当前 got 新建 + lost 销毁，需改为 got 接收 lost 释放的实例）。TablePile 延迟清除已改为直接 `destroy()`（不淡出），本任务不重做。**待排查**：TablePile 仍有全透明 carditem 残留（`_checkClearance` 跨对象 list 副本 splice 已修但仍存在），原因待技能实现后排查（可能与技能发动的 move 流程或 CardItem opacity 动画有关）。
@@ -394,11 +394,61 @@
 - A 子任务（牌区同步）全部完成：手牌✅/装备✅/TablePile✅/判定✅/私人牌堆✅。
 - TODO：判定区图标 tooltip（卡名+花色+点数，旧版 `addDelayedTricks` 设 `setToolTip`）、PrivatePileArea 下拉菜单的 pile 牌点击交互（查看详情/选中）、treasure pile（`wooden_ox`）排最前（旧版 `updatePile` 特殊处理）留待后续；layout 位置待统一调。
 
+### 2026-07-26：QML 不直调 Client::onPlayer* + ViewAsSkill 桥接
+- 所有 `client->onPlayer*` 调用统一走桥接层（不在 QML 直调 Client）：
+  - `respondToSkillInvoke(bool)`：桥接 `Client::onPlayerInvokeSkill`
+  - `finishPlayPhase()`：桥接 `Client::onPlayerResponseCard(nullptr)`（结束出牌阶段）
+  - Dashboard 两处直调（OK-AskForSkillInvoke、Discard-Playing）改为走桥接。
+  - `Client::onPlayerResponseCard`/`onPlayerInvokeSkill`/`onPlayerDiscardCards` 上的 `Q_INVOKABLE` 已移除。
+
+### 2026-07-26：aux-skill 桥接重构
+- **确认 aux-skill 流程**：服务器下发的 pattern 有两类——
+  - `@@skillname`：真实技能名，QML 显式传 skillName 走 `skillViewFilter`/`skillViewAs`/`submitSkillCard`
+  - `slash`/`peach` 等：走 `ResponseSkill`（桥接自动配置），`submitCardResponse` 内部 `viewAs`
+  - Discard：`DiscardSkill`（桥接自动配置），`submitDiscard` 内部 `viewAs`
+  - ShowOrPindian：`ShowOrPindianSkill`；PlayerChoose：`ChoosePlayerSkill`
+- **RoomScene 持有 aux-skill 实例**：`m_responseSkill`/`m_discardSkill`/`m_showOrPindianSkill`/`m_choosePlayerSkill`。`updateAuxSkill()` 在 status_changed 时按 pattern 配置；**`@@skillname` 不再自动设 `m_currentViewAsSkill`，留给 QML 显式驱动**。
+- **三阶段 API**：
+  - **Phase 1（Dashboard 选牌）**：`skillViewFilter(skillName, selectedIds, cardId)` —— QML 逐牌调用判断 viewFilter
+  - **Phase 2（RoomScene 选目标）**：`skillViewAs(skillName, cardIds)` —— 生成虚拟牌，返回 `{valid, cardName, targetFixed, enabledTargetNames}`
+  - **Phase 3（提交）**：`submitSkillCard(skillName, cardIds, targets)` —— QML 显式指定技能；`submitCardResponse`/`submitDiscard` 仍走 aux-skill 自动检测
+  - `enabledTargets(cardId)` 保留，用于真实牌的 targetFilter 查询
+- **移除**：`tryViewAsCard(cardIds)`（自动检测+合并阶段，无法区分选牌/选目标）、`submitViewAsCardResponse`（合并进 submitSkillCard）
+
+### 2026-07-26：CardItem 卡牌选择全链路 B-F
+- **B. CardItem 选中态**：
+  - `qml/CardItem.qml`：启用 `property bool selected` + `signal selectedChanged`；新增 `toggleSelected()`；新增 `useSelectionBorder` property（ChooseGeneralBox 用）。
+  - 抬起动画：`transform: Translate { y: selected ? -25 : 0; Behavior on y { NumberAnimation { duration:150 } } }`（不动 y/homeY，避免与 lay()/goBack() 冲突）。
+  - 选中边框：当 `useSelectionBorder && selected` 时显示金色 2px 边框（ChooseGeneralBox GridView clip 遮挡抬起，改用边框高亮）。
+  - `qml/CardContainer.qml`：新增 `getSelectedItems()`（扫描 cardItems 收集 selected 者）、`unselectAll(except)`、`selectOnlyCard(item)`。
+  - `qml/Dashboard.qml`：`addHandCard` 中 `item.clicked` connect toggleSelected + 通知 RoomScene.onCardSelected（目标选择激活）。新增 `selectedCardIds()` 辅助函数。
+  - `qml/ChooseGeneralBox.qml`：`scale: ... 1.1` 改 `selected: selectedGenerals.indexOf(modelData) >= 0` + `useSelectionBorder: true`。
+- **C. Dashboard pending + PromptBox**：
+  - `src/core/card.h`：`targetFixed`/`isAvailable` 加 `Q_INVOKABLE`（QML 直调判卡可用性/需目标）。
+  - `src/core/engine.h`：`getCurrentCardUsePattern`/`getCurrentCardUseReason` 加 `Q_INVOKABLE`。
+  - `src/client/client.h/cpp`：新增 `Q_PROPERTY(QString promptText...)` + `Q_INVOKABLE promptText()` + `promptTextChanged` 信号（setPromptList 末尾 emit）。
+  - **新建 `qml/PromptBox.qml`**：显示 prompt 文本的浮动提示框（黑色半透明+金色边框），visible 绑 `promptText !== ""`。
+  - `qml/Dashboard.qml`：`updateStatus` 扩展——Playing/Responding 时按 `card.isAvailable(Self)` 启用手牌；Discarding/Exchanging/AskForShowOrPindian 全部启用；OK 就绪按卡片选中+目标选中判定；切离选择态时清空选中。加 `PromptBox` 实例（浮于 cardBg 上方）。
+  - `.pro`：OTHER_FILES 加 `qml/PromptBox.qml`。
+- **D. 桥接选卡回传**：
+  - `src/qmlui/roomscene.h/cpp`：新增 `submitCardResponse(cardIds, targetNames)`（取第一张卡经 `Sanguosha->getCard`，targetNames 经 `Client::getPlayer` 转指针，调 `onPlayerResponseCard`）；`submitDiscard(cardIds)`（单卡 disc，nullptr=取消）；`cancelResponse(status)`（按 status 分支调 `onPlayerResponseCard(nullptr)`/`onPlayerDiscardCards(nullptr)`/`onPlayerInvokeSkill(false)`/`onPlayerChoosePlayer(nullptr)`）。
+  - `src/client/client.h`：`onPlayerResponseCard`/`onPlayerInvokeSkill`/`onPlayerDiscardCards` 加 `Q_INVOKABLE`（QML 直调，不走桥接的路由也可用）。
+- **E. OK/Cancel/Discard 按钮回传**：
+  - OK：activeBox→accept；AskForSkillInvoke→`onPlayerInvokeSkill(true)`；Playing/Responding/AskForShowOrPindian→`submitCardResponse(ids, targets)`；Discarding/Exchanging→`submitDiscard(ids)`。
+  - Cancel：Playing→本地 unselectAll；Responding/Discarding 等→`cancelResponse(status)`。
+  - Discard：Playing→`onPlayerResponseCard(null)`（结束出牌阶段）。
+- **F. 目标选择**：
+  - `src/qmlui/roomscene.h/cpp`：新增 `enabledTargets(cardId)`（Q_INVOKABLE，遍历 players 用 `card->targetFilter` 判可选目标，返回 objectName 列表）。
+  - `qml/RoomScene.qml`：新增 `selectedTargets`/`enabledTargetNames`/`targetSelectionActive` 状态；`onCardSelected(cardId)`——当选中非 targetFixed 的卡时激活目标选择，调 `enabledTargets` 填可选目标名；`_syncPhotoTargets()` 遍历 otherPhotos 设 `targetable`/`targetSelected`；`toggleTarget(playerName)` 切入选/移除目标；`onSelectedTargetsChanged` 联动 `_syncPhotoTargets()`。
+  - `qml/Photo.qml`：新增 `targetable`/`targetSelected` property；目标高亮环（半透明边框，targetable 金色/targetSelected 绿色）；目标点击 MouseArea（仅 targetable 且非 selfPhoto 且 targetSelectionActive 时启用，调 `parent.toggleTarget`）。
+  - `qml/Dashboard.qml`：OK 按钮传 `rs.selectedTargets` 给 `submitCardResponse`；`updateStatus` 中 OK 就绪判 targetSelectionActive（需至少一个目标选中）。
+
 ## 7. 下一步
-1. **CardItem 卡牌选择全链路**（已拆分为 A-G 子任务，见"待做"小节）：
-   - 执行顺序：A（牌区同步：手牌✅/装备✅/TablePile✅/判定✅/私人牌堆✅）→ B（CardItem 选中态）→ C（Dashboard pending + PromptBox）→ D（桥接选卡回传）→ E（OK/Cancel/Discard 按钮回传）→ F（目标选择）。
-   - 第一阶段最小闭环：A+B+C+D+E（先只支持 `targetFixed` 卡：桃自用、无懈可击等），F 补目标选择（杀/闪/桃救人），G 与"Dashboard 技能按钮"任务合并。
-2. 选项/触发顺序弹窗（ChooseOptionsBox/ChooseTriggerOrderBox）。
-3. 玩家牌展示/桌面牌堆、聊天日志。
-4. Dashboard 技能按钮 + 装备区（含 G 子任务：ViewAsSkill 组牌；旧版实现参考见"装备区与技能按钮（旧版实现参考）"小节，子任务见"待做"小节）、RoomScene 测试桩清理、src/uibackup 删除。
-5. QML 重构完成后：Client 去单例化（见 `client.h` TODO；桥接 `selfHelper`/`clientHelper` 已预留注入点，自包含 dialog 需一并改造）。
+
+## 7. 下一步
+1. ~~CardItem 卡牌选择全链路~~ ✅ B-F 已完成。A（牌区同步）✅→B（CardItem 选中态）✅→C（Dashboard pending + PromptBox）✅→D（桥接选卡回传）✅→E（OK/Cancel/Discard 按钮回传）✅→F（目标选择）✅。
+2. G（ViewAsSkill 组牌）与"Dashboard 技能按钮"任务合并。
+3. 选项/触发顺序弹窗（ChooseOptionsBox/ChooseTriggerOrderBox）。
+4. 玩家牌展示/桌面牌堆、聊天日志。
+5. Dashboard 技能按钮 + 装备区（含 G 子任务：ViewAsSkill 组牌；旧版实现参考见"装备区与技能按钮（旧版实现参考）"小节，子任务见"待做"小节）、RoomScene 测试桩清理、src/uibackup 删除。
+6. QML 重构完成后：Client 去单例化（见 `client.h` TODO；桥接 `selfHelper`/`clientHelper` 已预留注入点，自包含 dialog 需一并改造）。

@@ -163,12 +163,12 @@ public:
     virtual bool isNDTrick() const;
 
     // card target selection
-    virtual bool targetFixed(const Player *Self) const;
+    Q_INVOKABLE virtual bool targetFixed(const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     // @todo: the following two functions should be merged into one.
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, int &maxVotes) const;
-    virtual bool isAvailable(const Player *player) const;
+    Q_INVOKABLE virtual bool isAvailable(const Player *player) const;
     virtual bool ignoreCardValidty(const Player *player) const;
 
     Q_INVOKABLE inline virtual const Card *getRealCard() const

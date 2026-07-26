@@ -32,7 +32,9 @@ Item {
     Connections {
         target: privatePileArea.player
 
-        onPileChanged: privatePileArea.refresh()
+        function onPile_changed(name) {
+            privatePileArea.refresh();
+        }
     }
 
     Column {

@@ -22,13 +22,28 @@ Item {
     // Hand card sync (subtask A): add/remove CardItem in cardArea + relayout.
     // self hand cards only (other players' hidden cards sync via handcardNum, not here).
     function addHandCard(cardId: int) {
-        cardArea.createItem(cardId);
+        var item = cardArea.createItem(cardId);
+        item.clicked.connect(function () {
+            item.toggleSelected();
+            // Notify RoomScene for target-selection activation (Task F).
+            if (dashboard.roomScene !== null)
+                dashboard.roomScene.onCardSelected(item.selected ? item.cardId : -1);
+        });
         cardArea.lay(Qt.AlignLeft, 1, 0, true, true);
     }
 
     function removeHandCard(cardId: int) {
         cardArea.removeItem(cardId);
         cardArea.lay(Qt.AlignLeft, 1, 0, true, true);
+    }
+
+    // Collect selected hand card IDs as an array.
+    function selectedCardIds() {
+        var ids = [];
+        var sel = cardArea.getSelectedItems();
+        for (var i = 0; i < sel.length; ++i)
+            ids.push(sel[i].cardId);
+        return ids;
     }
 
     // Button enabled state, set imperatively by updateStatus() on status change (mirrors
@@ -53,14 +68,16 @@ Item {
             break;
         case Client.Responding:
             cancelEnabled = refusable;
-            // TODO: okEnabled after card+target selection (CardItem TODO)
+            // OK depends on card selection (wired in E).
             break;
         case Client.Playing:
             discardEnabled = true;
+            // OK depends on card selection (wired in E).
             break;
         case Client.Discarding:
         case Client.Exchanging:
             cancelEnabled = refusable;
+            // OK depends on card selection (wired in E).
             break;
         case Client.ExecDialog:
             cancelEnabled = true;
@@ -73,6 +90,7 @@ Item {
             cancelEnabled = refusable;
             break;
         case Client.AskForShowOrPindian:
+            // OK depends on card selection (wired in E).
             break;
         case Client.AskForGeneralTaken:
             // Choose-general: OK confirms via activeBox.canAccept.
@@ -82,9 +100,41 @@ Item {
             break;
         }
 
-        // TODO: remaining updateStatus logic per old uibackup/roomscene.cpp:2784-2949:
-        //   prompt box show/hide, card pending (response_skill/discard_skill/showorpindian_skill),
-        //   skill button enable/highlight, target selection prep, card enable/disable.
+        // Enable/disable hand cards based on current status.
+        // Playing/Responding: enable cards where isAvailable(Self).
+        // Discarding/Exchanging/AskForShowOrPindian: all hand cards enabled.
+        var rs = dashboard.roomScene;
+        var selfPlayer = rs !== null ? rs.Self : null;
+        var sc = s & Client.ClientStatusBasicMask;
+        var handCards = cardArea.cardItems;
+        for (var i = 0; i < handCards.length; ++i) {
+            var cid = handCards[i].cardId;
+            var enab = true;
+            if (cid !== -1 && selfPlayer !== null) {
+                var card = dashboard.clientInstance.getCard(cid);
+                if (sc === Client.Playing || sc === Client.Responding)
+                    enab = card.isAvailable(selfPlayer);
+            }
+            handCards[i].enabled = enab;
+        }
+
+        // OK readiness for card/target selection.
+        var hasSel = selectedCardIds().length > 0;
+        if (sc === Client.Playing || sc === Client.Responding || sc === Client.AskForShowOrPindian) {
+            if (rs !== null && rs.targetSelectionActive)
+                okEnabled = hasSel && rs.selectedTargets.length > 0;
+            else if (hasSel)
+                okEnabled = true;
+        }
+        if (sc === Client.Discarding || sc === Client.Exchanging) {
+            if (hasSel)
+                okEnabled = true;
+        }
+
+        // If status changed away from selection mode, clear selections.
+        if (sc !== Client.Playing && sc !== Client.Responding && sc !== Client.Discarding && sc !== Client.Exchanging && sc !== Client.AskForShowOrPindian && sc
+                !== Client.AskForGeneralTaken)
+            cardArea.unselectAll(null);
     }
 
     height: 360
@@ -138,6 +188,17 @@ Item {
         }
     }
 
+    // Prompt box: shows server prompt text above the card area when the player needs
+    // to respond. Driven by clientInstance.promptText (non-empty = visible).
+    PromptBox {
+        id: promptBox
+
+        anchors.bottom: cardBg.top
+        anchors.bottomMargin: 4
+        anchors.horizontalCenter: cardBg.horizontalCenter
+        clientInstance: dashboard.clientInstance
+    }
+
     Image {
         id: cardBg
 
@@ -189,9 +250,27 @@ Item {
                 y: 18
 
                 onClicked: {
-                    if (dashboard.parent && dashboard.parent.activeBox !== null)
+                    if (dashboard.parent && dashboard.parent.activeBox !== null) {
                         dashboard.parent.activeBox.accept();
-                    // TODO: handle AskForSkillInvoke / card-response OK once wired
+                        return;
+                    }
+
+                    var s = dashboard.clientInstance.status;
+                    var basic = s & Client.ClientStatusBasicMask;
+                    var rs = dashboard.roomScene;
+
+                    if (basic === Client.AskForSkillInvoke) {
+                        if (rs !== null)
+                            rs.respondToSkillInvoke(true);
+                    } else if (basic === Client.Playing || basic === Client.Responding || basic === Client.AskForShowOrPindian) {
+                        var ids = dashboard.selectedCardIds();
+                        if (ids.length > 0 && rs !== null)
+                            rs.submitCardResponse(ids, rs.selectedTargets);
+                    } else if (basic === Client.Discarding || basic === Client.Exchanging) {
+                        var ids2 = dashboard.selectedCardIds();
+                        if (ids2.length > 0 && rs !== null)
+                            rs.submitDiscard(ids2);
+                    }
                 }
             }
 
@@ -207,7 +286,21 @@ Item {
                 x: 2
                 y: 206
 
-                // TODO: doCancelButton based on ClientInstance.status
+                onClicked: {
+                    var s = dashboard.clientInstance.status;
+                    var basic = s & Client.ClientStatusBasicMask;
+                    var rs = dashboard.roomScene;
+
+                    if (basic === Client.Playing) {
+                        // Just unselect all (no server response for Playing cancel).
+                        dashboard.cardArea.unselectAll(null);
+                    } else if (basic === Client.Responding || basic === Client.AskForShowOrPindian || basic === Client.Discarding || basic === Client.Exchanging || basic
+                               === Client.AskForSkillInvoke || basic === Client.AskForPlayerChoose) {
+                        if (rs !== null)
+                            rs.cancelResponse(s);
+                    }
+                    // ExecDialog, AskForSuit/Kingdom etc. deferred.
+                }
             }
 
             QSanButton {
@@ -222,7 +315,14 @@ Item {
                 x: 123
                 y: 110
 
-                // TODO: dashboard.clientInstance.onPlayerDiscardCards(selectedCard)
+                onClicked: {
+                    // Playing: end the play phase by sending an empty card (nullptr).
+                    var s = dashboard.clientInstance.status;
+                    var basic = s & Client.ClientStatusBasicMask;
+                    var rs = dashboard.roomScene;
+                    if (basic === Client.Playing && rs !== null)
+                        rs.finishPlayPhase();
+                }
             }
 
             QSanButton {

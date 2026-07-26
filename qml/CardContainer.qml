@@ -25,6 +25,18 @@ Item {
         return item;
     }
 
+    // Selection: scan all CardItem children and return those with selected == true.
+    // Called imperatively (not a binding) because child-property changes inside the
+    // list do not trigger QML re-evaluation of container-level property expressions.
+    function getSelectedItems() {
+        var result = [];
+        for (var i = 0; i < cardItems.length; ++i) {
+            if (cardItems[i].selected)
+                result.push(cardItems[i]);
+        }
+        return result;
+    }
+
     function insertItem(item: CardItem) {
         cardItems.push(item);
     }
@@ -105,6 +117,12 @@ Item {
         return null;
     }
 
+    function selectOnlyCard(item: CardItem) {
+        for (var i = 0; i < cardItems.length; ++i) {
+            cardItems[i].selected = (cardItems[i] === item);
+        }
+    }
+
     function takeItem(item: CardItem) {
         var index = cardItems.indexOf(item);
         if (index !== -1)
@@ -119,6 +137,13 @@ Item {
         }
 
         return null;
+    }
+
+    function unselectAll(except: CardItem) {
+        for (var i = 0; i < cardItems.length; ++i) {
+            if (cardItems[i] !== except)
+                cardItems[i].selected = false;
+        }
     }
 
     onWidthChanged: {
