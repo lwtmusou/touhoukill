@@ -89,6 +89,7 @@ SOURCES += \
     src/package/touhougod.cpp \
     src/package/washout.cpp \
     src/qmlui/qmlui.cpp \
+    src/qmlui/cardcontainer.cpp \
     src/qmlui/photo.cpp \
     src/qmlui/roomscene.cpp \
     src/server/ai.cpp \
@@ -171,6 +172,7 @@ HEADERS += \
     src/package/washout.h \
     src/pch.h \
     src/qmlui/qmlui.h \
+    src/qmlui/cardcontainer.h \
     src/qmlui/photo.h \
     src/qmlui/roomscene.h \
     src/server/ai.h \

@@ -1,6 +1,8 @@
 import QtQuick 6.5
 
-Item {
+import rocks.touhousatsu 1.0
+
+CppCardContainer {
     id: cardContainer
 
     property bool autoBack: false
@@ -11,16 +13,17 @@ Item {
     // QObject parent for created CardItems -- roomScene (see plan "CardItem and card container design").
     // visual parent is cardContainer; QObject parent stays roomScene so cards can move
     // between containers without reparent issues.
-    property var rootScene: null
+    property var roomScene: null
 
     function createItem(cardId: int): CardItem {
-        var item = cardItemComponent.createObject(rootScene, {
+        var item = cardItemComponent.createObject(roomScene, {
                                                       cardId: cardId,
                                                       visible: true,
                                                       opacity: 0
                                                   });
         item.parent = cardContainer;
         cardItems.push(item);
+        cardContainer.registerCardItem(item);
 
         return item;
     }
@@ -110,6 +113,7 @@ Item {
             if (cardItems[i].cardId === cardId) {
                 var item = cardItems[i];
                 cardItems.splice(i, 1);
+                cardContainer.unregisterCardItem(item);
                 item.destroy();
                 return item;
             }

@@ -23,10 +23,8 @@ Item {
     function addHandCard(cardId: int) {
         var item = cardArea.createItem(cardId);
         item.clicked.connect(function () {
-            item.toggleSelected();
-            // Notify RoomScene for target-selection activation (Task F).
             if (dashboard.roomScene !== null)
-                dashboard.roomScene.selectCard(dashboard.selectedCardIds());
+                dashboard.roomScene.toggleCardSelection(item.cardId);
         });
         cardArea.lay(Qt.AlignLeft, 1, 0, true, true);
     }
@@ -36,50 +34,13 @@ Item {
         cardArea.lay(Qt.AlignLeft, 1, 0, true, true);
     }
 
-    // Collect selected hand card IDs as an array.
-    function selectedCardIds() {
-        var ids = [];
-        var sel = cardArea.getSelectedItems();
-        for (var i = 0; i < sel.length; ++i)
-            ids.push(sel[i].cardId);
-        return ids;
-    }
-
-    // Hand-card enablement only (status-driven button enablement is in CppRoomScene::
-    // updateDashboardStatus). Hand-card isAvailable stays in QML until CardContainer
-    // is bridged.
-    function updateStatus() {
-        if (clientInstance === null)
-            return;
-
-        var s = clientInstance.status;
-        var rs = dashboard.roomScene;
-        var selfPlayer = rs !== null ? rs.Self : null;
-        var sc = s & Client.ClientStatusBasicMask;
-        var handCards = cardArea.cardItems;
-        for (var i = 0; i < handCards.length; ++i) {
-            var cid = handCards[i].cardId;
-            var enab = true;
-            if (cid !== -1 && selfPlayer !== null) {
-                var card = dashboard.clientInstance.getCard(cid);
-                if (sc === Client.Playing || sc === Client.Responding)
-                    enab = card.isAvailable(selfPlayer);
-            }
-            handCards[i].enabled = enab;
-        }
-
-        // If status changed away from selection mode, clear selections.
-        if (sc !== Client.Playing && sc !== Client.Responding && sc !== Client.Discarding && sc !== Client.Exchanging && sc !== Client.AskForShowOrPindian && sc
-                !== Client.AskForGeneralTaken)
-            cardArea.unselectAll(null);
-    }
-
     height: 360
 
     Component.onCompleted: {
-        dashboard.updateStatus();
-        if (dashboard.roomScene !== null)
+        if (dashboard.roomScene !== null) {
+            dashboard.roomScene.registerCardContainer(cardArea);
             dashboard.roomScene.updateDashboardStatus();
+        }
     }
 
     // Notify C++ of activeBox.canAccept changes so AskForGeneralTaken OK readiness
@@ -89,19 +50,8 @@ Item {
             dashboard.roomScene.setActiveBoxCanAccept(activeBox !== null && activeBox.canAccept);
     }
     onClientInstanceChanged: {
-        dashboard.updateStatus();
         if (dashboard.roomScene !== null)
             dashboard.roomScene.updateDashboardStatus();
-    }
-
-    // Status change: C++ updateDashboardStatus is called internally before
-    // notifyStatusChanged; QML only needs to update hand-card isAvailable enablement.
-    Connections {
-        function onStatusChanged() {
-            dashboard.updateStatus();
-        }
-
-        target: dashboard.clientInstance
     }
 
     Connections {
@@ -164,7 +114,7 @@ Item {
             anchors.right: buttonSet.left
             anchors.top: parent.top
             anchors.topMargin: 94
-            rootScene: dashboard.roomScene
+            roomScene: dashboard.roomScene
         }
 
         // Button set: platter bg.png (100x195) + 4 platter buttons stacked per old layout
@@ -210,13 +160,11 @@ Item {
                         if (rs !== null)
                             rs.respondToSkillInvoke(true);
                     } else if (basic === Client.Playing || basic === Client.Responding || basic === Client.AskForShowOrPindian) {
-                        var ids = dashboard.selectedCardIds();
-                        if (ids.length > 0 && rs !== null)
-                            rs.submitCardResponse(ids);
+                        if (rs !== null)
+                            rs.submitCardResponse();
                     } else if (basic === Client.Discarding || basic === Client.Exchanging) {
-                        var ids2 = dashboard.selectedCardIds();
-                        if (ids2.length > 0 && rs !== null)
-                            rs.submitDiscard(ids2);
+                        if (rs !== null)
+                            rs.submitDiscard();
                     }
                 }
             }
@@ -240,7 +188,7 @@ Item {
 
                     if (basic === Client.Playing) {
                         // Just unselect all (no server response for Playing cancel).
-                        dashboard.cardArea.unselectAll(null);
+                        dashboard.cardArea.unselectAll();
                     } else if (basic === Client.Responding || basic === Client.AskForShowOrPindian || basic === Client.Discarding || basic === Client.Exchanging || basic
                                === Client.AskForSkillInvoke || basic === Client.AskForPlayerChoose) {
                         if (rs !== null)

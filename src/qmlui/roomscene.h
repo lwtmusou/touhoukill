@@ -1,6 +1,7 @@
 #ifndef TOUHOUKILL_ROOMSCENE_H_
 #define TOUHOUKILL_ROOMSCENE_H_
 
+#include "cardcontainer.h"
 #include "client.h"
 #include "clientplayer.h"
 #include "photo.h"
@@ -58,16 +59,18 @@ public:
     [[nodiscard]] Q_INVOKABLE bool isCardTargetsFeasible(const Card *card, const QStringList &selectedTargetNames) const;
 
     // ---- Card/target selection (state held in C++, QML only calls these) ----
-    // Update selected card state from Dashboard. Passes the full selectedCardIds list
-    // (supports multi-select for Discarding/Exchanging). Resets target state, computes
-    // enabled targets, syncs Photo targetable flags, recomputes OK readiness.
-    Q_INVOKABLE void selectCard(const QVariantList &selectedCardIds);
+    // Update selected card state from the registered CardContainer's selectedCardIds.
+    // Resets target state, computes enabled targets, syncs Photo targetable, recomputes OK.
+    Q_INVOKABLE void selectCard();
+    // Toggle a hand card's selected state (via CardContainer), then selectCard().
+    Q_INVOKABLE void toggleCardSelection(int cardId);
     // Toggle a player in/out of the selected target list, then recompute OK readiness.
     Q_INVOKABLE void toggleTarget(const QString &playerName);
-    // Status-driven button enablement (cancel/discard) + clear selections on status
-    // change away from selection modes. Hand-card isAvailable enablement stays in QML
-    // (Dashboard.updateStatus) until CardContainer is bridged.
+    // Status-driven button/hand-card enablement (cancel/discard + isAvailable) +
+    // clear selections on status change away from selection modes.
     Q_INVOKABLE void updateDashboardStatus();
+    // Register the Dashboard's CardContainer so C++ can drive selection/enabled.
+    Q_INVOKABLE void registerCardContainer(CardContainer *container);
     // Register/unregister a Photo so C++ can drive its targetable/targetSelected.
     Q_INVOKABLE void registerPhoto(Photo *photo);
     Q_INVOKABLE void unregisterPhoto(Photo *photo);
@@ -78,8 +81,8 @@ public:
     // ---- Phase 3: submit ----
     Q_INVOKABLE void respondCard(const Card *card);
     // Aux-skill submit. Uses internally-held m_selectedTargets (no targetNames from QML).
-    Q_INVOKABLE void submitCardResponse(const QVariantList &cardIds);
-    Q_INVOKABLE void submitDiscard(const QVariantList &cardIds);
+    Q_INVOKABLE void submitCardResponse();
+    Q_INVOKABLE void submitDiscard();
     Q_INVOKABLE void discardCard(const Card *card);
 
     Q_INVOKABLE void respondToSkillInvoke(bool invoke);
@@ -163,6 +166,7 @@ private:
     // Card/target selection state (held in C++, QML reads via Q_PROPERTY/signals).
     QVariantList m_selectedCardIds;
     const Card *m_selectedCard = nullptr;
+    QPointer<CardContainer> m_cardContainer;
     QStringList m_selectedTargets;
     QStringList m_enabledTargetNames;
     bool m_targetSelectionActive = false;
@@ -176,6 +180,7 @@ private:
 
     void recomputeOkReadiness();
     void syncPhotoTargets();
+    void updateHandCardEnabled();
 
     bool gameStarted;
     bool gameOver;

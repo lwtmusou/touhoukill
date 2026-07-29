@@ -535,7 +535,7 @@ CppRoomScene {
     TablePile {
         id: tablePile
 
-        rootScene: roomScene
+        roomScene: roomScene
     }
 
     Column {

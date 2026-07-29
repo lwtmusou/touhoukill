@@ -1,6 +1,7 @@
 #include "roomscene.h"
 
 #include "aux-skills.h"
+#include "cardcontainer.h"
 #include "choosegeneraldialog.h"
 #include "client.h"
 #include "clientplayer.h"
@@ -494,7 +495,7 @@ void RoomScene::discardCard(const Card *card)
     c->onPlayerDiscardCards(card);
 }
 
-void RoomScene::submitCardResponse(const QVariantList &cardIds)
+void RoomScene::submitCardResponse()
 {
     Client *c = ClientInstance;
     if (c == nullptr) {
@@ -502,6 +503,7 @@ void RoomScene::submitCardResponse(const QVariantList &cardIds)
         return;
     }
 
+    const QVariantList &cardIds = m_selectedCardIds;
     const Card *responseCard = nullptr;
     if (m_currentViewAsSkill != nullptr && !cardIds.isEmpty()) {
         QList<const Card *> cards;
@@ -524,8 +526,9 @@ void RoomScene::submitCardResponse(const QVariantList &cardIds)
     c->onPlayerResponseCard(responseCard, targets.isEmpty() ? QList<const Player *>() : targets);
 }
 
-void RoomScene::submitDiscard(const QVariantList &cardIds)
+void RoomScene::submitDiscard()
 {
+    const QVariantList &cardIds = m_selectedCardIds;
     Client *c = ClientInstance;
     if (c == nullptr) {
         qWarning() << "RoomScene::submitDiscard: ClientInstance is null";
@@ -722,21 +725,21 @@ bool RoomScene::discardEnabled() const
     return m_discardEnabled;
 }
 
-void RoomScene::selectCard(const QVariantList &selectedCardIds)
+void RoomScene::selectCard()
 {
-    m_selectedCardIds = selectedCardIds;
+    m_selectedCardIds = m_cardContainer != nullptr ? m_cardContainer->selectedCardIds() : QVariantList();
     m_selectedTargets.clear();
     m_enabledTargetNames.clear();
     m_targetSelectionActive = false;
     syncPhotoTargets();
 
-    if (selectedCardIds.isEmpty() || ClientInstance == nullptr || Self == nullptr) {
+    if (m_selectedCardIds.isEmpty() || ClientInstance == nullptr || Self == nullptr) {
         m_selectedCard = nullptr;
         recomputeOkReadiness();
         return;
     }
 
-    m_selectedCard = ClientInstance->getCard(selectedCardIds.first().toInt());
+    m_selectedCard = ClientInstance->getCard(m_selectedCardIds.first().toInt());
     if (m_selectedCard == nullptr) {
         recomputeOkReadiness();
         return;
@@ -769,6 +772,19 @@ void RoomScene::toggleTarget(const QString &playerName)
         m_selectedTargets.append(playerName);
     syncPhotoTargets();
     recomputeOkReadiness();
+}
+
+void RoomScene::toggleCardSelection(int cardId)
+{
+    if (m_cardContainer == nullptr)
+        return;
+    m_cardContainer->toggleCardSelected(cardId);
+    selectCard();
+}
+
+void RoomScene::registerCardContainer(CardContainer *container)
+{
+    m_cardContainer = container;
 }
 
 void RoomScene::updateDashboardStatus()
@@ -811,6 +827,8 @@ void RoomScene::updateDashboardStatus()
             m_selectedTargets.clear();
             m_enabledTargetNames.clear();
             m_targetSelectionActive = false;
+            if (m_cardContainer != nullptr)
+                m_cardContainer->unselectAll();
             syncPhotoTargets();
         }
     }
@@ -823,6 +841,7 @@ void RoomScene::updateDashboardStatus()
         m_discardEnabled = newDiscard;
         emit discardEnabledChanged();
     }
+    updateHandCardEnabled();
     recomputeOkReadiness();
 }
 
@@ -877,6 +896,22 @@ void RoomScene::syncPhotoTargets()
     }
 }
 
+void RoomScene::updateHandCardEnabled()
+{
+    if (m_cardContainer == nullptr || ClientInstance == nullptr || Self == nullptr)
+        return;
+    const int basic = static_cast<int>(ClientInstance->getStatus()) & Client::ClientStatusBasicMask;
+    const QVariantList ids = m_cardContainer->cardItemIds();
+    for (const QVariant &v : ids) {
+        const int cardId = v.toInt();
+        const Card *card = ClientInstance->getCard(cardId);
+        bool enab = true;
+        if (card != nullptr && (basic == Client::Playing || basic == Client::Responding))
+            enab = card->isAvailable(Self);
+        m_cardContainer->setCardEnabled(cardId, enab);
+    }
+}
+
 namespace {
 void registerRoomScene()
 {
@@ -889,6 +924,11 @@ void registerRoomScene()
 
     if (ret == -1)
         qDebug() << "Failed to register CppPhoto to Qml";
+
+    ret = qmlRegisterType<CardContainer>("rocks.touhousatsu", 1, 0, "CppCardContainer");
+
+    if (ret == -1)
+        qDebug() << "Failed to register CppCardContainer to Qml";
 }
 } // namespace
 

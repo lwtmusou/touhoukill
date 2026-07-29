@@ -302,8 +302,8 @@
 
 ### 2026-07-20：A-手牌区同步实现
 - **桥接层**：`roomscene.h` 加 `notifyMoveCardsGot`/`notifyMoveCardsLost` 信号（携 `moveId` + `QVariantList moves`）；`roomscene.cpp` `connectClientSignals()` 连接 `Client::move_cards_got`/`move_cards_lost`，lambda 遍历 `QList<CardsMoveStruct>` 转 `QVariantList<QVariantMap>`（字段：`cardIds`/`fromPlace`/`toPlace`/`fromPlayer`(`Player *`)/`toPlayer`(`Player *`)/`fromPileName`/`toPileName`），`from`/`to` 直接用结构体指针（`getCards`/`loseCards` 已 `getPlayer` 补设，非 null），加 `#include "structs.h"`。
-- **CardContainer.qml**：加 `id: cardContainer` + `property var rootScene`；`createItem` 改 `createObject(rootScene)` + `item.parent = cardContainer`（QObject parent = roomScene，visual parent = cardContainer，见"CardItem 与牌容器设计"小节）；加 `removeItem(cardId)`（按 cardId 找 + destroy）。
-- **Dashboard.qml**：加 `property var roomScene` + `addHandCard(cardId)`/`removeHandCard(cardId)` 函数（调 `cardArea.createItem`/`removeItem` + `lay(Qt.AlignLeft, 1, 0, true, true)`）；CardContainer 设 `rootScene: dashboard.roomScene`。
+- **CardContainer.qml**：加 `id: cardContainer` + `property var roomScene`；`createItem` 改 `createObject(roomScene)` + `item.parent = cardContainer`（QObject parent = roomScene，visual parent = cardContainer，见"CardItem 与牌容器设计"小节）；加 `removeItem(cardId)`（按 cardId 找 + destroy）。
+- **Dashboard.qml**：加 `property var roomScene` + `addHandCard(cardId)`/`removeHandCard(cardId)` 函数（调 `cardArea.createItem`/`removeItem` + `lay(Qt.AlignLeft, 1, 0, true, true)`）；CardContainer 设 `roomScene: dashboard.roomScene`。
 - **RoomScene.qml**：Dashboard 实例设 `roomScene: roomScene`；`onNotifyMoveCardsGot`/`onNotifyMoveCardsLost` 处理 `toPlace`/`fromPlace == Player.PlaceHand && player.objectName == Self.objectName` 的 move，遍历 `cardIds` 调 `dashboard.addHandCard`/`removeHandCard`。
 - **CardItem.qml**：`onCardIdChanged` 的 `cardId == -1` 分支补全牌背显示（`cardImage.source = card-back.png` + 隐藏花色/点数）。
 
@@ -372,9 +372,9 @@
 - **桥接层简化**：`roomscene.cpp` `move_cards_got`/`lost` lambda 去掉 `equipLocations` 解析（dynamic_cast EquipCard）与 `#include "standard.h"`；QML `onNotifyMoveCardsGot/Lost` 改读 `Sanguosha.getEngineCard(cardId).getRealCard().location` 得槽位（getEngineCard 返回 WrappedCard，须 getRealCard 拿真实 EquipCard；详见"Qt6 moc / QML 约束"getRealCard 条）。槽位信息不再经桥接层传，QML 直读 Card Q_PROPERTY。
 
 ### 2026-07-23：A-TablePile 同步实现
-- **新建 `qml/TablePile.qml`**：Item 根（`anchors.centerIn: parent`，width `parent.width*0.45`/height 256）内含 CardContainer（id `pile`，`rootScene` 透传）。`addCard(cardId)`/`removeCard(cardId)` 走 `pile.createItem`/`removeItem` + `lay(Qt.AlignHCenter,1,0,true,true)`。延迟清除对标旧 `TablePile.cpp`：`clearTimestamps`（{}，cardId->timestamp，新牌 `Number.MAX_VALUE`）+ `currentTime`（Timer 每秒 +1，`running: pile.cardItems.length>0`）；`_markOverflowClearance` 超量（`length - max(numVisible, numAdded+1)`）时给最老未标记牌设时间戳；`_checkClearance` 倒序遍历，`currentTime - ts > sClearanceDelayBuckets(3)` 的牌从 cardItems splice + `destroy()` + 删时间戳，有移除则重排。`numCardsVisible = floor(width/183)+1`（对标旧 `setSize`）。TablePile 统一处理 `PlaceTable`/`PlaceJudge`/`DiscardPile`，不区分；`PlaceDelayedTrick`（判定区容器）/`PlaceSpecial`（私人牌堆）不在本次范围。
+- **新建 `qml/TablePile.qml`**：Item 根（`anchors.centerIn: parent`，width `parent.width*0.45`/height 256）内含 CardContainer（id `pile`，`roomScene` 透传）。`addCard(cardId)`/`removeCard(cardId)` 走 `pile.createItem`/`removeItem` + `lay(Qt.AlignHCenter,1,0,true,true)`。延迟清除对标旧 `TablePile.cpp`：`clearTimestamps`（{}，cardId->timestamp，新牌 `Number.MAX_VALUE`）+ `currentTime`（Timer 每秒 +1，`running: pile.cardItems.length>0`）；`_markOverflowClearance` 超量（`length - max(numVisible, numAdded+1)`）时给最老未标记牌设时间戳；`_checkClearance` 倒序遍历，`currentTime - ts > sClearanceDelayBuckets(3)` 的牌从 cardItems splice + `destroy()` + 删时间戳，有移除则重排。`numCardsVisible = floor(width/183)+1`（对标旧 `setSize`）。TablePile 统一处理 `PlaceTable`/`PlaceJudge`/`DiscardPile`，不区分；`PlaceDelayedTrick`（判定区容器）/`PlaceSpecial`（私人牌堆）不在本次范围。
 - **`qml/CardContainer.qml`**：`lay` 加 `Qt.AlignHCenter` 单行居中分支（`x = (width - (step*(length-1)+cardWidth))/2`，负则 0），TablePile 用；手牌区 `AlignLeft` 不受影响。
-- **`qml/RoomScene.qml`**：加 `TablePile { id: tablePile; rootScene: roomScene }` 实例（SkillDock 后）；`onNotifyMoveCardsGot` 加 `toPlace === PlaceTable||PlaceJudge||DiscardPile` 分支调 `tablePile.addCard`，`onNotifyMoveCardsLost` 加 `fromPlace` 同三者分支调 `tablePile.removeCard`；注释更新（"Judge/pile/table deferred" → "Table pile ... routed to tablePile; Judge area(PlaceDelayedTrick)/private piles(PlaceSpecial) deferred"）。
+- **`qml/RoomScene.qml`**：加 `TablePile { id: tablePile; roomScene: roomScene }` 实例（SkillDock 后）；`onNotifyMoveCardsGot` 加 `toPlace === PlaceTable||PlaceJudge||DiscardPile` 分支调 `tablePile.addCard`，`onNotifyMoveCardsLost` 加 `fromPlace` 同三者分支调 `tablePile.removeCard`；注释更新（"Judge/pile/table deferred" → "Table pile ... routed to tablePile; Judge area(PlaceDelayedTrick)/private piles(PlaceSpecial) deferred"）。
 - **`.pro`** OTHER_FILES 加 `qml/TablePile.qml`。
 - TODO：TablePile 的 `showJudgeResult`（判定结果高亮，旧 `TablePile.cpp:104`）未移植；牌区进出场动画（手牌/装备/TablePile 当前简化"新建+销毁"）待"CardItem 移动动画"任务统一做原实例移动 + 坐标映射起点 + 飞行。
 
@@ -463,6 +463,14 @@
 - **`qml/Dashboard.qml`**：移除 cancelEnabled/discardEnabled property（绑 `roomScene.cancelEnabled`/`roomScene.discardEnabled`）；`okEnabled` 改 readonly 绑定（AskForGeneralTaken→activeBox.canAccept，其余→`roomScene.okEnabled`）。移除 `updateOkReadiness`。`updateStatus` 简化为只管手牌 isAvailable + unselect（按钮状态在 C++）。移除 Connections onCanAcceptChanged/onSelectedTargetsChanged。clicked connect 改调 `roomScene.selectCard(selectedCardIds())`。OK 提交 `submitCardResponse(ids)`（不传 targetNames）。
 - **`.pro`**：SOURCES/HEADERS 加 `cpphoto.cpp`/`cpphoto.h`。
 - 手牌 isAvailable enabled 保留 QML（Dashboard.updateStatus），待 CardContainer 桥接后迁 C++。
+
+### 2026-07-29：CardContainer 桥接 + Dashboard 选牌逻辑全迁 C++
+- **新建 `src/qmlui/cardcontainer.h/cpp`**：`CardContainer`（继承 QQuickItem）持有 `m_cardItems` 镜像（QList<QPointer<QQuickItem>>，register/unregister 维护），Q_INVOKABLE `selectedCardIds()`/`cardItemIds()`/`toggleCardSelected(cardId)`/`unselectAll()`/`setCardEnabled(cardId, enabled)`。CardItem 的 cardId/selected 通过 QObject::property/setProperty 访问。lay + QML `cardItems` list property 保留 QML（visual）。注册为 QML 类型 `CppCardContainer`。
+- **`qml/CardContainer.qml`**：root 改 `CppCardContainer`，`createItem`/`removeItem` 加 `registerCardItem`/`unregisterCardItem`（保持 C++ 镜像同步）。lay/cardItems/insertItem/takeItem 保留 QML。
+- **`src/qmlui/roomscene.h/cpp`** 扩展：加 `m_cardContainer`（QPointer<CardContainer>）+ `Q_INVOKABLE registerCardContainer`。`selectCard()` 改无参（内部 `m_cardContainer->selectedCardIds()`）。加 `Q_INVOKABLE toggleCardSelection(cardId)`（`m_cardContainer->toggleCardSelected` + `selectCard`）。加 `updateHandCardEnabled()`（遍历 `cardItemIds`，getCard + isAvailable，setCardEnabled）。`updateDashboardStatus` 加 `updateHandCardEnabled()` + 清选时 `m_cardContainer->unselectAll()`。`submitCardResponse()`/`submitDiscard()` 改无参（内部用 `m_selectedCardIds`）。
+- **`qml/Dashboard.qml`**：移除 `updateStatus`/`selectedCardIds`/Connections `onStatusChanged`（手牌 isAvailable + unselect 全在 C++）。clicked connect 改调 `roomScene.toggleCardSelection(item.cardId)`（移除 QML `toggleSelected`，C++ 处理）。OK 提交 `submitCardResponse()`/`submitDiscard()` 无参。Cancel `cardArea.unselectAll()` 无参。Component.onCompleted 加 `roomScene.registerCardContainer(cardArea)` + `updateDashboardStatus()`。Dashboard 只剩 visual（addHandCard/removeHandCard 创建 + lay）+ 按钮转发，不迁 CppDashboard。
+- **`.pro`**：SOURCES/HEADERS 加 `cardcontainer.cpp`/`cardcontainer.h`。
+- Dashboard 选牌逻辑全迁 C++ 完成（手牌 isAvailable + 选中态 + 按钮状态 + 目标选择）。
 
 ## 7. 下一步
 

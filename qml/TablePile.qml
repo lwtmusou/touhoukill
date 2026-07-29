@@ -16,7 +16,7 @@ Item {
 
     // QObject parent for created CardItems -- roomScene (see plan "CardItem and card
     // container design"). visual parent is the inner CardContainer.
-    property var rootScene: null
+    property var roomScene: null
     readonly property int sClearanceDelayBuckets: 3
     readonly property int sClearanceUpdateIntervalMsec: 1000
 
@@ -84,7 +84,7 @@ Item {
         id: pile
 
         anchors.fill: parent
-        rootScene: tablePile.rootScene
+        roomScene: tablePile.roomScene
     }
 
     Timer {
