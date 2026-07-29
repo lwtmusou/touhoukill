@@ -71,6 +71,9 @@ public:
     // Register/unregister a Photo so C++ can drive its targetable/targetSelected.
     Q_INVOKABLE void registerPhoto(Photo *photo);
     Q_INVOKABLE void unregisterPhoto(Photo *photo);
+    // QML notifies activeBox.canAccept changes so C++ can drive OK readiness for
+    // AskForGeneralTaken (choose-general) without QML binding activeBox itself.
+    Q_INVOKABLE void setActiveBoxCanAccept(bool canAccept);
 
     // ---- Phase 3: submit ----
     Q_INVOKABLE void respondCard(const Card *card);
@@ -169,6 +172,7 @@ private:
     bool m_okEnabled = false;
     bool m_cancelEnabled = false;
     bool m_discardEnabled = false;
+    bool m_activeBoxCanAccept = false; // activeBox.canAccept for AskForGeneralTaken OK
 
     void recomputeOkReadiness();
     void syncPhotoTargets();

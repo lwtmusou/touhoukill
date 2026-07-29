@@ -837,6 +837,12 @@ void RoomScene::unregisterPhoto(Photo *photo)
     m_photos.removeAll(photo);
 }
 
+void RoomScene::setActiveBoxCanAccept(bool canAccept)
+{
+    m_activeBoxCanAccept = canAccept;
+    recomputeOkReadiness();
+}
+
 void RoomScene::recomputeOkReadiness()
 {
     bool newOk = false;
@@ -849,8 +855,9 @@ void RoomScene::recomputeOkReadiness()
                 newOk = m_selectedCard->targetFixed(Self) || isCardTargetsFeasible(m_selectedCard, m_selectedTargets);
         } else if (s == Client::Discarding || s == Client::Exchanging) {
             newOk = !m_selectedCardIds.isEmpty();
+        } else if (s == Client::AskForGeneralTaken) {
+            newOk = m_activeBoxCanAccept;
         }
-        // AskForGeneralTaken: okEnabled driven by QML activeBox.canAccept binding, not here.
     }
     if (m_okEnabled != newOk) {
         m_okEnabled = newOk;

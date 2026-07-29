@@ -4,6 +4,7 @@ import rocks.touhousatsu 1.0
 Item {
     id: dashboard
 
+    property var activeBox: parent !== null ? parent.activeBox : null
     property var clientInstance: parent ? parent.ClientInstance : null
 
     // equipArea (SelfEquipArea), judgeArea (JudgeArea), phaseItem (PhaseItem):
@@ -12,15 +13,7 @@ Item {
     // move dispatch (addEquip/removeEquip, addDelayedTrick/removeDelayedTrick).
     property alias equipArea: equipArea
     property alias judgeArea: judgeArea
-    readonly property bool okEnabled: {
-        if (clientInstance === null)
-            return false;
-        if ((clientInstance.status & Client.ClientStatusBasicMask) === Client.AskForGeneralTaken) {
-            var box = parent !== null ? parent.activeBox : null;
-            return box !== null && box.canAccept;
-        }
-        return roomScene !== null && roomScene.okEnabled;
-    }
+    readonly property bool okEnabled: roomScene !== null && roomScene.okEnabled
     property alias phaseItem: phaseItem
     required property var photo
     property var roomScene: null
@@ -88,6 +81,13 @@ Item {
         if (dashboard.roomScene !== null)
             dashboard.roomScene.updateDashboardStatus();
     }
+
+    // Notify C++ of activeBox.canAccept changes so AskForGeneralTaken OK readiness
+    // is driven by C++ (setActiveBoxCanAccept -> recomputeOkReadiness).
+    onActiveBoxChanged: {
+        if (dashboard.roomScene !== null)
+            dashboard.roomScene.setActiveBoxCanAccept(activeBox !== null && activeBox.canAccept);
+    }
     onClientInstanceChanged: {
         dashboard.updateStatus();
         if (dashboard.roomScene !== null)
@@ -102,6 +102,15 @@ Item {
         }
 
         target: dashboard.clientInstance
+    }
+
+    Connections {
+        function onCanAcceptChanged() {
+            if (dashboard.roomScene !== null)
+                dashboard.roomScene.setActiveBoxCanAccept(activeBox !== null && activeBox.canAccept);
+        }
+
+        target: activeBox
     }
 
     Image {
