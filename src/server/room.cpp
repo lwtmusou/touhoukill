@@ -6766,10 +6766,12 @@ void Room::makeDamage(const QString &source, const QString &target, QSanProtocol
         return;
     // damage
     if (nature == S_CHEAT_HP_LOSE) {
-        loseHp(targetPlayer, point);
+        if (point > 0)
+            loseHp(targetPlayer, point);
         return;
     } else if (nature == S_CHEAT_MAX_HP_LOSE) {
-        loseMaxHp(targetPlayer, point);
+        if (point > 0)
+            loseMaxHp(targetPlayer, point);
         return;
     } else if (nature == S_CHEAT_HP_RECOVER) {
         RecoverStruct r;
