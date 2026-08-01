@@ -631,6 +631,23 @@ void RoomScene::updateAuxSkill()
             if (p.endsWith(u'!'))
                 p.chop(1);
             m_responseSkill->setPattern(p);
+            // Mirror old updateStatus (uibackup/roomscene.cpp:2864-2871): set the
+            // HandlingMethod on ResponseSkill so matchPattern's isCardLimited check
+            // uses the right method for the exact responding status. askForCard and
+            // askForUseCard share S_COMMAND_RESPONSE_CARD but differ in method:
+            // Responding=MethodResponse, RespondingUse=MethodUse,
+            // RespondingForDiscard=MethodDiscard, RespondingNonTrigger=MethodNone.
+            // Playing has no pattern match (uses isAvailable in updateHandCardEnabled).
+            if (basic == Client::Responding) {
+                if (status == Client::RespondingUse)
+                    m_responseSkill->setRequest(Card::MethodUse);
+                else if (status == Client::RespondingForDiscard)
+                    m_responseSkill->setRequest(Card::MethodDiscard);
+                else if (status == Client::RespondingNonTrigger)
+                    m_responseSkill->setRequest(Card::MethodNone);
+                else
+                    m_responseSkill->setRequest(Card::MethodResponse);
+            }
             m_currentViewAsSkill = m_responseSkill;
         }
         break;
@@ -748,8 +765,20 @@ void RoomScene::selectCard()
         return;
     }
 
-    const int basic = static_cast<int>(ClientInstance->getStatus()) & Client::ClientStatusBasicMask;
+    const Client::Status status = ClientInstance->getStatus();
+    const int basic = static_cast<int>(status) & Client::ClientStatusBasicMask;
     if (basic != Client::Playing && basic != Client::Responding) {
+        recomputeOkReadiness();
+        return;
+    }
+
+    // Target selection is only for card *use* (Playing phase or RespondingUse).
+    // Other responding variants are pure card responses/discards with no
+    // player-chosen targets: pure Responding (askForCard MethodResponse, server
+    // handles targeting), RespondingForDiscard (discard, no target),
+    // RespondingNonTrigger (MethodNone show/pindian-like, no target). Mirror old
+    // enableTargets (uibackup/roomscene.cpp:1415-1418) no-target-selection branch.
+    if (status == Client::Responding || status == Client::RespondingForDiscard || status == Client::RespondingNonTrigger) {
         recomputeOkReadiness();
         return;
     }
@@ -864,12 +893,25 @@ void RoomScene::recomputeOkReadiness()
 {
     bool newOk = false;
     if (ClientInstance != nullptr) {
-        const int s = static_cast<int>(ClientInstance->getStatus()) & Client::ClientStatusBasicMask;
+        const Client::Status status = ClientInstance->getStatus();
+        const int s = static_cast<int>(status) & Client::ClientStatusBasicMask;
         if (s == Client::AskForSkillInvoke) {
             newOk = true;
         } else if (s == Client::Playing || s == Client::Responding || s == Client::AskForShowOrPindian) {
-            if (m_selectedCard != nullptr && Self != nullptr)
-                newOk = m_selectedCard->targetFixed(Self) || isCardTargetsFeasible(m_selectedCard, m_selectedTargets);
+            if (m_selectedCard != nullptr && Self != nullptr) {
+                // No target selection (OK ready once a card is picked) for: targetFixed
+                // card, pure Responding / RespondingForDiscard / RespondingNonTrigger
+                // (askForCard responses/discards with no player-chosen targets),
+                // AskForShowOrPindian. Mirror old enableTargets
+                // (uibackup/roomscene.cpp:1415-1431). Otherwise (Playing or
+                // RespondingUse with non-targetFixed card) need feasible targets.
+                const bool noTargetSelection = m_selectedCard->targetFixed(Self) || status == Client::Responding || status == Client::RespondingForDiscard
+                    || status == Client::RespondingNonTrigger || s == Client::AskForShowOrPindian;
+                if (noTargetSelection)
+                    newOk = true;
+                else
+                    newOk = isCardTargetsFeasible(m_selectedCard, m_selectedTargets);
+            }
         } else if (s == Client::Discarding || s == Client::Exchanging) {
             newOk = !m_selectedCardIds.isEmpty();
         } else if (s == Client::AskForGeneralTaken) {
@@ -904,8 +946,23 @@ void RoomScene::updateHandCardEnabled()
         const int cardId = v.toInt();
         const Card *card = ClientInstance->getCard(cardId);
         bool enab = true;
-        if (card != nullptr && (basic == Client::Playing || basic == Client::Responding))
-            enab = card->isAvailable(Self);
+        if (card != nullptr) {
+            if (basic == Client::Playing) {
+                // Play phase: card is freely played, gate by general availability.
+                enab = card->isAvailable(Self);
+            } else if (basic == Client::Responding) {
+                // askForCard / askForUseCard: filter by the response pattern so only
+                // pattern-matching cards (e.g. "jink") are selectable. matchPattern
+                // also applies isCardLimited with the HandlingMethod set in
+                // updateAuxSkill (MethodResponse/Use/Discard/None per exact status).
+                // For @@skill patterns (ViewAsSkill, G task) m_currentViewAsSkill is
+                // not the response skill; fall back to isAvailable as a stopgap.
+                if (m_currentViewAsSkill == m_responseSkill)
+                    enab = m_responseSkill->matchPattern(Self, card);
+                else
+                    enab = card->isAvailable(Self);
+            }
+        }
         m_cardContainer->setCardEnabled(cardId, enab);
     }
 }
