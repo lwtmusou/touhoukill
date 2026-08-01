@@ -939,11 +939,14 @@ public:
             if (x == 0)
                 return false;
             int y = x / 2;
-            if (x > player->getCards("hes").length())
-                room->loseHp(player, y);
-            else {
-                if (!room->askForDiscard(player, objectName(), x, x, true, true, "@jinguo:" + QString::number(x) + ":" + QString::number(y)))
+            if (x > player->getCards("hes").length()) {
+                if (y > 0)
                     room->loseHp(player, y);
+            } else {
+                if (!room->askForDiscard(player, objectName(), x, x, true, true, "@jinguo:" + QString::number(x) + ":" + QString::number(y))) {
+                    if (y > 0)
+                        room->loseHp(player, y);
+                }
             }
         } else {
             player->loseMark("@kinki", 1);
@@ -3105,15 +3108,13 @@ public:
 
         damage.to->tag["zuosui_source"] = QVariant::fromValue(player);
         QString choice = room->askForChoice(damage.to, objectName(), "1+2+3+4");
-        int x = 0;
+        int x = 4;
         if (choice == "1")
             x = 1;
         else if (choice == "2")
             x = 2;
         else if (choice == "3")
             x = 3;
-        else
-            x = 4;
         room->sendLog("#zuosuichoice", damage.to, objectName(), QList<ServerPlayer *>(), QString::number(x));
         player->tag["zuosui_number"] = QVariant::fromValue(x);
         choice = room->askForChoice(player, objectName(), "losehp+discard");
@@ -5235,8 +5236,7 @@ public:
         foreach (const QString &name, generals) {
             const General *p = Sanguosha->getGeneral(name);
             foreach (const Skill *skill, p->getSkillList()) {
-                if (skill->getShowType() == "static" && !skill->isLordSkill() && !skill->isAttachedLordSkill() && !skill->isLimited()
-                    && !skill->isWake() && !skill->isEternal())
+                if (skill->getShowType() == "static" && !skill->isLordSkill() && !skill->isAttachedLordSkill() && !skill->isLimited() && !skill->isWake() && !skill->isEternal())
                     show << skill;
             }
         }
@@ -6390,7 +6390,8 @@ public:
         invoke->invoker->tag["xianji_target"] = QVariant::fromValue(invoke->targets.first());
         QString choice = room->askForChoice(invoke->invoker, objectName(), "loseHP+recoverHP");
         if (choice == "loseHP") {
-            room->loseHp(invoke->targets.first(), num);
+            if (num > 0)
+                room->loseHp(invoke->targets.first(), num);
         } else {
             RecoverStruct recover;
             recover.who = invoke->invoker;
