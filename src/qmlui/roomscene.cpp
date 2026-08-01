@@ -743,6 +743,11 @@ bool RoomScene::discardEnabled() const
 void RoomScene::selectCard()
 {
     m_selectedCardIds = m_cardContainer != nullptr ? m_cardContainer->selectedCardIds() : QVariantList();
+    // Re-evaluate hand-card enablement on selection change so viewFilter's
+    // selected.isEmpty() guard takes effect (OneCard skills: selecting one card
+    // disables the rest; unselecting re-enables them). Mirrors old
+    // startPending->updatePending re-evaluation on selection.
+    updateHandCardEnabled();
     m_selectedTargets.clear();
     m_enabledTargetNames.clear();
     m_targetSelectionActive = false;
@@ -941,6 +946,21 @@ void RoomScene::updateHandCardEnabled()
     if (m_cardContainer == nullptr || ClientInstance == nullptr || Self == nullptr)
         return;
     const int basic = static_cast<int>(ClientInstance->getStatus()) & Client::ClientStatusBasicMask;
+
+    // Build the currently-selected card list for viewFilter's "selected" argument
+    // (Responding only -- the cards already chosen for this OneCard/multi response).
+    QList<int> selectedIds;
+    QList<const Card *> selectedCards;
+    if (basic == Client::Responding) {
+        for (const QVariant &id : m_selectedCardIds) {
+            const int cid = id.toInt();
+            selectedIds.append(cid);
+            const Card *c = ClientInstance->getCard(cid);
+            if (c != nullptr)
+                selectedCards.append(c);
+        }
+    }
+
     const QVariantList ids = m_cardContainer->cardItemIds();
     for (const QVariant &v : ids) {
         const int cardId = v.toInt();
@@ -951,16 +971,18 @@ void RoomScene::updateHandCardEnabled()
                 // Play phase: card is freely played, gate by general availability.
                 enab = card->isAvailable(Self);
             } else if (basic == Client::Responding) {
-                // askForCard / askForUseCard: filter by the response pattern so only
-                // pattern-matching cards (e.g. "jink") are selectable. matchPattern
-                // also applies isCardLimited with the HandlingMethod set in
-                // updateAuxSkill (MethodResponse/Use/Discard/None per exact status).
-                // For @@skill patterns (ViewAsSkill, G task) m_currentViewAsSkill is
-                // not the response skill; fall back to isAvailable as a stopgap.
-                if (m_currentViewAsSkill == m_responseSkill)
-                    enab = m_responseSkill->matchPattern(Self, card);
-                else
+                if (m_currentViewAsSkill != nullptr) {
+                    // Skill path: ViewAsSkill::viewFilter (polymorphic), same interface
+                    // old startPending->updatePending used. For OneCardViewAsSkill
+                    // (ResponseSkill) this enforces selected.isEmpty() (single-select)
+                    // and the hasFlag("using") guard. Already-selected cards stay
+                    // enabled so the player can click to unselect them.
+                    enab = selectedIds.contains(cardId) || m_currentViewAsSkill->viewFilter(selectedCards, card);
+                } else {
+                    // @@skill pattern (ViewAsSkill, G task): m_currentViewAsSkill is
+                    // null, fall back to isAvailable as a stopgap.
                     enab = card->isAvailable(Self);
+                }
             }
         }
         m_cardContainer->setCardEnabled(cardId, enab);

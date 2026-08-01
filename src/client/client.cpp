@@ -175,6 +175,14 @@ Client::Client(QObject *parent, const QString &filename)
 #else
     prompt_doc->setDefaultFont(QFont("SimHei"));
 #endif
+    // promptText is a Q_PROPERTY with NOTIFY promptTextChanged; many askFor*
+    // handlers (askForNullification/askForSinglePeach/askForSkillInvoke/
+    // askForDiscard/askForCardShow/...) set the prompt via prompt_doc->setHtml
+    // directly rather than setPromptList. Route all prompt_doc content changes
+    // (setHtml/clear/...) through one signal so QML PromptBox always updates.
+    connect(prompt_doc, &QTextDocument::contentsChanged, this, [this] {
+        emit promptTextChanged(promptText());
+    });
 }
 
 Client::~Client()
@@ -918,8 +926,17 @@ void Client::setStatus(Status status)
         _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     else
         _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_UNKNOWN);
-    if (old_status != status)
+    if (old_status != status) {
+        // Clear the prompt when the interaction ends (mirror old updateStatus NotActive
+        // case: prompt_doc->clear() + prompt_box->disappear()). The contentsChanged
+        // connection in the constructor emits promptTextChanged so the QML PromptBox
+        // (visible bound to promptText !== "") hides. processServerRequest calls
+        // setStatus(NotActive) before dispatching a new askFor*, so the stale prompt
+        // is cleared before the new request sets its own.
+        if (status == NotActive && !prompt_doc->toPlainText().isEmpty())
+            prompt_doc->clear();
         emit status_changed(status);
+    }
 }
 
 Client::Status Client::getStatus() const
@@ -1125,7 +1142,8 @@ QString Client::setPromptList(const QStringList &texts)
     }
 
     prompt_doc->setHtml(prompt);
-    emit promptTextChanged(prompt_doc->toPlainText());
+    // promptTextChanged is emitted by the prompt_doc::contentsChanged connection
+    // in the constructor (covers setHtml here and direct setHtml elsewhere).
     return prompt;
 }
 
