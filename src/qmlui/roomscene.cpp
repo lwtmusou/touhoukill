@@ -431,8 +431,6 @@ QStringList RoomScene::enabledTargetsForCard(const Card *card, const QStringList
 
     const QList<ClientPlayer *> players = client->getPlayers();
     for (const ClientPlayer *player : players) {
-        if (player == Self)
-            continue;
         int maxVotes = 0;
         card->targetFilter(selected, player, Self, maxVotes);
         if (maxVotes > 0)

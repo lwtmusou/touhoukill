@@ -455,13 +455,13 @@ CppPhoto {
         border.width: photo.targetSelected ? 3 : 2
         color: "transparent"
         radius: 4
-        visible: photo.targetable && !photo.selfPhoto
+        visible: photo.targetable
     }
 
     // Click to toggle this Photo as a target (CppRoomScene::toggleTarget).
     MouseArea {
         anchors.fill: parent
-        enabled: photo.targetable && !photo.selfPhoto
+        enabled: photo.targetable
         visible: enabled
 
         onClicked: {

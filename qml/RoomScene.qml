@@ -159,6 +159,8 @@ CppRoomScene {
     Component.onCompleted: {
         backgroundImage.source = G.getAssetUrl(Config.TableBgImage);
 
+        roomScene.registerPhoto(selfPhoto);
+
         var playercount = Sanguosha.getPlayerCount(ServerInfo.GameMode);
 
         for (var i = 1; i < playercount; ++i) {
