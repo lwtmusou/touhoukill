@@ -102,7 +102,7 @@
   **简化策略（第一阶段最小闭环）**：A → B → C → D → E（先只支持 `targetFixed` 的卡：桃自用、无懈可击等），再 F 补目标选择（杀/闪/桃救人等），G 与"Dashboard 技能按钮"任务合并。
 - [ ] **CardItem 移动动画**（牌区同步的动画完善，A 子任务后续）：当前手牌/装备/TablePile 的进出场是简化"新建+销毁"模式——牌进区域时 `createItem` 在容器原点(0,0)创建后 `lay()`+`goBack()` 飞向 `homePos`（起点不自然，非从源位置飞来）；牌离区域时直接 `removeItem` destroy（无飞出动画）。本任务统一改为"原实例移动"（见"CardItem 与牌容器设计"小节）：容器间移动用原 CardItem 实例，切 visual parent 前后用 `mapToItem`/`mapFromItem` 把牌当前位置映射到目标容器坐标系作动画起点，`lay()` 设 `homeX`/`homeY`，`goBack()` 飞行；无目标的牌 `destroy()`。涉及手牌区（`Dashboard.addHandCard`/`removeHandCard`）、装备区（`addEquip`/`removeEquip`）、TablePile（`addCard`/`removeCard`）的 add/remove 改造，以及 `move_cards_got`/`lost` 配对 move 的源→目标实例传递（当前 got 新建 + lost 销毁，需改为 got 接收 lost 释放的实例）。TablePile 延迟清除已改为直接 `destroy()`（不淡出），本任务不重做。**待排查**：TablePile 仍有全透明 carditem 残留（`_checkClearance` 跨对象 list 副本 splice 已修但仍存在），原因待技能实现后排查（可能与技能发动的 move 流程或 CardItem opacity 动画有关）。
 - [ ] **选项/触发顺序弹窗**：ChooseOptionsBox（askForChoice/askForOrder/askForDirection/askForSuit/askForKingdom）、ChooseTriggerOrderBox（askForTriggerOrder）。
-- [ ] **玩家牌展示/桌面牌堆**：PlayerCardBox（showAllCards/showCard/askForGongxin）、GenericCardContainer、TablePile（askForGuanxing/askForYiji）。
+- [ ] **玩家牌展示/桌面牌堆**：~~PlayerCardBox（askForCardChosen）~~ ✅（2026-08-01）、PlayerCardBox（showAllCards/showCard/askForGongxin）、GenericCardContainer、TablePile（askForGuanxing/askForYiji）。
 - [ ] **聊天与日志**：ChatWidget、BubbleChatBox、ClientLogBox。
 - [ ] **Dashboard 技能按钮 + 装备区**（含 CardItem 全链路 G 子任务）：旧版实现参考见"装备区与技能按钮（旧版实现参考）"小节。子任务：
   - [x] **装备区拆两套实现**（组件结构部分）：`qml/EquipAreaBase.qml`（基类，5 槽 Repeater + `equipCardIds`/`addEquip`/`removeEquip` + 可配置图标/布局，动画预留 `Repeater.itemAt`）+ `qml/SelfEquipArea.qml`（EquipAreaBase 根，dashboard 配置，进 Dashboard `equipBg`，`property alias equipArea` 暴露）+ `qml/PhotoEquipArea.qml`（EquipAreaBase 根，small-equips 配置，叠加 Photo 底部 `visible: !selfPhoto`，仅展示）。Dashboard/Photo 不再持 `equipCardIds`/`addEquip`/`removeEquip`（移入 EquipAreaBase）；RoomScene 调 `dashboard.equipArea`/`photo.equipArea` 的 `addEquip`/`removeEquip`。**未做**：点击分流/有效态/broken 占位图/距离文字/装备技能按钮/Photo 动态 createObject（依赖 G 子任务）。
@@ -154,6 +154,7 @@
 - **国战将名 `_hegemony` 后缀是合法将名，`getGeneral` 查询不可去尾**：`Sanguosha.getGeneral("xxx_hegemony")` 直接查到国战将该本身；`xxx` 与 `xxx_hegemony` 是不同武将，kingdom 可能不同，去尾会查到错误的 general。注意这与 `Photo.qml` 的图片资源/翻译层面的 `_hegemony` 处理不同（图片资源可去尾 fallback 找文件、翻译可去尾查找 key，二者均非 getGeneral 查询）。
 
 ### 选牌与目标选择（Responding 系列 / askForCard / askForUseCard）
+- **core / client 禁用 QVariant**：除不得已（如 `Player::tag` 这种任意键值存储）或为 QML 提供通用接口（`qmlui` 桥接层的 signal/属性序列化）外，`src/core` 与 `src/client` 中一律使用明确类型（`QList<int>`、`QList<const Card*>`、`QStringList` 等），禁止 `QVariantList`/`QVariantMap`。需暴露给 QML 的 id 列表返回 `Q_INVOKABLE QList<int>`（QML 引擎自动转 JS 数组，如既有 `getPile`、本次 `handcardIds`/`equipIds`/`getShownHandcards`/`getJudgingAreaID`）。
 - **askForCard 与 askForUseCard 共用 `S_COMMAND_RESPONSE_CARD`**，区别在 `Card::HandlingMethod`（请求第 3 字段）。`Client::askForCardOrUseCard`（client.cpp:1141）按 method 映射 status（basic 都是 `Responding`，高位字节区分）：
   - `MethodResponse` → `Responding`（0x0001）——`askForCard` 响应牌（被杀要闪、要无懈），**无玩家目标**，服务器侧 `askForCard` 只读 `clientReply[0]`（卡字符串），忽略 targets。
   - `MethodUse` → `RespondingUse`（0x0101）——`askForUseCard` 使用牌（出杀选目标、用药救人），**需选目标**，服务器侧 `askForUseCard` 把整个 reply 解析为 `CardUseStruct`（卡+targets）。
@@ -503,6 +504,13 @@
 ### 2026-08-01：prompt 通知统一走 contentsChanged（修复多个 askFor* 无 prompt）
 - 根因：`promptText` Q_PROPERTY 的 NOTIFY `promptTextChanged` 只在 `setPromptList`（client.cpp:1143）手动 emit；`askForNullification`/`askForSinglePeach`/`askForSkillInvoke`/`askForDiscard`/`askForExchange`/`askForCardShow`/`askForPindian`/`askForYiji`/`askForPlayerChosen`/`askForLuckCard`/`askForSurrender` 等直接用 `prompt_doc->setHtml()` 设 prompt，不 emit → QML PromptBox 不更新（askForNullification/askForSinglePeach 完全无 prompt）。
 - 修法：构造函数（client.cpp:171）连接 `prompt_doc::contentsChanged` → `emit promptTextChanged(promptText())`，使所有 `prompt_doc` 内容变更（setHtml/clear/...）统一通知 QML。移除 `setPromptList`（原 line 1144）与 `setStatus` NotActive（原 line 928）的手动 emit（现由 contentsChanged 自动发）。副产品：`askForCardOrUseCard` 的 notice 追加（`prompt_doc->setHtml(text)`）原本也不 emit，现经 contentsChanged 自动通知，notice 显示也修复。
+
+### 2026-08-01：实现 askForCardChosen（PlayerCardBox）
+- `askForCardChosen`（S_COMMAND_CHOOSE_CARD）：玩家从某玩家的手牌/装备/判定区选一张牌（如顺手牵羊/过河拆桥/攻心选牌）。服务端 `askForCardChosen`（room.cpp:1508）发 `[player, flags, reason, handcard_visible, method, disabled_ids, enableEmptyCard]`，回传 card_id（`-1`=S_UNKNOWN_CARD_ID→服务端随机选一张隐藏手牌，`-2`/空→随机）。
+- 数据访问走 **Player/ClientPlayer Q_INVOKABLE**（非 RoomScene 桥接集中组装）：`getShownHandcards()`/`getJudgingAreaID()`（返回 `QList<int>`）直接加 Q_INVOKABLE（QML 当 JS 数组，与既有 `getPile` 同）；`getHandcards()`/`getEquips()` 返回 `QList<const Card*>`（QML 不可直接消费），故新增 `ClientPlayer::handcardIds()`/`Player::equipIds()`（均返回 `QList<int>` effective-id，**不用 QVariantList**）wrapper；`Player::canDiscard(to,int,reason)` 加 Q_INVOKABLE（flags 重载保持非 Q_INVOKABLE，QML 按 int 重载调用）。`onPlayerChooseCard` 本是 `public slots`（隐式 Q_INVOKABLE），QML 直接 `roomScene.ClientInstance.onPlayerChooseCard(id)` 回传。`Self`/`ClientInstance` 是 RoomScene 的 Q_PROPERTY。
+- `qml/PlayerCardBox.qml`：基于 GraphicsBox，直接从 `player` 对象查 `handcardIds()/shownHandcardIds()/equipIds()/judgingIds()`，QML 侧组装 areas + disabled（`disabledIds.indexOf(id)>=0 || (method===Card.MethodDiscard && id!==-1 && !roomScene.Self.canDiscard(player,id))`）+ footnote（shown→`Sanguosha.translate("shown_card")`、判定牌→`Sanguosha.translate(getEngineCard(id).objectName)`）。**部分公开手牌时隐藏手牌只画一个牌背**（`!handcardVisible && player!==Self` 时 shownHandcards 作真牌 + 一个 `cardId=-1` back，hidden=`player.handcard - shownIds.length`）。标题 `qsTr("%1: please choose %2's card").arg(Sanguosha.translate(reason)).arg(getPlayerName(player.objectName))`。CardItem `onClicked` → `cardChosen` signal → `ClientInstance.onPlayerChooseCard` + destroy。无取消（必须选）。请求参数（player/flags/reason/handcardVisible/method/disabledIds/enableEmptyCard）由 `RoomScene.qml` `onNotifyCardsGot` 经 `createObject` 传入。
+- 注册：`qml/PlayerCardBox.qml` 加入 `.pro` lupdate_only 列表；运行时从 `qml/` 目录磁盘加载，同目录隐式类型解析。
+
 
 
 

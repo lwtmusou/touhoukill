@@ -230,6 +230,7 @@ SOURCES += \
     qml/PhaseItem.qml \
     qml/Photo.qml \
     qml/PhotoEquipArea.qml \
+    qml/PlayerCardBox.qml \
     qml/PrivatePileArea.qml \
     qml/PromptBox.qml \
     qml/QSanButton.qml \

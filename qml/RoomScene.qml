@@ -217,7 +217,19 @@ CppRoomScene {
         }
 
         function onNotifyCardsGot(player, flags, reason, handcardVisible, method, disabledIds, enableEmptyCard) {
-            console.log("[bridge->qml] notifyCardsGot", reason, flags, method);
+            var box = playerCardBoxComponent.createObject(roomScene, {
+                                                              "player": player,
+                                                              "flags": flags,
+                                                              "reason": reason,
+                                                              "handcardVisible": handcardVisible,
+                                                              "method": method,
+                                                              "disabledIds": disabledIds,
+                                                              "enableEmptyCard": enableEmptyCard
+                                                          });
+            roomScene.activeBox = box;
+            box.cardChosen.connect(function (cardId) {
+                roomScene.ClientInstance.onPlayerChooseCard(cardId);
+            });
         }
 
         function onNotifyDashboardDeath(who) {
@@ -692,6 +704,13 @@ CppRoomScene {
         id: chooseGeneralBoxComponent
 
         ChooseGeneralBox {
+        }
+    }
+
+    Component {
+        id: playerCardBoxComponent
+
+        PlayerCardBox {
         }
     }
 }

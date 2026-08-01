@@ -18,6 +18,8 @@ class ClientPlayer : public Player
 public:
     explicit ClientPlayer(Client *client);
     [[nodiscard]] QList<const Card *> getHandcards() const override;
+    // QML-facing id list (e.g. PlayerCardBox / askForCardChosen).
+    [[nodiscard]] Q_INVOKABLE QList<int> handcardIds() const;
     void setCards(const QList<int> &card_ids);
     void changePile(const QString &name, bool add, const QList<int> &card_ids);
     [[nodiscard]] QString getDeathPixmapPath() const;

@@ -137,6 +137,14 @@ QList<const Card *> ClientPlayer::getHandcards() const
     return known_cards;
 }
 
+QList<int> ClientPlayer::handcardIds() const
+{
+    QList<int> l;
+    for (const Card *c : known_cards)
+        l << c->getEffectiveId();
+    return l;
+}
+
 void ClientPlayer::setCards(const QList<int> &card_ids)
 {
     known_cards.clear();

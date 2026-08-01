@@ -1147,6 +1147,14 @@ QList<int> Player::getJudgingAreaID() const
     return judging_area;
 }
 
+QList<int> Player::equipIds() const
+{
+    QList<int> l;
+    for (const Card *c : getEquips())
+        l << c->getEffectiveId();
+    return l;
+}
+
 Player::Phase Player::getPhase() const
 {
     return phase;

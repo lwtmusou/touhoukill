@@ -101,7 +101,7 @@ public:
     // property setters/getters
     [[nodiscard]] int getChaoren() const; //for chaoren
     void setChaoren(int chaoren);
-    [[nodiscard]] QList<int> getShownHandcards() const;
+    [[nodiscard]] Q_INVOKABLE QList<int> getShownHandcards() const;
     void setShownHandcards(QList<int> &ids);
     [[nodiscard]] bool isShownHandcard(int id) const;
     [[nodiscard]] QList<int> getBrokenEquips() const;
@@ -242,7 +242,10 @@ public:
     [[nodiscard]] bool hasEquip() const;
 
     [[nodiscard]] QList<const Card *> getJudgingArea() const;
-    [[nodiscard]] QList<int> getJudgingAreaID() const; //for marshal
+    [[nodiscard]] Q_INVOKABLE QList<int> getJudgingAreaID() const; //for marshal
+    // QML-facing id-list accessor for equips (getEquips returns QList<const Card*>,
+    // which QML cannot consume directly, so expose effective ids).
+    [[nodiscard]] Q_INVOKABLE QList<int> equipIds() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
     [[nodiscard]] bool containsTrick(const QString &trick_name) const;
@@ -269,7 +272,7 @@ public:
     [[nodiscard]] bool isAllNude() const;
 
     bool canDiscard(const Player *to, const QString &flags, const QString &reason = "") const;
-    bool canDiscard(const Player *to, int card_id, const QString &reason = "") const;
+    Q_INVOKABLE bool canDiscard(const Player *to, int card_id, const QString &reason = "") const;
 
     void addMark(const QString &mark, int add_num = 1);
     void removeMark(const QString &mark, int remove_num = 1);
