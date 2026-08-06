@@ -141,7 +141,12 @@ GraphicsBox {
 
     height: Math.max(360, contentColumn.implicitHeight + 60)
     source: G.getAssetUrl("image/system/card-container.png")
-    width: Math.max(720, contentColumn.implicitWidth + 60)
+    // Fixed width: deriving width from contentColumn.implicitWidth would form a
+    // binding loop (contentColumn.width -> areaColumn.width -> Flow.width ->
+    // Column.implicitWidth -> box.width -> contentColumn.width). Flow wraps cards
+    // inside the fixed width instead. Height stays adaptive (Flow.implicitHeight
+    // depends on the fixed width, not on height, so no loop).
+    width: 900
 
     // Title
     Text {

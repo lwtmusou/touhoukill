@@ -817,6 +817,10 @@ void RoomScene::toggleCardSelection(int cardId)
 void RoomScene::registerCardContainer(CardContainer *container)
 {
     m_cardContainer = container;
+    // Mark shown handcards with the "shown_card" footnote whenever Self's shown set
+    // changes (mirrors old Dashboard::updateShown connected to showncards_changed).
+    if (Self != nullptr)
+        connect(Self, &Player::showncards_changed, this, &RoomScene::updateShownFootnotes);
 }
 
 void RoomScene::updateDashboardStatus()
@@ -874,7 +878,20 @@ void RoomScene::updateDashboardStatus()
         emit discardEnabledChanged();
     }
     updateHandCardEnabled();
+    updateShownFootnotes();
     recomputeOkReadiness();
+}
+
+void RoomScene::updateShownFootnotes()
+{
+    if (m_cardContainer == nullptr || Self == nullptr)
+        return;
+    const QString shown = Sanguosha->translate("shown_card");
+    const QVariantList ids = m_cardContainer->cardItemIds();
+    for (const QVariant &v : ids) {
+        const int cardId = v.toInt();
+        m_cardContainer->setCardFootnote(cardId, Self->isShownHandcard(cardId) ? shown : QString());
+    }
 }
 
 void RoomScene::registerPhoto(Photo *photo)

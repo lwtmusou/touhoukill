@@ -44,7 +44,10 @@ Item {
     }
 
     // Notify C++ of activeBox.canAccept changes so AskForGeneralTaken OK readiness
-    // is driven by C++ (setActiveBoxCanAccept -> recomputeOkReadiness).
+    // is driven by C++ (setActiveBoxCanAccept -> recomputeOkReadiness). The initial
+    // value is read here when activeBox is set; ongoing canAccept changes are pushed
+    // by the box itself (e.g. ChooseGeneralBox.onCanAcceptChanged) to avoid a
+    // Connections-to-null-target signal-resolution warning.
     onActiveBoxChanged: {
         if (dashboard.roomScene !== null)
             dashboard.roomScene.setActiveBoxCanAccept(activeBox !== null && activeBox.canAccept);
@@ -52,15 +55,6 @@ Item {
     onClientInstanceChanged: {
         if (dashboard.roomScene !== null)
             dashboard.roomScene.updateDashboardStatus();
-    }
-
-    Connections {
-        function onCanAcceptChanged() {
-            if (dashboard.roomScene !== null)
-                dashboard.roomScene.setActiveBoxCanAccept(activeBox !== null && activeBox.canAccept);
-        }
-
-        target: activeBox
     }
 
     Image {

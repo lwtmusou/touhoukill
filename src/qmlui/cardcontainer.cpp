@@ -60,6 +60,13 @@ void CardContainer::setCardEnabled(int cardId, bool enabled)
         item->setEnabled(enabled);
 }
 
+void CardContainer::setCardFootnote(int cardId, const QString &footnote)
+{
+    QQuickItem *item = findCard(cardId);
+    if (item != nullptr)
+        item->setProperty("footnoteText", footnote);
+}
+
 QQuickItem *CardContainer::findCard(int cardId) const
 {
     for (const QPointer<QQuickItem> &item : m_cardItems) {

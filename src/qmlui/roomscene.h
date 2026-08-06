@@ -93,6 +93,10 @@ public:
     Q_INVOKABLE void showRoleAssignDialog();
     Q_INVOKABLE void showGameOverDialog(bool standoff);
 
+    // Mark self's shown handcards with the "shown_card" footnote (and clear it for
+    // non-shown). Called on status change, showncards_changed, and handcard moves.
+    Q_INVOKABLE void updateShownFootnotes();
+
     [[nodiscard]] Q_INVOKABLE QVariantList getPlayerSkillButtons(ClientPlayer *player) const;
 
 signals:

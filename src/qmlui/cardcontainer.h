@@ -31,6 +31,9 @@ public:
     Q_INVOKABLE void unselectAll();
     // Set enabled on the CardItem with the given cardId (for isAvailable gating).
     Q_INVOKABLE void setCardEnabled(int cardId, bool enabled);
+    // Set the footnote text on the CardItem with the given cardId (e.g. "shown_card"
+    // marker for shown handcards). Empty string clears it.
+    Q_INVOKABLE void setCardFootnote(int cardId, const QString &footnote);
 
 private:
     [[nodiscard]] QQuickItem *findCard(int cardId) const;

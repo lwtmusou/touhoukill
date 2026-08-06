@@ -97,7 +97,7 @@ public:
     QString getReplayPath() const;
     void setLines(const QString &skill_name);
     Replayer *getReplayer() const;
-    QString getPlayerName(const QString &str);
+    Q_INVOKABLE QString getPlayerName(const QString &str);
     QString getSkillNameToInvoke() const;
 
     QTextDocument *getLinesDoc() const;

@@ -12,6 +12,10 @@ GraphicsBox {
 
     // Whether the current selection can be confirmed: single-general needs >=1, dual needs 2.
     property bool canAccept: selectedGenerals.length >= (singleResult ? 1 : 2)
+    // Push canAccept changes to the C++ RoomScene so AskForGeneralTaken OK readiness
+    // is driven there (setActiveBoxCanAccept -> recomputeOkReadiness). parent is the
+    // C++ RoomScene root (box created via createObject(roomScene, ...)).
+    onCanAcceptChanged: parent.setActiveBoxCanAccept(canAccept)
     property var generals: []
     property var selectedGenerals: []
     property bool singleResult: true

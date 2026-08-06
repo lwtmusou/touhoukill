@@ -339,6 +339,7 @@ CppRoomScene {
                 if (m.toPlace === Player.PlaceHand && m.toPlayer !== null && m.toPlayer.objectName === roomScene.Self.objectName) {
                     for (var j = 0; j < m.cardIds.length; ++j)
                         dashboard.addHandCard(m.cardIds[j]);
+                    roomScene.updateShownFootnotes();
                 } else if (m.toPlace === Player.PlaceEquip && m.toPlayer !== null) {
                     var target = m.toPlayer.objectName === roomScene.Self.objectName ? dashboard.equipArea : roomScene.findPhotoByPlayerName(m.toPlayer.objectName).equipArea;
                     if (target !== null) {
@@ -366,6 +367,7 @@ CppRoomScene {
                 if (m.fromPlace === Player.PlaceHand && m.fromPlayer !== null && m.fromPlayer.objectName === roomScene.Self.objectName) {
                     for (var j = 0; j < m.cardIds.length; ++j)
                         dashboard.removeHandCard(m.cardIds[j]);
+                    roomScene.updateShownFootnotes();
                 } else if (m.fromPlace === Player.PlaceEquip && m.fromPlayer !== null) {
                     var target = m.fromPlayer.objectName === roomScene.Self.objectName ? dashboard.equipArea : roomScene.findPhotoByPlayerName(m.fromPlayer.objectName).equipArea;
                     if (target !== null) {
