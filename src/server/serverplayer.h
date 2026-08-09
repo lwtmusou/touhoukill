@@ -238,4 +238,6 @@ signals:
     void message_ready(const QString &msg);
 };
 
+Q_DECLARE_METATYPE(ServerPlayer *)
+
 #endif

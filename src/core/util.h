@@ -16,39 +16,17 @@ class QVariant;
 
 unsigned int qsgsRand();
 
-template<typename T> auto ToSet(const T &t)
+// TODO: rename this function
+template<typename T> [[nodiscard]] auto List2Set(const T &t)
 {
     return QSet<typename T::value_type>(std::cbegin(t), std::cend(t));
 }
 
-// TODO: remove this function
-template<typename T> QSet<T> List2Set(const QList<T> &t)
-{
-#if QT_VERSION_MAJOR >= 6
-    return ToSet(t);
-#else
-    return t.toSet();
-#endif
-}
-
-template<typename T> void Shuffle(T &t)
+// TODO: rename this function
+template<typename T> void qShuffle(T &t)
 {
     static thread_local std::minstd_rand engine {std::random_device()()};
     std::shuffle(std::begin(t), std::end(t), engine);
-}
-
-// TODO: remove this function
-template<typename T> void qShuffle(QList<T> &list)
-{
-#if QT_VERSION_MAJOR >= 6
-    Shuffle(list);
-#else
-    int n = list.length();
-    for (int i = 0; i < n; i++) {
-        int r = (qsgsRand() % (n - i)) + i;
-        list.swapItemsAt(i, r);
-    }
-#endif
 }
 
 // lua interpreter related

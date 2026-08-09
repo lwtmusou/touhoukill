@@ -422,7 +422,7 @@ bool SkillInvokeDetail::operator<(const SkillInvokeDetail &arg2) const // the op
     else if (skill->getPriority() < arg2.skill->getPriority())
         return false;
 
-    std::function<Room *(ServerPlayer *)> getRoom = [this](ServerPlayer *p) -> Room * {
+    auto getRoom = [this](ServerPlayer *p) -> Room * {
         if (p != nullptr)
             return p->getRoom();
         else {
@@ -544,7 +544,7 @@ QStringList SkillInvokeDetail::toList() const
     if (!isValid())
         l << QString() << QString() << QString() << QString();
     else {
-        std::function<void(const QObject *)> insert = [&l](const QObject *item) {
+        auto insert = [&l](const QObject *item) {
             if (item != nullptr)
                 l << item->objectName();
             else

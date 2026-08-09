@@ -150,24 +150,8 @@ bool isHegemonyGameMode(const QString &mode)
     return mode.startsWith("hegemony");
 }
 
-#if QT_VERSION_MAJOR <= 5
-struct qsrand_wrapper
-{
-    qsrand_wrapper()
-    {
-        qsrand(QDateTime::currentSecsSinceEpoch());
-    }
-};
-#endif
-
 unsigned int qsgsRand()
 {
-#if QT_VERSION_MAJOR >= 6
     static thread_local std::mt19937 engine {std::random_device()()};
     return engine();
-#else
-    static qsrand_wrapper wrapper;
-    (void)wrapper;
-    return (unsigned int)qrand();
-#endif
 }
