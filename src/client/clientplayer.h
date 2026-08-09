@@ -25,6 +25,14 @@ public:
     [[nodiscard]] QString getDeathPixmapPath() const;
     void setPile(const QString &name, const QList<int> &card_ids);
     void setHandcardNum(int n);
+
+    // Emits handcardChanged so the QML `handcard` property stays in sync after
+    // handcard_num mutates (addCard/removeCard/setHandcardNum). Also calls
+    // boundKongcheng.notify() so the BINDABLE computed `kongcheng` property
+    // (Q_OBJECT_COMPUTED_PROPERTY in player.h, value = isKongcheng()) updates its
+    // bindings -- computed properties don't auto-track their dependencies, so the
+    // notify must happen wherever handcard_num changes.
+    void notifyHandcardChanged();
     [[nodiscard]] QString getGameMode() const override;
 
     void setFlags(const QString &flag) override;

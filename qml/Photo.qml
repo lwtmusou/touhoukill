@@ -386,6 +386,7 @@ CppPhoto {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             kingdom: photo.kingdom
+            num: photo.player ? photo.player.handcard : 0
             visible: photo.gameStarted
         }
 

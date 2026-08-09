@@ -4,7 +4,9 @@
 #include "WrappedCard.h"
 #include "general.h"
 
+#include <QBindable>
 #include <QObject>
+#include <QObjectComputedProperty>
 #include <QTcpSocket>
 
 class EquipCard;
@@ -51,7 +53,7 @@ class Player : public QObject
 
     Q_PROPERTY(QString next READ getNextName WRITE setNext)
 
-    Q_PROPERTY(bool kongcheng READ isKongcheng STORED false)
+    Q_PROPERTY(bool kongcheng READ isKongcheng STORED false BINDABLE bindableKongcheng)
     Q_PROPERTY(bool nude READ isNude STORED false)
     Q_PROPERTY(bool all_nude READ isAllNude STORED false)
 
@@ -453,6 +455,13 @@ signals:
     void showncards_changed();
     void brokenEquips_changed();
     void disable_show_changed();
+
+protected:
+    Q_OBJECT_COMPUTED_PROPERTY(Player, bool, boundKongcheng, &Player::isKongcheng)
+    QBindable<bool> bindableKongcheng()
+    {
+        return QBindable<bool>(&boundKongcheng);
+    }
 };
 
 #endif

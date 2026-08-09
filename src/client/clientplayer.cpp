@@ -41,6 +41,7 @@ void ClientPlayer::addCard(const Card *card, Place place)
         if (card != nullptr)
             known_cards << card;
         handcard_num++;
+        notifyHandcardChanged();
         break;
     }
     case PlaceEquip: {
@@ -116,6 +117,7 @@ void ClientPlayer::removeCard(const Card *card, Place place)
         handcard_num--;
         if (card != nullptr)
             known_cards.removeOne(card);
+        notifyHandcardChanged();
         break;
     }
     case PlaceEquip: {
@@ -211,8 +213,14 @@ void ClientPlayer::setHandcardNum(int n)
 {
     if (n != handcard_num) {
         handcard_num = n;
-        emit handcardChanged();
+        notifyHandcardChanged();
     }
+}
+
+void ClientPlayer::notifyHandcardChanged()
+{
+    emit handcardChanged();
+    boundKongcheng.notify();
 }
 
 QString ClientPlayer::getGameMode() const

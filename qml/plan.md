@@ -520,7 +520,16 @@
 
 
 
+### 2026-08-06：手牌数同步 + kongcheng 可绑定
+- 根因：`ClientPlayer::addCard`/`removeCard`（PlaceHand）改 `handcard_num` 后**不 emit `handcardChanged`**；`setHandcardNum` emit 了但只此一处。故其他玩家摸/弃牌后 `handcard` Q_PROPERTY 不更新，Photo 手牌数不刷新（且 `HandcardNum.num` 压根没绑 `player.handcard`，恒 0）。
+- 修法：
+  - `ClientPlayer` 新增 private `notifyHandcardChanged()`：emit `handcardChanged` + `boundKongcheng.notify()`。`addCard`/`removeCard`（PlaceHand）+ `setHandcardNum` 统一改调它（原 add/remove 改 `handcard_num` 后不 emit，是同步缺口）。
+  - `Player::kongcheng` 改为 **BINDABLE computed property**：`Q_PROPERTY(bool kongcheng READ isKongcheng STORED false BINDABLE bindableKongcheng)` + `Q_OBJECT_COMPUTED_PROPERTY(Player, bool, boundKongcheng, &Player::isKongcheng)` + `bindableKongcheng()` 返回 `QBindable<bool>(&boundKongcheng)`。computed property 不自动跟踪 `handcard_num` 依赖，故 `notifyHandcardChanged()` 里手动 `boundKongcheng.notify()`（handcard_num 变化处）。QML 绑定可直接用 `player.kongcheng`。
+  - `qml/Photo.qml`：`HandcardNum.num` 绑 `photo.player ? photo.player.handcard : 0`。
+- `setCards` 不动 `handcard_num`（它只同步 known_cards 已知牌集，与实际手牌数分离——其他玩家 known ≤ actual，实际数由 `setHandcardNum` 从服务器计数设置）。
+
 ## 7. 下一步
+
 1. ~~CardItem 卡牌选择全链路~~ ✅ B-F 已完成。A（牌区同步）✅→B（CardItem 选中态）✅→C（Dashboard pending + PromptBox）✅→D（桥接选卡回传）✅→E（OK/Cancel/Discard 按钮回传）✅→F（目标选择）✅。
 2. G（ViewAsSkill 组牌）与"Dashboard 技能按钮"任务合并。
 3. 选项/触发顺序弹窗（ChooseOptionsBox/ChooseTriggerOrderBox）。
