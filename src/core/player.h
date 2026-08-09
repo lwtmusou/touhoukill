@@ -54,8 +54,6 @@ class Player : public QObject
     Q_PROPERTY(QString next READ getNextName WRITE setNext)
 
     Q_PROPERTY(bool kongcheng READ isKongcheng STORED false BINDABLE bindableKongcheng)
-    Q_PROPERTY(bool nude READ isNude STORED false)
-    Q_PROPERTY(bool all_nude READ isAllNude STORED false)
 
 public:
     enum Phase
@@ -270,8 +268,8 @@ public:
     [[nodiscard]] bool hasTreasure(const QString &treasure_name, bool selfOnly = false) const;
 
     [[nodiscard]] bool isKongcheng() const;
-    [[nodiscard]] bool isNude() const;
-    [[nodiscard]] bool isAllNude() const;
+    [[nodiscard]] Q_INVOKABLE bool isNude() const;
+    [[nodiscard]] Q_INVOKABLE bool isAllNude() const;
 
     bool canDiscard(const Player *to, const QString &flags, const QString &reason = "") const;
     Q_INVOKABLE bool canDiscard(const Player *to, int card_id, const QString &reason = "") const;
